@@ -554,4 +554,4 @@ function moneyHowCard(S){
 /* (V38.60) the field chat page — the office and the installers in one thread per point, or person to person */
 PAGE.chat = { m:'الميدان', t:'المحادثات',
   l:'المهندسُ في المكتب والمنفِّذُ في الموقع يتكلّمان هنا — على نقطةٍ بعينها أو مباشرةً، وكلُّ سطرٍ يبقى.',
-  body:function(){ return chPageHtml(); } };
+  body:function(){ var head = tabHead('chat'), cur = tabCur('chat'); return head + (cur === 'chathist' ? chHistHtml() : chPageHtml()); } };   /* (V38.67) two tabs */

@@ -530,6 +530,12 @@ console.log('\n══ ١٦ · محادثةُ الميدان ══');
   as('engineer', 'جرد السيناريوهات'); w.apprIns(x.id, 1);
   T(sys.length === 1 && /اكتمل التركيب/.test(sys[0].text) && /SN-CHAT-9/.test(sys[0].text) && w.chOf(x.id).some(v => /اعتمد المهندسُ/.test(v.text)), 'وحفظُ التركيب يكتب سطرَه بقطعه وسيريالاته، والاعتمادُ سطرَه');
   w.POP_SITE = x.id; T(String(w.popHtml()).indexOf('محادثة النقطة') > -1, 'والمحادثةُ تظهر في نافذة النقطة على الخريطة');
+  /* (V38.67) a point not scheduled for installation has no chat; the management has the history tab with its filters */
+  { const fr = w.STATE.sites.filter(z => z && z.type === 'مخيم' && !w.STATE.inss[z.id] && !w.taskKindOf(z.id, 'install') && !w.chOf(z.id).length)[0];
+    w.POP_SITE = fr.id; const noChat = String(w.popHtml()).indexOf('محادثة النقطة') < 0 && !w.chScheduled(fr.id);
+    w.ROLE = 'admin'; w.STATE.meta.role = 'admin'; const tabsA = w.tabsOf('chat').map(t0 => t0[0]); w.ROLE = 'tech'; w.STATE.meta.role = 'tech'; const tabsT = w.tabsOf('chat').map(t0 => t0[0]); w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
+    w.chHistState.s = { site:x.id, who:'', from:'', to:'', kind:'sys', q:'' }; const hh = w.chHistHtml(); w.chHistState.s = null;
+    T(noChat && tabsA.join() === 'chat,chathist' && tabsT.join() === 'chat' && hh.indexOf('اكتمل التركيب') > -1 && hh.indexOf('ركّب القارئَ') < 0, 'ونقطةٌ غيرُ مجدولةٍ للتركيب بلا محادثة، و«سجل المحادثات» للإدارة بفلترٍ بالنقطة والنوع'); }
   w.STATE.users = keepUsers; w.STATE.tasks['TK-install-' + x.id].status = 'معتمد'; w.tasksTouched();
 }
 

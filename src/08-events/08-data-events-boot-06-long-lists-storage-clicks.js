@@ -446,6 +446,7 @@ function clickTables(e){
     if (key.indexOf('dm:') === 0){ to = key.slice(3); site = ''; } else if (key === 'team'){ to = ''; site = ''; }   /* (V38.65) person and team threads */
     if (!String(txt || '').trim()){ toast(t('اكتب الرسالةَ أوّلًا')); return true; }
     if (site && !siteFind(site)){ toast(t('النقطةُ غيرُ موجودة') + ': ' + site); return true; }
+    if (site && !chScheduled(site)){ toast(t('هذه النقطةُ غيرُ مجدولةٍ للتركيب — لا محادثةَ عليها')); return true; }   /* (V38.67) */
     var sent = chSend(site, to, txt); if (ta) ta.value = ''; toast('\u{1F4AC} ' + t('أُرسلت'));
     if (key === '*' && sent && CUR === 'chat') chPageHtml.f = { open:chKey(sent) };   /* (V38.65) the conversation it started opens */
     render(1); return true;
@@ -453,7 +454,8 @@ function clickTables(e){
   var chf = e.target.closest('[data-chf]');
   if (chf){ var chfv = chf.getAttribute('data-chf'); chPageHtml.f = chfv === 'all' ? {} : chfv === 'sys' ? { sys:1 } : (chfv.indexOf('site:') === 0 ? { site:chfv.slice(5) } : { who:chfv.slice(4) }); toast(chfv === 'all' ? t('كلُّ الرسائل') : chfv === 'sys' ? t('سجل التركيب') : chfv.slice(chfv.indexOf(':') + 1)); render(1); return true; }
   var cho = e.target.closest('[data-chopen]');
-  if (cho){ chPageHtml.f = { open:'site:' + cho.getAttribute('data-chopen') }; POP_OPEN = false; goPage('chat'); render(1); return true; }
+  if (cho){ chPageHtml.f = { open:'site:' + cho.getAttribute('data-chopen') }; POP_OPEN = false; PTAB.chat = 'chat'; goPage('chat'); render(1); return true; }
+  if (e.target.closest('[data-chhclear]')){ chHistState.s = null; render(1); return true; }   /* (V38.67) */
   var chot = e.target.closest('[data-chopen-t]');   /* (V38.65) a thread from the list */
   if (chot){ chPageHtml.f = { open:chot.getAttribute('data-chopen-t') }; render(1); return true; }
   var rbpr = e.target.closest('[data-rbpresets]'); if (rbpr){ var nP = rbPresetsAdd(); toast(nP ? '\u26A1 ' + t('أُضيفت') + ' ' + nm(nP) : t('كلُّها موجودةٌ أصلًا')); var rsR = document.getElementById('assistRes'); if (rsR) rsR.innerHTML = assistResHtml(); else render(1); return true; }

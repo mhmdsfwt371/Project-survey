@@ -356,7 +356,16 @@ function phBlob(id){
   W[id] = 1;
   DB.col('photoblobs').doc(id).get().then(function(d){
     FB.readCount = (FB.readCount || 0) + 1;
-    var v = d && d.exists ? (d.data() || {}).data : ''; if (!v) return;
+    var v = d && d.exists ? (d.data() || {}).data : '';
+    if (!v){
+      /* (V38.67) no raw copy: the server moved it to Drive and deleted the copy — read the photo's document once for its Drive id */
+      return DB.col('photos').doc(id).get().then(function(pd){
+        FB.readCount = (FB.readCount || 0) + 1;
+        var pv = pd && pd.exists ? pd.data() : null; if (!pv || !pv.driveId) return;
+        STATE.photos = STATE.photos || {}; STATE.photos[id] = Object.assign({}, STATE.photos[id] || {}, pv); if (typeof phTouch === 'function') phTouch(); else PH_IDX = null;
+        try { if (!document.querySelector('#content textarea:focus, #content input:focus')) render(1); } catch (e3){ LS_ERR = e3; }
+      });
+    }
     C[id] = v; var ks = Object.keys(C); if (ks.length > 40) delete C[ks[0]];
     try { if (!document.querySelector('#content textarea:focus, #content input:focus')) render(1); } catch (e){ LS_ERR = e; }
   }).catch(function(e){ LS_ERR = e; });

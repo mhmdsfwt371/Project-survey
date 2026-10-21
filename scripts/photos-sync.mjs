@@ -264,6 +264,22 @@ try {
   if (rehomed) console.log(`::notice title=photos::نُقلت ${rehomed} صورةً إلى مجلد نقطتها الجديدة`);
 } catch (e){ console.log('نقلُ صور النقاط المدموجة تعذّر: ' + (e && e.message)); }
 
+/* ═══ (V38.67) photos moved before this fix carry no _at newer than their move — phones never pulled their Drive id.
+   One pass a run over the moved ones (by id, a cursor in settings/photosAt) stamps _at where it lags behind movedAt. ═══ */
+try {
+  const AT = db.collection('settings').doc('photosAt'), st = (await AT.get()).data() || {};
+  if (!st.done){
+    let q = db.collection('photos').where('status', '==', 'done').orderBy(admin.firestore.FieldPath.documentId()).limit(300);
+    if (st.cursor) q = q.startAfter(st.cursor);
+    const page = await q.get(); let fixed = 0; const b = db.batch();
+    for (const d of page.docs){ const p = d.data(); if (!(+p._at >= +(p.movedAt || 0))){ b.set(d.ref, { _at: Date.now() }, { merge: true }); fixed++; } }
+    if (fixed) await b.commit();
+    const last = page.docs.length ? page.docs[page.docs.length - 1].id : '';
+    await AT.set(page.empty ? { done: true, at: Date.now(), cursor: admin.firestore.FieldValue.delete() } : { cursor: last, at: Date.now() }, { merge: true });
+    if (fixed) console.log(`::notice title=photos::وُسِمت ${fixed} صورةً منقولةً بتوقيتها — تصل الأجهزةَ برابط الدرايف`);
+  }
+} catch (e){ console.log('وسمُ توقيت الصور المنقولة تعذّر: ' + (e && e.message)); }
+
 const snap = await db.collection('photos').where('status', '==', 'pending').limit(150).get();
 if (snap.empty){ console.log('لا صورَ منتظرة'); process.exit(0); }
 console.log(`صور منتظرة: ${snap.size}`);
@@ -285,7 +301,9 @@ for (const d of snap.docs){
     /* رابطٌ يفتح لكلِّ من عنده الرابط — فتظهر الصورةُ في معرض التطبيق لكلِّ الفريق
        لا لصاحب الدرايف وحدَه؛ وإن تعذّرت المشاركةُ بقي الملفُ مرفوعًا */
     await drive.permissions.create({ fileId: made.data.id, requestBody: { role: 'reader', type: 'anyone' }, supportsAllDrives: true }).catch(() => {});
-    await d.ref.set({ status: 'done', driveId: made.data.id, link: made.data.webViewLink, movedAt: Date.now(),
+    /* (V38.67) _at moves with the document: phones pull photos by _at, so a moved photo without it stayed «⏳ to Drive» on
+       every phone forever (its raw copy deleted, its Drive id never pulled) */
+    await d.ref.set({ status: 'done', driveId: made.data.id, link: made.data.webViewLink, movedAt: Date.now(), _at: Date.now(),
                       inSite: true, folderId: dirId, data: admin.firestore.FieldValue.delete() }, { merge: true });
     if (p.blob) await db.collection('photoblobs').doc(d.id).delete().catch(() => {});   /* (V37.18) */
     done++;

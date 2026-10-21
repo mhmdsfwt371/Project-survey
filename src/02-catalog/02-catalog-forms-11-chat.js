@@ -11,6 +11,12 @@
 function chMsgs(){ var M = STATE.msgs || {}; return Object.keys(M).map(function(k){ return M[k]; }).filter(function(v){ return v && !v.deleted && v.text; }).sort(function(a, b){ return (+a.at || 0) - (+b.at || 0); }); }
 /* the thread of one site */
 function chOf(site){ return chMsgs().filter(function(v){ return v.site === site; }); }
+/* (V38.67) owner's rule: a point has a chat only once its installation is assigned (scheduled) — an unscheduled point has none;
+   a point that already has a history keeps it */
+function chScheduled(site){
+  if (!site) return false;
+  return !!(taskKindOf(site, 'install') || (STATE.tasks || {})['TK-install-' + site] || ((STATE.inss || {})[site] || {}).status || chOf(site).length);
+}
 /* who may read a message: the office reads all; the field reads what is to it, from it, to the team, or on its own sites */
 /* (V38.65) «كلُّ مديرٍ يرى ما تحته»: the office (engineer and above) reads everything; a supervisor reads his own lines and
    his team's (the crews he belongs to); a technician reads his own. A plain line to the whole team (no point, no addressee)
@@ -19,6 +25,8 @@ function chPeople(){
   var me = STATE.meta.name || '', key = me + '|' + ROLE + '|' + ((STATE.crews || []).length);
   if (chPeople.k === key && chPeople.v) return chPeople.v;
   var set = {}; set[me] = 1;
+  /* (V38.67) the reporting line of the accounts (each user's manager): everyone under me, at any depth */
+  if (typeof underNames === 'function') underNames(me).forEach(function(n){ set[n] = 1; });
   if (rankOf(ROLE) >= rankOf('supervisor') && typeof myCrews === 'function'){
     var crews = myCrews(me);
     crewsList().forEach(function(c){ if (crews.indexOf(c.n) > -1) (c.members || []).forEach(function(m){ set[m] = 1; }); });
@@ -28,8 +36,11 @@ function chPeople(){
 }
 function chVisible(v){
   if (!v) return false;
-  if (may('approve')) return true;
+  /* the project's management (admin, executive) reads everything; an engineer reads his line of reports — and everything while
+     the reporting line is not set yet (no one under him), as before */
+  if (rankOf(effRole(ROLE)) >= rankOf('admin')) return true;
   var P = chPeople();
+  if (may('approve') && Object.keys(P).length <= 1) return true;
   if (P[v.from] || (v.to && P[v.to])) return true;
   if (!v.to && !v.site && v.kind !== 'sys') return true;
   if (v.site){ var tk = typeof asnOf === 'function' ? asnOf(v.site) : null; if (tk && P[tk.to]) return true; }
@@ -72,6 +83,7 @@ function chLineHtml(v){
 }
 /* the thread of a site with its composer; `to` defaults to the site's assignee (office) or empty = the office (field) */
 function chThreadHtml(site, compact){
+  if (!chScheduled(site)) return '';   /* (V38.67) */
   var L = chOf(site).filter(chVisible), tk = typeof asnOf === 'function' ? asnOf(site) : null;
   var to = may('approve') ? ((tk && tk.to) || '') : '';
   var lines = (compact ? L.slice(-3) : L).map(chLineHtml).join('') || '<p class="hint" style="text-align:center;margin:0">' + esc(t('لا رسائلَ على هذه النقطة بعد')) + '</p>';
@@ -142,4 +154,42 @@ function chPageHtml(){
     + card('\u270F ' + t('رسالة جديدة'), compose)
     + cardFlush(t('المحادثات'), chListHtml() || '<p class="hint" style="text-align:center;padding:12px">' + esc(t('لا رسائلَ بعد — اكتب أوّلَ رسالة')) + '</p>')
     + '<p class="hint">' + esc(t('كلُّ رسالةٍ سطرٌ لا يُمحى ولا يُعدَّل — وحفظُ التركيب واعتمادُه وردُّه يكتبون سطورَهم هنا وحدَهم.')) + '</p>';
+}
+
+/* (V38.67) «سجل المحادثات» — the project's management finds any line: by point, person, date range, kind and text; each
+   line opens its conversation. The page's export takes the table. */
+function chHistState(){ return chHistState.s || (chHistState.s = { site:'', who:'', from:'', to:'', kind:'', q:'' }); }
+function chHistHtml(){
+  var F = chHistState(), all = chMsgs();
+  var people = {}, sites = {}; all.forEach(function(v){ if (v.from) people[v.from] = 1; if (v.to) people[v.to] = 1; if (v.site) sites[v.site] = 1; });
+  var t0 = F.from ? Date.parse(F.from + 'T00:00:00') : 0, t1 = F.to ? Date.parse(F.to + 'T23:59:59') : 0, qq = String(F.q || '').trim();
+  var L = all.filter(function(v){
+    if (F.site && v.site !== F.site) return false;
+    if (F.who && v.from !== F.who && v.to !== F.who) return false;
+    if (F.kind === 'msg' && v.kind === 'sys') return false;
+    if (F.kind === 'sys' && v.kind !== 'sys') return false;
+    if (t0 && (+v.at || 0) < t0) return false;
+    if (t1 && (+v.at || 0) > t1) return false;
+    if (qq && String(v.text).indexOf(qq) < 0) return false;
+    return true;
+  }).slice().reverse();
+  var sel = function(attr, val, opts, all0){ return '<select class="in" data-chh="' + attr + '" aria-label="' + esc(t(all0)) + '"><option value="">' + esc(t(all0)) + '</option>' + opts.map(function(o){ return '<option value="' + esc(o[0]) + '"' + (val === o[0] ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select>'; };
+  var filters = '<div class="grid cols-2" style="gap:6px">'
+    + sel('site', F.site, Object.keys(sites).sort().map(function(id){ var x = siteFind(id); return [id, x ? siteKey(x) + ' · ' + id : id]; }), 'كلُّ النقاط')
+    + sel('who', F.who, Object.keys(people).sort().map(function(n){ return [n, dispName(n) || n]; }), 'كلُّ الأشخاص')
+    + '<label class="hint" style="margin:0">' + esc(t('من تاريخ')) + '<input class="in" type="date" data-chh="from" value="' + esc(F.from) + '" aria-label="' + esc(t('من تاريخ')) + '"></label>'
+    + '<label class="hint" style="margin:0">' + esc(t('إلى تاريخ')) + '<input class="in" type="date" data-chh="to" value="' + esc(F.to) + '" aria-label="' + esc(t('إلى تاريخ')) + '"></label>'
+    + sel('kind', F.kind, [['msg', t('رسائل الأشخاص')], ['sys', t('سطور النظام (التركيب)')]], 'كلُّ الأنواع')
+    + '<input class="in" data-chh="q" value="' + esc(F.q) + '" placeholder="' + esc(t('بحثٌ في النص')) + '" aria-label="' + esc(t('بحثٌ في النص')) + '">'
+    + '</div><div class="actions" style="margin-top:6px">' + btn(t('مسح الفلاتر'), 'btn-quiet btn-sm', ' data-chhclear="1"') + '</div>';
+  var rows = L.slice(0, 500).map(function(v){
+    var x = v.site ? siteFind(v.site) : null;
+    return ['<span class="num">' + esc(fmtDT(v.at)) + '</span>',
+            v.site ? btn(esc(x ? siteKey(x) : v.site), 'btn-quiet btn-sm', ' data-chopen="' + esc(v.site) + '"') : '<span class="hint" style="margin:0">' + esc(t(v.to ? 'مباشرة' : 'الفريق')) + '</span>',
+            esc(v.kind === 'sys' ? t('النظام') : (dispName(v.from) || v.from)) + (v.to ? ' \u2192 ' + esc(dispName(v.to) || v.to) : ''),
+            (v.kind === 'sys' ? '\u2139 ' : '') + esc(v.text)];
+  });
+  return stats([['السطور المطابقة', N(L.length)], ['النقاط', N(Object.keys(sites).length)], ['الأشخاص', N(Object.keys(people).length)]])
+    + card('\u{1F50E} ' + t('فلترة سجل المحادثات'), filters)
+    + cardFlush(t('السجل') + ' \u00b7 ' + nm(L.length) + (L.length > 500 ? ' \u2014 ' + t('أحدثُ ٥٠٠') : ''), rows.length ? table(['الوقت', 'النقطة', 'من \u2192 إلى', 'النص'], rows) : '<p class="hint" style="text-align:center;padding:12px">' + esc(t('لا سطورَ تطابق الفلاتر')) + '</p>');
 }

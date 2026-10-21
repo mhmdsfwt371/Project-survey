@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.66</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.67</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1377,7 +1377,7 @@ function nskChunkReady(){
 
   try { if (typeof whatsNewMaybe === 'function' && whatsNewMaybe.pending){ whatsNewMaybe.pending = false; if (whatsNewMaybe() && typeof render === 'function') render(1); } } catch (e3){ LS_ERR = e3; }
 }
-var I18N_FILE = 'i18n/dict-76235316bf.js', I18N_STATE = 0, I18N_WAIT = [];
+var I18N_FILE = 'i18n/dict-4abb30cc5d.js', I18N_STATE = 0, I18N_WAIT = [];
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }
@@ -5340,7 +5340,7 @@ function moneyHowCard(S){
 
 PAGE.chat = { m:'الميدان', t:'المحادثات',
   l:'المهندسُ في المكتب والمنفِّذُ في الموقع يتكلّمان هنا — على نقطةٍ بعينها أو مباشرةً، وكلُّ سطرٍ يبقى.',
-  body:function(){ return chPageHtml(); } };
+  body:function(){ var head = tabHead('chat'), cur = tabCur('chat'); return head + (cur === 'chathist' ? chHistHtml() : chPageHtml()); } };
 
 var PMO = { at:0, v:null, err:'' };
 var PMO_LEVELS = ['غير مدرك', 'مقاوم', 'محايد', 'داعم', 'قائد'];
@@ -6903,10 +6903,17 @@ function chMsgs(){ var M = STATE.msgs || {}; return Object.keys(M).map(function(
 
 function chOf(site){ return chMsgs().filter(function(v){ return v.site === site; }); }
 
+function chScheduled(site){
+  if (!site) return false;
+  return !!(taskKindOf(site, 'install') || (STATE.tasks || {})['TK-install-' + site] || ((STATE.inss || {})[site] || {}).status || chOf(site).length);
+}
+
 function chPeople(){
   var me = STATE.meta.name || '', key = me + '|' + ROLE + '|' + ((STATE.crews || []).length);
   if (chPeople.k === key && chPeople.v) return chPeople.v;
   var set = {}; set[me] = 1;
+
+  if (typeof underNames === 'function') underNames(me).forEach(function(n){ set[n] = 1; });
   if (rankOf(ROLE) >= rankOf('supervisor') && typeof myCrews === 'function'){
     var crews = myCrews(me);
     crewsList().forEach(function(c){ if (crews.indexOf(c.n) > -1) (c.members || []).forEach(function(m){ set[m] = 1; }); });
@@ -6916,8 +6923,10 @@ function chPeople(){
 }
 function chVisible(v){
   if (!v) return false;
-  if (may('approve')) return true;
+
+  if (rankOf(effRole(ROLE)) >= rankOf('admin')) return true;
   var P = chPeople();
+  if (may('approve') && Object.keys(P).length <= 1) return true;
   if (P[v.from] || (v.to && P[v.to])) return true;
   if (!v.to && !v.site && v.kind !== 'sys') return true;
   if (v.site){ var tk = typeof asnOf === 'function' ? asnOf(v.site) : null; if (tk && P[tk.to]) return true; }
@@ -6960,6 +6969,7 @@ function chLineHtml(v){
 }
 
 function chThreadHtml(site, compact){
+  if (!chScheduled(site)) return '';
   var L = chOf(site).filter(chVisible), tk = typeof asnOf === 'function' ? asnOf(site) : null;
   var to = may('approve') ? ((tk && tk.to) || '') : '';
   var lines = (compact ? L.slice(-3) : L).map(chLineHtml).join('') || '<p class="hint" style="text-align:center;margin:0">' + esc(t('لا رسائلَ على هذه النقطة بعد')) + '</p>';
@@ -7029,6 +7039,42 @@ function chPageHtml(){
     + card('\u270F ' + t('رسالة جديدة'), compose)
     + cardFlush(t('المحادثات'), chListHtml() || '<p class="hint" style="text-align:center;padding:12px">' + esc(t('لا رسائلَ بعد — اكتب أوّلَ رسالة')) + '</p>')
     + '<p class="hint">' + esc(t('كلُّ رسالةٍ سطرٌ لا يُمحى ولا يُعدَّل — وحفظُ التركيب واعتمادُه وردُّه يكتبون سطورَهم هنا وحدَهم.')) + '</p>';
+}
+
+function chHistState(){ return chHistState.s || (chHistState.s = { site:'', who:'', from:'', to:'', kind:'', q:'' }); }
+function chHistHtml(){
+  var F = chHistState(), all = chMsgs();
+  var people = {}, sites = {}; all.forEach(function(v){ if (v.from) people[v.from] = 1; if (v.to) people[v.to] = 1; if (v.site) sites[v.site] = 1; });
+  var t0 = F.from ? Date.parse(F.from + 'T00:00:00') : 0, t1 = F.to ? Date.parse(F.to + 'T23:59:59') : 0, qq = String(F.q || '').trim();
+  var L = all.filter(function(v){
+    if (F.site && v.site !== F.site) return false;
+    if (F.who && v.from !== F.who && v.to !== F.who) return false;
+    if (F.kind === 'msg' && v.kind === 'sys') return false;
+    if (F.kind === 'sys' && v.kind !== 'sys') return false;
+    if (t0 && (+v.at || 0) < t0) return false;
+    if (t1 && (+v.at || 0) > t1) return false;
+    if (qq && String(v.text).indexOf(qq) < 0) return false;
+    return true;
+  }).slice().reverse();
+  var sel = function(attr, val, opts, all0){ return '<select class="in" data-chh="' + attr + '" aria-label="' + esc(t(all0)) + '"><option value="">' + esc(t(all0)) + '</option>' + opts.map(function(o){ return '<option value="' + esc(o[0]) + '"' + (val === o[0] ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select>'; };
+  var filters = '<div class="grid cols-2" style="gap:6px">'
+    + sel('site', F.site, Object.keys(sites).sort().map(function(id){ var x = siteFind(id); return [id, x ? siteKey(x) + ' · ' + id : id]; }), 'كلُّ النقاط')
+    + sel('who', F.who, Object.keys(people).sort().map(function(n){ return [n, dispName(n) || n]; }), 'كلُّ الأشخاص')
+    + '<label class="hint" style="margin:0">' + esc(t('من تاريخ')) + '<input class="in" type="date" data-chh="from" value="' + esc(F.from) + '" aria-label="' + esc(t('من تاريخ')) + '"></label>'
+    + '<label class="hint" style="margin:0">' + esc(t('إلى تاريخ')) + '<input class="in" type="date" data-chh="to" value="' + esc(F.to) + '" aria-label="' + esc(t('إلى تاريخ')) + '"></label>'
+    + sel('kind', F.kind, [['msg', t('رسائل الأشخاص')], ['sys', t('سطور النظام (التركيب)')]], 'كلُّ الأنواع')
+    + '<input class="in" data-chh="q" value="' + esc(F.q) + '" placeholder="' + esc(t('بحثٌ في النص')) + '" aria-label="' + esc(t('بحثٌ في النص')) + '">'
+    + '</div><div class="actions" style="margin-top:6px">' + btn(t('مسح الفلاتر'), 'btn-quiet btn-sm', ' data-chhclear="1"') + '</div>';
+  var rows = L.slice(0, 500).map(function(v){
+    var x = v.site ? siteFind(v.site) : null;
+    return ['<span class="num">' + esc(fmtDT(v.at)) + '</span>',
+            v.site ? btn(esc(x ? siteKey(x) : v.site), 'btn-quiet btn-sm', ' data-chopen="' + esc(v.site) + '"') : '<span class="hint" style="margin:0">' + esc(t(v.to ? 'مباشرة' : 'الفريق')) + '</span>',
+            esc(v.kind === 'sys' ? t('النظام') : (dispName(v.from) || v.from)) + (v.to ? ' \u2192 ' + esc(dispName(v.to) || v.to) : ''),
+            (v.kind === 'sys' ? '\u2139 ' : '') + esc(v.text)];
+  });
+  return stats([['السطور المطابقة', N(L.length)], ['النقاط', N(Object.keys(sites).length)], ['الأشخاص', N(Object.keys(people).length)]])
+    + card('\u{1F50E} ' + t('فلترة سجل المحادثات'), filters)
+    + cardFlush(t('السجل') + ' \u00b7 ' + nm(L.length) + (L.length > 500 ? ' \u2014 ' + t('أحدثُ ٥٠٠') : ''), rows.length ? table(['الوقت', 'النقطة', 'من \u2192 إلى', 'النص'], rows) : '<p class="hint" style="text-align:center;padding:12px">' + esc(t('لا سطورَ تطابق الفلاتر')) + '</p>');
 }
 
 function insqState(){ return insqState.s || (insqState.s = { id:'', delAsk:'', st:'' }); }
@@ -12859,7 +12905,16 @@ function phBlob(id){
   W[id] = 1;
   DB.col('photoblobs').doc(id).get().then(function(d){
     FB.readCount = (FB.readCount || 0) + 1;
-    var v = d && d.exists ? (d.data() || {}).data : ''; if (!v) return;
+    var v = d && d.exists ? (d.data() || {}).data : '';
+    if (!v){
+
+      return DB.col('photos').doc(id).get().then(function(pd){
+        FB.readCount = (FB.readCount || 0) + 1;
+        var pv = pd && pd.exists ? pd.data() : null; if (!pv || !pv.driveId) return;
+        STATE.photos = STATE.photos || {}; STATE.photos[id] = Object.assign({}, STATE.photos[id] || {}, pv); if (typeof phTouch === 'function') phTouch(); else PH_IDX = null;
+        try { if (!document.querySelector('#content textarea:focus, #content input:focus')) render(1); } catch (e3){ LS_ERR = e3; }
+      });
+    }
     C[id] = v; var ks = Object.keys(C); if (ks.length > 40) delete C[ks[0]];
     try { if (!document.querySelector('#content textarea:focus, #content input:focus')) render(1); } catch (e){ LS_ERR = e; }
   }).catch(function(e){ LS_ERR = e; });
@@ -18116,6 +18171,11 @@ function deptName(id){
 function maySupEng(){ return mayBonus(); }
 
 var TABS = {
+
+  chat:[
+    ['chat','المحادثات','\u{1F4AC}','المهندسُ في المكتب والمنفِّذُ في الموقع يتكلّمان هنا — على نقطةٍ مجدولةٍ للتركيب أو مباشرةً، وكلُّ سطرٍ يبقى.'],
+    ['chathist','سجل المحادثات','\u{1F5C2}','كلُّ سطرٍ كُتب — بفلترٍ بالنقطة والشخص والتاريخ والنوع والنص.','chatmgr']
+  ],
   exp:[
     ['exp','التصدير والاستيراد','\u2B07','ما يخرج من النظام وما يدخل إليه.'],
     ['repcenter','مركز التقارير','\u{1F4D1}','قوائمُ التقارير ودورياتُها وحزمُها.']
@@ -18265,6 +18325,8 @@ var PTAB = {};
 var PARENT = {};
 
 var TAB_SEE = {
+
+  chatmgr: function(pid){ return seesRaw(pid) && rankOf(effRole(ROLE)) >= rankOf('admin'); },
 
   self: function(pid){ return seesRaw(pid) && !(pid === 'mywork' && effRole(ROLE) === 'exec'); },
 
@@ -27166,6 +27228,7 @@ function clickTables(e){
     if (key.indexOf('dm:') === 0){ to = key.slice(3); site = ''; } else if (key === 'team'){ to = ''; site = ''; }
     if (!String(txt || '').trim()){ toast(t('اكتب الرسالةَ أوّلًا')); return true; }
     if (site && !siteFind(site)){ toast(t('النقطةُ غيرُ موجودة') + ': ' + site); return true; }
+    if (site && !chScheduled(site)){ toast(t('هذه النقطةُ غيرُ مجدولةٍ للتركيب — لا محادثةَ عليها')); return true; }
     var sent = chSend(site, to, txt); if (ta) ta.value = ''; toast('\u{1F4AC} ' + t('أُرسلت'));
     if (key === '*' && sent && CUR === 'chat') chPageHtml.f = { open:chKey(sent) };
     render(1); return true;
@@ -27173,7 +27236,8 @@ function clickTables(e){
   var chf = e.target.closest('[data-chf]');
   if (chf){ var chfv = chf.getAttribute('data-chf'); chPageHtml.f = chfv === 'all' ? {} : chfv === 'sys' ? { sys:1 } : (chfv.indexOf('site:') === 0 ? { site:chfv.slice(5) } : { who:chfv.slice(4) }); toast(chfv === 'all' ? t('كلُّ الرسائل') : chfv === 'sys' ? t('سجل التركيب') : chfv.slice(chfv.indexOf(':') + 1)); render(1); return true; }
   var cho = e.target.closest('[data-chopen]');
-  if (cho){ chPageHtml.f = { open:'site:' + cho.getAttribute('data-chopen') }; POP_OPEN = false; goPage('chat'); render(1); return true; }
+  if (cho){ chPageHtml.f = { open:'site:' + cho.getAttribute('data-chopen') }; POP_OPEN = false; PTAB.chat = 'chat'; goPage('chat'); render(1); return true; }
+  if (e.target.closest('[data-chhclear]')){ chHistState.s = null; render(1); return true; }
   var chot = e.target.closest('[data-chopen-t]');
   if (chot){ chPageHtml.f = { open:chot.getAttribute('data-chopen-t') }; render(1); return true; }
   var rbpr = e.target.closest('[data-rbpresets]'); if (rbpr){ var nP = rbPresetsAdd(); toast(nP ? '\u26A1 ' + t('أُضيفت') + ' ' + nm(nP) : t('كلُّها موجودةٌ أصلًا')); var rsR = document.getElementById('assistRes'); if (rsR) rsR.innerHTML = assistResHtml(); else render(1); return true; }
@@ -29300,6 +29364,7 @@ document.addEventListener('change', function(e){
       if (pv > 0) SOL_LINES[pc] = pv; else delete SOL_LINES[pc];
       render(1); return;
     }
+    if (el.hasAttribute('data-chh')){ chHistState()[el.getAttribute('data-chh')] = el.value; render(1); return; }
     if (el.hasAttribute('data-insqadd')){
       var flI = el.files ? Array.prototype.slice.call(el.files) : [], idI = el.getAttribute('data-insqadd');
       if (flI.length && idI && typeof insPhotoAdd === 'function') insPhotoAdd(idI, flI);
@@ -29860,6 +29925,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.66"></script>
+<script defer src="app-office.js?v=38.67"></script>
 </body>
 </html>

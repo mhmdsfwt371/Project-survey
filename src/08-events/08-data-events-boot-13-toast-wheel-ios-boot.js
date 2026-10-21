@@ -180,6 +180,7 @@ document.addEventListener('change', function(e){
       if (pv > 0) SOL_LINES[pc] = pv; else delete SOL_LINES[pc];
       render(1); return;
     }
+    if (el.hasAttribute('data-chh')){ chHistState()[el.getAttribute('data-chh')] = el.value; render(1); return; }   /* (V38.67) the chat history's filters */
     if (el.hasAttribute('data-insqadd')){   /* (V38.61) photos added from «تعديل التركيب» */
       var flI = el.files ? Array.prototype.slice.call(el.files) : [], idI = el.getAttribute('data-insqadd');
       if (flI.length && idI && typeof insPhotoAdd === 'function') insPhotoAdd(idI, flI);
