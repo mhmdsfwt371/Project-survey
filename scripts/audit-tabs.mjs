@@ -55,10 +55,13 @@ check(Object.keys(TABS).length >= 8, `صفحاتٌ مدموجة: ${Object.keys(T
   const broken = [];
   for (const pid of Object.keys(TABS)){
     for (const tb of TABS[pid]){
+      /* (V38.67) a tab kept for a higher role (the chat history is the management's) is drawn as that role, not skipped */
+      const seen = w.tabsOf(pid).some(x => x[0] === tb[0]); if (!seen){ w.ROLE = 'admin'; w.STATE.meta.role = 'admin'; }
       w.CUR = tb[0]; let len = 0;
       try { w.render(1); len = (d.getElementById('content').textContent || '').trim().length; }
-      catch (e){ broken.push(tb[0] + ' رمت: ' + e.message); continue; }
+      catch (e){ broken.push(tb[0] + ' رمت: ' + e.message); w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; continue; }
       if (w.CUR !== pid || w.PTAB[pid] !== tb[0] || len < 40) broken.push(tb[0] + ' → CUR=' + w.CUR + ' PTAB=' + w.PTAB[pid] + ' len=' + len);
+      w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
     }
   }
   const nTabs = Object.values(TABS).reduce((a, t) => a + t.length, 0);
