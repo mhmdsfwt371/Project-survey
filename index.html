@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.71</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.72</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -6440,7 +6440,8 @@ function maintSave(){
     if (typeof photoQueue === 'function') photoQueue(id, 'mnt_' + Date.now() + '_' + k, MNTF.photos[k].data);
   });
   Object.keys(used).forEach(function(k){
-    STATE.moves.push({ id:uid36(), at:Date.now(), kind:'استهلاك',
+
+    mvWrite({ id:'mt-' + id + '-' + k + '-' + Date.now().toString(36), at:Date.now(), ts:Date.now(), kind:'استهلاك',
       item:itemName(k), qty:used[k], by:rec.by, site:id, note:'صيانة ' + id });
   });
   var tk = taskKindOf(id, 'maint');
@@ -30036,6 +30037,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.71"></script>
+<script defer src="app-office.js?v=38.72"></script>
 </body>
 </html>

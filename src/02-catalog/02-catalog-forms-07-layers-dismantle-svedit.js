@@ -154,7 +154,8 @@ function maintSave(){
     if (typeof photoQueue === 'function') photoQueue(id, 'mnt_' + Date.now() + '_' + k, MNTF.photos[k].data);
   });
   Object.keys(used).forEach(function(k){
-    STATE.moves.push({ id:uid36(), at:Date.now(), kind:'استهلاك',
+    /* (V38.72) the maintenance's parts reach the office ledger — they were pushed on this phone only */
+    mvWrite({ id:'mt-' + id + '-' + k + '-' + Date.now().toString(36), at:Date.now(), ts:Date.now(), kind:'استهلاك',
       item:itemName(k), qty:used[k], by:rec.by, site:id, note:'صيانة ' + id });
   });
   var tk = taskKindOf(id, 'maint');

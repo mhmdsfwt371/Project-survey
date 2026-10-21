@@ -708,6 +708,15 @@ console.log('\n══ ٢٣ · إملاءٌ واحدٌ لحالة التركيب 
   delete w.STATE.inss[x.id]; w.statBump();
 }
 
+/* ── ٢٤ · (V38.72) قطعُ الصيانة تصل دفترَ المكتب — كانت تُدفَع على هاتف المنفِّذ وحدَه ── */
+console.log('\n══ ٢٤ · قطعُ الصيانة في الدفتر ══');
+{
+  const src = w.document.querySelector('script') ? String(w.maintSave) : '';
+  T(/mvWrite\(/.test(src) && !/STATE\.moves\.push\(/.test(src), 'الصيانةُ تكتب حركتَها وثيقةً في الدفتر — لا دفعًا محليًّا');
+  const all = Object.keys(w).filter(k => typeof w[k] === 'function' && /^function/.test(String(w[k]))).filter(k => k !== 'mvWrite' && k !== 'moveAdd' && /STATE\.moves\.push\(/.test(String(w[k])) && !/CORE\.dirty\('moves'/.test(String(w[k])));
+  T(!all.length, 'ولا دالّةَ تدفع حركةَ مخزنٍ محليًّا بلا كتابتها في الدفتر' + (all.length ? ': ' + all.join('، ') : ''));
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);
