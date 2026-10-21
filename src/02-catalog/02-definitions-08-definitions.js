@@ -61,9 +61,12 @@ var CHAL_SHOW = { 'المدخل غير واضح — لم يُستدل عليه':
 function chalShow(k){ return t(CHAL_SHOW[k] || k); }
 
 /* ── التركيبُ والتسليمُ والفك ── */
+/* (V38.58) the status compared without diacritics: «مُركّب» and «مركب» are the same word, and a record that carried the
+   plain spelling coloured its point «scheduled» while its popup said «installed» */
+function insStatusIs(v, want){ var n = function(x){ return String(x || '').replace(/[\u064B-\u0652\u0670]/g, '').trim(); }; return n(v) === n(want); }
 function insDone(id){
   var r = STATE.inss[id];
-  return !!(r && r.status === 'مُركّب');
+  return !!(r && insStatusIs(r.status, 'مُركّب'));
 }
 function handOf(id){
   var r = STATE.inss[id];

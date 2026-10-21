@@ -31,9 +31,18 @@ function popPhotosHtml(id){
   var L = photosOf(id).filter(function(x){ return x[1] && !x[1].del; });
   if (!L.length && typeof photosFetchSite === 'function') photosFetchSite(id);
   if (!L.length) return (typeof PH_FETCH === 'object' && PH_FETCH[id] === 'run') ? '<div class="hint" style="margin:6px 0 0">\u23F3 ' + esc(t('تُحمَّل صورُ الزيارة…')) + '</div>' : '';
-  var th = L.slice(0, 6).map(function(x){ var p = x[1], src = p.data || (p.driveId ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(p.driveId) + '&sz=w400' : '');
-    return src ? '<img src="' + esc(src) + '" alt="" loading="lazy" data-phview="' + esc(x[0]) + '" title="' + esc(t('اضغط لعرضها كاملة')) + '" style="width:72px;height:72px;object-fit:cover;border-radius:8px;cursor:zoom-in;flex:0 0 auto">' : ''; }).join('');
-  return '<div style="margin:8px 0 0"><div class="hint" style="margin:0 0 4px">\u{1F4F7} ' + esc(t('صور الزيارة')) + ' \u00b7 ' + nm(L.length) + (L.length > 6 ? ' \u2014 ' + esc(t('أوّلُ ستٍّ — والباقي في «التفاصيل»')) : '') + '</div><div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">' + th + '</div></div>';
+  /* (V38.58) the installation's photos are their own row (they were counted among the visit's), and a photo the server has
+     not yet moved to Drive (no data, no drive id) is shown as waiting instead of silently dropped */
+  var group = function(list, label){
+    if (!list.length) return '';
+    var pend = list.filter(function(x){ return !(x[1].data || x[1].driveId); }).length;
+    var th = list.slice(0, 6).map(function(x){ var p = x[1], src = p.data || (p.driveId ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(p.driveId) + '&sz=w400' : '');
+      return src ? '<img src="' + esc(src) + '" alt="" loading="lazy" data-phview="' + esc(x[0]) + '" title="' + esc(t('اضغط لعرضها كاملة')) + '" style="width:72px;height:72px;object-fit:cover;border-radius:8px;cursor:zoom-in;flex:0 0 auto">'
+                 : '<span class="hint" title="' + esc(t('وصلت وتُنقَل إلى الدرايف')) + '" style="width:72px;height:72px;display:flex;align-items:center;justify-content:center;border:1px dashed var(--line);border-radius:8px;margin:0;flex:0 0 auto">\u23F3</span>'; }).join('');
+    return '<div style="margin:8px 0 0"><div class="hint" style="margin:0 0 4px">\u{1F4F7} ' + esc(t(label)) + ' \u00b7 ' + nm(list.length) + (pend ? ' \u00b7 \u23F3 ' + nm(pend) + ' ' + esc(t('تُنقَل إلى الدرايف')) : '') + (list.length > 6 ? ' \u2014 ' + esc(t('أوّلُ ستٍّ — والباقي في «التفاصيل»')) : '') + '</div><div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">' + th + '</div></div>';
+  };
+  var isIns = function(x){ return /^ins/.test(String(x[1].kind || '')); };
+  return group(L.filter(function(x){ return !isIns(x); }), 'صور الزيارة') + group(L.filter(isIns), 'صور التركيب');
 }
 
 function popHtml(){
@@ -55,7 +64,11 @@ function popHtml(){
   /* أزرارُ الوسم: في وضع التركيب مجدولٌ وتم، وفي المسح «تمت الزيارة» —
      ولا تظهر إلا لنقطةٍ أُسندت، فلا يُوسَم ما لم يُطلَب. */
   var marks = '';
-  if (FIELD_MODE === 'install'){
+  /* (V38.58) owner's rule: the engineer may say «installed» from here; supervisor and technician record the
+     installation in its form with parts, serials and photos */
+  if (FIELD_MODE === 'install' && !may('approve')){
+    marks = '<span class="hint" style="margin:0;font-size:11.5px">' + esc(t('سجّل التركيبَ من «نموذج التركيب» بقطعه وسيريالاته وصوره')) + '</span>';
+  } else if (FIELD_MODE === 'install'){
     marks = [['مجدول','#FF8C42'], ['مُركّب','#3AD6A0'], ['متعذّر','#E05252']].map(function(o){
       var on = st === o[0];
       return '<button type="button" class="go' + (on?' on':'') + '"'

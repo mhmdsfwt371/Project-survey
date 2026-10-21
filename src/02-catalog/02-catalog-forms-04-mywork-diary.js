@@ -250,7 +250,7 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
         if ((STATE.queue || []).some(function(q){ return q && q.kind === 'inss' && String(q.id) === String(x.site); })) return pill('\u23F3 ' + t('محفوظٌ على الجهاز — لم يُرفَع بعد'), 'wrn');
         if (ins.approved) return pill('اعتُمد التركيب', 'ok');
         if (ins.status === 'مُعاد') return pill('أُعيد للتصحيح', 'off');
-        if (ins.status === 'مُركّب') return pill('رُكِّب — بانتظار التدقيق', 'acc');
+        if (insDone(x.site)) return pill('رُكِّب — بانتظار التدقيق', 'acc');
         if (ins.status === 'قيد التركيب' || ins.status === 'مسودّة') return pill(ins.status, 'wrn');
         return pill('بانتظارك', 'warn');
       }

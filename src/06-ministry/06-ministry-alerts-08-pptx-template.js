@@ -463,7 +463,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
     var head = tabHead('survey'), cur = tabCur('survey');
     if (cur === 'qa') return head + (function(){
     var wait = Object.keys(STATE.inss).filter(function(k){
-      return STATE.inss[k].status === 'مُركّب' && !STATE.inss[k].approved;
+      return insDone(k) && !STATE.inss[k].approved;   /* (V38.58) the same test as the map colour */
     });
     var done = Object.keys(STATE.inss).filter(function(k){ return STATE.inss[k].approved; });
     return stats([['بانتظار التدقيق', N(wait.length), wait.length?'wrn':''],

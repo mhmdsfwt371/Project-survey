@@ -205,7 +205,10 @@ function markSurvey(id){
 function markInstall(id, status){
   var s = siteFind(id);
   var cur = STATE.inss[id] || { id:id, parts:{}, serials:{}, pts:0, approved:false };
-  if (cur.status === status){
+  if (!may('approve')){ toast(t('سجّل التركيبَ من «نموذج التركيب» بقطعه وسيريالاته وصوره')); return; }   /* (V38.58) */
+  if (insStatusIs(cur.status, status)){
+    /* (V38.58) pressing the lit «installed» is not an error: say what the record is */
+    if (insStatusIs(status, 'مُركّب')){ toast(cur.approved ? t('مُركّبةٌ ومعتمدة') : t('مُركّبةٌ فعلًا — بانتظار التدقيق الهندسي')); return; }
     /* (V28.3) الضغطُ على الحالة المضاءة كان يحذف سجلَّ التركيب كلَّه (قطعه وسيريالاته واعتماده) بلا تأكيد */
     var heavy = cur.approved || Object.keys(cur.parts || {}).length || Object.keys(cur.serials || {}).length || (cur.photos && cur.photos.length) || cur.sol || cur.solution;
     toast(t(heavy ? 'لهذا التركيب قطعٌ أو سيريالاتٌ أو اعتماد — لا يُلغى من هنا؛ للتصحيح افتح «تعديل التركيب»' : 'الحالةُ مسجّلة — حذفُ التركيبات موقوفٌ الآن؛ اختر الحالةَ الصحيحة بدلها'));   /* (V28.4) لا حذف */

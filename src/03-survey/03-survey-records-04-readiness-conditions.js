@@ -101,7 +101,7 @@ function gateChain(kind, x){
   var sv   = { t:'زيارةُ مسحٍ محفوظة',   ok:svDone(r),                    p:'svForm',   why:'لا تُخطَّط نقطةٌ لم تُزَر — القياساتُ والصورُ منها' };
   var svOk = { t:'اعتمادُ الزيارة',      ok:svReview(r) === 'approved',   p:'svappr',   why:'المهندسُ يراجع ما زاره الميدانُ قبل أن يُبنى عليه' };
   var sol  = { t:'حلٌّ معتمدٌ بالقطع',    ok:((ins.solution || {}).status === 'معتمد'), p:'solution', why:'لا يُركَّب شيءٌ قبل أن يُعتمَد ما يُركَّب' };
-  var insD = { t:'تركيبٌ مسجَّل',         ok:ins.status === 'مُركّب',       p:'insForm',  why:'ما لم يُسجَّل تركيبُه لا يُدقَّق ولا يُسلَّم' };
+  var insD = { t:'تركيبٌ مسجَّل',         ok:insDone(id),                  p:'insForm',  why:'ما لم يُسجَّل تركيبُه لا يُدقَّق ولا يُسلَّم' };
   var qa   = { t:'اعتمادُ التركيب',      ok:!!ins.approved,                p:'qa',       why:'التدقيقُ الهندسيُّ يسبق التسليم — والصورُ والسيرياتُ تُراجَع' };
   var hd   = { t:'تسليمٌ بمحضر',          ok:(typeof handDone === 'function') && handDone(id), p:'hand', why:'الفكُّ إرجاعُ ما سُلِّم — فلا يُفَكُّ ما لم يُسلَّم' };
   var C = { visit:[], install:[sv, svOk, sol], maint:[sv, svOk, sol, insD, qa], dis:[sv, svOk, sol, insD, qa, hd] }[kind] || [];

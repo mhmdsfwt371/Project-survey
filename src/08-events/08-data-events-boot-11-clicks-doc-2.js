@@ -413,7 +413,13 @@ function onDocClickPart5(e){
    يعالج: fst، svsave، svnext، inssave، insdraft، fix */
 function onDocClickPart6(e){
   var fs = e.target.closest('[data-fst]');   /* بحثٌ صرف — يُعاد حسابُه */
-    if (fs){ FORM.status = fs.getAttribute('data-fst'); render(1); return; }
+    if (fs){
+      FORM.status = fs.getAttribute('data-fst');
+      /* (V38.58) the chip lights at once; if the redraw throws on this device the choice is still kept and the fault is said */
+      try { var sib = fs.parentNode ? fs.parentNode.querySelectorAll('[data-fst]') : []; for (var i2 = 0; i2 < sib.length; i2++) sib[i2].classList.toggle('on', sib[i2] === fs); } catch (e0){ LS_ERR = e0; }
+      try { render(1); } catch (e1){ softErr('رسمُ نموذج التركيب', e1, 'تعذّر إعادةُ رسم النموذج — الحالةُ محفوظةٌ، أعد فتحَ الصفحة'); }
+      return;
+    }
   if (e.target.closest('[data-svsave]')){ svSave(0); return; }
   if (e.target.closest('[data-svnext]')){ svSave(1); return; }
   if (e.target.closest('[data-inssave]')){ insSave(0); return; }

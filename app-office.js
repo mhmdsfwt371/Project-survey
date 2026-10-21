@@ -1846,7 +1846,10 @@ function markSurvey(id){
 function markInstall(id, status){
   var s = siteFind(id);
   var cur = STATE.inss[id] || { id:id, parts:{}, serials:{}, pts:0, approved:false };
-  if (cur.status === status){
+  if (!may('approve')){ toast(t('سجّل التركيبَ من «نموذج التركيب» بقطعه وسيريالاته وصوره')); return; }
+  if (insStatusIs(cur.status, status)){
+
+    if (insStatusIs(status, 'مُركّب')){ toast(cur.approved ? t('مُركّبةٌ ومعتمدة') : t('مُركّبةٌ فعلًا — بانتظار التدقيق الهندسي')); return; }
 
     var heavy = cur.approved || Object.keys(cur.parts || {}).length || Object.keys(cur.serials || {}).length || (cur.photos && cur.photos.length) || cur.sol || cur.solution;
     toast(t(heavy ? 'لهذا التركيب قطعٌ أو سيريالاتٌ أو اعتماد — لا يُلغى من هنا؛ للتصحيح افتح «تعديل التركيب»' : 'الحالةُ مسجّلة — حذفُ التركيبات موقوفٌ الآن؛ اختر الحالةَ الصحيحة بدلها'));
@@ -3690,7 +3693,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
     var head = tabHead('survey'), cur = tabCur('survey');
     if (cur === 'qa') return head + (function(){
     var wait = Object.keys(STATE.inss).filter(function(k){
-      return STATE.inss[k].status === 'مُركّب' && !STATE.inss[k].approved;
+      return insDone(k) && !STATE.inss[k].approved;
     });
     var done = Object.keys(STATE.inss).filter(function(k){ return STATE.inss[k].approved; });
     return stats([['بانتظار التدقيق', N(wait.length), wait.length?'wrn':''],
@@ -4565,6 +4568,8 @@ function provReask(uid){
 
 var RELEASE_NOTES = [
 
+  { v:'V38.58', d:'2026-10-21', notes:[
+      'لون النقطة يطابق حالة تركيبها، وصور التركيب في نافذة النقطة، والوسم السريع «مركب» للمهندس وحده، وضغطة الحالة لا تُبتلع' ] },
   { v:'V38.57', d:'2026-10-21', notes:[
       'التركيب يصل المكتب: قاعدة قاعدة البيانات كانت ترفض كل تركيب يحفظه الميدان على نقطة حلّها معتمد' ] },
   { v:'V38.56', d:'2026-10-21', notes:[

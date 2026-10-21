@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.57</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.58</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1377,7 +1377,7 @@ function nskChunkReady(){
 
   try { if (typeof whatsNewMaybe === 'function' && whatsNewMaybe.pending){ whatsNewMaybe.pending = false; if (whatsNewMaybe() && typeof render === 'function') render(1); } } catch (e3){ LS_ERR = e3; }
 }
-var I18N_FILE = 'i18n/dict-fd3728b591.js', I18N_STATE = 0, I18N_WAIT = [];
+var I18N_FILE = 'i18n/dict-abe78979d3.js', I18N_STATE = 0, I18N_WAIT = [];
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }
@@ -5046,7 +5046,7 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
         if ((STATE.queue || []).some(function(q){ return q && q.kind === 'inss' && String(q.id) === String(x.site); })) return pill('\u23F3 ' + t('محفوظٌ على الجهاز — لم يُرفَع بعد'), 'wrn');
         if (ins.approved) return pill('اعتُمد التركيب', 'ok');
         if (ins.status === 'مُعاد') return pill('أُعيد للتصحيح', 'off');
-        if (ins.status === 'مُركّب') return pill('رُكِّب — بانتظار التدقيق', 'acc');
+        if (insDone(x.site)) return pill('رُكِّب — بانتظار التدقيق', 'acc');
         if (ins.status === 'قيد التركيب' || ins.status === 'مسودّة') return pill(ins.status, 'wrn');
         return pill('بانتظارك', 'warn');
       }
@@ -6900,9 +6900,10 @@ function svObstacle(r){ return svVisited(r) && !svClean(r); }
 var CHAL_SHOW = { 'المدخل غير واضح — لم يُستدل عليه':'المدخل غير واضح — يحتاج تحديد', 'أخرى':'ملاحظات فنية متنوعة' };
 function chalShow(k){ return t(CHAL_SHOW[k] || k); }
 
+function insStatusIs(v, want){ var n = function(x){ return String(x || '').replace(/[\u064B-\u0652\u0670]/g, '').trim(); }; return n(v) === n(want); }
 function insDone(id){
   var r = STATE.inss[id];
-  return !!(r && r.status === 'مُركّب');
+  return !!(r && insStatusIs(r.status, 'مُركّب'));
 }
 function handOf(id){
   var r = STATE.inss[id];
@@ -9075,7 +9076,7 @@ function gateChain(kind, x){
   var sv   = { t:'زيارةُ مسحٍ محفوظة',   ok:svDone(r),                    p:'svForm',   why:'لا تُخطَّط نقطةٌ لم تُزَر — القياساتُ والصورُ منها' };
   var svOk = { t:'اعتمادُ الزيارة',      ok:svReview(r) === 'approved',   p:'svappr',   why:'المهندسُ يراجع ما زاره الميدانُ قبل أن يُبنى عليه' };
   var sol  = { t:'حلٌّ معتمدٌ بالقطع',    ok:((ins.solution || {}).status === 'معتمد'), p:'solution', why:'لا يُركَّب شيءٌ قبل أن يُعتمَد ما يُركَّب' };
-  var insD = { t:'تركيبٌ مسجَّل',         ok:ins.status === 'مُركّب',       p:'insForm',  why:'ما لم يُسجَّل تركيبُه لا يُدقَّق ولا يُسلَّم' };
+  var insD = { t:'تركيبٌ مسجَّل',         ok:insDone(id),                  p:'insForm',  why:'ما لم يُسجَّل تركيبُه لا يُدقَّق ولا يُسلَّم' };
   var qa   = { t:'اعتمادُ التركيب',      ok:!!ins.approved,                p:'qa',       why:'التدقيقُ الهندسيُّ يسبق التسليم — والصورُ والسيرياتُ تُراجَع' };
   var hd   = { t:'تسليمٌ بمحضر',          ok:(typeof handDone === 'function') && handDone(id), p:'hand', why:'الفكُّ إرجاعُ ما سُلِّم — فلا يُفَكُّ ما لم يُسلَّم' };
   var C = { visit:[], install:[sv, svOk, sol], maint:[sv, svOk, sol, insD, qa], dis:[sv, svOk, sol, insD, qa, hd] }[kind] || [];
@@ -13469,9 +13470,17 @@ function popPhotosHtml(id){
   var L = photosOf(id).filter(function(x){ return x[1] && !x[1].del; });
   if (!L.length && typeof photosFetchSite === 'function') photosFetchSite(id);
   if (!L.length) return (typeof PH_FETCH === 'object' && PH_FETCH[id] === 'run') ? '<div class="hint" style="margin:6px 0 0">\u23F3 ' + esc(t('تُحمَّل صورُ الزيارة…')) + '</div>' : '';
-  var th = L.slice(0, 6).map(function(x){ var p = x[1], src = p.data || (p.driveId ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(p.driveId) + '&sz=w400' : '');
-    return src ? '<img src="' + esc(src) + '" alt="" loading="lazy" data-phview="' + esc(x[0]) + '" title="' + esc(t('اضغط لعرضها كاملة')) + '" style="width:72px;height:72px;object-fit:cover;border-radius:8px;cursor:zoom-in;flex:0 0 auto">' : ''; }).join('');
-  return '<div style="margin:8px 0 0"><div class="hint" style="margin:0 0 4px">\u{1F4F7} ' + esc(t('صور الزيارة')) + ' \u00b7 ' + nm(L.length) + (L.length > 6 ? ' \u2014 ' + esc(t('أوّلُ ستٍّ — والباقي في «التفاصيل»')) : '') + '</div><div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">' + th + '</div></div>';
+
+  var group = function(list, label){
+    if (!list.length) return '';
+    var pend = list.filter(function(x){ return !(x[1].data || x[1].driveId); }).length;
+    var th = list.slice(0, 6).map(function(x){ var p = x[1], src = p.data || (p.driveId ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(p.driveId) + '&sz=w400' : '');
+      return src ? '<img src="' + esc(src) + '" alt="" loading="lazy" data-phview="' + esc(x[0]) + '" title="' + esc(t('اضغط لعرضها كاملة')) + '" style="width:72px;height:72px;object-fit:cover;border-radius:8px;cursor:zoom-in;flex:0 0 auto">'
+                 : '<span class="hint" title="' + esc(t('وصلت وتُنقَل إلى الدرايف')) + '" style="width:72px;height:72px;display:flex;align-items:center;justify-content:center;border:1px dashed var(--line);border-radius:8px;margin:0;flex:0 0 auto">\u23F3</span>'; }).join('');
+    return '<div style="margin:8px 0 0"><div class="hint" style="margin:0 0 4px">\u{1F4F7} ' + esc(t(label)) + ' \u00b7 ' + nm(list.length) + (pend ? ' \u00b7 \u23F3 ' + nm(pend) + ' ' + esc(t('تُنقَل إلى الدرايف')) : '') + (list.length > 6 ? ' \u2014 ' + esc(t('أوّلُ ستٍّ — والباقي في «التفاصيل»')) : '') + '</div><div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">' + th + '</div></div>';
+  };
+  var isIns = function(x){ return /^ins/.test(String(x[1].kind || '')); };
+  return group(L.filter(function(x){ return !isIns(x); }), 'صور الزيارة') + group(L.filter(isIns), 'صور التركيب');
 }
 
 function popHtml(){
@@ -13491,7 +13500,10 @@ function popHtml(){
   }
 
   var marks = '';
-  if (FIELD_MODE === 'install'){
+
+  if (FIELD_MODE === 'install' && !may('approve')){
+    marks = '<span class="hint" style="margin:0;font-size:11.5px">' + esc(t('سجّل التركيبَ من «نموذج التركيب» بقطعه وسيريالاته وصوره')) + '</span>';
+  } else if (FIELD_MODE === 'install'){
     marks = [['مجدول','#FF8C42'], ['مُركّب','#3AD6A0'], ['متعذّر','#E05252']].map(function(o){
       var on = st === o[0];
       return '<button type="button" class="go' + (on?' on':'') + '"'
@@ -28442,7 +28454,13 @@ function onDocClickPart5(e){
 
 function onDocClickPart6(e){
   var fs = e.target.closest('[data-fst]');
-    if (fs){ FORM.status = fs.getAttribute('data-fst'); render(1); return; }
+    if (fs){
+      FORM.status = fs.getAttribute('data-fst');
+
+      try { var sib = fs.parentNode ? fs.parentNode.querySelectorAll('[data-fst]') : []; for (var i2 = 0; i2 < sib.length; i2++) sib[i2].classList.toggle('on', sib[i2] === fs); } catch (e0){ LS_ERR = e0; }
+      try { render(1); } catch (e1){ softErr('رسمُ نموذج التركيب', e1, 'تعذّر إعادةُ رسم النموذج — الحالةُ محفوظةٌ، أعد فتحَ الصفحة'); }
+      return;
+    }
   if (e.target.closest('[data-svsave]')){ svSave(0); return; }
   if (e.target.closest('[data-svnext]')){ svSave(1); return; }
   if (e.target.closest('[data-inssave]')){ insSave(0); return; }
@@ -28771,6 +28789,8 @@ function nskClick(e){
       toast('\u23F3 ' + t('يُحمَّل باقي التطبيق — ستُفتَح وحدَها'));
       return;
     }
+
+    try { softErr('ضغطة', err, 'حدث خطأٌ في هذه الضغطة — سُجِّل في «المزامنة والتعارض»'); } catch (e2){ LS_ERR = e2; }
     throw err;
   }
 }
@@ -29499,6 +29519,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.57"></script>
+<script defer src="app-office.js?v=38.58"></script>
 </body>
 </html>

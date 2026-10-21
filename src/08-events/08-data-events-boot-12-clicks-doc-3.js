@@ -248,6 +248,8 @@ function nskClick(e){
       toast('\u23F3 ' + t('يُحمَّل باقي التطبيق — ستُفتَح وحدَها'));
       return;
     }
+    /* (V38.58) a press that throws is no longer silent on the device: it is said and recorded with the black box */
+    try { softErr('ضغطة', err, 'حدث خطأٌ في هذه الضغطة — سُجِّل في «المزامنة والتعارض»'); } catch (e2){ LS_ERR = e2; }
     throw err;
   }
 }

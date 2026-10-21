@@ -481,6 +481,14 @@ console.log('\n══ ١٥ · دورةُ التركيب للمُسنَد إلي�
   as('tech', 'فني الدورة'); const x3 = free[2]; w.formReset(); w.formGo(x3.id); w.CUR = 'insForm'; w.render(1);
   w.FORM.parts[rr.code] = 1; w.FORM.serials[rr.code] = A.SN; w.FORM.status = 'مُركّب'; w.FORM.photos.before = { data:IMG2 + 'c' }; w.FORM.photos.after = { data:IMG2 + 'd' }; w.insSave(0);
   T(!((w.STATE.inss[x3.id] || {}).status === 'مُركّب'), 'وسيريالٌ مسجَّلٌ على نقطةٍ أخرى لم تُفَكّ يوقف الحفظ');
+  /* (V38.58) what the owner saw on his phone: the installation's photos in the popup as their own row, the quick marks for
+     the engineer only, a plain-spelled «installed» still counts, and the lit mark answers instead of complaining */
+  { const x0 = free[0]; w.STATE.photos = w.STATE.photos || {}; w.STATE.photos[x0.id + '-91'] = { site:x0.id, kind:'ins_before', seq:91, status:'pending', blob:true, at:Date.now() }; w.STATE.photos[x0.id + '-92'] = { site:x0.id, kind:'ins_after', seq:92, driveId:'d92', at:Date.now() }; w.PH_IDX = null;
+    w.POP_SITE = x0.id; w.FIELD_MODE = 'install'; as('tech', 'فني الدورة'); const pt = w.popHtml();
+    as('engineer', 'جرد السيناريوهات'); const pe = w.popHtml(); const keep = w.STATE.inss[x0.id].status; w.STATE.inss[x0.id].status = 'مركب'; const plain = w.insDone(x0.id) && w.lifeOfRaw(x0) === 'installed'; w.STATE.inss[x0.id].status = keep;
+    toasts.length = 0; w.markInstall(x0.id, 'مُركّب'); const said = toasts.slice(-1)[0] || '';
+    T(pt.indexOf('صور التركيب') > -1 && pt.indexOf('تُنقَل إلى الدرايف') > -1 && !/data-fmark=/.test(pt) && /data-fmark=/.test(pe) && plain && /مُركّبةٌ/.test(said), 'ونافذةُ النقطة تعرض صورَ التركيب (والمنقولةَ بعدُ)، والوسمُ السريعُ للمهندس وحده ويجيب بالحال لا بالشكوى، و«مركب» بلا تشكيلٍ مُركّبةٌ أيضًا');
+    w.FIELD_MODE = 'survey'; }
   w.STATE.users = keepUsers; w.STATE.meta.online = keepOnline; as('engineer', 'جرد السيناريوهات');
 }
 
