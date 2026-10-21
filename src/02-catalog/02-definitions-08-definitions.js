@@ -64,6 +64,20 @@ function chalShow(k){ return t(CHAL_SHOW[k] || k); }
 /* (V38.58) the status compared without diacritics: «مُركّب» and «مركب» are the same word, and a record that carried the
    plain spelling coloured its point «scheduled» while its popup said «installed» */
 function insStatusIs(v, want){ var n = function(x){ return String(x || '').replace(/[\u064B-\u0652\u0670]/g, '').trim(); }; return n(v) === n(want); }
+/* (V38.71) one spelling in memory. The form writes «مُركّب», the quick mark on the map «مركب» — and about forty-five screens
+   compare letter for letter (the Ministry follow-up, the daily overview, the follow-up %, EVM, the week plan, handover
+   readiness, the companies, performance...), so Mina 0449 counted «installed» on the dashboard and not on the Ministry's
+   screens. Every installation status is brought to its spelled form whenever data changes (statBump) — memory only. */
+function insCanon(v){
+  var L = ['مُركّب', 'قيد التركيب', 'متعذّر', 'مُعاد', 'مسودّة', 'مجدول'];   /* the spelled forms the screens compare with */
+  var strip = function(x){ return String(x || '').replace(/[\u064B-\u0652\u0670]/g, '').trim(); }, n = strip(v);
+  for (var i = 0; i < L.length; i++) if (strip(L[i]) === n) return L[i];
+  return v;
+}
+function insCanonApply(){
+  var I = STATE.inss || {};
+  Object.keys(I).forEach(function(k){ var r = I[k]; if (r && r.status){ var c = insCanon(r.status); if (c !== r.status) r.status = c; } });
+}
 function insDone(id){
   var r = STATE.inss[id];
   return !!(r && insStatusIs(r.status, 'مُركّب'));

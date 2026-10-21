@@ -214,7 +214,7 @@ function markInstall(id, status){
     toast(t(heavy ? 'لهذا التركيب قطعٌ أو سيريالاتٌ أو اعتماد — لا يُلغى من هنا؛ للتصحيح افتح «تعديل التركيب»' : 'الحالةُ مسجّلة — حذفُ التركيبات موقوفٌ الآن؛ اختر الحالةَ الصحيحة بدلها'));   /* (V28.4) لا حذف */
     return;   /* (V31.4) كان بعده حذفُ التركيب وإرجاعُ الحالة — كودٌ ميتٌ منذ إيقاف الحذف (V28.4) */
   } else {
-    cur.status = status;
+    cur.status = insCanon(status);   /* (V38.71) the spelled form, as the form writes it */
     cur.by = STATE.meta.name || '';
     cur.at = Date.now();
     CORE.set('inss', id, cur);

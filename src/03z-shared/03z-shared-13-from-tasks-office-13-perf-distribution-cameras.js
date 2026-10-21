@@ -64,7 +64,8 @@ var STAT_CACHE = null, STAT_VER = 0;
 
 /* الفهرسُ يُبطَل مع كلِّ تغيُّرٍ في المهامّ — وstatBump يُستدعى بعد كلِّ تغيير */
 function statBump(){
-  TK_IX = null; STAT_CACHE = null; STAT_VER++; DB.memoReset(); recLocApply(); }
+  TK_IX = null; STAT_CACHE = null; STAT_VER++; DB.memoReset(); recLocApply();
+  if (typeof insCanonApply === 'function') insCanonApply(); }   /* (V38.71) */
 
 /* (V32.2) ما حُرِّك قبل V32.2 كُتب في الزيارة (rec.loc) وحدَها — يُطبَّق هنا على النقطة في كلِّ جهازٍ ما لم يكن لها تجاوزُ موضع */
 function recLocApply(){

@@ -697,6 +697,17 @@ console.log('\n══ ٢٢ · نقلُ الزيارة وصورُ التركيب 
   delete w.STATE.inss[src.id]; w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
 }
 
+/* ── ٢٣ · (V38.71) حالةُ التركيب بإملاءٍ واحدٍ في الذاكرة: «مركب» (الوسم السريع) و«مُركّب» (النموذج) كلمةٌ واحدة لكلِّ شاشة ── */
+console.log('\n══ ٢٣ · إملاءٌ واحدٌ لحالة التركيب ══');
+{
+  const x = w.STATE.sites.filter(z => z && z.type === 'مخيم' && z.zone === 'منى' && !w.STATE.inss[z.id])[12];
+  w.STATE.inss[x.id] = { id:x.id, status:'مركب', by:'منفِّذ', at:Date.now(), parts:{ rdr4c:1 } };
+  w.statBump();
+  T(w.STATE.inss[x.id].status === 'مُركّب' && w.insDone(x.id) && w.insCanon('متعذر') === 'متعذّر' && w.insCanon('معاد') === 'مُعاد' && w.insCanon('شيء آخر') === 'شيء آخر',
+    'الإملاءُ البسيطُ يصير «مُركّب» بعد كلِّ تغيّرٍ في البيانات — فتعدّه شاشاتُ الوزارة والمتابعة كما تعدّه اللوحة');
+  delete w.STATE.inss[x.id]; w.statBump();
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

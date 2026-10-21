@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.70</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.71</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -7252,6 +7252,17 @@ var CHAL_SHOW = { 'المدخل غير واضح — لم يُستدل عليه':
 function chalShow(k){ return t(CHAL_SHOW[k] || k); }
 
 function insStatusIs(v, want){ var n = function(x){ return String(x || '').replace(/[\u064B-\u0652\u0670]/g, '').trim(); }; return n(v) === n(want); }
+
+function insCanon(v){
+  var L = ['مُركّب', 'قيد التركيب', 'متعذّر', 'مُعاد', 'مسودّة', 'مجدول'];
+  var strip = function(x){ return String(x || '').replace(/[\u064B-\u0652\u0670]/g, '').trim(); }, n = strip(v);
+  for (var i = 0; i < L.length; i++) if (strip(L[i]) === n) return L[i];
+  return v;
+}
+function insCanonApply(){
+  var I = STATE.inss || {};
+  Object.keys(I).forEach(function(k){ var r = I[k]; if (r && r.status){ var c = insCanon(r.status); if (c !== r.status) r.status = c; } });
+}
 function insDone(id){
   var r = STATE.inss[id];
   return !!(r && insStatusIs(r.status, 'مُركّب'));
@@ -14544,7 +14555,8 @@ function siteSearch(q, lim){
 var STAT_CACHE = null, STAT_VER = 0;
 
 function statBump(){
-  TK_IX = null; STAT_CACHE = null; STAT_VER++; DB.memoReset(); recLocApply(); }
+  TK_IX = null; STAT_CACHE = null; STAT_VER++; DB.memoReset(); recLocApply();
+  if (typeof insCanonApply === 'function') insCanonApply(); }
 
 function recLocApply(){
   var R = STATE.recs || {}, ov = STATE.siteOv || {};
@@ -30024,6 +30036,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.70"></script>
+<script defer src="app-office.js?v=38.71"></script>
 </body>
 </html>
