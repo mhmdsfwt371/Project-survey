@@ -459,7 +459,8 @@ await deny('والمحذوفُ نهائيًّا لا يُرجَع (ولو بنس
 await deny('ولا تُرفَع علامةُ الحذف عنه',                   setDoc(doc(as('adm'), 'sites/SV1'), { deleted:false }, { merge:true }));
 /* (V37.18) الخامُ في photoblobs: الفنيُّ يكتب، ولا يقرأ أحد */
 await ok  ('الفنيُّ يكتب صورةً خامًا بمسار الطوارئ', setDoc(doc(as('tec'), 'photoblobs/S1-9'), { site:'S1', data:'data:image/jpeg;base64,AAAA', at:9 }));
-await deny('ولا يقرؤها أيُّ جهاز (الخادمُ وحده)', getDoc(doc(as('eng'), 'photoblobs/S1-9')));
+await ok  ('(V38.62) والمهندسُ يقرأ صورةً خامًا واحدةً حتى تنتقل إلى الدرايف', getDoc(doc(as('eng'), 'photoblobs/S1-9')));
+await deny('ولا يسرد أحدٌ مجموعةَ الخام (لا تُسحَب إلى الأجهزة)', getDocs(query(collection(as('eng'), 'photoblobs'), limit(5))));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 if (bad) console.log('::error title=محاكي القواعد::سقط ' + bad + ' فحصًا من ' + n + ' — الأسماءُ في التنبيهات أعلاه');

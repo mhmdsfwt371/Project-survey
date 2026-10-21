@@ -478,8 +478,12 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
                 var r = STATE.inss[k], s = siteFind(k);
                 /* (V38.59) the review needs what it reviews: each part with its serial, and the installation photos */
                 var sn = Object.keys(r.parts || {}).map(function(code){ var v = (r.serials || {})[code]; return '<div class="hint" style="margin:0"><bdi>' + esc(itemName(code)) + '</bdi> \u00d7' + nm(r.parts[code]) + (v ? ' \u00b7 <span class="num" dir="ltr">' + esc(v) + '</span>' : ' \u00b7 <span style="color:var(--danger)">' + esc(t('بلا سيريال')) + '</span>') + '</div>'; }).join('');
+                /* (V38.62) the difference from the approved solution — normal in the field, shown so the engineer sees it */
+                var solI = ((r.solution || (STATE.inss[k] || {}).solution || {}).items) || {}, dv = [];
+                Object.keys(solI).concat(Object.keys(r.parts || {})).filter(function(c, i, a){ return a.indexOf(c) === i; }).forEach(function(c){ var a1 = cfgN(solI[c]) || 0, b1 = cfgN((r.parts || {})[c]) || 0; if (a1 !== b1) dv.push(itemName(c) + ' ' + nm(a1) + '\u2192' + nm(b1)); });
+                if (Object.keys(solI).length) sn += '<div class="hint" style="margin:2px 0 0">' + (dv.length ? '\u0394 ' + esc(t('عن الحلّ المعتمد')) + ': ' + esc(dv.join('، ')) : '\u2713 ' + esc(t('مطابقٌ للحلّ المعتمد'))) + '</div>';
                 var ph = (typeof photosOf === 'function' ? photosOf(k) : []).filter(function(x){ return x[1] && !x[1].del && /^ins/.test(String(x[1].kind || '')); });
-                var phH = ph.length ? '<div style="display:flex;gap:4px;margin-top:4px">' + ph.slice(0, 4).map(function(x){ var p = x[1], src = p.data || (p.driveId ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(p.driveId) + '&sz=w200' : ''); return src ? '<img src="' + esc(src) + '" alt="" loading="lazy" data-phview="' + esc(x[0]) + '" style="width:44px;height:44px;object-fit:cover;border-radius:6px;cursor:zoom-in">' : '<span class="hint" style="margin:0;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border:1px dashed var(--line);border-radius:6px">\u23F3</span>'; }).join('') + '</div>' : '<div class="hint" style="margin:4px 0 0;color:var(--danger)">' + esc(t('لا صورَ تركيبٍ وصلت')) + '</div>';
+                var phH = ph.length ? '<div style="display:flex;gap:4px;margin-top:4px">' + ph.slice(0, 4).map(function(x){ var p = x[1], src = phSrc(x[0], p, 200); return src ? '<img src="' + esc(src) + '" alt="" loading="lazy" data-phview="' + esc(x[0]) + '" style="width:44px;height:44px;object-fit:cover;border-radius:6px;cursor:zoom-in">' : '<span class="hint" style="margin:0;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border:1px dashed var(--line);border-radius:6px">\u23F3</span>'; }).join('') + '</div>' : '<div class="hint" style="margin:4px 0 0;color:var(--danger)">' + esc(t('لا صورَ تركيبٍ وصلت')) + '</div>';
                 return ['<strong>' + esc(k) + '</strong><br><span class="hint" style="margin:0">'
                           + esc((s && s.name) || '') + '</span>' + demoTag(s) + ' ' + btn('\u25C8', 'btn-quiet btn-sm', ' data-site="' + esc(k) + '" title="' + esc(t('صفحة النقطة')) + '"'),   /* (V37.78) */
                         esc(r.by), N(Object.keys(r.parts || {}).length) + sn + phH, N(insPtsOf(k)),
@@ -567,19 +571,25 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
           done.forEach(function(r){
             var s = siteFind(r.id), ty = (s && s.type) || 'أخرى';
             byType[ty] = (byType[ty] || 0) + 1;
-            Object.keys(r.solution.items).forEach(function(code){
-              itemTotals[code] = (itemTotals[code] || 0) + cfgN(r.solution.items[code]);
+            Object.keys(r.solution.items || {}).forEach(function(code){
+              itemTotals[code] = (itemTotals[code] || 0) + cfgN((r.solution.items || {})[code]);
             });
           });
           var types = Object.keys(byType), codes = Object.keys(itemTotals);
           if (!done.length) return '';
+          /* (V38.62) owner's model: the survey's approved solution is the procurement number; the installation is what
+             leaves the warehouse. Side by side per item — and «to order» is approved minus received. */
+          var bal = {}; (typeof stockBalance === 'function' ? stockBalance() : []).forEach(function(b){ bal[b.item] = b; });
+          var recv = {}; movesList().forEach(function(m){ if (m && m.kind === 'توريد') recv[itemKey(m.item)] = (recv[itemKey(m.item)] || 0) + cfgN(m.qty); });
           return card('الإجمالي المعتمد — موسم ١٤٤٨',
               stats(types.map(function(ty){ return [typeLabel(ty), N(byType[ty]), 'acc']; }))
               + (codes.length
-                ? table(['الصنف','الكمية الإجمالية المعتمدة'],
+                ? table(['الصنف','المعتمد من المسح (للتوريد)','ورد','في المستودع','مع المنفِّذين','رُكِّب (خُصم)','المتبقّي للطلب'],
                     codes.sort(function(a,b){ return itemTotals[b] - itemTotals[a]; }).map(function(code){
-                      return [esc(itemName(code)), N(Math.round(itemTotals[code]))];
+                      var k = itemKey(code), b = bal[k] || {}, need = Math.round(itemTotals[code]), got = Math.round(recv[k] || 0), left = Math.max(0, need - got);
+                      return [esc(itemName(code)), N(need), N(got), N(Math.round(b.store || 0)), N(Math.round(b.custody || 0)), N(Math.round(b.used || 0)), left ? '<b style="color:var(--warn)">' + nm(left) + '</b>' : '\u2713'];
                     }))
+                  + '<p class="hint" style="margin:6px 0 0">' + esc(t('المعتمدُ من حلول المسح هو رقمُ التوريد؛ والخصمُ من المستودع بما رُكِّب فعلًا — وفرقُ التركيب عن الحلّ طبيعيٌّ ويظهر في صفِّ التدقيق.')) + '</p>'
                 : ''));
         })()
 
@@ -590,7 +600,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
                 var s = siteFind(r.id);
                 return [siteIdHtml(siteOf(r)) + '<br><span class="hint" style="margin:0">'
                           + esc(((s && s.name) || '').slice(0,28)) + '</span>',
-                        Object.keys(r.solution.items).map(function(c){
+                        Object.keys(r.solution.items || {}).map(function(c){
                           return esc(itemName(c)) + ' \u00d7' + nm(r.solution.items[c]);
                         }).join('، '),
                         esc(r.solution.by),

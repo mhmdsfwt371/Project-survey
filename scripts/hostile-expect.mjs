@@ -25,7 +25,7 @@ export const HOSTILE = {
   inss:        office('AAAAD', { approved:false }),
   props:       office('AAAAD'),
   photos:      office('AAAAD'),
-  photoblobs:  office('DDAAD'),   /* (V37.18) الخامُ: يُكتب من الميدان ولا يُقرأ ولا يُحذَف من جهاز */
+  photoblobs:  office('ADAAD'),   /* (V37.18) الخامُ: يُكتب من الميدان ولا يُحذَف من جهاز؛ (V38.62) ويُقرأ واحدًا واحدًا لا قائمةً */
   tasks:       office('AAAAD'),
   srvorders:   office('AAAAD'),
   hb:          office('AAAAA'),

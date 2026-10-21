@@ -127,6 +127,7 @@ function navHtml(){
       + '<span class="chevron" aria-hidden="true"></span></button><div class="group-panel"><div class="gp-head" aria-hidden="true">'+esc(t(s.g))+'</div>'
       + items.map(function(i){
           var bdg = ''; if (i[0] === 'mfu'){ try { var un = mfuUnseen(); if (un) bdg = ' <span class="tb-badge" style="position:static;display:inline-block">' + nm(un) + '</span>'; } catch (e){ LS_ERR = e; } }   /* (V20.7) */
+          if (i[0] === 'chat' && typeof chUnread === 'function'){ try { var cu = chUnread(); if (cu) bdg = ' <span class="tb-badge" style="position:static;display:inline-block">' + nm(cu) + '</span>'; } catch (e4){ LS_ERR = e4; } }   /* (V38.62) unread messages */
           return '<a href="#" class="sub'+(CUR===i[0]?' active':'')+'" data-p="'+i[0]+'">'+esc(t(i[1])) + bdg + '</a>' + navTabLinks(i[0]);
         }).join('')
       + '</div></div>';

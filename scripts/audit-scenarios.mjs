@@ -549,12 +549,36 @@ console.log('\n══ ١٧ · تعديلُ التركيب ══');
   w.insqState().id = x.id; w.CUR = 'map'; w.render(1); let sh = d.getElementById('insqSheet');
   const drawn = !!sh && sh.innerHTML.indexOf('SN-ED-1') > -1 && sh.querySelectorAll('[data-insqdelask]').length === 1 && sh.innerHTML.indexOf('d70') < 0 && !!sh.querySelector('[data-insqadd]');
   sh.querySelector('[data-insqp="' + cm.code + '"]').value = '2'; sh.querySelector('[data-insqs="' + cm.code + '"]').value = 'SN-ED-C'; const mv0 = w.STATE.moves.length; const ok1 = w.insqSave(); const r1 = w.STATE.inss[x.id];
-  T(drawn && ok1 && r1.parts[cm.code] === 2 && r1.serials[cm.code] === 'SN-ED-C' && r1.solution && r1.edits.length === 1 && w.STATE.moves.length === mv0 + 1 && w.chOf(x.id).some(v => /عُدِّل التركيب/.test(v.text) && /SN-ED-C/.test(v.text)), 'ولوحُ التعديل يعرض صورَ التركيب وحدَها ويحفظ الكميةَ والسيريال، ويُستهلَك الفرقُ، ويُسجَّل التعديلُ وسطرُه في المحادثة');
+  T(drawn && ok1 && r1.parts[cm.code] === 2 && r1.serials[cm.code] === 'SN-ED-C' && r1.solution && r1.edits.length === 1 && w.STATE.moves.length > mv0 && w.insConsumed(x.id)[cm.code] === 2 && w.chOf(x.id).some(v => /عُدِّل التركيب/.test(v.text) && /SN-ED-C/.test(v.text)), 'ولوحُ التعديل يعرض صورَ التركيب وحدَها ويحفظ الكميةَ والسيريال، ويُستهلَك الفرقُ، ويُسجَّل التعديلُ وسطرُه في المحادثة');
   w.render(1); sh = d.getElementById('insqSheet'); sh.querySelector('[data-insqdelask]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); sh = d.getElementById('insqSheet'); sh.querySelector('[data-insqdel]').dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
   const delOk = !!(w.STATE.photos[x.id + '-71'] || {}).del;
   w.STATE.inss[x.id].approved = true; as('tech', 'فني آخر'); w.render(1); sh = d.getElementById('insqSheet'); const noDel = !sh.querySelector('[data-insqdelask]'); sh.querySelector('[data-insqs="' + rd.code + '"]').value = 'SN-ED-2'; const ok2 = w.insqSave();
   T(delOk && noDel && ok2 && w.STATE.inss[x.id].approved === false, 'وحذفُ صورته قبل الاعتماد له، وبعد الاعتماد للمهندس وحده — وتعديلُ الفنيِّ لمعتمدٍ يعيده إلى التدقيق');
   w.insqState().id = ''; as('engineer', 'جرد السيناريوهات');
+}
+
+/* ── ١٨ · (V38.62) المسحُ للتوريد والتركيبُ للمستودع: الاستهلاكُ صافٍ لكلِّ نقطة (لا خصمَ مرتين)، والنقصُ يعود للعهدة،
+   و«متعذّر» لا يستهلك؛ والجدولُ يضع المعتمدَ من المسح بجانب الوارد والمخزون والمركَّب والمتبقّي للطلب ── */
+console.log('\n══ ١٨ · التوريدُ والمستودع ══');
+{
+  const as = (role, name) => { w.ROLE = role; w.STATE.meta.role = role; w.STATE.meta.name = name; };
+  const x = w.STATE.sites.filter(z => z && z.type === 'مخيم' && z.zone === 'منى' && !w.STATE.inss[z.id] && !w.taskKindOf(z.id, 'install'))[1];
+  const zn = w.siteZone(x), pz = w.itemsList().filter(i => i.z === zn && i.name), rd = pz.find(i => /قارئ/.test(i.name)), cm = pz.find(i => /كاميرا/.test(i.name));
+  as('supervisor', 'مشرف المستودع'); w.STATE.recs[x.id] = { id:x.id, access:'تم الوصول', review:'approved', at:Date.now() }; w.STATE.inss[x.id] = { id:x.id, solution:{ status:'معتمد', items:{ [rd.code]:1, [cm.code]:1 } } };
+  const save = (parts, st, tag) => { w.formReset(); w.formGo(x.id); w.FORM.parts = parts; w.FORM.status = st; w.FORM.photos.before = { data:IMG + tag + 'a' }; w.FORM.photos.after = { data:IMG + tag + 'b' }; w.insSave(0); return JSON.stringify(w.insConsumed(x.id)); };
+  const c1 = save({ [rd.code]:1 }, 'قيد التركيب', 'w1'), c2 = save({ [rd.code]:1, [cm.code]:2 }, 'مُركّب', 'w2');
+  w.insqState().id = x.id; w.CUR = 'map'; w.render(1); const sh = w.document.getElementById('insqSheet'); sh.querySelector('[data-insqp="' + cm.code + '"]').value = '1'; w.insqSave(); w.insqState().id = '';
+  const c3 = w.insConsumed(x.id), corr = w.STATE.moves.filter(m => m.site === x.id && m.kind === 'تصحيح استهلاك').length;
+  T(c1 === JSON.stringify({ [rd.code]:1 }) && c2 === JSON.stringify({ [rd.code]:1, [cm.code]:2 }) && c3[cm.code] === 1 && corr === 1, 'الاستهلاكُ صافٍ لكلِّ نقطة: الحفظُ الثاني يخصم الفرقَ وحدَه، والتعديلُ بالنقص يعيد الفرقَ إلى عهدة المنفِّذ');
+  const c4 = w.insConsumed(x.id); save({}, 'متعذّر', 'w3'); const c5 = w.insConsumed(x.id);
+  T(c4[rd.code] === 1 && !c5[rd.code] && !c5[cm.code], 'و«متعذّر» لا يستهلك شيئًا ويعيد ما خُصم');
+  as('engineer', 'جرد السيناريوهات'); w.STATE.inss[x.id].status = 'مُركّب'; w.STATE.inss[x.id].parts = { [rd.code]:1, [cm.code]:3 }; w.STATE.inss[x.id].solution = { status:'معتمد', items:{ [rd.code]:1, [cm.code]:1 } };
+  w.CUR = 'survey'; w.render(1); w.PTAB.survey = 'solution'; w.render(1); const hs = w.document.getElementById('content').innerHTML; w.PTAB.survey = 'qa'; w.render(1); const hq = w.document.getElementById('content').innerHTML;
+  T(hs.indexOf('المعتمد من المسح (للتوريد)') > -1 && hs.indexOf('رُكِّب (خُصم)') > -1 && hs.indexOf('المتبقّي للطلب') > -1 && hq.indexOf('عن الحلّ المعتمد') > -1, 'وجدولُ الحلول يضع المعتمدَ للتوريد بجانب الوارد والمخزون والمركَّب والمتبقّي، وصفُّ التدقيق يُري الفرقَ عن الحلّ');
+  /* a photo still travelling to Drive is read from its raw copy, once */
+  w.phBlob.c = { 'S-PH-1':'data:image/jpeg;base64,/9j/RAW' }; const src1 = w.phSrc('S-PH-1', { status:'pending', blob:true }), src2 = w.phSrc('S-PH-2', { driveId:'dz' }, 200);
+  T(src1.indexOf('RAW') > -1 && /thumbnail\?id=dz&sz=w200/.test(src2), 'والصورةُ التي لم تصل الدرايف بعدُ تُعرَض من نسختها في السحابة خلال ثوانٍ');
+  w.STATE.inss[x.id].status = ''; delete w.STATE.inss[x.id];
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

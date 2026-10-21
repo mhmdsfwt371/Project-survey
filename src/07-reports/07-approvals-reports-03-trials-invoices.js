@@ -481,7 +481,7 @@ function custodyByWho(){
     var who = m.by || '—', q = cfgN(m.qty), it = m.item || '—';
     if (!q) return;
     var d = 0;
-    if (m.kind === 'صرف') d = q;
+    if (m.kind === 'صرف' || m.kind === 'تصحيح استهلاك') d = q;   /* (V38.62) a lowered installation returns to its installer */
     else if (m.kind === 'استهلاك' || m.kind === 'إرجاع' || m.kind === 'شطب'
              || m.kind === 'إرجاع سليم' || m.kind === 'إرجاع تالف') d = -q;
     else return;

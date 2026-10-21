@@ -344,3 +344,26 @@ function photoStrip(siteId){
     + '</div>'
     + '<p class="hint">' + esc(t('كلُّ رفعٍ واطّلاعٍ وحذفٍ مسجَّلٌ في سجل الأحداث باسم فاعله.')) + '</p>');
 }
+
+/* (V38.62) a photo that reached the cloud but not yet Drive is read once from its raw copy and kept in memory (last 40) —
+   so the office sees the installer's photo within seconds, not after the Drive transfer */
+function phBlob(id){
+  var C = phBlob.c || (phBlob.c = {}), W = phBlob.w || (phBlob.w = {});
+  if (C[id]) return C[id];
+  if (W[id] || typeof FB === 'undefined' || !FB.ready || !FB.ready() || typeof DB === 'undefined') return '';
+  W[id] = 1;
+  DB.col('photoblobs').doc(id).get().then(function(d){
+    FB.readCount = (FB.readCount || 0) + 1;
+    var v = d && d.exists ? (d.data() || {}).data : ''; if (!v) return;
+    C[id] = v; var ks = Object.keys(C); if (ks.length > 40) delete C[ks[0]];
+    try { if (!document.querySelector('#content textarea:focus, #content input:focus')) render(1); } catch (e){ LS_ERR = e; }
+  }).catch(function(e){ LS_ERR = e; });
+  return '';
+}
+/* the best source of a photo for a thumbnail: its own data, the raw copy while it travels, or the Drive thumbnail */
+function phSrc(id, p, sz){
+  p = p || {}; if (p.data) return p.data;
+  if (p.driveId) return 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(p.driveId) + '&sz=w' + (sz || 400);
+  if (p.blob || p.status === 'pending') return phBlob(id);
+  return '';
+}

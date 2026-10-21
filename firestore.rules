@@ -252,7 +252,9 @@ service cloud.firestore {
     // `data` لا يُقرأ إلا للمكتب لأنه ثقيلٌ — والرابطُ يكفي الجميع.
     match /photos/{id} { allow read: if pm('photos', 'r', ok()); allow create, update: if pm('photos', 'w', canW()); allow delete: if pm('photos', 'd', mgr()); }
     // (V37.18) الصورُ الخامُ بمسار الطوارئ: تُكتب من الميدان ولا يقرؤها أيُّ جهاز — الخادمُ ينقلها إلى الدرايف بحساب الخدمة
-    match /photoblobs/{id} { allow read: if false; allow create, update: if pm('photos', 'w', canW()); allow delete: if false; }
+    // (V38.62) a raw photo is read one at a time while it waits for Drive — the photo shows on every device within seconds;
+    // listing stays closed, so no device pulls the collection (the V37.18 reason: raw photos pulled to every phone)
+    match /photoblobs/{id} { allow get: if pm('photos', 'r', ok()); allow list: if false; allow create, update: if pm('photos', 'w', canW()); allow delete: if false; }
 
     // نبضات صحة الأجهزة — تكتبها أداة فحص المكتب ويقرؤها الجميع
     // أوامر المسح: المهندس ينشئ ويقفل، والمشرف يسجّل زياراته

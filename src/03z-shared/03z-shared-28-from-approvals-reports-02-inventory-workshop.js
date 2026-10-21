@@ -110,6 +110,7 @@ function stockBalance(){
     if (m.kind === 'توريد')      r.store   += q;
     else if (m.kind === 'صرف'){  r.store   -= q; r.custody += q; }
     else if (m.kind === 'استهلاك'){ r.custody -= q; r.used += q; }
+    else if (m.kind === 'تصحيح استهلاك'){ r.used -= q; r.custody += q; }   /* (V38.62) an installation lowered: back to the installer */
     /* (V37.99) ما يعود بالفكِّ يخرج من «رُكّب في الميدان» لا من عهدة الفني — كان يُخصَم من العهدة فتصير سالبةً
        ويبقى «رُكّب» منفوخًا بعد الموسم. يُعرَف بعلامته، والقديمُ بملاحظته «فك …» */
     else if (m.kind === 'إرجاع'){ if (m.dis || /^فك /.test(m.note || '')){ r.used -= q; } else { r.custody -= q; } r.store += q; }

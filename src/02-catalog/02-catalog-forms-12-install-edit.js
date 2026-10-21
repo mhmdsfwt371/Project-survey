@@ -18,7 +18,7 @@ function insqPhotos(rec){
   var q = (typeof PHOTO_Q !== 'undefined' ? PHOTO_Q : []).map(function(x, i){ return [i, x]; }).filter(function(e){ return e[1] && e[1].site === id && /^ins/.test(String(e[1].kind || '')); });
   var S = insqState();
   var row = function(thumb, label, sub, act){ return '<div class="svq-row"><div class="svq-ph">' + thumb + '</div><div class="svq-k" style="flex:1 1 50%"><b style="color:var(--ink)">' + esc(t(label)) + '</b><div class="hint" style="margin:0;font-size:11.5px">' + sub + '</div></div>' + act + '</div>'; };
-  var img = function(p){ var src = p.data || p.thumb || (p.driveId ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(p.driveId) + '&sz=w200' : ''); return src ? '<img src="' + esc(src) + '" alt="" loading="lazy">' : '<span title="' + esc(t('وصلت وتُنقَل إلى الدرايف')) + '">\u23F3</span>'; };
+  var img = function(p, pid){ var src = p.thumb || phSrc(pid, p, 200); return src ? '<img src="' + esc(src) + '" alt="" loading="lazy">' : '<span title="' + esc(t('وصلت وتُنقَل إلى الدرايف')) + '">\u23F3</span>'; };
   var h = '<div class="wp-sec" style="margin-top:12px">' + esc(t('صور التركيب')) + ' \u00b7 ' + nm(list.length + q.length) + '</div>';
   h += list.map(function(p){
     var ph = p[1] || {}, ask = S.delAsk === p[0];
@@ -26,7 +26,7 @@ function insqPhotos(rec){
       ? (ask ? btn(t('تأكيد الحذف'), 'btn-sm', ' data-insqdel="' + esc(p[0]) + '" style="background:#C0392B;color:#fff"') + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-insqdelx="1"')
              : btn('\u{1F5D1} ' + t('احذف'), 'btn-quiet btn-sm', ' data-insqdelask="' + esc(p[0]) + '"'))
       : '<span class="hint" style="margin:0;font-size:11px">' + esc(t('حذفُها للمهندس')) + '</span>';
-    return row(img(ph), insqKindLabel(ph.kind), esc(fmtDT(ph.at)) + (ph.by ? ' \u00b7 ' + esc(dispName(ph.by)) : '') + (ph.link || ph.driveId ? ' \u00b7 ' + esc(t('على الدرايف')) : (ph.status === 'pending' ? ' \u00b7 \u23F3 ' + esc(t('تُنقَل إلى الدرايف')) : '')), act);
+    return row(img(ph, p[0]), insqKindLabel(ph.kind), esc(fmtDT(ph.at)) + (ph.by ? ' \u00b7 ' + esc(dispName(ph.by)) : '') + (ph.link || ph.driveId ? ' \u00b7 ' + esc(t('على الدرايف')) : (ph.status === 'pending' ? ' \u00b7 \u23F3 ' + esc(t('تُنقَل إلى الدرايف')) : '')), act);
   }).join('');
   h += q.map(function(e){ return row(img(e[1]), insqKindLabel(e[1].kind), esc(t('في طابور جهازك — تُرفَع مع المزامنة')), btn('\u2715 ' + t('ألغِها'), 'btn-quiet btn-sm', ' data-insqqx="' + e[0] + '"')); }).join('');
   if (!list.length && !q.length) h += '<p class="hint">' + esc(t('لا صورَ تركيبٍ لهذه النقطة بعد.')) + '</p>';
@@ -90,10 +90,9 @@ function insqSave(){
   if (elsewhere && !(may('approve') && typeof confirm === 'function' && confirm(t('هذا الرقمُ مسجَّلٌ على نقطةٍ أخرى') + ': ' + elsewhere + ' — ' + t('سجّله هنا على أيِّ حال؟')))){ toast(t('رقمٌ تسلسليٌّ مسجَّلٌ على نقطةٍ أخرى لم تُفَكّ') + ': ' + elsewhere); return false; }
   if (!insStatusIs(status, rec.status)) changes.push(t('الحالة') + ': ' + t(rec.status || '—') + ' \u2190 ' + t(status));
   var all = {}; Object.keys(rec.parts || {}).concat(Object.keys(parts)).forEach(function(k){ all[k] = 1; });
-  var take = {};
   Object.keys(all).forEach(function(k){
     var o = cfgN((rec.parts || {})[k]) || 0, n = parts[k] || 0, so = (rec.serials || {})[k] || '', sn = serials[k] || '';
-    if (o !== n){ changes.push(itemName(k) + ' \u00d7' + nm(o) + ' \u2190 \u00d7' + nm(n)); if (n > o) take[k] = n - o; }
+    if (o !== n) changes.push(itemName(k) + ' \u00d7' + nm(o) + ' \u2190 \u00d7' + nm(n));
     if (so !== sn) changes.push(itemName(k) + ' ' + t('سيريال') + ': ' + (so || '—') + ' \u2190 ' + (sn || '—'));
   });
   if (!changes.length){ toast(t('لا تغييرَ')); return false; }
@@ -103,8 +102,7 @@ function insqSave(){
   n2.edits = (Array.isArray(rec.edits) ? rec.edits : []).concat([{ what:changes.join(' \u00b7 '), by:who, at:now }]).slice(-30);
   CORE.set('inss', s.id, n2);
   if (n2.solution === undefined && rec.solution) STATE.inss[s.id] = Object.assign({}, n2, { solution:rec.solution });
-  Object.keys(take).forEach(function(k){ STATE.moves.push({ at:dayKey(), kind:'استهلاك', item:k, qty:take[k], by:who, site:s.id, cond:'' }); });
-  if (Object.keys(take).length) CORE.dirty('moves', s.id, take);
+  insConsume(s.id, insStatusIs(status, 'متعذّر') ? {} : parts, who);   /* (V38.62) net against what the point already consumed */
   logEvent('تعديل تركيب — ' + s.id + ' · ' + changes.join(' · '), s.id);
   if (typeof chSystem === 'function') chSystem(s.id, 'عُدِّل التركيب — ' + changes.join(' \u00b7 '), '');
   if (typeof statBump === 'function') statBump();

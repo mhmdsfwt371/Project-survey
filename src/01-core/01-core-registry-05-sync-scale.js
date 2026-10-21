@@ -417,7 +417,7 @@ function pzInssRetry(){
     STATE.poison = STATE.poison.filter(function(p){
       if (!p || p.kind !== 'inss' || !/permission|insufficient|PERMISSION_DENIED/i.test(String(p.err || ''))) return true;
       var k = String(p.id), r = R[k] || { n:0, at:0 };
-      if (r.n >= 8 || now - r.at < 1800000) return true;
+      if (r.n >= 20 || now - r.at < 30000) return true;   /* (V38.62) every 30 s, up to 20 rounds */
       R[k] = { n:r.n + 1, at:now }; CORE.dirty(p.kind, p.id, p.v); back++; return false;
     });
     if (back){ lsSet('nsk14.pzIns', JSON.stringify(R)); CORE.saveSoon(); logEventQuiet('أُعيد إرسالُ ' + back + ' تركيبٍ رفضته القاعدةُ القديمة'); }

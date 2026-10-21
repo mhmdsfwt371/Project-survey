@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.61</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.62</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1377,7 +1377,7 @@ function nskChunkReady(){
 
   try { if (typeof whatsNewMaybe === 'function' && whatsNewMaybe.pending){ whatsNewMaybe.pending = false; if (whatsNewMaybe() && typeof render === 'function') render(1); } } catch (e3){ LS_ERR = e3; }
 }
-var I18N_FILE = 'i18n/dict-92f407a3e3.js', I18N_STATE = 0, I18N_WAIT = [];
+var I18N_FILE = 'i18n/dict-7efc204194.js', I18N_STATE = 0, I18N_WAIT = [];
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }
@@ -2472,7 +2472,7 @@ function pzInssRetry(){
     STATE.poison = STATE.poison.filter(function(p){
       if (!p || p.kind !== 'inss' || !/permission|insufficient|PERMISSION_DENIED/i.test(String(p.err || ''))) return true;
       var k = String(p.id), r = R[k] || { n:0, at:0 };
-      if (r.n >= 8 || now - r.at < 1800000) return true;
+      if (r.n >= 20 || now - r.at < 30000) return true;
       R[k] = { n:r.n + 1, at:now }; CORE.dirty(p.kind, p.id, p.v); back++; return false;
     });
     if (back){ lsSet('nsk14.pzIns', JSON.stringify(R)); CORE.saveSoon(); logEventQuiet('أُعيد إرسالُ ' + back + ' تركيبٍ رفضته القاعدةُ القديمة'); }
@@ -6980,7 +6980,7 @@ function insqPhotos(rec){
   var q = (typeof PHOTO_Q !== 'undefined' ? PHOTO_Q : []).map(function(x, i){ return [i, x]; }).filter(function(e){ return e[1] && e[1].site === id && /^ins/.test(String(e[1].kind || '')); });
   var S = insqState();
   var row = function(thumb, label, sub, act){ return '<div class="svq-row"><div class="svq-ph">' + thumb + '</div><div class="svq-k" style="flex:1 1 50%"><b style="color:var(--ink)">' + esc(t(label)) + '</b><div class="hint" style="margin:0;font-size:11.5px">' + sub + '</div></div>' + act + '</div>'; };
-  var img = function(p){ var src = p.data || p.thumb || (p.driveId ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(p.driveId) + '&sz=w200' : ''); return src ? '<img src="' + esc(src) + '" alt="" loading="lazy">' : '<span title="' + esc(t('وصلت وتُنقَل إلى الدرايف')) + '">\u23F3</span>'; };
+  var img = function(p, pid){ var src = p.thumb || phSrc(pid, p, 200); return src ? '<img src="' + esc(src) + '" alt="" loading="lazy">' : '<span title="' + esc(t('وصلت وتُنقَل إلى الدرايف')) + '">\u23F3</span>'; };
   var h = '<div class="wp-sec" style="margin-top:12px">' + esc(t('صور التركيب')) + ' \u00b7 ' + nm(list.length + q.length) + '</div>';
   h += list.map(function(p){
     var ph = p[1] || {}, ask = S.delAsk === p[0];
@@ -6988,7 +6988,7 @@ function insqPhotos(rec){
       ? (ask ? btn(t('تأكيد الحذف'), 'btn-sm', ' data-insqdel="' + esc(p[0]) + '" style="background:#C0392B;color:#fff"') + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-insqdelx="1"')
              : btn('\u{1F5D1} ' + t('احذف'), 'btn-quiet btn-sm', ' data-insqdelask="' + esc(p[0]) + '"'))
       : '<span class="hint" style="margin:0;font-size:11px">' + esc(t('حذفُها للمهندس')) + '</span>';
-    return row(img(ph), insqKindLabel(ph.kind), esc(fmtDT(ph.at)) + (ph.by ? ' \u00b7 ' + esc(dispName(ph.by)) : '') + (ph.link || ph.driveId ? ' \u00b7 ' + esc(t('على الدرايف')) : (ph.status === 'pending' ? ' \u00b7 \u23F3 ' + esc(t('تُنقَل إلى الدرايف')) : '')), act);
+    return row(img(ph, p[0]), insqKindLabel(ph.kind), esc(fmtDT(ph.at)) + (ph.by ? ' \u00b7 ' + esc(dispName(ph.by)) : '') + (ph.link || ph.driveId ? ' \u00b7 ' + esc(t('على الدرايف')) : (ph.status === 'pending' ? ' \u00b7 \u23F3 ' + esc(t('تُنقَل إلى الدرايف')) : '')), act);
   }).join('');
   h += q.map(function(e){ return row(img(e[1]), insqKindLabel(e[1].kind), esc(t('في طابور جهازك — تُرفَع مع المزامنة')), btn('\u2715 ' + t('ألغِها'), 'btn-quiet btn-sm', ' data-insqqx="' + e[0] + '"')); }).join('');
   if (!list.length && !q.length) h += '<p class="hint">' + esc(t('لا صورَ تركيبٍ لهذه النقطة بعد.')) + '</p>';
@@ -7052,10 +7052,9 @@ function insqSave(){
   if (elsewhere && !(may('approve') && typeof confirm === 'function' && confirm(t('هذا الرقمُ مسجَّلٌ على نقطةٍ أخرى') + ': ' + elsewhere + ' — ' + t('سجّله هنا على أيِّ حال؟')))){ toast(t('رقمٌ تسلسليٌّ مسجَّلٌ على نقطةٍ أخرى لم تُفَكّ') + ': ' + elsewhere); return false; }
   if (!insStatusIs(status, rec.status)) changes.push(t('الحالة') + ': ' + t(rec.status || '—') + ' \u2190 ' + t(status));
   var all = {}; Object.keys(rec.parts || {}).concat(Object.keys(parts)).forEach(function(k){ all[k] = 1; });
-  var take = {};
   Object.keys(all).forEach(function(k){
     var o = cfgN((rec.parts || {})[k]) || 0, n = parts[k] || 0, so = (rec.serials || {})[k] || '', sn = serials[k] || '';
-    if (o !== n){ changes.push(itemName(k) + ' \u00d7' + nm(o) + ' \u2190 \u00d7' + nm(n)); if (n > o) take[k] = n - o; }
+    if (o !== n) changes.push(itemName(k) + ' \u00d7' + nm(o) + ' \u2190 \u00d7' + nm(n));
     if (so !== sn) changes.push(itemName(k) + ' ' + t('سيريال') + ': ' + (so || '—') + ' \u2190 ' + (sn || '—'));
   });
   if (!changes.length){ toast(t('لا تغييرَ')); return false; }
@@ -7065,8 +7064,7 @@ function insqSave(){
   n2.edits = (Array.isArray(rec.edits) ? rec.edits : []).concat([{ what:changes.join(' \u00b7 '), by:who, at:now }]).slice(-30);
   CORE.set('inss', s.id, n2);
   if (n2.solution === undefined && rec.solution) STATE.inss[s.id] = Object.assign({}, n2, { solution:rec.solution });
-  Object.keys(take).forEach(function(k){ STATE.moves.push({ at:dayKey(), kind:'استهلاك', item:k, qty:take[k], by:who, site:s.id, cond:'' }); });
-  if (Object.keys(take).length) CORE.dirty('moves', s.id, take);
+  insConsume(s.id, insStatusIs(status, 'متعذّر') ? {} : parts, who);
   logEvent('تعديل تركيب — ' + s.id + ' · ' + changes.join(' · '), s.id);
   if (typeof chSystem === 'function') chSystem(s.id, 'عُدِّل التركيب — ' + changes.join(' \u00b7 '), '');
   if (typeof statBump === 'function') statBump();
@@ -10258,6 +10256,25 @@ function insPhotoAdd(id, files){
       toast(t('صعدت الصورُ إلى طابور الرفع') + ' (' + nm(n) + ')'); render(1); });
 }
 
+function insConsumed(site){
+  var c = {};
+  movesList().forEach(function(m){
+    if (!m || m.site !== site) return; var q = cfgN(m.qty), it = m.item; if (!q || !it) return;
+    if (m.kind === 'استهلاك') c[it] = (c[it] || 0) + q;
+    else if (m.kind === 'تصحيح استهلاك') c[it] = (c[it] || 0) - q;
+    else if ((m.kind === 'إرجاع' || m.kind === 'شطب') && (m.dis || /^فك /.test(m.note || ''))) c[it] = (c[it] || 0) - q;
+  });
+  return c;
+}
+function insConsume(site, held, who){
+  var had = insConsumed(site), all = {}, take = {}, back = {};
+  Object.keys(had).concat(Object.keys(held || {})).forEach(function(k){ all[k] = 1; });
+  Object.keys(all).forEach(function(k){ var d = (cfgN((held || {})[k]) || 0) - (had[k] || 0); if (d > 0) take[k] = d; else if (d < 0) back[k] = -d; });
+  Object.keys(take).forEach(function(k){ STATE.moves.push({ at:dayKey(), kind:'استهلاك', item:k, qty:take[k], by:who || STATE.meta.name || '—', site:site, cond:'' }); });
+  Object.keys(back).forEach(function(k){ STATE.moves.push({ at:dayKey(), kind:'تصحيح استهلاك', item:k, qty:back[k], by:who || STATE.meta.name || '—', site:site, cond:'', note:'تعديل تركيب' }); });
+  if (Object.keys(take).length || Object.keys(back).length) CORE.dirty('moves', site, { take:take, back:back });
+  return { take:take, back:back };
+}
 function insSave(draft){
   var s = formSite();
   if (!s) return;
@@ -10290,7 +10307,7 @@ function insSave(draft){
     var q = cfgN(FORM.parts[k]);
     if (q > 0){ used[k] = q; n += q; }
   });
-  if (!draft && !n){ toast(t('سجّل القطع المستهلكة أولًا')); return; }
+  if (!draft && !n && !insStatusIs(FORM.status, 'متعذّر')){ toast(t('سجّل القطع المستهلكة أولًا')); return; }
 
   var prevIns = STATE.inss[s.id], keepRev = !!(s.pilot && prevIns && !prevIns.deleted && prevIns.status && prevIns.status !== 'مسودّة' && !draft);
   var nIns = {
@@ -10308,18 +10325,7 @@ function insSave(draft){
     if (typeof photoQueue === 'function') photoQueue(s.id, (s.pilot ? 'ins_r' + (insRevs(nIns).length + 1) + '_' + k : 'ins_' + k), FORM.photos[k].data);
   });
 
-  if (!draft){
-    var take = {};
-    Object.keys(used).forEach(function(k){
-      var q = keepRev ? used[k] - cfgN((prevIns.parts || {})[k]) : used[k];
-      if (q > 0) take[k] = q;
-    });
-    Object.keys(take).forEach(function(k){
-      STATE.moves.push({ at:dayKey(), kind:'استهلاك',
-                         item:k, qty:take[k], by:STATE.meta.name || '—', site:s.id, cond:'' });
-    });
-    if (Object.keys(take).length) CORE.dirty('moves', s.id, take);
-  }
+  if (!draft) insConsume(s.id, insStatusIs(FORM.status, 'متعذّر') ? {} : used, STATE.meta.name || '—');
   logEvent((draft ? 'مسودّة تركيب' : (keepRev ? 'تجهيزةُ ديمو ' + (insRevs(nIns).length + 1) : 'تركيب')) + ' — ' + s.id + ' · ' + nm(formPts()) + ' نقطة');
 
   if (!draft && typeof chSystem === 'function') chSystem(s.id, (keepRev ? 'تجهيزةٌ جديدة' : 'رُكِّبت') + ' — ' + t(FORM.status) + ' \u00b7 ' + Object.keys(used).map(function(k){ var sn2 = (FORM.serials || {})[k]; return itemName(k) + ' \u00d7' + nm(used[k]) + (sn2 ? ' (' + sn2 + ')' : ''); }).join('، ') + ' \u00b7 ' + nm(Object.keys(FORM.photos).length) + ' ' + t('صورة'), '');
@@ -12783,6 +12789,27 @@ function photoStrip(siteId){
     + '<p class="hint">' + esc(t('كلُّ رفعٍ واطّلاعٍ وحذفٍ مسجَّلٌ في سجل الأحداث باسم فاعله.')) + '</p>');
 }
 
+function phBlob(id){
+  var C = phBlob.c || (phBlob.c = {}), W = phBlob.w || (phBlob.w = {});
+  if (C[id]) return C[id];
+  if (W[id] || typeof FB === 'undefined' || !FB.ready || !FB.ready() || typeof DB === 'undefined') return '';
+  W[id] = 1;
+  DB.col('photoblobs').doc(id).get().then(function(d){
+    FB.readCount = (FB.readCount || 0) + 1;
+    var v = d && d.exists ? (d.data() || {}).data : ''; if (!v) return;
+    C[id] = v; var ks = Object.keys(C); if (ks.length > 40) delete C[ks[0]];
+    try { if (!document.querySelector('#content textarea:focus, #content input:focus')) render(1); } catch (e){ LS_ERR = e; }
+  }).catch(function(e){ LS_ERR = e; });
+  return '';
+}
+
+function phSrc(id, p, sz){
+  p = p || {}; if (p.data) return p.data;
+  if (p.driveId) return 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(p.driveId) + '&sz=w' + (sz || 400);
+  if (p.blob || p.status === 'pending') return phBlob(id);
+  return '';
+}
+
 var BASE = null;
 
 function baseDays(){
@@ -13669,7 +13696,7 @@ function popPhotosHtml(id){
   var group = function(list, label){
     if (!list.length) return '';
     var pend = list.filter(function(x){ return !(x[1].data || x[1].driveId); }).length;
-    var th = list.slice(0, 6).map(function(x){ var p = x[1], src = p.data || (p.driveId ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(p.driveId) + '&sz=w400' : '');
+    var th = list.slice(0, 6).map(function(x){ var p = x[1], src = phSrc(x[0], p, 400);
       return src ? '<img src="' + esc(src) + '" alt="" loading="lazy" data-phview="' + esc(x[0]) + '" title="' + esc(t('اضغط لعرضها كاملة')) + '" style="width:72px;height:72px;object-fit:cover;border-radius:8px;cursor:zoom-in;flex:0 0 auto">'
                  : '<span class="hint" title="' + esc(t('وصلت وتُنقَل إلى الدرايف')) + '" style="width:72px;height:72px;display:flex;align-items:center;justify-content:center;border:1px dashed var(--line);border-radius:8px;margin:0;flex:0 0 auto">\u23F3</span>'; }).join('');
     return '<div style="margin:8px 0 0"><div class="hint" style="margin:0 0 4px">\u{1F4F7} ' + esc(t(label)) + ' \u00b7 ' + nm(list.length) + (pend ? ' \u00b7 \u23F3 ' + nm(pend) + ' ' + esc(t('تُنقَل إلى الدرايف')) : '') + (list.length > 6 ? ' \u2014 ' + esc(t('أوّلُ ستٍّ — والباقي في «التفاصيل»')) : '') + '</div><div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">' + th + '</div></div>';
@@ -16598,6 +16625,7 @@ function stockBalance(){
     if (m.kind === 'توريد')      r.store   += q;
     else if (m.kind === 'صرف'){  r.store   -= q; r.custody += q; }
     else if (m.kind === 'استهلاك'){ r.custody -= q; r.used += q; }
+    else if (m.kind === 'تصحيح استهلاك'){ r.used -= q; r.custody += q; }
 
     else if (m.kind === 'إرجاع'){ if (m.dis || /^فك /.test(m.note || '')){ r.used -= q; } else { r.custody -= q; } r.store += q; }
     else if (m.kind === 'شطب'){   if (m.dis || /^فك /.test(m.note || '')){ r.used -= q; } else { r.custody -= q; } r.scrap += q; }
@@ -26541,6 +26569,7 @@ function navHtml(){
       + '<span class="chevron" aria-hidden="true"></span></button><div class="group-panel"><div class="gp-head" aria-hidden="true">'+esc(t(s.g))+'</div>'
       + items.map(function(i){
           var bdg = ''; if (i[0] === 'mfu'){ try { var un = mfuUnseen(); if (un) bdg = ' <span class="tb-badge" style="position:static;display:inline-block">' + nm(un) + '</span>'; } catch (e){ LS_ERR = e; } }
+          if (i[0] === 'chat' && typeof chUnread === 'function'){ try { var cu = chUnread(); if (cu) bdg = ' <span class="tb-badge" style="position:static;display:inline-block">' + nm(cu) + '</span>'; } catch (e4){ LS_ERR = e4; } }
           return '<a href="#" class="sub'+(CUR===i[0]?' active':'')+'" data-p="'+i[0]+'">'+esc(t(i[1])) + bdg + '</a>' + navTabLinks(i[0]);
         }).join('')
       + '</div></div>';
@@ -29760,6 +29789,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.61"></script>
+<script defer src="app-office.js?v=38.62"></script>
 </body>
 </html>

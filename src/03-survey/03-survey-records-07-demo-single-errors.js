@@ -119,6 +119,29 @@ function insPhotoAdd(id, files){
       toast(t('صعدت الصورُ إلى طابور الرفع') + ' (' + nm(n) + ')'); render(1); });
 }
 
+/* (V38.62) the warehouse follows what is installed: the survey's approved solution is the procurement number, the
+   installation is what leaves stock. A point consumes the difference between what it holds now and what was already
+   consumed on it — a re-save («قيد التركيب» then «مُركّب», or after a return) consumed everything again; a lower quantity
+   goes back to the installer's custody («تصحيح استهلاك»); «متعذّر» consumes nothing. Dismantling returns count too. */
+function insConsumed(site){
+  var c = {};
+  movesList().forEach(function(m){
+    if (!m || m.site !== site) return; var q = cfgN(m.qty), it = m.item; if (!q || !it) return;
+    if (m.kind === 'استهلاك') c[it] = (c[it] || 0) + q;
+    else if (m.kind === 'تصحيح استهلاك') c[it] = (c[it] || 0) - q;
+    else if ((m.kind === 'إرجاع' || m.kind === 'شطب') && (m.dis || /^فك /.test(m.note || ''))) c[it] = (c[it] || 0) - q;
+  });
+  return c;
+}
+function insConsume(site, held, who){
+  var had = insConsumed(site), all = {}, take = {}, back = {};
+  Object.keys(had).concat(Object.keys(held || {})).forEach(function(k){ all[k] = 1; });
+  Object.keys(all).forEach(function(k){ var d = (cfgN((held || {})[k]) || 0) - (had[k] || 0); if (d > 0) take[k] = d; else if (d < 0) back[k] = -d; });
+  Object.keys(take).forEach(function(k){ STATE.moves.push({ at:dayKey(), kind:'استهلاك', item:k, qty:take[k], by:who || STATE.meta.name || '—', site:site, cond:'' }); });
+  Object.keys(back).forEach(function(k){ STATE.moves.push({ at:dayKey(), kind:'تصحيح استهلاك', item:k, qty:back[k], by:who || STATE.meta.name || '—', site:site, cond:'', note:'تعديل تركيب' }); });
+  if (Object.keys(take).length || Object.keys(back).length) CORE.dirty('moves', site, { take:take, back:back });
+  return { take:take, back:back };
+}
 function insSave(draft){
   var s = formSite();
   if (!s) return;
@@ -153,7 +176,7 @@ function insSave(draft){
     var q = cfgN(FORM.parts[k]);
     if (q > 0){ used[k] = q; n += q; }
   });
-  if (!draft && !n){ toast(t('سجّل القطع المستهلكة أولًا')); return; }
+  if (!draft && !n && !insStatusIs(FORM.status, 'متعذّر')){ toast(t('سجّل القطع المستهلكة أولًا')); return; }   /* (V38.62) «متعذّر» installs nothing */
 
   /* (V37.78) نقطةُ الديمو: ما رُكِّب قبلُ يُحفَظ تجهيزةً سابقة، ويُستهلَك الفرقُ الزائدُ وحدَه */
   var prevIns = STATE.inss[s.id], keepRev = !!(s.pilot && prevIns && !prevIns.deleted && prevIns.status && prevIns.status !== 'مسودّة' && !draft);
@@ -173,18 +196,7 @@ function insSave(draft){
     if (typeof photoQueue === 'function') photoQueue(s.id, (s.pilot ? 'ins_r' + (insRevs(nIns).length + 1) + '_' + k : 'ins_' + k), FORM.photos[k].data);   /* (V37.79) */
   });
   /* استهلاكُ القطع يدخل دفتر الحركة — فلا يُخصَم المخزونُ مرتين */
-  if (!draft){
-    var take = {};
-    Object.keys(used).forEach(function(k){
-      var q = keepRev ? used[k] - cfgN((prevIns.parts || {})[k]) : used[k];   /* (V37.78) */
-      if (q > 0) take[k] = q;
-    });
-    Object.keys(take).forEach(function(k){
-      STATE.moves.push({ at:dayKey(), kind:'استهلاك',
-                         item:k, qty:take[k], by:STATE.meta.name || '—', site:s.id, cond:'' });
-    });
-    if (Object.keys(take).length) CORE.dirty('moves', s.id, take);
-  }
+  if (!draft) insConsume(s.id, insStatusIs(FORM.status, 'متعذّر') ? {} : used, STATE.meta.name || '—');   /* (V38.62) net, per point */
   logEvent((draft ? 'مسودّة تركيب' : (keepRev ? 'تجهيزةُ ديمو ' + (insRevs(nIns).length + 1) : 'تركيب')) + ' — ' + s.id + ' · ' + nm(formPts()) + ' نقطة');
   /* (V38.60) the record goes into the point's chat: the office reads what was installed and the serials as they are saved */
   if (!draft && typeof chSystem === 'function') chSystem(s.id, (keepRev ? 'تجهيزةٌ جديدة' : 'رُكِّبت') + ' — ' + t(FORM.status) + ' \u00b7 ' + Object.keys(used).map(function(k){ var sn2 = (FORM.serials || {})[k]; return itemName(k) + ' \u00d7' + nm(used[k]) + (sn2 ? ' (' + sn2 + ')' : ''); }).join('، ') + ' \u00b7 ' + nm(Object.keys(FORM.photos).length) + ' ' + t('صورة'), '');
