@@ -244,6 +244,8 @@ jobs:
         run: node scripts/audit-csp.mjs
       - name: جرد المكتبات المحلية — النسخة المحلية أولًا والشبكة العامة احتياط فقط
         run: node scripts/audit-vendor.mjs
+      - name: جولة الزائر — كل دور وكل شاشة وFirebase قائم كما على الهاتف
+        run: node scripts/audit-live-tour.mjs
       - name: جرد النبض — يَعُدُّ ما ينتظر، ويسكت حين لا شيء
         run: node scripts/audit-pulse.mjs
       - name: جرد تفاصيل المسح — رقمٌ خلفَه قائمتُه، وسطرٌ يطير إلى نقطته
