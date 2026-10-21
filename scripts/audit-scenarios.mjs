@@ -591,6 +591,51 @@ console.log('\n══ ١٨ · التوريدُ والمستودع ══');
   w.STATE.inss[x.id].status = ''; delete w.STATE.inss[x.id];
 }
 
+/* ── ١٩ · (V38.64) كما على الهاتف: Firebase قائمٌ (FB.ready = true) — كلُّ شاشةٍ لمسها التركيبُ والمحادثةُ تُفتَح لكلِّ دور
+   بلا خطأ. بلاغُ المالك: «النقطةُ الخضراء لا تستجيب — خطأ»: كان FB.ready يُستدعى دالّةً وهو علَمٌ، فسقطت نافذةُ كلِّ نقطةٍ
+   فيها صورةٌ في الطريق إلى الدرايف. الجرودُ كانت تعمل وFirebase نائم فلم تَرَه — وهذا الجردُ يعمل وهو قائم ── */
+console.log('\n══ ١٩ · كما على الهاتف (Firebase قائم) ══');
+{
+  const d = w.document, keepReady = w.FB.ready, keepDb = w.FB.db;
+  const stubDoc = { get:() => Promise.resolve({ exists:true, data:() => ({ data:'data:image/jpeg;base64,/9j/RAW' }) }), set:() => Promise.resolve(), update:() => Promise.resolve() };
+  const stubCol = { doc:() => stubDoc, where(){ return this; }, orderBy(){ return this; }, limit(){ return this; }, get:() => Promise.resolve({ size:0, forEach(){}, docs:[] }), onSnapshot:() => () => {} };
+  w.FB.ready = true; w.FB.db = { collection:() => stubCol, batch:() => ({ set(){}, commit:() => Promise.resolve() }) };
+  const pts = w.STATE.sites.filter(z => z && z.type === 'مخيم' && z.zone === 'منى' && !w.STATE.inss[z.id]).slice(5, 9);
+  const zn = w.siteZone(pts[0]), pz = w.itemsList().filter(i => i.z === zn && i.name), rd = pz.find(i => /قارئ/.test(i.name));
+  const states = ['مُركّب', 'قيد التركيب', 'متعذّر', 'مُعاد'];
+  pts.forEach((x, k) => {
+    w.STATE.recs[x.id] = { id:x.id, access:'تم الوصول', review:'approved', by:'فني', at:Date.now() - 9e6 };
+    w.STATE.inss[x.id] = { id:x.id, status:states[k], by:'فني الهاتف', at:Date.now(), parts:{ [rd.code]:1 }, serials:{ [rd.code]:'SN-PH-' + k }, approved:false, why:k === 3 ? 'السبب' : undefined, solution:{ status:'معتمد', items:{ [rd.code]:1 } } };
+    w.STATE.photos[x.id + '-81'] = { site:x.id, kind:'ins_before', seq:81, status:'pending', blob:true, at:Date.now() };
+    w.STATE.photos[x.id + '-82'] = { site:x.id, kind:'sv', seq:82, status:'pending', blob:true, at:Date.now() };
+    w.STATE.tasks['TK-install-' + x.id] = { id:'TK-install-' + x.id, site:x.id, kind:'install', to:'فني الهاتف', status:'مطلوب', when:'2026-10-22' };
+    w.STATE.msgs = w.STATE.msgs || {}; w.STATE.msgs['M-ph-' + k] = { id:'M-ph-' + k, site:x.id, from:'مهندس', to:'فني الهاتف', text:'سطر', kind:'msg', at:Date.now() };
+  });
+  w.PH_IDX = null; w.tasksTouched();
+  const errs = [];
+  const tryIt = (what, fn) => { try { const r = fn(); if (r === false) errs.push(what + ': فارغ'); } catch (e){ errs.push(what + ': ' + String(e.message).slice(0, 90)); } };
+  [['admin','مدير'], ['engineer','مهندس'], ['supervisor','مشرف الهاتف'], ['tech','فني الهاتف']].forEach(([role, name]) => {
+    w.ROLE = role; w.STATE.meta.role = role; w.STATE.meta.name = name;
+    pts.forEach(x => {
+      w.POP_SITE = x.id;
+      ['survey','install','brief'].forEach(m => { w.FIELD_MODE = m; tryIt(role + ' نافذة ' + m + ' ' + x.id, () => String(w.popHtml()).length > 300); });
+      w.FIELD_MODE = 'survey';
+      tryIt(role + ' صفحة النقطة ' + x.id, () => { w.DETAIL_ID = x.id; return String(w.PAGE.site.body()).length > 300; });
+      tryIt(role + ' نموذج التركيب ' + x.id, () => { w.formReset(); w.formGo(x.id); w.CUR = 'insForm'; w.render(1); return !!d.querySelector('#content [data-fst]'); });
+      tryIt(role + ' شريحة الحالة ' + x.id, () => { const c = d.querySelector('#content [data-fst="مُركّب"]'); c.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); return w.FORM.status === 'مُركّب'; });
+      if (w.insqMay(x.id)) tryIt(role + ' لوح تعديل التركيب ' + x.id, () => { w.insqState().id = x.id; w.CUR = 'map'; w.render(1); const ok = !!d.getElementById('insqSheet'); w.insqState().id = ''; w.render(1); return ok; });
+    });
+    tryIt(role + ' مهامي', () => { w.CUR = 'mywork'; w.render(1); return true; });
+    tryIt(role + ' المحادثات', () => { w.CUR = 'chat'; w.render(1); return !!d.querySelector('#content [data-chsend]'); });
+    if (role === 'admin' || role === 'engineer') ['qa','solution'].forEach(tb => tryIt(role + ' ' + tb, () => { w.CUR = 'survey'; w.render(1); w.PTAB.survey = tb; w.render(1); return true; }));
+  });
+  /* a tap on «نموذج التركيب» inside the popup of a green point opens the form */
+  w.ROLE = 'admin'; w.STATE.meta.role = 'admin'; w.POP_SITE = pts[0].id; w.FIELD_MODE = 'install'; w.CUR = 'map'; w.POP_OPEN = true;
+  tryIt('ضغطةُ نموذج التركيب من نافذة نقطةٍ خضراء', () => { const host = d.createElement('div'); host.innerHTML = w.popHtml(); d.body.appendChild(host); const b = host.querySelector('[data-insform]'); b.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); host.remove(); return w.CUR === 'insForm' || w.CUR === 'forms'; });
+  T(!errs.length, 'كلُّ شاشات التركيب والمحادثة تُفتَح لكلِّ دورٍ وFirebase قائم — والنقطةُ الخضراءُ تستجيب' + (errs.length ? ' — ' + errs.slice(0, 4).join(' | ') : ''));
+  w.FB.ready = keepReady; w.FB.db = keepDb; w.FIELD_MODE = 'survey'; w.POP_OPEN = false; w.ROLE = 'admin'; w.STATE.meta.role = 'admin';
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

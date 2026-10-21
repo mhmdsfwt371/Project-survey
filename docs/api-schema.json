@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V38.63",
+  "app_version": "V38.64",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2225,7 +2225,8 @@
   "V38.60": "msgs collection · chSend/chSystem/chThreadHtml/chPageHtml · PAGE.chat · LIFE.inprog/insfail",
   "V38.61": "insqSheet/insqSave/insqPhotoDel · popPhotosHtml by FIELD_MODE · svqPhotos visit-only",
   "V38.62": "insConsumed/insConsume · «تصحيح استهلاك» · phBlob/phSrc · photoblobs get · pzInssRetry 30s · شارة المحادثات",
-  "V38.63": "stockBalance/custodyByWho بترتيب زمني · movAt() · ts على حركات الاستهلاك · data-chf=sys"
+  "V38.63": "stockBalance/custodyByWho بترتيب زمني · movAt() · ts على حركات الاستهلاك · data-chf=sys",
+  "V38.64": "phBlob: DB.ready() لا FB.ready() · phSrc وpopPhotosHtml محميّتان · سيناريو ١٩ بـFirebase قائم"
   },
   "map_and_geolocation": {
     "tile_layers": {

@@ -350,7 +350,9 @@ function photoStrip(siteId){
 function phBlob(id){
   var C = phBlob.c || (phBlob.c = {}), W = phBlob.w || (phBlob.w = {});
   if (C[id]) return C[id];
-  if (W[id] || typeof FB === 'undefined' || !FB.ready || !FB.ready() || typeof DB === 'undefined') return '';
+  /* (V38.64) FB.ready is a flag, not a function — calling it threw on every phone with Firebase up, so a point with a photo
+     still travelling to Drive could not open (the owner's «green point does not respond — error»). DB.ready() is the check. */
+  if (W[id] || typeof DB === 'undefined' || typeof DB.ready !== 'function' || !DB.ready()) return '';
   W[id] = 1;
   DB.col('photoblobs').doc(id).get().then(function(d){
     FB.readCount = (FB.readCount || 0) + 1;
@@ -364,6 +366,7 @@ function phBlob(id){
 function phSrc(id, p, sz){
   p = p || {}; if (p.data) return p.data;
   if (p.driveId) return 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(p.driveId) + '&sz=w' + (sz || 400);
-  if (p.blob || p.status === 'pending') return phBlob(id);
+  /* (V38.64) a thumbnail never breaks the screen that shows it */
+  if (p.blob || p.status === 'pending'){ try { return phBlob(id); } catch (e){ LS_ERR = e; return ''; } }
   return '';
 }

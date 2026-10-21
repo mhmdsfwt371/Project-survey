@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.63</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.64</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -12795,7 +12795,8 @@ function photoStrip(siteId){
 function phBlob(id){
   var C = phBlob.c || (phBlob.c = {}), W = phBlob.w || (phBlob.w = {});
   if (C[id]) return C[id];
-  if (W[id] || typeof FB === 'undefined' || !FB.ready || !FB.ready() || typeof DB === 'undefined') return '';
+
+  if (W[id] || typeof DB === 'undefined' || typeof DB.ready !== 'function' || !DB.ready()) return '';
   W[id] = 1;
   DB.col('photoblobs').doc(id).get().then(function(d){
     FB.readCount = (FB.readCount || 0) + 1;
@@ -12809,7 +12810,8 @@ function phBlob(id){
 function phSrc(id, p, sz){
   p = p || {}; if (p.data) return p.data;
   if (p.driveId) return 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(p.driveId) + '&sz=w' + (sz || 400);
-  if (p.blob || p.status === 'pending') return phBlob(id);
+
+  if (p.blob || p.status === 'pending'){ try { return phBlob(id); } catch (e){ LS_ERR = e; return ''; } }
   return '';
 }
 
@@ -13896,7 +13898,7 @@ function popHtml(){
     +   (s.type === 'مخيم' ? (tfwFloorOf(s.id) != null ? kv('مسار التفويج', esc(t('إلى الجمرات')) + ' \u2014 ' + esc(t('الدور') + ' ' + t(TFW_FL[tfwFloorOf(s.id)])) + ' ' + btn('اعرض مسار المخيم', 'btn-quiet btn-sm', ' data-tfwcamp="' + esc(s.id) + '"')) : (tfwLoad(), '')) : '')
     +   (s.type === 'مخيم' && maySiteEdit() ? kv('حدود المخيم', btn(campFoot(s) ? 'عدّل الحدود' : 'ارسم الحدود', 'btn-quiet btn-sm', ' data-bedstart="' + esc(s.id) + '"') + (campFoot(s) ? btn('\u2702 ' + t('قسّم المخيم'), 'btn-quiet btn-sm', ' data-campsplit="' + esc(s.id) + '"') : ''))    : '')
     +   (s.type === 'مخيم' && s.zone === 'منى' && mayIot() ? kv('حساسات المخيم', (function(){ var c = iotOf(s.id); if (!c) return (campFoot(s) ? btn('\u2728 ' + t('ولّد خطة حساسات') + ' (' + nm(IOT_N) + ')', 'btn-quiet btn-sm', ' data-iotgen="' + esc(s.id) + '"') : esc(t('ارسم حدودَ المخيم أوّلًا'))); var o = iotOutside(s.id, c).length; return nm(c.sensors.length) + ' ' + esc(t('حساسًا')) + ' \u00b7 ' + nm(1 + (c.gws || []).length) + ' ' + esc(t('جيت واي')) + ' ' + btn('عدّل الحساسات', 'btn-quiet btn-sm', ' data-iotedit="' + esc(s.id) + '"') + (o ? ' <span style="color:#E05252">\u26A0 ' + nm(o) + ' ' + esc(t('خارج الحدود')) + '</span> ' + btn(t('وزّعها من جديد'), 'btn-quiet btn-sm', ' data-iotredist="' + esc(s.id) + '"') : ''); })()) : '')
-    +   camInfoRows(s, kv) + camxRows(s, kv) + netRows(s, kv) + popPhotosHtml(s.id)
+    +   camInfoRows(s, kv) + camxRows(s, kv) + netRows(s, kv) + (function(){ try { return popPhotosHtml(s.id); } catch (e){ LS_ERR = e; return ''; } })()
 
   +   (function(){
         var lf = (typeof lifeOf === 'function') ? lifeOf(s) : '';
@@ -29794,6 +29796,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.63"></script>
+<script defer src="app-office.js?v=38.64"></script>
 </body>
 </html>
