@@ -140,10 +140,13 @@ function apprIns(id, ok){
     var tkI = taskKindOf(id, 'install');
     if (tkI){ tkI.status = 'معتمد'; tkI.doneAt = Date.now(); CORE.set('tasks', tkI.id, tkI); tasksTouched(); }
   } else {
-    r.status = 'مُعاد'; r.approved = false; r.why = 'أُعيد للتصحيح';
-    logEvent('ردّ تركيب — ' + id, id);
+    /* (V38.59) the reason travels with the return — the installer reads it in «مهامي» instead of guessing */
+    var why = (typeof prompt === 'function') ? prompt(t('سببُ الردّ (يراه المنفِّذ)'), '') : '';
+    if (why === null) return;
+    r.status = 'مُعاد'; r.approved = false; r.why = String(why || '').trim() || 'أُعيد للتصحيح'; r.whyAt = Date.now();
+    logEvent('ردّ تركيب — ' + id + (r.why ? ' · ' + r.why : ''), id);
     /* الردُّ يوقف العملَ حتى يُصحَّح — فهو عاجلٌ لا يُترَك للسجل */
-    notifPush('ردّ', 'رُدَّ تركيبُك للتصحيح — راجع النقطة', { to:r.by || '', site:id, lv:'عاجل' });
+    notifPush('ردّ', 'رُدَّ تركيبُك للتصحيح — ' + r.why, { to:r.by || '', site:id, lv:'عاجل' });
   }
   CORE.set('inss', id, r);
   toast(ok ? t('اعتُمد') : t('رُدّ للمنفِّذ'));

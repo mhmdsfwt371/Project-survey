@@ -320,8 +320,10 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
               if (!s) return '';
               var k = WO_KINDS[x.kind] || { i:'', n:x.kind };
               var rr = STATE.recs[x.site];
+              var insR = x.kind === 'install' ? (STATE.inss[x.site] || {}) : null;   /* (V38.59) the return reason of an installation */
               var why = (rr && svReview(rr) === 'revisit' && rr.revisitNote)
-                ? '<div class="hint" style="margin:2px 0 0;color:var(--danger)">\u21a9 ' + esc(rr.revisitNote) + '</div>' : '';
+                ? '<div class="hint" style="margin:2px 0 0;color:var(--danger)">\u21a9 ' + esc(rr.revisitNote) + '</div>'
+                : (insR && insR.status === 'مُعاد' && insR.why ? '<div class="hint" style="margin:2px 0 0;color:var(--danger)">\u21a9 ' + esc(insR.why) + '</div>' : '');
               /* (V38.56) an install task opens its install form directly — the installer's next step; others open the site */
               return '<div class="list-item" ' + (x.kind === 'install' ? 'data-insform' : 'data-site') + '="' + esc(x.site) + '"><div class="li-main">'
                 + '<div class="li-t">' + (s.sign ? esc(t('شاخص')) + ' ' + esc(s.sign) : esc(s.name.slice(0,36))) + '</div>'

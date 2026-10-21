@@ -489,6 +489,19 @@ console.log('\n══ ١٥ · دورةُ التركيب للمُسنَد إلي�
     toasts.length = 0; w.markInstall(x0.id, 'مُركّب'); const said = toasts.slice(-1)[0] || '';
     T(pt.indexOf('صور التركيب') > -1 && pt.indexOf('تُنقَل إلى الدرايف') > -1 && !/data-fmark=/.test(pt) && /data-fmark=/.test(pe) && plain && /مُركّبةٌ/.test(said), 'ونافذةُ النقطة تعرض صورَ التركيب (والمنقولةَ بعدُ)، والوسمُ السريعُ للمهندس وحده ويجيب بالحال لا بالشكوى، و«مركب» بلا تشكيلٍ مُركّبةٌ أيضًا');
     w.FIELD_MODE = 'survey'; }
+  /* (V38.59) the engineer's review row shows the parts with their serials and the installation photos, and a return carries
+     its reason to the installer's «مهامي» */
+  { const x2 = free[2]; as('engineer', 'جرد السيناريوهات'); w.STATE.queue = queued().filter(q => q.id !== x2.id);
+    w.STATE.inss[x2.id] = { id:x2.id, status:'مُركّب', by:'فني الدورة', at:Date.now(), parts:{ [rr.code]:1, zz_cam:2 }, serials:{ [rr.code]:'SN-QA-1' }, approved:false, pts:9, solution:{ status:'معتمد', parts:{ [rr.code]:1 } } };
+    w.STATE.photos = w.STATE.photos || {}; w.STATE.photos[x2.id + '-95'] = { site:x2.id, kind:'ins_after', seq:95, driveId:'d95', at:Date.now() }; w.PH_IDX = null;
+    w.STATE.tasks['TK-install-' + x2.id] = { id:'TK-install-' + x2.id, site:x2.id, kind:'install', to:'فني الدورة', status:'مطلوب' }; w.tasksTouched();
+    w.CUR = 'survey'; w.render(1); w.PTAB.survey = 'qa'; w.render(1); const hq = d.getElementById('content').innerHTML;
+    const keepPrompt = w.prompt; w.prompt = () => 'الصورة مش واضحة'; w.apprIns(x2.id, 0); w.prompt = keepPrompt; const r2 = w.STATE.inss[x2.id];
+    w.STATE.queue = queued().filter(q => !(q.kind === 'inss' && q.id === x2.id));   /* the write belongs to the engineer's device, not the installer's */
+    as('tech', 'فني الدورة'); w.CUR = 'mywork'; w.render(1); const mw2 = d.getElementById('content').innerHTML, i2 = mw2.indexOf('data-insform="' + x2.id + '"'), row2 = mw2.slice(i2, i2 + 1500).split('دورة مهمتك')[0];
+    T(hq.indexOf('SN-QA-1') > -1 && hq.indexOf('بلا سيريال') > -1 && hq.indexOf('data-phview') > -1 && hq.indexOf('data-site="' + x2.id + '"') > -1, 'وصفُّ التدقيق الهندسيِّ يعرض القطعَ بسيريالاتها (وما بلا سيريال) وصورَ التركيب وبابَ النقطة');
+    T(r2.status === 'مُعاد' && r2.why === 'الصورة مش واضحة' && row2.indexOf('الصورة مش واضحة') > -1 && row2.indexOf('أُعيد للتصحيح') > -1, 'والردُّ يحمل سببَه إلى «مهامي» المنفِّذ');
+    w.STATE.tasks['TK-install-' + x2.id].status = 'معتمد'; w.tasksTouched(); as('engineer', 'جرد السيناريوهات'); }
   w.STATE.users = keepUsers; w.STATE.meta.online = keepOnline; as('engineer', 'جرد السيناريوهات');
 }
 

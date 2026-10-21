@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.58</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.59</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1377,7 +1377,7 @@ function nskChunkReady(){
 
   try { if (typeof whatsNewMaybe === 'function' && whatsNewMaybe.pending){ whatsNewMaybe.pending = false; if (whatsNewMaybe() && typeof render === 'function') render(1); } } catch (e3){ LS_ERR = e3; }
 }
-var I18N_FILE = 'i18n/dict-abe78979d3.js', I18N_STATE = 0, I18N_WAIT = [];
+var I18N_FILE = 'i18n/dict-1dab868a69.js', I18N_STATE = 0, I18N_WAIT = [];
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }
@@ -5116,8 +5116,10 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
               if (!s) return '';
               var k = WO_KINDS[x.kind] || { i:'', n:x.kind };
               var rr = STATE.recs[x.site];
+              var insR = x.kind === 'install' ? (STATE.inss[x.site] || {}) : null;
               var why = (rr && svReview(rr) === 'revisit' && rr.revisitNote)
-                ? '<div class="hint" style="margin:2px 0 0;color:var(--danger)">\u21a9 ' + esc(rr.revisitNote) + '</div>' : '';
+                ? '<div class="hint" style="margin:2px 0 0;color:var(--danger)">\u21a9 ' + esc(rr.revisitNote) + '</div>'
+                : (insR && insR.status === 'مُعاد' && insR.why ? '<div class="hint" style="margin:2px 0 0;color:var(--danger)">\u21a9 ' + esc(insR.why) + '</div>' : '');
 
               return '<div class="list-item" ' + (x.kind === 'install' ? 'data-insform' : 'data-site') + '="' + esc(x.site) + '"><div class="li-main">'
                 + '<div class="li-t">' + (s.sign ? esc(t('شاخص')) + ' ' + esc(s.sign) : esc(s.name.slice(0,36))) + '</div>'
@@ -10346,10 +10348,13 @@ function apprIns(id, ok){
     var tkI = taskKindOf(id, 'install');
     if (tkI){ tkI.status = 'معتمد'; tkI.doneAt = Date.now(); CORE.set('tasks', tkI.id, tkI); tasksTouched(); }
   } else {
-    r.status = 'مُعاد'; r.approved = false; r.why = 'أُعيد للتصحيح';
-    logEvent('ردّ تركيب — ' + id, id);
 
-    notifPush('ردّ', 'رُدَّ تركيبُك للتصحيح — راجع النقطة', { to:r.by || '', site:id, lv:'عاجل' });
+    var why = (typeof prompt === 'function') ? prompt(t('سببُ الردّ (يراه المنفِّذ)'), '') : '';
+    if (why === null) return;
+    r.status = 'مُعاد'; r.approved = false; r.why = String(why || '').trim() || 'أُعيد للتصحيح'; r.whyAt = Date.now();
+    logEvent('ردّ تركيب — ' + id + (r.why ? ' · ' + r.why : ''), id);
+
+    notifPush('ردّ', 'رُدَّ تركيبُك للتصحيح — ' + r.why, { to:r.by || '', site:id, lv:'عاجل' });
   }
   CORE.set('inss', id, r);
   toast(ok ? t('اعتُمد') : t('رُدّ للمنفِّذ'));
@@ -29519,6 +29524,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.58"></script>
+<script defer src="app-office.js?v=38.59"></script>
 </body>
 </html>

@@ -3706,9 +3706,13 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
             table(['النقطة','المنفِّذ','القطع','النقاط','الوقت',''],
               wait.slice(0, 30).map(function(k){
                 var r = STATE.inss[k], s = siteFind(k);
+
+                var sn = Object.keys(r.parts || {}).map(function(code){ var v = (r.serials || {})[code]; return '<div class="hint" style="margin:0"><bdi>' + esc(itemName(code)) + '</bdi> \u00d7' + nm(r.parts[code]) + (v ? ' \u00b7 <span class="num" dir="ltr">' + esc(v) + '</span>' : ' \u00b7 <span style="color:var(--danger)">' + esc(t('بلا سيريال')) + '</span>') + '</div>'; }).join('');
+                var ph = (typeof photosOf === 'function' ? photosOf(k) : []).filter(function(x){ return x[1] && !x[1].del && /^ins/.test(String(x[1].kind || '')); });
+                var phH = ph.length ? '<div style="display:flex;gap:4px;margin-top:4px">' + ph.slice(0, 4).map(function(x){ var p = x[1], src = p.data || (p.driveId ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(p.driveId) + '&sz=w200' : ''); return src ? '<img src="' + esc(src) + '" alt="" loading="lazy" data-phview="' + esc(x[0]) + '" style="width:44px;height:44px;object-fit:cover;border-radius:6px;cursor:zoom-in">' : '<span class="hint" style="margin:0;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border:1px dashed var(--line);border-radius:6px">\u23F3</span>'; }).join('') + '</div>' : '<div class="hint" style="margin:4px 0 0;color:var(--danger)">' + esc(t('لا صورَ تركيبٍ وصلت')) + '</div>';
                 return ['<strong>' + esc(k) + '</strong><br><span class="hint" style="margin:0">'
-                          + esc((s && s.name) || '') + '</span>' + demoTag(s),
-                        esc(r.by), N(Object.keys(r.parts || {}).length), N(insPtsOf(k)),
+                          + esc((s && s.name) || '') + '</span>' + demoTag(s) + ' ' + btn('\u25C8', 'btn-quiet btn-sm', ' data-site="' + esc(k) + '" title="' + esc(t('صفحة النقطة')) + '"'),
+                        esc(r.by), N(Object.keys(r.parts || {}).length) + sn + phH, N(insPtsOf(k)),
                         '<span class="num">' + fmtTime(r.at, { hour:'2-digit', minute:'2-digit' }) + '</span>',
                         '<div class="actions">'
                         + btn('اعتمد','btn-primary btn-sm',' data-appr="' + esc(k) + '"')
@@ -4568,6 +4572,8 @@ function provReask(uid){
 
 var RELEASE_NOTES = [
 
+  { v:'V38.59', d:'2026-10-21', notes:[
+      'التدقيق الهندسي يعرض السيريالات وصور التركيب في صف القرار، والردّ يحمل سببه إلى المنفّذ' ] },
   { v:'V38.58', d:'2026-10-21', notes:[
       'لون النقطة يطابق حالة تركيبها، وصور التركيب في نافذة النقطة، والوسم السريع «مركب» للمهندس وحده، وضغطة الحالة لا تُبتلع' ] },
   { v:'V38.57', d:'2026-10-21', notes:[
