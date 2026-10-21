@@ -186,7 +186,18 @@ function svRevisit(id, note){
 }
 
 function formSite(){
-  return (FORM.site && siteFind(FORM.site)) || STATE.sites[0] || null;
+  /* (V38.68) no fallback. It returned the registry's first point (NSK-ARF-CMP-0001, Arafat) whenever no point was chosen —
+     so a form opened from the menu showed that camp, and every save landed on it: 15 survey visits by two technicians over
+     six days and one installation (Mina 0449's, 21 Oct) were found written there. A form without its point now asks for it. */
+  return (FORM.site && siteFind(FORM.site)) || null;
+}
+/* the card a form shows when no point is chosen: the points assigned to me for this kind of work, each opening its form */
+function formPickHtml(kind){
+  var me = STATE.meta.name || '', T = STATE.tasks || {}, mine = [];
+  Object.keys(T).forEach(function(k){ var x = T[k]; if (!x || x.status === 'معتمد' || x.to !== me) return; if (kind === 'install' ? x.kind === 'install' : x.kind !== 'install') mine.push(x); });
+  var rows = mine.slice(0, 40).map(function(x){ var s = siteFind(x.site); if (!s) return ''; return btn((kind === 'install' ? '\u{1F527} ' : '\u{1F50D} ') + siteKey(s) + ' \u00b7 ' + s.name, 'chip', kind === 'install' ? ' data-insform="' + esc(s.id) + '"' : ' data-form="' + esc(s.id) + '"'); }).join('');
+  return alertBox('warn', t('لم تُختر نقطة — اختر النقطةَ أوّلًا: من الخريطة (اضغطها ثم «نموذج') + ' ' + t(kind === 'install' ? 'التركيب' : 'المسح') + '»)، ' + t('أو من «مهامي»، أو من القائمة تحت. لا يُحفَظ نموذجٌ بلا نقطته.'))
+    + (rows ? card(t('نقاطي المسندة'), '<div class="chips">' + rows + '</div>') : '');
 }
 
 /* ═══ ما نقص عن نموذج المسح: القياساتُ والكمياتُ والتقدير ═══

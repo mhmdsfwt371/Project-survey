@@ -55,7 +55,8 @@ function insqSheet(){
     + '<p class="hint" style="margin:6px 0 10px">' + esc(t(rec.approved && !boss ? 'هذا التركيبُ معتمد — أيُّ تعديلٍ يعيده إلى تدقيق المهندس.' : 'عدّل الحالةَ أو الكمياتِ أو السيريالات ثم احفظ — والصورُ تُحذَف وتُضاف كلٌّ على حدة، ويُسجَّل كلُّ تعديلٍ باسمك.')) + '</p>'
     + '<div class="wp-sec">' + esc(t('حالة التركيب')) + '</div>' + chips
     + '<div class="wp-sec">' + esc(t('القطع والسيريالات')) + '</div>' + rows
-    + '<div class="actions" style="margin:8px 0 0">' + btn('\u2713 ' + t('احفظ التعديل'), 'btn-primary btn-sm', ' data-insqsave="1"') + btn(t('إغلاق'), 'btn-quiet btn-sm', ' data-insqx="1"') + '</div>'
+    + '<div class="actions" style="margin:8px 0 0">' + btn('\u2713 ' + t('احفظ التعديل'), 'btn-primary btn-sm', ' data-insqsave="1"') + btn(t('إغلاق'), 'btn-quiet btn-sm', ' data-insqx="1"')
+    + (boss ? btn('\u2716 ' + t('إلغاء تركيبٍ سُجِّل خطأً'), 'btn-sm', ' data-insqvoid="' + esc(rec.id) + '" style="color:var(--danger);border-color:var(--danger)"') : '') + '</div>'   /* (V38.68) */
     + insqPhotos(rec)
     + (hist ? '<div class="wp-sec" style="margin-top:12px">' + esc(t('آخر التعديلات')) + '</div><ul class="hint" style="margin:0;padding-inline-start:18px">' + hist + '</ul>' : '')
     + '</div></div>';
@@ -107,5 +108,28 @@ function insqSave(){
   if (typeof chSystem === 'function') chSystem(s.id, 'عُدِّل التركيب — ' + changes.join(' \u00b7 '), '');
   if (typeof statBump === 'function') statBump();
   toast(t('حُفظ التعديل')); S.st = '';
+  return true;
+}
+
+/* (V38.68) an installation recorded on the wrong point is voided — by the engineer and above, with a reason. The point returns to
+   «not installed»; what it consumed goes back to the installer's custody; its installation photos are set aside with the reason;
+   the voided record keeps what it held (who, when, parts, serials) so the trace stays. */
+function insqVoid(id){
+  if (!may('approve')){ toast(t('إلغاءُ تركيبٍ للمهندس فما فوق')); return false; }
+  var rec = STATE.inss[id], s = siteFind(id); if (!rec || !s || !rec.status) return false;
+  var why = (typeof prompt === 'function') ? prompt(t('سببُ الإلغاء (يبقى في السجل) — مثلًا: سُجِّل على نقطةٍ خطأ'), t('سُجِّل على نقطةٍ خطأ')) : t('سُجِّل على نقطةٍ خطأ');
+  if (why === null) return false;
+  var who = STATE.meta.name || '', now = Date.now();
+  var prev = { status:rec.status, by:rec.by || '', at:rec.at || 0, approved:!!rec.approved, apprBy:rec.apprBy || '', parts:rec.parts || {}, serials:rec.serials || {}, prefix:rec.prefix || '' };
+  var n2 = Object.assign({}, rec, { status:'', approved:false, parts:{}, serials:{}, pts:0, photos:[], prefix:'', voided:{ by:who, at:now, why:String(why || '').trim(), prev:prev } });
+  n2.edits = (Array.isArray(rec.edits) ? rec.edits : []).concat([{ what:t('أُلغي التركيب') + ' — ' + String(why || ''), by:who, at:now }]).slice(-30);
+  CORE.set('inss', id, n2);
+  insConsume(id, {}, who);
+  (typeof photosOf === 'function' ? photosOf(id) : []).forEach(function(p){ var ph = p[1] || {}; if (ph.del || !/^ins/.test(String(ph.kind || ''))) return; var dr = Object.assign({}, ph, { del:{ by:who, at:now, why:t('تركيبٌ أُلغي') + ' — ' + String(why || '') } }); delete dr.data; STATE.photos[p[0]] = dr; CORE.set('photos', p[0], dr); });
+  if (typeof phTouch === 'function') phTouch();
+  logEvent('إلغاء تركيب — ' + id + ' · ' + String(why || '') + ' · كان: ' + prev.by + ' ' + (prev.at ? fmtDT(prev.at) : ''), id);
+  if (typeof chSystem === 'function') chSystem(id, 'أُلغي التركيب — ' + String(why || '') + ' — ' + who, prev.by || '');
+  if (typeof statBump === 'function') statBump();
+  insqState().id = ''; toast(t('أُلغي التركيب وأُعيدت القطعُ إلى العهدة'));
   return true;
 }

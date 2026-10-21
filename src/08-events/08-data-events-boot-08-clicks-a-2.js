@@ -26,6 +26,7 @@ function clickAPart3(e){
   if (e.target.closest('[data-insqx]')){ insqState().id = ''; insqState().st = ''; render(1); return true; }
   var iqs = e.target.closest('[data-insqst]'); if (iqs){ insqState().st = iqs.getAttribute('data-insqst'); render(1); return true; }
   if (e.target.closest('[data-insqsave]')){ if (insqSave()) render(1); return true; }
+  var iqv = e.target.closest('[data-insqvoid]'); if (iqv){ if (insqVoid(iqv.getAttribute('data-insqvoid'))) render(1); return true; }   /* (V38.68) */
   var iqa = e.target.closest('[data-insqdelask]'); if (iqa){ insqState().delAsk = iqa.getAttribute('data-insqdelask'); render(1); return true; }
   if (e.target.closest('[data-insqdelx]')){ insqState().delAsk = ''; render(1); return true; }
   var iqd = e.target.closest('[data-insqdel]'); if (iqd){ if (insqPhotoDel(iqd.getAttribute('data-insqdel'))) render(1); return true; }

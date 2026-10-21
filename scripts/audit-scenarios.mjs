@@ -642,6 +642,27 @@ console.log('\n══ ١٩ · كما على الهاتف (Firebase قائم) ═
   w.FB.ready = keepReady; w.FB.db = keepDb; w.FIELD_MODE = 'survey'; w.POP_OPEN = false; w.ROLE = 'admin'; w.STATE.meta.role = 'admin';
 }
 
+/* ── ٢٠ · (V38.68) لا نموذجَ بلا نقطته: كان النموذجُ المفتوحُ بلا نقطةٍ يعرض أوّلَ نقطةٍ في السجل (مخيم عرفات ٠٠٠١) ويحفظ
+   عليها — فوُجد عليها ١٥ زيارةً لفنيَّين في ستةِ أيامٍ وتركيبُ مخيم منى ٠٤٤٩. صار يطلب النقطةَ ولا يحفظ؛ ويُلغي المهندسُ تركيبًا
+   سُجِّل خطأً فتعود النقطةُ والقطعُ والأثرُ باقٍ ── */
+console.log('\n══ ٢٠ · لا نموذجَ بلا نقطته ══');
+{
+  const d = w.document, first = w.STATE.sites[0], before = JSON.stringify(w.STATE.inss[first.id] || null), beforeRec = JSON.stringify(w.STATE.recs[first.id] || null);
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.STATE.meta.name = 'جرد السيناريوهات';
+  w.formReset(); w.FORM.site = ''; w.CUR = 'forms'; w.PTAB.forms = 'insForm'; w.render(1); const hi = d.getElementById('content').innerHTML;
+  w.FORM.parts = { rdr4c:1 }; w.FORM.status = 'مُركّب'; w.FORM.photos.before = { data:IMG + 'n1' }; w.FORM.photos.after = { data:IMG + 'n2' }; w.insSave(0);
+  w.PTAB.forms = 'svForm'; w.render(1); const hs = d.getElementById('content').innerHTML;
+  T(w.formSite() === null && hi.indexOf('لم تُختر نقطة') > -1 && hs.indexOf('لم تُختر نقطة') > -1 && JSON.stringify(w.STATE.inss[first.id] || null) === before && JSON.stringify(w.STATE.recs[first.id] || null) === beforeRec,
+    'النموذجُ بلا نقطةٍ يطلبها ولا يعرض أوّلَ نقطةٍ في السجل، ولا يُكتَب على تلك النقطة شيء');
+  const x = w.STATE.sites.filter(z => z && z.type === 'مخيم' && z.zone === 'منى' && !w.STATE.inss[z.id] && !w.taskKindOf(z.id, 'install'))[3];
+  w.STATE.inss[x.id] = { id:x.id, status:'مركب', by:'منفِّذ', at:Date.now() - 6e5, approved:true, parts:{ rdr4c:1 }, serials:{ rdr4c:'SN-VOID' }, pts:5 };
+  w.STATE.moves.push({ at:'2026-10-21', ts:Date.now() - 6e5, kind:'استهلاك', item:'rdr4c', qty:1, by:'منفِّذ', site:x.id });
+  w.ROLE = 'admin'; w.STATE.meta.role = 'admin'; const keepP = w.prompt; w.prompt = () => 'سُجِّل على نقطةٍ خطأ'; const ok = w.insqVoid(x.id); w.prompt = keepP;
+  const r = w.STATE.inss[x.id];
+  T(ok && !w.insDone(x.id) && r.voided && r.voided.prev.serials.rdr4c === 'SN-VOID' && w.insConsumed(x.id).rdr4c === 0, 'وإلغاءُ تركيبٍ سُجِّل خطأً يعيد النقطةَ غيرَ مركَّبة والقطعَ إلى العهدة، ويُبقي ما كان في السجلّ');
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

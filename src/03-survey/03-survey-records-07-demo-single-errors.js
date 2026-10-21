@@ -145,7 +145,7 @@ function insConsume(site, held, who){
 }
 function insSave(draft){
   var s = formSite();
-  if (!s) return;
+  if (!s){ toast(t('اختر النقطةَ أوّلًا — لا يُحفَظ تركيبٌ بلا نقطته')); return; }   /* (V38.68) */
   if (!draft && !FORM.status){ toast(t('حدّد حالة التركيب أولًا')); return; }
   /* (V37.80) مسودّةٌ على نقطة ديمو مركَّبة كانت تمحو التجهيزةَ الحالية وتُخرجها من «المركَّب» — تُمنَع بصراحة */
   if (draft && s.pilot && STATE.inss[s.id] && STATE.inss[s.id].status && STATE.inss[s.id].status !== 'مسودّة'){ toast(t('نقطةُ ديمو مركَّبة: سجّل التجهيزة الجديدة مباشرةً — المسودّةُ تمحو الحالية')); return; }

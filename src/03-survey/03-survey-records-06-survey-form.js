@@ -364,7 +364,7 @@ function svDraftApply(d){   /* (V37.32) الاستعادةُ نفسُها — م
 /* ── الحفظ — يكتب في المحرك ويدخل الطابور ── */
 function svSave(next){
   var s = formSite();
-  if (!s) return;
+  if (!s){ toast(t('اختر النقطةَ أوّلًا — لا يُحفَظ مسحٌ بلا نقطته')); return; }   /* (V38.68) */
   /* سبقني غيري على النقطة بعد فتح النموذج (V17.79): يُقال ويُطلَب حفظٌ ثانٍ صريح */
   var ahead = svClashAhead(s.id);
   if (ahead && !FORM.overwrite){

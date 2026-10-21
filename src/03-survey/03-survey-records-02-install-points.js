@@ -586,7 +586,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
   })();
     if (cur === 'svForm') return head + (function(){
     var s = formSite();
-    if (!s) return alertBox('warn','لا مواقع محمّلة.');
+    if (!s) return formPickHtml('survey');   /* (V38.68) */
     var done = !!STATE.recs[s.id];
     /* زيارةٌ سُجِّلت بإضافة النقطة ولم تُستكمَل بياناتُها ليست «تصويبًا» (V17.57) */
     var fresh = done && STATE.recs[s.id].src === 'newsite' && !STATE.recs[s.id].mount;
@@ -673,7 +673,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
   })();
     if (cur === 'insForm') return head + (function(){
     var s = formSite();
-    if (!s) return alertBox('warn','لا مواقع محمّلة.');
+    if (!s) return formPickHtml('install');   /* (V38.68) */
     var zone = siteZone(s);
     /* (V37.90) قطعُ النوع كلُّها — كانت تُعرض ذاتُ الوزن وحدَها، وبلا أوزانٍ أوّلُ ثمانٍ فقط فلا تُسجَّل البقية */
     var parts = itemsList().filter(function(i){ return i.z === zone && i.name; });

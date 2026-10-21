@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.67</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.68</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1377,7 +1377,7 @@ function nskChunkReady(){
 
   try { if (typeof whatsNewMaybe === 'function' && whatsNewMaybe.pending){ whatsNewMaybe.pending = false; if (whatsNewMaybe() && typeof render === 'function') render(1); } } catch (e3){ LS_ERR = e3; }
 }
-var I18N_FILE = 'i18n/dict-4abb30cc5d.js', I18N_STATE = 0, I18N_WAIT = [];
+var I18N_FILE = 'i18n/dict-111e44cb91.js', I18N_STATE = 0, I18N_WAIT = [];
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }
@@ -7124,7 +7124,8 @@ function insqSheet(){
     + '<p class="hint" style="margin:6px 0 10px">' + esc(t(rec.approved && !boss ? 'هذا التركيبُ معتمد — أيُّ تعديلٍ يعيده إلى تدقيق المهندس.' : 'عدّل الحالةَ أو الكمياتِ أو السيريالات ثم احفظ — والصورُ تُحذَف وتُضاف كلٌّ على حدة، ويُسجَّل كلُّ تعديلٍ باسمك.')) + '</p>'
     + '<div class="wp-sec">' + esc(t('حالة التركيب')) + '</div>' + chips
     + '<div class="wp-sec">' + esc(t('القطع والسيريالات')) + '</div>' + rows
-    + '<div class="actions" style="margin:8px 0 0">' + btn('\u2713 ' + t('احفظ التعديل'), 'btn-primary btn-sm', ' data-insqsave="1"') + btn(t('إغلاق'), 'btn-quiet btn-sm', ' data-insqx="1"') + '</div>'
+    + '<div class="actions" style="margin:8px 0 0">' + btn('\u2713 ' + t('احفظ التعديل'), 'btn-primary btn-sm', ' data-insqsave="1"') + btn(t('إغلاق'), 'btn-quiet btn-sm', ' data-insqx="1"')
+    + (boss ? btn('\u2716 ' + t('إلغاء تركيبٍ سُجِّل خطأً'), 'btn-sm', ' data-insqvoid="' + esc(rec.id) + '" style="color:var(--danger);border-color:var(--danger)"') : '') + '</div>'
     + insqPhotos(rec)
     + (hist ? '<div class="wp-sec" style="margin-top:12px">' + esc(t('آخر التعديلات')) + '</div><ul class="hint" style="margin:0;padding-inline-start:18px">' + hist + '</ul>' : '')
     + '</div></div>';
@@ -7176,6 +7177,26 @@ function insqSave(){
   if (typeof chSystem === 'function') chSystem(s.id, 'عُدِّل التركيب — ' + changes.join(' \u00b7 '), '');
   if (typeof statBump === 'function') statBump();
   toast(t('حُفظ التعديل')); S.st = '';
+  return true;
+}
+
+function insqVoid(id){
+  if (!may('approve')){ toast(t('إلغاءُ تركيبٍ للمهندس فما فوق')); return false; }
+  var rec = STATE.inss[id], s = siteFind(id); if (!rec || !s || !rec.status) return false;
+  var why = (typeof prompt === 'function') ? prompt(t('سببُ الإلغاء (يبقى في السجل) — مثلًا: سُجِّل على نقطةٍ خطأ'), t('سُجِّل على نقطةٍ خطأ')) : t('سُجِّل على نقطةٍ خطأ');
+  if (why === null) return false;
+  var who = STATE.meta.name || '', now = Date.now();
+  var prev = { status:rec.status, by:rec.by || '', at:rec.at || 0, approved:!!rec.approved, apprBy:rec.apprBy || '', parts:rec.parts || {}, serials:rec.serials || {}, prefix:rec.prefix || '' };
+  var n2 = Object.assign({}, rec, { status:'', approved:false, parts:{}, serials:{}, pts:0, photos:[], prefix:'', voided:{ by:who, at:now, why:String(why || '').trim(), prev:prev } });
+  n2.edits = (Array.isArray(rec.edits) ? rec.edits : []).concat([{ what:t('أُلغي التركيب') + ' — ' + String(why || ''), by:who, at:now }]).slice(-30);
+  CORE.set('inss', id, n2);
+  insConsume(id, {}, who);
+  (typeof photosOf === 'function' ? photosOf(id) : []).forEach(function(p){ var ph = p[1] || {}; if (ph.del || !/^ins/.test(String(ph.kind || ''))) return; var dr = Object.assign({}, ph, { del:{ by:who, at:now, why:t('تركيبٌ أُلغي') + ' — ' + String(why || '') } }); delete dr.data; STATE.photos[p[0]] = dr; CORE.set('photos', p[0], dr); });
+  if (typeof phTouch === 'function') phTouch();
+  logEvent('إلغاء تركيب — ' + id + ' · ' + String(why || '') + ' · كان: ' + prev.by + ' ' + (prev.at ? fmtDT(prev.at) : ''), id);
+  if (typeof chSystem === 'function') chSystem(id, 'أُلغي التركيب — ' + String(why || '') + ' — ' + who, prev.by || '');
+  if (typeof statBump === 'function') statBump();
+  insqState().id = ''; toast(t('أُلغي التركيب وأُعيدت القطعُ إلى العهدة'));
   return true;
 }
 
@@ -8545,7 +8566,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
   })();
     if (cur === 'svForm') return head + (function(){
     var s = formSite();
-    if (!s) return alertBox('warn','لا مواقع محمّلة.');
+    if (!s) return formPickHtml('survey');
     var done = !!STATE.recs[s.id];
 
     var fresh = done && STATE.recs[s.id].src === 'newsite' && !STATE.recs[s.id].mount;
@@ -8631,7 +8652,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
   })();
     if (cur === 'insForm') return head + (function(){
     var s = formSite();
-    if (!s) return alertBox('warn','لا مواقع محمّلة.');
+    if (!s) return formPickHtml('install');
     var zone = siteZone(s);
 
     var parts = itemsList().filter(function(i){ return i.z === zone && i.name; });
@@ -9816,7 +9837,16 @@ function svRevisit(id, note){
 }
 
 function formSite(){
-  return (FORM.site && siteFind(FORM.site)) || STATE.sites[0] || null;
+
+  return (FORM.site && siteFind(FORM.site)) || null;
+}
+
+function formPickHtml(kind){
+  var me = STATE.meta.name || '', T = STATE.tasks || {}, mine = [];
+  Object.keys(T).forEach(function(k){ var x = T[k]; if (!x || x.status === 'معتمد' || x.to !== me) return; if (kind === 'install' ? x.kind === 'install' : x.kind !== 'install') mine.push(x); });
+  var rows = mine.slice(0, 40).map(function(x){ var s = siteFind(x.site); if (!s) return ''; return btn((kind === 'install' ? '\u{1F527} ' : '\u{1F50D} ') + siteKey(s) + ' \u00b7 ' + s.name, 'chip', kind === 'install' ? ' data-insform="' + esc(s.id) + '"' : ' data-form="' + esc(s.id) + '"'); }).join('');
+  return alertBox('warn', t('لم تُختر نقطة — اختر النقطةَ أوّلًا: من الخريطة (اضغطها ثم «نموذج') + ' ' + t(kind === 'install' ? 'التركيب' : 'المسح') + '»)، ' + t('أو من «مهامي»، أو من القائمة تحت. لا يُحفَظ نموذجٌ بلا نقطته.'))
+    + (rows ? card(t('نقاطي المسندة'), '<div class="chips">' + rows + '</div>') : '');
 }
 
 var SV_FIT   = ['','مناسب','مناسب بتعديل','غير مناسب'];
@@ -10169,7 +10199,7 @@ function svDraftApply(d){
 
 function svSave(next){
   var s = formSite();
-  if (!s) return;
+  if (!s){ toast(t('اختر النقطةَ أوّلًا — لا يُحفَظ مسحٌ بلا نقطته')); return; }
 
   var ahead = svClashAhead(s.id);
   if (ahead && !FORM.overwrite){
@@ -10385,7 +10415,7 @@ function insConsume(site, held, who){
 }
 function insSave(draft){
   var s = formSite();
-  if (!s) return;
+  if (!s){ toast(t('اختر النقطةَ أوّلًا — لا يُحفَظ تركيبٌ بلا نقطته')); return; }
   if (!draft && !FORM.status){ toast(t('حدّد حالة التركيب أولًا')); return; }
 
   if (draft && s.pilot && STATE.inss[s.id] && STATE.inss[s.id].status && STATE.inss[s.id].status !== 'مسودّة'){ toast(t('نقطةُ ديمو مركَّبة: سجّل التجهيزة الجديدة مباشرةً — المسودّةُ تمحو الحالية')); return; }
@@ -27545,6 +27575,7 @@ function clickAPart3(e){
   if (e.target.closest('[data-insqx]')){ insqState().id = ''; insqState().st = ''; render(1); return true; }
   var iqs = e.target.closest('[data-insqst]'); if (iqs){ insqState().st = iqs.getAttribute('data-insqst'); render(1); return true; }
   if (e.target.closest('[data-insqsave]')){ if (insqSave()) render(1); return true; }
+  var iqv = e.target.closest('[data-insqvoid]'); if (iqv){ if (insqVoid(iqv.getAttribute('data-insqvoid'))) render(1); return true; }
   var iqa = e.target.closest('[data-insqdelask]'); if (iqa){ insqState().delAsk = iqa.getAttribute('data-insqdelask'); render(1); return true; }
   if (e.target.closest('[data-insqdelx]')){ insqState().delAsk = ''; render(1); return true; }
   var iqd = e.target.closest('[data-insqdel]'); if (iqd){ if (insqPhotoDel(iqd.getAttribute('data-insqdel'))) render(1); return true; }
@@ -29925,6 +29956,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.67"></script>
+<script defer src="app-office.js?v=38.68"></script>
 </body>
 </html>
