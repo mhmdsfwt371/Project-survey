@@ -87,11 +87,11 @@ await deny('المشرفُ لا يعتمد حلَّ التركيب',         upd
 await ok  ('المهندسُ يعتمد التركيب',                updateDoc(doc(as('eng'), 'inss/S1'), { approved:true }));
 await deny('بعد الاعتماد لا يعدّل الفنيُّ السجل',   updateDoc(doc(as('tec'), 'inss/S1'), { parts:{ x:1 } }));
 /* (V38.57) the real field path: the install is saved (merge) on a site whose solution the engineer already approved */
-await setDoc(doc(as('eng'), 'inss/S9'), { id:'S9', solution:{ status:'معتمد', items:{ rdr:1 }, by:'مهندس' } });
-await ok  ('الفنيُّ يحفظ تركيبَه على نقطةٍ حلُّها معتمد (دمجًا)',   setDoc(doc(as('tec'), 'inss/S9'), { id:'S9', status:'مُركّب', approved:false, parts:{ rdr:1 }, serials:{ rdr:'26127723' } }, { merge:true }));
-await ok  ('والمشرفُ كذلك',                                          setDoc(doc(as('sup'), 'inss/S9'), { id:'S9', status:'مُركّب', approved:false, parts:{ rdr:1 } }, { merge:true }));
-await deny('ولا يغيّر الفنيُّ الحلَّ المعتمد',                       setDoc(doc(as('tec'), 'inss/S9'), { solution:{ status:'معتمد', items:{ rdr:5 } } }, { merge:true }));
-await deny('ولا يعتمد تركيبَه وهو يحفظه',                           setDoc(doc(as('tec'), 'inss/S9'), { status:'مُركّب', approved:true }, { merge:true }));
+await setDoc(doc(as('eng'), 'inss/IS57'), { id:'IS57', solution:{ status:'معتمد', items:{ rdr:1 }, by:'مهندس' } });
+await ok  ('الفنيُّ يحفظ تركيبَه على نقطةٍ حلُّها معتمد (دمجًا)',   setDoc(doc(as('tec'), 'inss/IS57'), { id:'IS57', status:'مُركّب', approved:false, parts:{ rdr:1 }, serials:{ rdr:'26127723' } }, { merge:true }));
+await ok  ('والمشرفُ كذلك',                                          setDoc(doc(as('sup'), 'inss/IS57'), { id:'IS57', status:'مُركّب', approved:false, parts:{ rdr:1 } }, { merge:true }));
+await deny('ولا يغيّر الفنيُّ الحلَّ المعتمد',                       setDoc(doc(as('tec'), 'inss/IS57'), { solution:{ status:'معتمد', items:{ rdr:5 } } }, { merge:true }));
+await deny('ولا يعتمد تركيبَه وهو يحفظه',                           setDoc(doc(as('tec'), 'inss/IS57'), { status:'مُركّب', approved:true }, { merge:true }));
 await ok  ('المهندسُ يحرّر محضرَ التسليم',          updateDoc(doc(as('eng'), 'inss/S1'), { hand:{ no:'HO-0001', at:1, by:'مهندس', to:'وزارة' } }));
 
 console.log('\n══ ٤ · الإعداداتُ والحسابات ══');
