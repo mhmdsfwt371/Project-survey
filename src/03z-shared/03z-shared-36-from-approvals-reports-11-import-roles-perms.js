@@ -45,7 +45,7 @@ var ROLES = {
     guide:'دليل الفني والمشرف — العمل الميداني',
     /* V16.26: المشرفُ يرى الطلباتِ والتوزيع — طلباتِ زيارةِ فريقه وسجلَّ إسناداته
        وتوزيعَه؛ نطاقُ سحبه شجرتُه فلا يرى إلا ما يخصُّه */
-    nav:['map','mywork','sites','sel','svForm','insForm','newsite','co','recs','tools','mine','over','wbs','wtask','now','pace','inst','reg','chalm','dis','users','req','reqreg','assign','guide','acct'],
+    nav:['map','mywork','chat','sites','sel','svForm','insForm','newsite','co','recs','tools','mine','over','wbs','wtask','now','pace','inst','reg','chalm','dis','users','req','reqreg','assign','guide','acct'],
     can:{ propose:1, provision:1, edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
@@ -69,7 +69,7 @@ var ROLES = {
   tech:{
     n:'فني', d:'ينفّذ ما يُسند إليه تحت مشرفه', base:'supervisor', kind:'*',
     guide:'دليل الفني — العمل الميداني',
-    nav:['map','mywork','sites','sel','svForm','insForm','newsite','recs','mine','guide','acct'],
+    nav:['map','mywork','chat','sites','sel','svForm','insForm','newsite','recs','mine','guide','acct'],
     can:{ propose:1, edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
@@ -92,7 +92,7 @@ var ROLES = {
   cins:{
     n:'فريق التركيب', d:'الميدان — تركيبًا وتوثيقًا', base:'supervisor', kind:'install',
     guide:'دليل الميدان — التركيب',
-    nav:['map','mywork','sites','sel','svForm','insForm','newsite','recs','mine','guide','acct'],
+    nav:['map','mywork','chat','sites','sel','svForm','insForm','newsite','recs','mine','guide','acct'],
     can:{ propose:1, edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
@@ -123,7 +123,7 @@ var ROLES = {
   helper:{
     n:'مساعد فني', d:'يعمل مع الفنيّ ولا يُسنَد إليه وحدَه',
     base:'supervisor', kind:'*', guide:'دليل الفني — العمل الميداني',
-    nav:['map','mywork','sites','svForm','insForm','newsite','mine','guide','acct'],
+    nav:['map','mywork','chat','sites','svForm','insForm','newsite','mine','guide','acct'],
     can:{ propose:1, edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:0 } },
 
@@ -183,6 +183,7 @@ var PM_COLS = [
   ['tasks','المهام والإسنادات',         { r:'ok', w:'canW', d:'mgr' }],
   ['maints','زيارات الصيانة',           { r:'ok', w:'canW', d:'canW' }],
   ['steps','آخر ما تمّ',                { r:'ok', w:'canW' }],
+  ['msgs','محادثة الميدان',             { r:'ok', w:'canW' }],   /* (V38.60) */
   ['dismantles','الفك',                 { r:'ok', w:'canW', d:'mgr' }],
   ['photos','الصور',                    { r:'ok', w:'canW', d:'mgr' }],
   ['newsites','المواقع المقترحة',       { r:'ok', w:'canW', d:'mgr' }],

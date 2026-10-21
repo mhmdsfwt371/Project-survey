@@ -550,3 +550,8 @@ function moneyHowCard(S){
     + '<p class="hint" style="margin:8px 0 0">' + esc(t('النقاطُ من الأعمال المعتمدة وحدَها (المسحُ المعتمَدُ تقنيًّا، والتركيبُ المعتمَد، والفكّ، والورشة) — ويُعاد الحسابُ فورًا متى تغيّر وزنٌ أو سعر.')) + '</p>'
     + '<div class="actions">' + btn(t('اضبط الأوزان'), 'btn-quiet btn-sm', ' data-goto="pts"') + btn(t('اضبط السعر والتارجت'), 'btn-quiet btn-sm', ' data-goto="consts"') + '</div>');
 }
+
+/* (V38.60) the field chat page — the office and the installers in one thread per point, or person to person */
+PAGE.chat = { m:'الميدان', t:'المحادثات',
+  l:'المهندسُ في المكتب والمنفِّذُ في الموقع يتكلّمان هنا — على نقطةٍ بعينها أو مباشرةً، وكلُّ سطرٍ يبقى.',
+  body:function(){ return chPageHtml(); } };

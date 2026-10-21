@@ -433,6 +433,21 @@ function clickTables(e){
   var rbx = e.target.closest('[data-rbxls]'); if (rbx){ rbXls(rbx.getAttribute('data-rbxls')); return true; }
   var rbf = e.target.closest('[data-rbfav]'); if (rbf){ var fv = rbFavs()[+rbf.getAttribute('data-rbfav')]; if (fv && fv.sel){ rbState().sel = Object.assign({}, fv.sel); rbState().open = true; var rsV = document.getElementById('assistRes'); if (rsV) rsV.innerHTML = assistResHtml(); else render(1); rbRun(fv.sel.pop); } return true; }
   var rbp = e.target.closest('[data-rbpin]'); if (rbp){ if (rbFavPin(rbp.getAttribute('data-rbpin'))){ var rsP = document.getElementById('assistRes'); if (rsP) rsP.innerHTML = assistResHtml(); else render(1); } return true; }
+  /* (V38.60) the field chat */
+  var chs = e.target.closest('[data-chsend]');
+  if (chs){
+    var key = chs.getAttribute('data-chsend'), ta = null;
+    document.querySelectorAll('[data-chtext]').forEach(function(el){ if (!ta && el.getAttribute('data-chtext') === key) ta = el; });
+    var txt = ta ? ta.value : '', site = key === '*' ? ((document.querySelector('[data-chsite-in]') || {}).value || '').trim() : key;
+    var to = key === '*' ? ((document.querySelector('[data-chto-sel]') || {}).value || '') : (chs.getAttribute('data-chto') || '');
+    if (!String(txt || '').trim()){ toast(t('اكتب الرسالةَ أوّلًا')); return true; }
+    if (site && !siteFind(site)){ toast(t('النقطةُ غيرُ موجودة') + ': ' + site); return true; }
+    chSend(site, to, txt); if (ta) ta.value = ''; toast('\u{1F4AC} ' + t('أُرسلت')); render(1); return true;
+  }
+  var chf = e.target.closest('[data-chf]');
+  if (chf){ var chfv = chf.getAttribute('data-chf'); chPageHtml.f = chfv === 'all' ? {} : (chfv.indexOf('site:') === 0 ? { site:chfv.slice(5) } : { who:chfv.slice(4) }); toast(chfv === 'all' ? t('كلُّ الرسائل') : chfv.slice(chfv.indexOf(':') + 1)); render(1); return true; }
+  var cho = e.target.closest('[data-chopen]');
+  if (cho){ chPageHtml.f = { site:cho.getAttribute('data-chopen') }; POP_OPEN = false; goPage('chat'); render(1); return true; }
   var rbpr = e.target.closest('[data-rbpresets]'); if (rbpr){ var nP = rbPresetsAdd(); toast(nP ? '\u26A1 ' + t('أُضيفت') + ' ' + nm(nP) : t('كلُّها موجودةٌ أصلًا')); var rsR = document.getElementById('assistRes'); if (rsR) rsR.innerHTML = assistResHtml(); else render(1); return true; }
   var rbc = e.target.closest('[data-rbclear]'); if (rbc){ rbState().sel = {}; rbState().open = true; var rsC = document.getElementById('assistRes'); if (rsC) rsC.innerHTML = assistResHtml(); else render(1); return true; }
   var aq = e.target.closest('[data-assistq]');   /* (V37.30) سؤالٌ سريعٌ بنقرة */

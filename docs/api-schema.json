@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V38.59",
+  "app_version": "V38.60",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2217,7 +2217,8 @@
   "V38.56": "taskPill(install) · apprIns closes TK-install · insSave serialOwner block · data-insform في النافذة وصفحة النقطة",
   "V38.57": "firestore.rules inss update · pzInssRetry() · taskPill upload state · rules-test S9",
   "V38.58": "insStatusIs() · popPhotosHtml بمجموعتين · markInstall بالدور · data-fst فوري · nskClick يقول الخطأ",
-  "V38.59": "صف qa بالقطع والسيريالات والصور · apprIns(0) بسبب · why في مهامي"
+  "V38.59": "صف qa بالقطع والسيريالات والصور · apprIns(0) بسبب · why في مهامي",
+  "V38.60": "msgs collection · chSend/chSystem/chThreadHtml/chPageHtml · PAGE.chat · LIFE.inprog/insfail"
   },
   "map_and_geolocation": {
     "tile_layers": {

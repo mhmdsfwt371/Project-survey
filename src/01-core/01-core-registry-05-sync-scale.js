@@ -166,7 +166,7 @@ var CORE = {
       poison:STATE.poison || [],
       /* ما بُني حديثًا كان يضيع مع إعادة التحميل: الفكُّ والصيانةُ وسجلُّ
          ما تمّ — تُحفَظ كما تُحفَظ الزياراتُ والتركيبات. */
-      diss:STATE.diss || {}, maints:STATE.maints || {}, steps:STATE.steps || [],
+      diss:STATE.diss || {}, maints:STATE.maints || {}, steps:STATE.steps || [], msgs:STATE.msgs || {},   /* (V38.60) the field chat */
       pending:STATE.pending || {}, provision:STATE.provision || {},   /* (V37.18) الصورُ في مفتاحها photos — لا تُنسَخ مع كلِّ حفظ */
       att:STATE.att || {},
       siteOv:STATE.siteOv || {},
@@ -188,7 +188,7 @@ var CORE = {
         var T = v[k]; if (!T || Array.isArray(T)) return;
         Object.keys(T).forEach(function(id){ if (T[id] && T[id].deleted) delete T[id]; });
       });
-      ['recs','inss','tasks','moves','buys','queue','poison','diss','maints','steps','photos','pending','provision','att'].forEach(function(k){
+      ['recs','inss','tasks','moves','buys','queue','poison','diss','maints','steps','photos','pending','provision','att','msgs'].forEach(function(k){
         if (v[k]) STATE[k] = v[k];
       });
       if (v.photos){ var oldP = {}; Object.keys(v.photos).forEach(function(k){ oldP[k] = photoSlim(v.photos[k]); }); STATE.photos = oldP; PH_DIRTY = true, phTouch(); }   /* (V37.18) لقطةٌ قديمةٌ تحمل الصورَ: تُجرَّد مرةً */
@@ -557,7 +557,7 @@ var FB = {
              vehicles:'vehicles', vehAsn:'vehAsn', accounts:'accounts', photos:'photos', photoblobs:'photoblobs',
              stats:'stats', teams:'teams', baseline:'baseline',
              changes:'changes', hse:'hse', ncr:'ncr', ipc:'ipc', bonus:'bonus',
-             workReqs:'workreqs', maints:'maints', steps:'steps', pending:'pending', provision:'provision', att:'att', ghcfg:'ghcfg', presence:'presence' }[kind] || 'misc';
+             workReqs:'workreqs', maints:'maints', steps:'steps', pending:'pending', provision:'provision', att:'att', ghcfg:'ghcfg', presence:'presence', msgs:'msgs' }[kind] || 'misc';
   },
   live: function(kind, v){
     /* (V28.3) بلاغُ الوزارة «مسحنا المخيم مراتٍ ولم يُضَف»: الحذفُ يكتب شاهدًا {deleted:true} بدمج، والمسحُ التالي يُكتَب بدمجٍ
@@ -649,7 +649,7 @@ var FB = {
                   vehicles:'vehicles', vehAsn:'vehAsn', accounts:'accounts', photos:'photos', photoblobs:'photoblobs',
                   stats:'stats', teams:'teams', baseline:'baseline',
                   changes:'changes', hse:'hse', ncr:'ncr', ipc:'ipc', bonus:'bonus',
-                  workReqs:'workreqs', maints:'maints', steps:'steps', pending:'pending', provision:'provision', att:'att', ghcfg:'ghcfg', presence:'presence' }[it.kind];
+                  workReqs:'workreqs', maints:'maints', steps:'steps', pending:'pending', provision:'provision', att:'att', ghcfg:'ghcfg', presence:'presence', msgs:'msgs' }[it.kind];
       if (!col){ console.warn('نوعٌ بلا مجموعة: ' + it.kind); col = 'misc'; }
       var ref = DB.col(col).doc(String(it.id));
       if (it.v === null) w.delete(ref);
@@ -892,6 +892,7 @@ var FB = {
         }).catch(function(e){ softErr('سحب مفتاح التشغيل', e, ''); });
       }
       readDelta('maints', 'maints', 1000);
+      readDelta('msgs', 'msgs', 600);   /* (V38.60) the field chat — history; the last days arrive live */
       /* آخرُ مئتَي خطوةٍ تكفي اللوحات — ولا تُثقِل الإقلاع */
       DB.col('steps').orderBy('at', 'desc').limit(200).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;

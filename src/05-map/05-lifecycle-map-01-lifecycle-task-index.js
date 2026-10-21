@@ -30,12 +30,15 @@ var LIFE = {
   minback:   { c:'#D96C6C', n:'ردّتها الوزارة — تحتاج معالجة', d:'أعادتها الوزارةُ بملاحظةٍ — يعالجها المهندسُ ويرفعها ثانيةً.' },
   ready:     { c:'#FF8C42', n:'معتمدةٌ من الوزارة — بانتظار الجدولة', d:'اعتمدت الوزارةُ إعدادَ تركيبها، وتنتظر إسنادَ تركيب.' },
   sched:     { c:'#7C5CFF', n:'مجدولة للتركيب',            d:'أُسند تركيبُها لفريقٍ بموعد.' },   /* (V37.64) الاسمُ نفسُه في اللوحات */
+  /* (V38.60) the two quick statuses of an installation that were pressed and never coloured */
+  inprog:    { c:'#F2B134', n:'قيد التركيب',               d:'بدأ تركيبُها ولم يُكتمل بعد.' },
+  insfail:   { c:'#E05252', n:'تعذّر التركيب',             d:'سُجِّل تعذُّرُ تركيبها — السببُ في سجلّ النقطة.' },
   installed: { c:'#3AD6A0', n:'مُركّبة',                  d:'اكتمل تركيبُها واعتُمد — تنتظر التسليم.' },
   handed:    { c:'#12A594', n:'سُلِّمت للعميل',            d:'حُرِّر محضرُ تسليمها وبدأ ضمانُها — ومنها يُتاح الفك.' },
   maint:     { c:'#F5D547', n:'صيانةٌ مُسندة',            d:'أُسندت لها زيارةُ صيانةٍ في أثناء الموسم.' },
   dis:       { c:'#E01B1B', n:'فكٌّ مُسند أو تمّ',         d:'أُسند فكُّها بعد الموسم أو تمّ فعلًا.' }
 };
-var LIFE_ORDER = ['todo','stuck','tech','assigned','tomorrow','visited',   /* (V37.52) بلاغُ المالك: «فلتر تحتاج زيارة تقنية مش لاقيه» — الحالةُ كانت تُحسَب وتُلوَّن ولا تُرشَّح */'revisit','minwait','minback','ready','sched','installed','handed','maint','dis'];
+var LIFE_ORDER = ['todo','stuck','tech','assigned','tomorrow','visited',   /* (V37.52) بلاغُ المالك: «فلتر تحتاج زيارة تقنية مش لاقيه» — الحالةُ كانت تُحسَب وتُلوَّن ولا تُرشَّح */'revisit','minwait','minback','ready','sched','inprog','insfail','installed','handed','maint','dis'];
 /* مهمةٌ مفتوحةٌ من نوعٍ بعينه على هذه النقطة */
 /* ═══ فهرسُ المهامِّ بالنقطة والنوع (V17.47) ═══
    كانت الدالةُ تمرُّ على المهامِّ كلِّها لكلِّ نقطةٍ ولكلِّ نوع: ألفٌ وسبعُمئةٍ
@@ -77,6 +80,10 @@ function lifeOfRaw(x){
   if (taskKindOf(id, 'maint')) return 'maint';
   if (handDone(id)) return 'handed';
   if (insDone(id)) return 'installed';
+  /* (V38.60) «قيد التركيب» and «متعذّر» from the quick marks or the form colour the point — they stayed «scheduled» */
+  var insQ = STATE.inss[id];
+  if (insQ && insStatusIs(insQ.status, 'متعذّر')) return 'insfail';
+  if (insQ && insStatusIs(insQ.status, 'قيد التركيب')) return 'inprog';
   if (taskKindOf(id, 'install')) return 'sched';
   var r = STATE.recs[id], rv = (typeof svReview === 'function') ? svReview(r) : '';
   /* المتعذّرُ يُحكَم به قبل قرار المراجعة (V17.77): سجلٌّ لم يصل صاحبُه إلى

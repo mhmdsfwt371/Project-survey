@@ -135,6 +135,7 @@ function apprIns(id, ok){
     logEvent('اعتماد تركيب — ' + id + ' · ' + nm(r.pts || 0) + ' نقطة', id);
     notifPush('اعتماد', 'اعتُمد تركيبُك — ' + nm(r.pts || 0) + ' نقطة',
               { to:r.by || '', site:id, lv:'مهم' });
+    if (typeof chSystem === 'function') chSystem(id, 'اعتمد المهندسُ التركيب — ' + nm(r.pts || 0) + ' ' + t('نقطة'), r.by || '');   /* (V38.60) */
     /* (V38.56) the install task closes with the approval — as the visit, dismantling and maintenance tasks do; it stayed
        «مطلوب» in the installer's «مهامي» forever and kept the site marked as already assigned */
     var tkI = taskKindOf(id, 'install');
@@ -147,6 +148,7 @@ function apprIns(id, ok){
     logEvent('ردّ تركيب — ' + id + (r.why ? ' · ' + r.why : ''), id);
     /* الردُّ يوقف العملَ حتى يُصحَّح — فهو عاجلٌ لا يُترَك للسجل */
     notifPush('ردّ', 'رُدَّ تركيبُك للتصحيح — ' + r.why, { to:r.by || '', site:id, lv:'عاجل' });
+    if (typeof chSystem === 'function') chSystem(id, 'رُدَّ التركيبُ للتصحيح — ' + r.why, r.by || '');   /* (V38.60) */
   }
   CORE.set('inss', id, r);
   toast(ok ? t('اعتُمد') : t('رُدّ للمنفِّذ'));

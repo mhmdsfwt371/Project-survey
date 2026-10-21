@@ -14,6 +14,7 @@ const office = (tec, seed) => ({ str:DENY5, ina:DENY5, tec, seed });
 export const HOSTILE = {
   maints:      office('AAAAA'),
   steps:       office('AAADD'),
+  msgs:        office('AAADD'),   /* (V38.60) the field chat — written once, never edited */
   pcode:       office('DDDDD'),
   ghcfg:       office('DDDDD'),
   provision:   office('DDDDD', { by:'someone', role:'tech' }),

@@ -489,6 +489,9 @@ console.log('\n══ ١٥ · دورةُ التركيب للمُسنَد إلي�
     toasts.length = 0; w.markInstall(x0.id, 'مُركّب'); const said = toasts.slice(-1)[0] || '';
     T(pt.indexOf('صور التركيب') > -1 && pt.indexOf('تُنقَل إلى الدرايف') > -1 && !/data-fmark=/.test(pt) && /data-fmark=/.test(pe) && plain && /مُركّبةٌ/.test(said), 'ونافذةُ النقطة تعرض صورَ التركيب (والمنقولةَ بعدُ)، والوسمُ السريعُ للمهندس وحده ويجيب بالحال لا بالشكوى، و«مركب» بلا تشكيلٍ مُركّبةٌ أيضًا');
     w.FIELD_MODE = 'survey'; }
+  /* (V38.60) the quick statuses colour the point: «متعذّر» red, «قيد التركيب» amber — they stayed «scheduled» */
+  { const x4 = free[1]; const keepSt = w.STATE.inss[x4.id].status; w.STATE.inss[x4.id].status = 'متعذّر'; const a1 = w.lifeOfRaw(x4); w.STATE.inss[x4.id].status = 'قيد التركيب'; const a2 = w.lifeOfRaw(x4); w.STATE.inss[x4.id].status = keepSt;
+    T(a1 === 'insfail' && a2 === 'inprog' && w.LIFE.insfail && w.LIFE.inprog && w.LIFE_ORDER.indexOf('insfail') > -1, 'و«متعذّر» و«قيد التركيب» لهما لونُهما على الخريطة لا لونُ «مجدولة»'); }
   /* (V38.59) the engineer's review row shows the parts with their serials and the installation photos, and a return carries
      its reason to the installer's «مهامي» */
   { const x2 = free[2]; as('engineer', 'جرد السيناريوهات'); w.STATE.queue = queued().filter(q => q.id !== x2.id);
@@ -503,6 +506,31 @@ console.log('\n══ ١٥ · دورةُ التركيب للمُسنَد إلي�
     T(r2.status === 'مُعاد' && r2.why === 'الصورة مش واضحة' && row2.indexOf('الصورة مش واضحة') > -1 && row2.indexOf('أُعيد للتصحيح') > -1, 'والردُّ يحمل سببَه إلى «مهامي» المنفِّذ');
     w.STATE.tasks['TK-install-' + x2.id].status = 'معتمد'; w.tasksTouched(); as('engineer', 'جرد السيناريوهات'); }
   w.STATE.users = keepUsers; w.STATE.meta.online = keepOnline; as('engineer', 'جرد السيناريوهات');
+}
+
+/* ── ١٦ · (V38.60) محادثةُ الميدان: المهندسُ يكتب على النقطة من صفحتها ← المنفِّذُ يراها ويردّ من صفحة المحادثات ← حفظُ التركيب
+   واعتمادُه يكتبان سطرَيهما وحدَهما ── */
+console.log('\n══ ١٦ · محادثةُ الميدان ══');
+{
+  const d = w.document, as = (role, name) => { w.ROLE = role; w.STATE.meta.role = role; w.STATE.meta.name = name; };
+  const keepUsers = w.STATE.users; w.STATE.users = Object.assign({}, keepUsers || {}, { zc1:{ name:'فني المحادثة', role:'tech', user:'zc1' } });
+  const x = w.STATE.sites.filter(z => z && z.type === 'مخيم' && z.zone === 'عرفات' && !w.STATE.inss[z.id] && !w.taskKindOf(z.id, 'install'))[0];
+  w.STATE.tasks['TK-install-' + x.id] = { id:'TK-install-' + x.id, site:x.id, kind:'install', to:'فني المحادثة', status:'مطلوب' }; w.tasksTouched();
+  as('engineer', 'جرد السيناريوهات'); w.DETAIL_ID = x.id; w.CUR = 'site'; w.render(1);
+  const ta = d.querySelector('#content [data-chtext="' + x.id + '"]'); ta.value = 'ركّب القارئَ على العمود الشماليّ'; d.querySelector('#content [data-chsend="' + x.id + '"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
+  const M1 = w.chOf(x.id);
+  T(M1.length === 1 && M1[0].to === 'فني المحادثة' && M1[0].from === 'جرد السيناريوهات' && queued().some(q => q.kind === 'msgs' && q.id === M1[0].id), 'المهندسُ يكتب على النقطة من صفحتها إلى مُسنَدها، والرسالةُ في طابور الرفع');
+  as('tech', 'فني المحادثة'); const vis = w.chVisible(M1[0]); w.CUR = 'chat'; w.render(1); const hc = d.getElementById('content').innerHTML;
+  const ta2 = d.querySelector('#content [data-chtext="*"]'); ta2.value = 'تمام — جاري'; d.querySelector('#content [data-chsite-in]').value = x.id; d.querySelector('#content [data-chsend="*"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
+  T(vis && w.seesPage('chat') && hc.indexOf('العمود الشماليّ') > -1 && w.chOf(x.id).length === 2 && w.chOf(x.id)[1].from === 'فني المحادثة', 'والمنفِّذُ يراها في «المحادثات» ويردُّ منها');
+  const rzone = w.siteZone(x), rparts = w.itemsList().filter(i => i.z === rzone && i.name), rr2 = rparts.find(i => /^rdr/i.test(i.code) || /قارئ/.test(i.name));
+  w.STATE.recs[x.id] = { id:x.id, access:'تم الوصول', review:'approved', by:'فني المحادثة', at:Date.now() }; w.STATE.inss[x.id] = { id:x.id, solution:{ status:'معتمد', parts:{ [rr2.code]:1 } } };
+  w.formReset(); w.formGo(x.id); w.FORM.parts = { [rr2.code]:1 }; w.FORM.serials = { [rr2.code]:'SN-CHAT-9' }; w.FORM.status = 'مُركّب'; w.FORM.photos.before = { data:IMG + 'q' }; w.FORM.photos.after = { data:IMG + 'r' }; w.insSave(0);
+  const sys = w.chOf(x.id).filter(v => v.kind === 'sys');
+  as('engineer', 'جرد السيناريوهات'); w.apprIns(x.id, 1);
+  T(sys.length === 1 && /رُكِّبت/.test(sys[0].text) && /SN-CHAT-9/.test(sys[0].text) && w.chOf(x.id).some(v => /اعتمد المهندسُ/.test(v.text)), 'وحفظُ التركيب يكتب سطرَه بقطعه وسيريالاته، والاعتمادُ سطرَه');
+  w.POP_SITE = x.id; T(String(w.popHtml()).indexOf('محادثة النقطة') > -1, 'والمحادثةُ تظهر في نافذة النقطة على الخريطة');
+  w.STATE.users = keepUsers; w.STATE.tasks['TK-install-' + x.id].status = 'معتمد'; w.tasksTouched();
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

@@ -48,6 +48,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
 
       + (SITE_ED && maySiteEditBasic() ? siteEditHtml(x) : '')   /* (V28.6) */
       + (typeof egCard === 'function' ? egCard(x) : '')   /* (V38.31) بواباتُ محطة القطار */
+      + (rankOf(ROLE) >= rankOf('tech') && typeof chThreadHtml === 'function' ? chThreadHtml(x.id) : '')   /* (V38.60) the point's chat */
       + (typeof egIsGate === 'function' && egIsGate(x) ? (function(){   /* (V38.53) a train gate shows its station and its drawing pages, and opens them */
           var g = egOf(x), st = g && g.stn ? siteFind(g.stn) : null; if (!st) return '';
           return card('\u{1F686} ' + t('محطة البوابة'),

@@ -218,6 +218,8 @@ function liveSmall(){
     } catch (e){ softErr('إنصات حسابي', e, ''); }
   }
   if (rankOf(ROLE) > 30){
+    /* (V38.60) the field chat is live: every message of the last week arrives as it is written */
+    watch('msgs', function(id, v){ STATE.msgs = STATE.msgs || {}; if (v){ var fresh = !STATE.msgs[id]; STATE.msgs[id] = v; if (fresh && typeof chIncoming === 'function') chIncoming(v); } }, 400, ['_at', '>', Date.now() - 7 * 86400000]);
     watch('users', function(id, v){
       STATE.users = STATE.users || {};
       if (v) STATE.users[id] = v; else delete STATE.users[id];

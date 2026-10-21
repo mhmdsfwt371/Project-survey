@@ -274,6 +274,7 @@ function popHtml(){
         + esc(t('موقع معدَّل ميدانيًّا')) + '</div>' : '')
 
     + '<div class="pst">' + marks + '</div>'
+    + (rankOf(ROLE) >= rankOf('tech') && typeof chThreadHtml === 'function' ? chThreadHtml(s.id, true) : '')   /* (V38.60) the point's chat, last three lines */
 
     + (ins && Object.keys(ins.parts || {}).length
       ? '<div class="hint" style="margin:8px 0 0">' + esc(t('القطع'))

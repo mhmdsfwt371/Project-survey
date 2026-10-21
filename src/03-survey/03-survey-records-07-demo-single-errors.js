@@ -186,6 +186,8 @@ function insSave(draft){
     if (Object.keys(take).length) CORE.dirty('moves', s.id, take);
   }
   logEvent((draft ? 'مسودّة تركيب' : (keepRev ? 'تجهيزةُ ديمو ' + (insRevs(nIns).length + 1) : 'تركيب')) + ' — ' + s.id + ' · ' + nm(formPts()) + ' نقطة');
+  /* (V38.60) the record goes into the point's chat: the office reads what was installed and the serials as they are saved */
+  if (!draft && typeof chSystem === 'function') chSystem(s.id, (keepRev ? 'تجهيزةٌ جديدة' : 'رُكِّبت') + ' — ' + t(FORM.status) + ' \u00b7 ' + Object.keys(used).map(function(k){ var sn2 = (FORM.serials || {})[k]; return itemName(k) + ' \u00d7' + nm(used[k]) + (sn2 ? ' (' + sn2 + ')' : ''); }).join('، ') + ' \u00b7 ' + nm(Object.keys(FORM.photos).length) + ' ' + t('صورة'), '');
   if (!draft) stepDone('install', s.id, nm(n) + ' ' + t('قطعة'), formPts());
   toast(draft ? t('حُفظت مسودّة') : (t('تركيبٌ حُفظ — بانتظار التدقيق')));
   formReset();

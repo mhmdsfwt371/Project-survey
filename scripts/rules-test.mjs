@@ -92,6 +92,11 @@ await ok  ('الفنيُّ يحفظ تركيبَه على نقطةٍ حلُّه�
 await ok  ('والمشرفُ كذلك',                                          setDoc(doc(as('sup'), 'inss/IS57'), { id:'IS57', status:'مُركّب', approved:false, parts:{ rdr:1 } }, { merge:true }));
 await deny('ولا يغيّر الفنيُّ الحلَّ المعتمد',                       setDoc(doc(as('tec'), 'inss/IS57'), { solution:{ status:'معتمد', items:{ rdr:5 } } }, { merge:true }));
 await deny('ولا يعتمد تركيبَه وهو يحفظه',                           setDoc(doc(as('tec'), 'inss/IS57'), { status:'مُركّب', approved:true }, { merge:true }));
+/* (V38.60) the field chat: everyone who writes may post a line; nobody edits or deletes it */
+await ok  ('الفنيُّ يكتب رسالةً في المحادثة',                 setDoc(doc(as('tec'), 'msgs/M1'), { id:'M1', site:'S1', from:'فني', to:'مهندس', text:'ركّبت القارئ', kind:'msg', at:1 }));
+await ok  ('والمهندسُ يقرؤها',                                 getDoc(doc(as('eng'), 'msgs/M1')));
+await deny('ولا يعدّلها أحد',                                   updateDoc(doc(as('eng'), 'msgs/M1'), { text:'x' }));
+await deny('ولا يحذفها أحد',                                    deleteDoc(doc(as('eng'), 'msgs/M1')));
 await ok  ('المهندسُ يحرّر محضرَ التسليم',          updateDoc(doc(as('eng'), 'inss/S1'), { hand:{ no:'HO-0001', at:1, by:'مهندس', to:'وزارة' } }));
 
 console.log('\n══ ٤ · الإعداداتُ والحسابات ══');

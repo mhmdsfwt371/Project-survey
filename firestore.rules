@@ -239,6 +239,12 @@ service cloud.firestore {
       );
       allow delete: if pm('inss', 'd', mgr());
     }
+    // (V38.60) the field chat: a message is a line that is written once — the office and the field read, nobody edits or deletes
+    match /msgs/{id} {
+      allow read: if pm('msgs', 'r', ok());
+      allow create: if pm('msgs', 'w', canW()) && request.resource.data.get('deleted', false) != true;
+      allow update, delete: if false;
+    }
     match /props/{id} { allow read: if pm('props', 'r', ok()); allow create, update: if pm('props', 'w', canW()); allow delete: if pm('props', 'd', mgr()); }
 
     // صور المسح والتركيب — مستند لكل لقطة (فُصلت عن السجل لتجاوز حد 1MB)
