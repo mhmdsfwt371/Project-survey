@@ -13,7 +13,9 @@ var DETAIL_ID = '';
 /* يُوسَم شريطُ الصور في شاشة الموقع أدناه */
 PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ ما عن نقطةٍ واحدة: بيانُها وزيارتُها وتركيبُها وصورُها وسجلُّها — تُفتَح من الخريطة أو من القوائم.',
   body:function(){
-    var x = siteFind(DETAIL_ID) || STATE.sites[0];
+    /* (V38.69) no fallback to the first point — every button on this page writes to the point it shows */
+    var x = siteFind(DETAIL_ID);
+    if (!x) return alertBox('warn', t('النقطةُ غيرُ موجودة — ربما حُذفت أو دُمجت. افتحها من الخريطة أو من البحث.'));
     if (!x) return alertBox('warn','لا مواقع محمّلة.');
     var d = catDefOf(x);
     var rec = STATE.recs[x.id], ins = STATE.inss[x.id];

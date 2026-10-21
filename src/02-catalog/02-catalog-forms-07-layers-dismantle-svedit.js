@@ -111,11 +111,11 @@ function disSave(){
   /* ما سلِم يعود مخزونًا وما تلِف يُشطَب — والعهدةُ تُقفَل بالحالة لا بالعدد */
   Object.keys(back).forEach(function(k){
     var b = back[k];
-    STATE.moves.push({ id:uid36(), at:Date.now(),
+    /* (V38.69) each return is its own ledger document — the summary «dis-<point>» never reached the office as a movement */
+    mvWrite({ id:'dis-' + id + '-' + k, at:Date.now(), ts:Date.now(),
       kind: b.cond === 'سليم' ? 'إرجاع' : 'شطب',
       item:k, qty:b.qty, by:rec.by, site:id, note:'فك ' + id, dis:1 });   /* (V37.99) بالرمز كالتركيب — فيُقابل استهلاكَه في صفٍّ واحد، ومِن «رُكّب» لا من العهدة */
   });
-  CORE.set('moves', 'dis-' + id, { site:id, at:rec.at, by:rec.by });
   /* المهمةُ تُغلَق: لا يبقى فكٌّ مفتوحٌ على نقطةٍ فُكَّت */
   var tk = taskKindOf(id, 'dis');
   if (tk){ tk.status = 'معتمد'; tk.doneAt = Date.now(); CORE.set('tasks', tk.id, tk); }

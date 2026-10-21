@@ -25,7 +25,8 @@ var TEAMS = [];
 var CTEAM_CUR = 'T1';
 
 function teamOf(id){
-  return TEAMS.filter(function(x){ return x.id === id; })[0] || TEAMS[0] || null;
+  /* (V38.69) the first team is the default view only — an id that is not found is not quietly another team */
+  var hit = TEAMS.filter(function(x){ return x.id === id; })[0]; if (hit) return hit; return id ? null : (TEAMS[0] || null);
 }
 function teamShare(tm){ return tm.members.reduce(function(a,m){ return a + cfgN(m.share); }, 0); }
 
@@ -93,7 +94,7 @@ function crewStat(c){
 
 function crewOf(id){
   var L = crewsList();
-  return L.filter(function(c){ return c.id === id; })[0] || L[0];
+  var hit = L.filter(function(c){ return c.id === id; })[0]; if (hit) return hit; return id ? null : L[0];   /* (V38.69) as teamOf */
 }
 
 /* ── متابعة الفرق — لوحة المهندس ─────────────────── */

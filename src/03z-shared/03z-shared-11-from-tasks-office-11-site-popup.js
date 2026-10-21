@@ -48,7 +48,10 @@ function popPhotosHtml(id){
 }
 
 function popHtml(){
-  var s = (POP_SITE && siteFind(POP_SITE)) || STATE.sites[0];
+  /* (V38.69) no fallback to the registry's first point (Arafat 0001): a popup whose point is gone closes — its buttons
+     (marks, «نموذج التركيب») would have acted on that camp, the same class as the formSite() incident */
+  var s = POP_SITE ? siteFind(POP_SITE) : null;
+  if (!s){ POP_OPEN = false; return ''; }
   if (!s) return '';
   var d = CAT_DEF[s.type] || { l:s.type, i:'\u25CF', c:'#8A939D' };
   var rec = STATE.recs[s.id] || null;

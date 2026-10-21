@@ -209,7 +209,7 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
         + (tot.pend && may('approve') ? '<div class="actions">' + btn('\u2705 ' + t('اعتماد الزيارات') + ' (' + nm(tot.pend) + ')','btn-primary btn-sm',' data-p="svappr"') + '</div>' : '');
     })();
     if (cur === 'mycrew') return head + (function(){
-    var c = crewOf(CREW_VIEW);
+    var c = crewOf(CREW_VIEW) || crewOf('');   /* (V38.69) a view may show the first crew; a write never does */
     var S = crewStat(c);
     var K = c.kind === '*' ? null : WO_KINDS[c.kind];
     return '<div class="chips">' + CREWS.filter(function(x){ return x.kind !== '*'; }).map(function(x){

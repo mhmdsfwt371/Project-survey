@@ -254,7 +254,7 @@ PAGE.perf = { m:'الفرق', t:'الفرق والأداء',
         + (may('users') ? crewNewCard() : '');
     }
     if (!L.some(function(c){ return c.id === CREW_CUR; })) CREW_CUR = L[0].id;
-    var crew = crewOf(CREW_CUR);
+    var crew = crewOf(CREW_CUR) || crewOf('');   /* (V38.69) */
     var techs = crewTechs(crew);
     var subs  = crewTeams(crew);
     if (!subs.some(function(x){ return x.id === CTEAM_CUR; })) CTEAM_CUR = subs[0] ? subs[0].id : '';

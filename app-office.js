@@ -4581,6 +4581,8 @@ function provReask(uid){
 
 var RELEASE_NOTES = [
 
+  { v:'V38.69', d:'2026-10-22', notes:[
+      'دفتر المخزن يصل المكتب فعلًا (كل حركة تركيب وفك وثيقتها) + تسوية بضغطة، ولا «أول نقطة» بديلًا في النافذة وصفحة النقطة والفرق' ] },
   { v:'V38.68', d:'2026-10-22', notes:[
       'إصلاح عاجل: النموذج بلا نقطة كان يحفظ على أول نقطة في السجل (مخيم عرفات ٠٠٠١) — وأداة إلغاء التركيب المسجّل خطأً' ] },
   { v:'V38.67', d:'2026-10-22', notes:[
@@ -6434,7 +6436,14 @@ PAGE.inv = { m:'الورشة والمخزون', t:'المخزون',
   })();
     if (cur === 'invmv') return head + (function(){
     var L = movesList(), items = itemsList();
-    return (may('inventory')
+
+    var gap = 0; Object.keys(STATE.inss || {}).forEach(function(id){ var r = STATE.inss[id]; if (!r || r.deleted || !r.status || insStatusIs(r.status, 'مسودّة') || insStatusIs(r.status, 'متعذّر')) return; var had = insConsumed(id); Object.keys(r.parts || {}).forEach(function(k){ if ((cfgN(r.parts[k]) || 0) !== (had[k] || 0)) gap++; }); });
+    return (may('inventory') && gap
+      ? card('', alertBox('warn', t('تركيباتٌ لم تصل دفترَ المخزن') + ': ' + nm(gap) + ' ' + t('صنفًا — سُجِّلت قبل إصلاح الدفتر (٣٨٫٦٩)'))
+          + '<div class="actions">' + btn('\u2696 ' + t('سوِّ الدفتر مع التركيبات'), 'btn-primary btn-sm', ' data-mvsettle="1"') + '</div>'
+          + '<p class="hint" style="margin:6px 0 0">' + esc(t('تُسجَّل حركةُ «استهلاك» باسم المنفِّذ لكلِّ ما رُكِّب ولم يُخصَم — مرةً واحدة، ولا تتكرّر لو ضُغطت ثانية.')) + '</p>')
+      : '')
+      + (may('inventory')
       ? card('تسجيل حركة',
           '<div class="grid cols-3">'
           + '<div class="field"><label>' + esc(t('الحركة')) + '</label><select id="mvKind">'

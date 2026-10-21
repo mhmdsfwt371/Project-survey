@@ -663,6 +663,20 @@ console.log('\n══ ٢٠ · لا نموذجَ بلا نقطته ══');
   w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
 }
 
+/* ── ٢١ · (V38.69) لا «أوّلُ نقطةٍ» بديلًا في أيِّ شاشةٍ تكتب، وكلُّ حركةِ مخزنٍ وثيقتُها ── */
+console.log('\n══ ٢١ · لا بديلَ صامت، والدفترُ يصل المكتب ══');
+{
+  w.POP_SITE = 'NO-SUCH-POINT'; const pop = String(w.popHtml()); w.DETAIL_ID = 'NO-SUCH-POINT'; const pg = String(w.PAGE.site.body());
+  T(pop === '' && pg.indexOf('غيرُ موجودة') > -1 && pg.indexOf(w.STATE.sites[0].id) < 0 && w.crewOf('NO-SUCH') === null && w.teamOf('NO-SUCH') === null,
+    'نافذةُ نقطةٍ غيرِ موجودةٍ تُغلَق، وصفحتُها تقول ذلك، والفريقُ غيرُ الموجود لا يصير أوّلَ فريق — لا كتابةَ على غير المقصود');
+  const keepM = w.STATE.moves, keepQ = w.STATE.queue; w.STATE.moves = []; w.STATE.queue = [];
+  const x = w.STATE.sites.filter(z => z && z.type === 'مخيم' && z.zone === 'منى' && !w.STATE.inss[z.id])[7];
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.STATE.inss[x.id] = { id:x.id, status:'مركب', by:'منفِّذ', at:Date.now(), parts:{ rdr4c:1 } };
+  const n1 = w.insLedgerSettle(), n2 = w.insLedgerSettle(), q = w.STATE.queue.filter(it => it.kind === 'moves' && it.v && it.v.site === x.id);
+  T(n1 >= 1 && n2 === 0 && q.length === 1 && q[0].v.kind === 'استهلاك' && q[0].id === q[0].v.id, 'وتسويةُ الدفتر تكتب حركةَ «استهلاك» وثيقةً بنفسها مرةً واحدة — لا ملخّصًا بمفتاح النقطة');
+  delete w.STATE.inss[x.id]; w.STATE.moves = keepM; w.STATE.queue = keepQ; w.POP_SITE = ''; w.DETAIL_ID = '';
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

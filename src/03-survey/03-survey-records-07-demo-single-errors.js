@@ -123,6 +123,29 @@ function insPhotoAdd(id, files){
    installation is what leaves stock. A point consumes the difference between what it holds now and what was already
    consumed on it — a re-save («قيد التركيب» then «مُركّب», or after a return) consumed everything again; a lower quantity
    goes back to the installer's custody («تصحيح استهلاك»); «متعذّر» consumes nothing. Dismantling returns count too. */
+/* (V38.69) one movement, one ledger document — on this phone and in the cloud alike */
+function mvWrite(m){
+  if (!m || !m.id) m = Object.assign({ id:uid36() }, m || {});
+  STATE.moves = STATE.moves || [];
+  if (STATE.moves.some(function(x){ return x && x.id === m.id; })) return m;   /* the same settlement written twice is one */
+  if (!m.user) m.user = STATE.meta.name || '';
+  STATE.moves.push(m); CORE.dirty('moves', m.id, m);
+  return m;
+}
+/* (V38.69) the office brings the ledger level with what is installed: every live installation consumes what it holds — the ones
+   saved before V38.69 never reached the cloud ledger. Net and idempotent: run twice, writes once. */
+function insLedgerSettle(){
+  if (!may('inventory')){ toast(t('تسويةُ دفتر المخزن لصاحب صلاحية المخزون')); return 0; }
+  var n = 0;
+  Object.keys(STATE.inss || {}).forEach(function(id){
+    var r = STATE.inss[id]; if (!r || r.deleted || !r.status || insStatusIs(r.status, 'مسودّة')) return;
+    var held = insStatusIs(r.status, 'متعذّر') ? {} : (r.parts || {}), res = insConsume(id, held, r.by || '—');
+    n += Object.keys(res.take).length + Object.keys(res.back).length;
+  });
+  logEvent('تسوية دفتر المخزن مع التركيبات — ' + n + ' حركة');
+  toast(t('سُوِّي الدفتر مع التركيبات') + ' — ' + nm(n) + ' ' + t('حركة'));
+  return n;
+}
 function insConsumed(site){
   var c = {};
   movesList().forEach(function(m){
@@ -138,9 +161,13 @@ function insConsume(site, held, who){
   Object.keys(had).concat(Object.keys(held || {})).forEach(function(k){ all[k] = 1; });
   Object.keys(all).forEach(function(k){ var d = (cfgN((held || {})[k]) || 0) - (had[k] || 0); if (d > 0) take[k] = d; else if (d < 0) back[k] = -d; });
   var ts = Date.now();   /* (V38.63) the instant too — the ledger is read in time order */
-  Object.keys(take).forEach(function(k){ STATE.moves.push({ at:dayKey(), ts:ts, kind:'استهلاك', item:k, qty:take[k], by:who || STATE.meta.name || '—', site:site, cond:'' }); });
-  Object.keys(back).forEach(function(k){ STATE.moves.push({ at:dayKey(), ts:ts, kind:'تصحيح استهلاك', item:k, qty:back[k], by:who || STATE.meta.name || '—', site:site, cond:'', note:'تعديل تركيب' }); });
-  if (Object.keys(take).length || Object.keys(back).length) CORE.dirty('moves', site, { take:take, back:back });
+  /* (V38.69) each movement is its own ledger document. It was pushed on this phone only and one summary keyed by the point
+     ({take,back}) went to the cloud — which the office reads as a movement without a kind and ignores: no installation (and no
+     dismantling) ever reached the office ledger, so the warehouse never went down by what was installed. The id is fixed by
+     point, item and how many movements that pair already has — two devices settling the same state write the same document. */
+  var nOf = function(k){ return movesList().filter(function(m){ return m && m.site === site && itemKey(m.item) === itemKey(k); }).length; };
+  Object.keys(take).forEach(function(k){ mvWrite({ id:'ic-' + site + '-' + k + '-' + nOf(k), at:dayKey(), ts:ts, kind:'استهلاك', item:k, qty:take[k], by:who || STATE.meta.name || '—', site:site, cond:'' }); });
+  Object.keys(back).forEach(function(k){ mvWrite({ id:'ir-' + site + '-' + k + '-' + nOf(k), at:dayKey(), ts:ts, kind:'تصحيح استهلاك', item:k, qty:back[k], by:who || STATE.meta.name || '—', site:site, cond:'', note:'تعديل تركيب' }); });
   return { take:take, back:back };
 }
 function insSave(draft){
