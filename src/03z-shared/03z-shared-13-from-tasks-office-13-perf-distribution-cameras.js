@@ -9,7 +9,10 @@
 var SITE_IX = null, SITE_TOK = null;
 
 function siteIndex(){
-  if (SITE_IX) return SITE_IX;
+  /* (V38.69) the index follows the list it was built from: a replaced or grown registry rebuilds it. With the «first point»
+     fallbacks gone (popup, point page, forms) a stale index would hide a point that exists — the fallback used to mask that. */
+  if (SITE_IX && siteIndex.of === STATE.sites && siteIndex.n === STATE.sites.length) return SITE_IX;
+  siteIndex.of = STATE.sites; siteIndex.n = STATE.sites.length;
   SITE_IX = Object.create(null);
   SITE_TOK = Object.create(null);
   STATE.sites.forEach(function(x, i){

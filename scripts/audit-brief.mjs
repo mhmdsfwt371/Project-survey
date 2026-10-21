@@ -216,7 +216,8 @@ w.ROLE = 'engineer';
     'وأحداثُ النقاط تُوسَم بنقطتها فتُستعلَم من القاعدة لا بالبحث في النصّ');
   T(/(?:collection|DB\.col)\('events'\)\.where\('site', '==', id\)\.limit\(200\)/.test(raw5),
     'والقديمُ يُجلَب بسقفٍ عند الطلب لا في كلِّ إقلاع');
-  w.DETAIL_ID = 'L1'; w.goPage('site'); w.render(1); await wait(250);
+  /* (V38.69) the point page no longer falls back to the registry's first point — the check opens a point that exists */
+  w.DETAIL_ID = w.siteFind('L1') ? 'L1' : w.STATE.sites[0].id; w.goPage('site'); w.render(1); await wait(250);
   const sp = d.getElementById('main') || d.body;
   T(/سجلُّ النقطة/.test(sp.textContent) && !!sp.querySelector('[data-sitelog]'), 'والبطاقةُ في شاشة الموقع بزرِّ جلبِ القديم');
 }
