@@ -406,15 +406,20 @@ var CORE = {
    «nusuk-lib» cache, so it works with no network), the public CDN only as a fallback when the own copy cannot load.
    Order matters for chained loads (Firebase compat: app → auth → firestore), so callers chain the promises. */
 function libLoad(local, cdn, ms){
-  var one = function(src){ return new Promise(function(res){
+  /* one deadline for both attempts (the caller's ms, as before vendoring): a local copy that errors fast leaves the rest
+     of the budget to the CDN; a local copy that hangs until the deadline does not double the wait */
+  var t0 = Date.now();
+  var one = function(src, budget){ return new Promise(function(res){
     var sc = document.createElement('script'), done = false, fin = function(ok){ if (done) return; done = true; if (!ok && sc.parentNode) sc.parentNode.removeChild(sc); res(ok); };
     sc.src = src; sc.onload = function(){ fin(true); }; sc.onerror = function(){ fin(false); };
-    document.head.appendChild(sc); if (ms) setTimeout(function(){ fin(false); }, ms);
+    document.head.appendChild(sc); if (budget) setTimeout(function(){ fin(false); }, budget);
   }); };
-  return one(local).then(function(ok){
+  return one(local, ms).then(function(ok){
     if (ok || !cdn) return ok;
+    var left = ms ? ms - (Date.now() - t0) : 0;
+    if (ms && left < 1000) return false;
     libLoad.fellBack = (libLoad.fellBack || 0) + 1; libLoad.last = local;   /* visible in the device diagnostics */
-    return one(cdn);
+    return one(cdn, left);
   });
 }
 var FB = {

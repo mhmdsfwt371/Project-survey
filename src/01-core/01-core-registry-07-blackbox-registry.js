@@ -72,7 +72,10 @@ function softErr(where, e, tell){
    تصل البيانات — فيجد الجواب مكتوبًا لا يخمّنه. */
 function softErrCard(){
   if (!SOFT_ERRS.length) return '';
-  return alertBox('warn', 'أعطالٌ صامتةٌ وقعت — لم تُزعج العملَ لكنها قد تفسّر نقصًا فيما تراه.')
+  /* (V38.55) the swallowed-error count since the app opened, and where most of them come from */
+  var N = lsErrNote.n, top = N ? Object.keys(N.by).sort(function(a, b){ return N.by[b] - N.by[a]; }).slice(0, 3) : [];
+  var sum = N && N.total ? '<p class="hint" style="margin:0 0 6px">' + esc(t('أخطاءٌ مبتلَعةٌ منذ فتح التطبيق')) + ': <b class="num">' + nm(N.total) + '</b>' + (top.length ? ' \u2014 ' + esc(t('أكثرُها من')) + ' ' + top.map(function(k){ return '<bdi>' + esc(k) + '</bdi> (' + nm(N.by[k]) + ')'; }).join('، ') : '') + '</p>' : '';
+  return alertBox('warn', 'أعطالٌ صامتةٌ وقعت — لم تُزعج العملَ لكنها قد تفسّر نقصًا فيما تراه.') + sum
     + cardFlush(t('ما سقط بلا صوت') + ' — ' + nm(SOFT_ERRS.length),
         table(['الوقت','الموضع','السبب'],
           SOFT_ERRS.slice(0, 30).map(function(x){

@@ -8,17 +8,17 @@
 |---|---:|---:|---|
 | `00-head.html` | 1323 | 0 |  |
 
-## `01-core/` — النواة — اللغة والمحرك والمزامنة والسجل  (8 ملفات · 2803 سطر · 133 دالة)
+## `01-core/` — النواة — اللغة والمحرك والمزامنة والسجل  (8 ملفات · 2835 سطر · 135 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
-| `01-core-registry-01-boot-i18n.js` | 327 | 38 | Boot guard (crash-loop breaker), language engine (Arabic/English/Urdu), number and date formatting per language, barcode scan of serials, screen wake-lock durin |
+| `01-core-registry-01-boot-i18n.js` | 351 | 40 | Boot guard (crash-loop breaker), language engine (Arabic/English/Urdu), number and date formatting per language, barcode scan of serials, screen wake-lock durin |
 | `01-core-registry-02-data-display-search.js` | 222 | 23 | Project constants, display helpers (HTML escaping, pills, cards, tables), isolation of Latin tokens inside Arabic text, and the per-page search box. |
 | `01-core-registry-03-config-values.js` | 189 | 18 | Single source of configurable values (CFG): rates, weights keyed by zone and type, numeric constants edited from Settings and synced to every device. |
 | `01-core-registry-04-engine-storage.js` | 223 | 14 | Local-first storage engine: IndexedDB/localStorage persistence, resilience when the local store fails, and the save banner when data is at risk. |
-| `01-core-registry-05-sync-scale.js` | 1112 | 2 | CORE: the write queue, deduplication, upload with backoff and poison isolation, pending-upload limit and pending-file export/import, pull scheduling and scale-o |
+| `01-core-registry-05-sync-scale.js` | 1117 | 2 | CORE: the write queue, deduplication, upload with backoff and poison isolation, pending-upload limit and pending-file export/import, pull scheduling and scale-o |
 | `01-core-registry-06-data-gate-live.js` | 412 | 13 | DB gate (the only path to Firestore), silent-failure capture, live listeners that mirror other devices' writes, sync counters and pull accounting. |
-| `01-core-registry-07-blackbox-registry.js` | 239 | 17 | Black box (crash forensics) and the embedded site registry SITES_RAW with its publish/cache cycle to the database. |
+| `01-core-registry-07-blackbox-registry.js` | 242 | 17 | Black box (crash forensics) and the embedded site registry SITES_RAW with its publish/cache cycle to the database. |
 | `01-core-registry-08-egates-seed.js` | 79 | 8 | Al Mashaaer train: the nine stations and their 62 E-GATE points (registry points at the station reference, owner decision Q-023), the station card listing its g |
 
 ## `02-catalog/` — الكتالوج والنقطة — التعريفات والتصنيف والصلاحيات وتعديل المسح  (10 ملفات · 4329 سطر · 257 دالة)
@@ -140,13 +140,13 @@
 | `04-tasks-office-14-pull-scope-listen-map.js` | 26 | 0 | Pull scope per role, differential pulls, per-device read caps, change-pulse listening, and the Leaflet map with two layers and camp polygons. |
 | `04-tasks-office-15-handover-minutes.js` | 58 | 3 | Handover and official receipt minutes. |
 
-## `05-map/` — الخريطة ودورةُ الحياة — الطبقات والتصدير والاستيراد والدخول وشاشةُ الوزارة  (13 ملفات · 5403 سطر · 291 دالة)
+## `05-map/` — الخريطة ودورةُ الحياة — الطبقات والتصدير والاستيراد والدخول وشاشةُ الوزارة  (13 ملفات · 5406 سطر · 291 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
 | `05-lifecycle-map-01-lifecycle-task-index.js` | 272 | 13 | Point lifecycle (one state read by all), task index by point and type, and stacked points on one coordinate. |
 | `05-lifecycle-map-02-map-incremental.js` | 340 | 13 | Incremental map painting (never rebuilt from scratch), marker cache MK, faster first paint, flying to a point, locate, theme and satellite toggles. |
-| `05-lifecycle-map-03-export-import-docx.js` | 713 | 5 | Export/import with real data, ExcelJS for self-updating files, and Word export that stays inside the app. |
+| `05-lifecycle-map-03-export-import-docx.js` | 716 | 5 | Export/import with real data, ExcelJS for self-updating files, and Word export that stays inside the app. |
 | `05-lifecycle-map-04-excel-templates-kmz.js` | 535 | 22 | Current page to Excel, the tasks file from a template, and KMZ/KML import. |
 | `05-lifecycle-map-05-geojson-basemap-layers.js` | 162 | 12 | GeoJSON export, offline Makkah basemap, device map for outages, ministry buildings and tafweej places layers, Mina sensor planning and camp-boundary editing. |
 | `05-lifecycle-map-06-sensors-gateways-split.js` | 347 | 43 | Sensors and gateways as first-class points, and splitting a camp. |
@@ -158,7 +158,7 @@
 | `05-lifecycle-map-12-ministry-screen-progress.js` | 384 | 22 | Ministry hall screen, completion forecast, progress map, far points, satellite in the ministry screen, week sentence and the hall view. |
 | `05-lifecycle-map-13-ministry-followup.js` | 471 | 49 | Ministry follow-up page: dynamic follow-up, season brief header, 'whose turn' groups, two modes, and the no-challenge camps card. |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4069 سطر · 151 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4071 سطر · 151 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -172,7 +172,7 @@
 | `06-ministry-alerts-08-pptx-template.js` | 966 | 16 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 285 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 987 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 989 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
 
@@ -216,4 +216,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 159 ملفًّا · 43196 سطر · 1939 دالة.
+**الإجمالي:** 159 ملفًّا · 43233 سطر · 1941 دالة.

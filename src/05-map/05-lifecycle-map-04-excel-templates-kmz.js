@@ -3,7 +3,7 @@
    DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
    PURPOSE : Current page to Excel, the tasks file from a template, and KMZ/KML import.
    DEFINES : lsGet, lsSet, xlsPage, xlsSheets, jszipLoad, xmlEsc, xlSerial, wtWorkbook, xlsExport, crc32, zipStore, kmzCamTable, kmzBuild, geoM … (+8 more)
-   GLOBALS : LS_ERR, JSZIP_LOADING, KMZ_STY, KMI, KMI_NEAR
+   GLOBALS : JSZIP_LOADING, KMZ_STY, KMI, KMI_NEAR
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
    ============================================================================ */
@@ -14,7 +14,7 @@
    جدولٍ فيها ورقةً باسم بطاقته — فيخرج ما في الصفحة كلُّه، لا ما تراه العين. */
 EXP.xlsAll = false;
 /* التخزينُ المحليُّ قد يكون معطَّلًا (تصفّحٌ خاصّ) — يُلتقَط ويُذكَر مرةً */
-var LS_ERR = null;
+/* (V38.55) LS_ERR is an accessor defined at the top of the core (01-core boot) — every swallowed error is recorded */
 function lsGet(k){ try { return localStorage.getItem(k); } catch (e){ LS_ERR = e; return null; } }
 function lsSet(k, v){ try { localStorage.setItem(k, v); return true; } catch (e){ LS_ERR = e; return false; } }
 function xlsPage(){
@@ -112,7 +112,7 @@ function jszipLoad(){
   if (typeof JSZip !== 'undefined') return Promise.resolve(true);
   if (JSZIP_LOADING) return JSZIP_LOADING;
   JSZIP_LOADING = libLoad('vendor/jszip/3.10.1/jszip.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js', 15000)   /* (V38.54) */
-    .then(function(ok){ ok = !!(ok && typeof JSZip !== 'undefined'); if (!ok) JSZIP_LOADING = null; return ok; });
+    .then(function(ok){ ok = !!(ok && typeof JSZip !== 'undefined'); if (!ok) setTimeout(function(){ JSZIP_LOADING = null; }, 60000); return ok; });
   return JSZIP_LOADING;
 }
 function xmlEsc(v){ return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }

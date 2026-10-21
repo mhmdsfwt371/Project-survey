@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.54</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.55</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1321,6 +1321,27 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 </div>
 
 <script>
+
+(function(){
+  var G = (typeof globalThis !== 'undefined') ? globalThis : this;
+  try { Object.defineProperty(G, 'LS_ERR', { configurable:true, get:function(){ return lsErrNote.last || null; }, set:function(v){ lsErrNote.last = v; if (v) lsErrNote(v); } }); }
+  catch (e){ G.LS_ERR = null; }
+})();
+function lsErrWhere(e){
+  var st = String((e && e.stack) || ''), m = /\n\s*at (?:new )?([A-Za-z_$][\w$.]*) /.exec(st) || /^([A-Za-z_$][\w$]*)@/m.exec(st);
+  return m ? m[1].replace(/^Object\./, '') : 'catch';
+}
+function lsErrNote(e){
+  if (lsErrNote.busy) return; lsErrNote.busy = true;
+  try {
+    var N = lsErrNote.n || (lsErrNote.n = { total:0, by:{}, since:Date.now() }), w = lsErrWhere(e);
+    N.total++; N.by[w] = (N.by[w] || 0) + 1;
+    var lastAt = (lsErrNote.at || (lsErrNote.at = {}))[w] || 0;
+    if (Date.now() - lastAt > 60000 && typeof softErr === 'function' && typeof SOFT_ERRS !== 'undefined' && SOFT_ERRS){ lsErrNote.at[w] = Date.now(); softErr('مبتلَع: ' + w, e); }
+  } catch (e2){  }
+  lsErrNote.busy = false;
+}
+
 'use strict';
 
 var BOOT_GUARD = (function(){
@@ -1356,7 +1377,7 @@ function nskChunkReady(){
 
   try { if (typeof whatsNewMaybe === 'function' && whatsNewMaybe.pending){ whatsNewMaybe.pending = false; if (whatsNewMaybe() && typeof render === 'function') render(1); } } catch (e3){ LS_ERR = e3; }
 }
-var I18N_FILE = 'i18n/dict-39af37f900.js', I18N_STATE = 0, I18N_WAIT = [];
+var I18N_FILE = 'i18n/dict-9aaf188f59.js', I18N_STATE = 0, I18N_WAIT = [];
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }
@@ -2443,15 +2464,19 @@ var CORE = {
 };
 
 function libLoad(local, cdn, ms){
-  var one = function(src){ return new Promise(function(res){
+
+  var t0 = Date.now();
+  var one = function(src, budget){ return new Promise(function(res){
     var sc = document.createElement('script'), done = false, fin = function(ok){ if (done) return; done = true; if (!ok && sc.parentNode) sc.parentNode.removeChild(sc); res(ok); };
     sc.src = src; sc.onload = function(){ fin(true); }; sc.onerror = function(){ fin(false); };
-    document.head.appendChild(sc); if (ms) setTimeout(function(){ fin(false); }, ms);
+    document.head.appendChild(sc); if (budget) setTimeout(function(){ fin(false); }, budget);
   }); };
-  return one(local).then(function(ok){
+  return one(local, ms).then(function(ok){
     if (ok || !cdn) return ok;
+    var left = ms ? ms - (Date.now() - t0) : 0;
+    if (ms && left < 1000) return false;
     libLoad.fellBack = (libLoad.fellBack || 0) + 1; libLoad.last = local;
-    return one(cdn);
+    return one(cdn, left);
   });
 }
 var FB = {
@@ -3411,7 +3436,10 @@ function softErr(where, e, tell){
 
 function softErrCard(){
   if (!SOFT_ERRS.length) return '';
-  return alertBox('warn', 'أعطالٌ صامتةٌ وقعت — لم تُزعج العملَ لكنها قد تفسّر نقصًا فيما تراه.')
+
+  var N = lsErrNote.n, top = N ? Object.keys(N.by).sort(function(a, b){ return N.by[b] - N.by[a]; }).slice(0, 3) : [];
+  var sum = N && N.total ? '<p class="hint" style="margin:0 0 6px">' + esc(t('أخطاءٌ مبتلَعةٌ منذ فتح التطبيق')) + ': <b class="num">' + nm(N.total) + '</b>' + (top.length ? ' \u2014 ' + esc(t('أكثرُها من')) + ' ' + top.map(function(k){ return '<bdi>' + esc(k) + '</bdi> (' + nm(N.by[k]) + ')'; }).join('، ') : '') + '</p>' : '';
+  return alertBox('warn', 'أعطالٌ صامتةٌ وقعت — لم تُزعج العملَ لكنها قد تفسّر نقصًا فيما تراه.') + sum
     + cardFlush(t('ما سقط بلا صوت') + ' — ' + nm(SOFT_ERRS.length),
         table(['الوقت','الموضع','السبب'],
           SOFT_ERRS.slice(0, 30).map(function(x){
@@ -20014,8 +20042,9 @@ function xlsxLoad(){
   if (XLSX_READY || (typeof window !== 'undefined' && window.XLSX)){ XLSX_READY = true; return Promise.resolve(true); }
   if (XLSX_LOADING) return XLSX_LOADING;
 
+  if (typeof toast === 'function') toast('\u23F3 ' + t('يُجهَّز محرّكُ الإكسل…'));
   XLSX_LOADING = libLoad('vendor/xlsx/0.20.3/xlsx.full.min.js', 'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js', 12000)
-    .then(function(ok){ ok = !!(ok && window.XLSX); XLSX_READY = ok; if (!ok) XLSX_LOADING = null; return ok; });
+    .then(function(ok){ ok = !!(ok && window.XLSX); XLSX_READY = ok; if (!ok) setTimeout(function(){ XLSX_LOADING = null; }, 60000); return ok; });
   return XLSX_LOADING;
 }
 
@@ -20023,8 +20052,9 @@ var EXLJS_READY = false, EXLJS_LOADING = null;
 function exlLoad(){
   if (EXLJS_READY || (typeof window !== 'undefined' && window.ExcelJS)){ EXLJS_READY = true; return Promise.resolve(true); }
   if (EXLJS_LOADING) return EXLJS_LOADING;
+  if (typeof toast === 'function') toast('\u23F3 ' + t('يُجهَّز محرّكُ الإكسل…'));
   EXLJS_LOADING = libLoad('vendor/exceljs/4.4.0/exceljs.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js', 15000)
-    .then(function(ok){ ok = !!(ok && window.ExcelJS); EXLJS_READY = ok; if (!ok) EXLJS_LOADING = null; return ok; });
+    .then(function(ok){ ok = !!(ok && window.ExcelJS); EXLJS_READY = ok; if (!ok) setTimeout(function(){ EXLJS_LOADING = null; }, 60000); return ok; });
   return EXLJS_LOADING;
 }
 
@@ -20682,7 +20712,6 @@ var SHEET_NAMES = {
 
 EXP.xlsAll = false;
 
-var LS_ERR = null;
 function lsGet(k){ try { return localStorage.getItem(k); } catch (e){ LS_ERR = e; return null; } }
 function lsSet(k, v){ try { localStorage.setItem(k, v); return true; } catch (e){ LS_ERR = e; return false; } }
 function xlsPage(){
@@ -20770,7 +20799,7 @@ function jszipLoad(){
   if (typeof JSZip !== 'undefined') return Promise.resolve(true);
   if (JSZIP_LOADING) return JSZIP_LOADING;
   JSZIP_LOADING = libLoad('vendor/jszip/3.10.1/jszip.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js', 15000)
-    .then(function(ok){ ok = !!(ok && typeof JSZip !== 'undefined'); if (!ok) JSZIP_LOADING = null; return ok; });
+    .then(function(ok){ ok = !!(ok && typeof JSZip !== 'undefined'); if (!ok) setTimeout(function(){ JSZIP_LOADING = null; }, 60000); return ok; });
   return JSZIP_LOADING;
 }
 function xmlEsc(v){ return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -29421,6 +29450,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.54"></script>
+<script defer src="app-office.js?v=38.55"></script>
 </body>
 </html>

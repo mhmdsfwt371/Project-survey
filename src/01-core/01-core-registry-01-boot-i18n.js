@@ -7,6 +7,30 @@
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
    ============================================================================ */
+/* (V38.55) swallowed errors are counted and recorded, not just the last one kept. 228 «catch (e){ LS_ERR = e; }» sites
+   keep the field running; LS_ERR is now an accessor on the global object, so each assignment also feeds the soft-error
+   log (per place, rate-limited) and the black box — shown in «Sync and conflicts» and attached to bug reports.
+   It must stay the first statement of the core: a `var LS_ERR` anywhere would be hoisted and make it a plain field. */
+(function(){
+  var G = (typeof globalThis !== 'undefined') ? globalThis : this;
+  try { Object.defineProperty(G, 'LS_ERR', { configurable:true, get:function(){ return lsErrNote.last || null; }, set:function(v){ lsErrNote.last = v; if (v) lsErrNote(v); } }); }
+  catch (e){ G.LS_ERR = null; }
+})();
+function lsErrWhere(e){
+  var st = String((e && e.stack) || ''), m = /\n\s*at (?:new )?([A-Za-z_$][\w$.]*) /.exec(st) || /^([A-Za-z_$][\w$]*)@/m.exec(st);
+  return m ? m[1].replace(/^Object\./, '') : 'catch';
+}
+function lsErrNote(e){
+  if (lsErrNote.busy) return; lsErrNote.busy = true;
+  try {
+    var N = lsErrNote.n || (lsErrNote.n = { total:0, by:{}, since:Date.now() }), w = lsErrWhere(e);
+    N.total++; N.by[w] = (N.by[w] || 0) + 1;
+    var lastAt = (lsErrNote.at || (lsErrNote.at = {}))[w] || 0;
+    if (Date.now() - lastAt > 60000 && typeof softErr === 'function' && typeof SOFT_ERRS !== 'undefined' && SOFT_ERRS){ lsErrNote.at[w] = Date.now(); softErr('مبتلَع: ' + w, e); }
+  } catch (e2){ /* never let the recorder throw */ }
+  lsErrNote.busy = false;
+}
+
 'use strict';   /* (V31.1) الوضعُ الصارم: لا متغيراتٍ ضمنيةً عامةً ولا أخطاءً صامتة — يسري على الشيفرة كلِّها */
 /* ═══ حارسُ الإقلاع — قاطعُ التوقّف المتكرّر (V21.9) ═══
    بلاغ: «A problem repeatedly occurred» في سفاري الآيفون لحظةَ التحديث التلقائي، ويعمل
@@ -52,7 +76,7 @@ function nskChunkReady(){
   /* (V38.51) the what's-new sheet waits for the release-notes log that ships in the chunk */
   try { if (typeof whatsNewMaybe === 'function' && whatsNewMaybe.pending){ whatsNewMaybe.pending = false; if (whatsNewMaybe() && typeof render === 'function') render(1); } } catch (e3){ LS_ERR = e3; }
 }
-var I18N_FILE = 'i18n/dict-39af37f900.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-9aaf188f59.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */

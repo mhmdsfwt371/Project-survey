@@ -16,9 +16,11 @@ var XLSX_READY = false, XLSX_LOADING = null;
 function xlsxLoad(){
   if (XLSX_READY || (typeof window !== 'undefined' && window.XLSX)){ XLSX_READY = true; return Promise.resolve(true); }
   if (XLSX_LOADING) return XLSX_LOADING;
-  /* (V38.54) own copy first (works offline once cached), the SheetJS CDN only as a fallback */
+  /* (V38.54) own copy first (works offline once cached), the SheetJS CDN only as a fallback;
+     (V38.55) the user sees at once that the press arrived — the first load can take seconds on the field network */
+  if (typeof toast === 'function') toast('\u23F3 ' + t('يُجهَّز محرّكُ الإكسل…'));
   XLSX_LOADING = libLoad('vendor/xlsx/0.20.3/xlsx.full.min.js', 'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js', 12000)
-    .then(function(ok){ ok = !!(ok && window.XLSX); XLSX_READY = ok; if (!ok) XLSX_LOADING = null; return ok; });
+    .then(function(ok){ ok = !!(ok && window.XLSX); XLSX_READY = ok; if (!ok) setTimeout(function(){ XLSX_LOADING = null; }, 60000); return ok; });   /* a failure answers at once for a minute, then a retry is allowed */
   return XLSX_LOADING;
 }
 
@@ -31,8 +33,9 @@ var EXLJS_READY = false, EXLJS_LOADING = null;
 function exlLoad(){
   if (EXLJS_READY || (typeof window !== 'undefined' && window.ExcelJS)){ EXLJS_READY = true; return Promise.resolve(true); }
   if (EXLJS_LOADING) return EXLJS_LOADING;
+  if (typeof toast === 'function') toast('\u23F3 ' + t('يُجهَّز محرّكُ الإكسل…'));   /* (V38.55) */
   EXLJS_LOADING = libLoad('vendor/exceljs/4.4.0/exceljs.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js', 15000)   /* (V38.54) */
-    .then(function(ok){ ok = !!(ok && window.ExcelJS); EXLJS_READY = ok; if (!ok) EXLJS_LOADING = null; return ok; });
+    .then(function(ok){ ok = !!(ok && window.ExcelJS); EXLJS_READY = ok; if (!ok) setTimeout(function(){ EXLJS_LOADING = null; }, 60000); return ok; });
   return EXLJS_LOADING;
 }
 /* ═══ (V33.7) بلاغُ المالك: «لما بعمل إكسبورت وورد بيطلّعني برّه السيستم ويدخّلني تاني» ═══

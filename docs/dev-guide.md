@@ -86,6 +86,18 @@ firestore.rules  database security rules (frozen by owner decision — do not ed
 | **Branches** | Push to `staging` only. `main` is written by the train after the gate passes. Never push to `main`. |
 | **Secrets** | Nothing secret in the repo or in Actions logs; the repo is public. |
 
+### 5b. New code — names, state and errors (V38.55)
+
+- **No new top-level `var`.** The health audit fails the gate if the number of globals grows (677 today). Keep state on the
+  function that owns it (`rbState.s`, `libLoad.fellBack`, `nskChunkState()`) or inside one object per domain.
+- **Prefix new functions with their domain** (`rb…` report builder, `eg…` train gates, `lib…` vendored libraries, `nsk…` loader)
+  so a search finds the whole feature and two features cannot collide.
+- **Unused local variables** are a lint warning held at the baseline (53, `docs/health-baseline.json`): a change that adds one
+  fails the gate; removing existing ones lowers the baseline with `node scripts/health-update.mjs`.
+- **Swallowed errors:** `catch (e){ LS_ERR = e; }` is allowed where the field must not stop, and it is no longer silent —
+  `LS_ERR` is an accessor that records each one (per function, rate-limited) into the soft-error log shown in
+  «المزامنة والتعارض» and attached to bug reports. Use `softErr('where', e, 'message to the user')` when the user must be told.
+
 ## 6. How to add a field to the survey
 
 1. **Define** the field label in `SV_LABELS` and its position in `SV_ORDER` (`03-survey/…05-forms-approvals.js`, `…06-survey-form.js`). Add it to `SV_EXTRA_KEYS` so it is saved and reset with the form.
