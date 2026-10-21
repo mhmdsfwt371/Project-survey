@@ -533,6 +533,30 @@ console.log('\n══ ١٦ · محادثةُ الميدان ══');
   w.STATE.users = keepUsers; w.STATE.tasks['TK-install-' + x.id].status = 'معتمد'; w.tasksTouched();
 }
 
+/* ── ١٧ · (V38.61) تعديلُ التركيب كما يُعدَّل المسح: الحالةُ والقطعُ والسيريالاتُ تُحفَظ من اللوح، وصورُ التركيب تُحذَف وتُضاف،
+   والصورُ في نافذة الخريطة بحسب وضعها (المسحُ صورَه، والتركيبُ صورَه، والمختصرُ الكلّ) ── */
+console.log('\n══ ١٧ · تعديلُ التركيب ══');
+{
+  const d = w.document, as = (role, name) => { w.ROLE = role; w.STATE.meta.role = role; w.STATE.meta.name = name; };
+  const x = w.STATE.sites.filter(z => z && z.type === 'مخيم' && z.zone === 'منى' && !w.STATE.inss[z.id] && !w.taskKindOf(z.id, 'install'))[0];
+  const zn = w.siteZone(x), pz = w.itemsList().filter(i => i.z === zn && i.name), rd = pz.find(i => /^rdr/i.test(i.code) || /قارئ/.test(i.name)), cm = pz.find(i => /كاميرا/.test(i.name));
+  as('supervisor', 'مشرف التعديل');
+  w.STATE.recs[x.id] = { id:x.id, access:'تم الوصول', review:'approved', by:'مشرف التعديل', at:Date.now() - 3600000, mount:'هيكل قائم', power:'شبكة' };
+  w.STATE.inss[x.id] = { id:x.id, status:'مُركّب', by:'مشرف التعديل', at:Date.now(), parts:{ [rd.code]:1 }, serials:{ [rd.code]:'SN-ED-1' }, approved:false, pts:1, solution:{ status:'معتمد', parts:{ [rd.code]:1 } } };
+  w.STATE.photos = w.STATE.photos || {}; w.STATE.photos[x.id + '-71'] = { site:x.id, kind:'ins_before', seq:71, by:'مشرف التعديل', at:Date.now(), driveId:'d71' }; w.STATE.photos[x.id + '-70'] = { site:x.id, kind:'sv', seq:70, by:'مشرف التعديل', at:Date.now(), driveId:'d70' }; w.PH_IDX = null;
+  w.POP_SITE = x.id; w.FIELD_MODE = 'survey'; const pS = String(w.popHtml()); w.FIELD_MODE = 'install'; const pI = String(w.popHtml()); w.FIELD_MODE = 'brief'; const pB = String(w.popHtml()); w.FIELD_MODE = 'survey';
+  T(pS.indexOf('صور الزيارة') > -1 && pS.indexOf('صور التركيب') < 0 && pI.indexOf('صور التركيب') > -1 && pI.indexOf('صور الزيارة') < 0 && pI.indexOf('data-insq="' + x.id + '"') > -1 && pB.indexOf('d70') > -1 && pB.indexOf('d71') > -1, 'الصورُ بحسب وضع الخريطة: المسحُ صورَ الزيارة، والتركيبُ صورَ التركيب وزرَّ تعديله، والمختصرُ الكلّ');
+  w.insqState().id = x.id; w.CUR = 'map'; w.render(1); let sh = d.getElementById('insqSheet');
+  const drawn = !!sh && sh.innerHTML.indexOf('SN-ED-1') > -1 && sh.querySelectorAll('[data-insqdelask]').length === 1 && sh.innerHTML.indexOf('d70') < 0 && !!sh.querySelector('[data-insqadd]');
+  sh.querySelector('[data-insqp="' + cm.code + '"]').value = '2'; sh.querySelector('[data-insqs="' + cm.code + '"]').value = 'SN-ED-C'; const mv0 = w.STATE.moves.length; const ok1 = w.insqSave(); const r1 = w.STATE.inss[x.id];
+  T(drawn && ok1 && r1.parts[cm.code] === 2 && r1.serials[cm.code] === 'SN-ED-C' && r1.solution && r1.edits.length === 1 && w.STATE.moves.length === mv0 + 1 && w.chOf(x.id).some(v => /عُدِّل التركيب/.test(v.text) && /SN-ED-C/.test(v.text)), 'ولوحُ التعديل يعرض صورَ التركيب وحدَها ويحفظ الكميةَ والسيريال، ويُستهلَك الفرقُ، ويُسجَّل التعديلُ وسطرُه في المحادثة');
+  w.render(1); sh = d.getElementById('insqSheet'); sh.querySelector('[data-insqdelask]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); sh = d.getElementById('insqSheet'); sh.querySelector('[data-insqdel]').dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
+  const delOk = !!(w.STATE.photos[x.id + '-71'] || {}).del;
+  w.STATE.inss[x.id].approved = true; as('tech', 'فني آخر'); w.render(1); sh = d.getElementById('insqSheet'); const noDel = !sh.querySelector('[data-insqdelask]'); sh.querySelector('[data-insqs="' + rd.code + '"]').value = 'SN-ED-2'; const ok2 = w.insqSave();
+  T(delOk && noDel && ok2 && w.STATE.inss[x.id].approved === false, 'وحذفُ صورته قبل الاعتماد له، وبعد الاعتماد للمهندس وحده — وتعديلُ الفنيِّ لمعتمدٍ يعيده إلى التدقيق');
+  w.insqState().id = ''; as('engineer', 'جرد السيناريوهات');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

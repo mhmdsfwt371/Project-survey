@@ -42,7 +42,9 @@ function popPhotosHtml(id){
     return '<div style="margin:8px 0 0"><div class="hint" style="margin:0 0 4px">\u{1F4F7} ' + esc(t(label)) + ' \u00b7 ' + nm(list.length) + (pend ? ' \u00b7 \u23F3 ' + nm(pend) + ' ' + esc(t('تُنقَل إلى الدرايف')) : '') + (list.length > 6 ? ' \u2014 ' + esc(t('أوّلُ ستٍّ — والباقي في «التفاصيل»')) : '') + '</div><div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">' + th + '</div></div>';
   };
   var isIns = function(x){ return /^ins/.test(String(x[1].kind || '')); };
-  return group(L.filter(function(x){ return !isIns(x); }), 'صور الزيارة') + group(L.filter(isIns), 'صور التركيب');
+  /* (V38.61) owner's rule: the survey map shows the visit's photos, the installation map the installation's, «brief» both */
+  var sv = group(L.filter(function(x){ return !isIns(x); }), 'صور الزيارة'), ins = group(L.filter(isIns), 'صور التركيب');
+  return FIELD_MODE === 'install' ? ins : (FIELD_MODE === 'survey' ? sv : sv + ins);
 }
 
 function popHtml(){
@@ -302,9 +304,10 @@ function popHtml(){
     +   (may('edit')
           ? (FIELD_MODE === 'install'
               /* الجاهزيةُ الحقيقيةُ: اعتمادُ الوزارة وحلٌّ معتمد — لا اللونُ وحدَه */
-              ? (((typeof minOk === 'function' && minOk(s.id)) && (STATE.inss[s.id] || {}).solution && (STATE.inss[s.id] || {}).solution.status === 'معتمد') || insDone(s.id) || taskKindOf(s.id, 'install')
+              ? ((((typeof minOk === 'function' && minOk(s.id)) && (STATE.inss[s.id] || {}).solution && (STATE.inss[s.id] || {}).solution.status === 'معتمد') || insDone(s.id) || taskKindOf(s.id, 'install')
                   ? btn('🔧 ' + t('نموذج التركيب'),'btn-secondary btn-sm',' data-insform="' + esc(s.id) + '"')
                   : '')
+                + (typeof insqMay === 'function' && insqMay(s.id) ? btn('\u270E ' + t('تعديل التركيب'),'btn-secondary btn-sm',' data-insq="' + esc(s.id) + '"') : ''))   /* (V38.61) */
               : btn('🔍 ' + t('نموذج المسح'),'btn-secondary btn-sm',' data-form="' + esc(s.id) + '"')
                 + (svqMay(s.id) ? btn('\u270E ' + t('تعديل المسح'),'btn-secondary btn-sm',' data-svq="' + esc(s.id) + '"') : '')
                 /* (V38.56) an open install task on this site: its form is here even in «survey» map mode */

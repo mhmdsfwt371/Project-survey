@@ -44,6 +44,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
         /* (V38.56) the install form from the site page — when an install task is open here, or it is installed, or ready */
         + (may('edit') && (taskKindOf(x.id, 'install') || insDone(x.id) || (((STATE.inss[x.id] || {}).solution || {}).status === 'معتمد' && typeof minOk === 'function' && minOk(x.id)))
             ? btn('🔧 ' + t('نموذج التركيب'),'btn-primary btn-sm',' data-insform="' + esc(x.id) + '"') : '')
+        + (typeof insqMay === 'function' && insqMay(x.id) ? btn('\u270E ' + t('تعديل التركيب'),'btn-secondary btn-sm',' data-insq="' + esc(x.id) + '"') : '')   /* (V38.61) */
         + '</div>')
 
       + (SITE_ED && maySiteEditBasic() ? siteEditHtml(x) : '')   /* (V28.6) */

@@ -20,6 +20,17 @@ function clickAPart3(e){
   if (e.target.closest('[data-svq]')){ SVQ = { id:e.target.closest('[data-svq]').getAttribute('data-svq'), key:'', tmp:null }; POP_OPEN = false;
     try { if (window.history && history.pushState) history.pushState({ svq:1 }, ''); } catch (e3){ LS_ERR = e3; }   /* زرُّ الرجوع في الجهاز يغلق اللوح لا التطبيق */
     render(1); return true; }   /* (V22.3) */
+  /* (V38.61) the installation's edit sheet */
+  var iqo = e.target.closest('[data-insq]');
+  if (iqo){ var IQ = insqState(); IQ.id = iqo.getAttribute('data-insq'); IQ.st = ''; IQ.delAsk = ''; POP_OPEN = false; render(1); return true; }
+  if (e.target.closest('[data-insqx]')){ insqState().id = ''; insqState().st = ''; render(1); return true; }
+  var iqs = e.target.closest('[data-insqst]'); if (iqs){ insqState().st = iqs.getAttribute('data-insqst'); render(1); return true; }
+  if (e.target.closest('[data-insqsave]')){ if (insqSave()) render(1); return true; }
+  var iqa = e.target.closest('[data-insqdelask]'); if (iqa){ insqState().delAsk = iqa.getAttribute('data-insqdelask'); render(1); return true; }
+  if (e.target.closest('[data-insqdelx]')){ insqState().delAsk = ''; render(1); return true; }
+  var iqd = e.target.closest('[data-insqdel]'); if (iqd){ if (insqPhotoDel(iqd.getAttribute('data-insqdel'))) render(1); return true; }
+  var iqq = e.target.closest('[data-insqqx]');
+  if (iqq){ var qi2 = +iqq.getAttribute('data-insqqx'), qx2 = PHOTO_Q[qi2]; if (qx2 && qx2.site === insqState().id){ PHOTO_Q.splice(qi2, 1); CORE.saveSoon(); toast(t('أُلغيت')); } render(1); return true; }
   if (e.target.closest('[data-svqx]')){ SVQ = { id:'', key:'', tmp:null }; render(1); return true; }
   if (e.target.closest('[data-svqk]')){ SVQ.key = e.target.closest('[data-svqk]').getAttribute('data-svqk'); SVQ.tmp = null; render(1); setTimeout(function(){ var el = document.getElementById('svqIn'); if (el){ try { el.focus(); } catch (e2){ LS_ERR = e2; } } }, 30); return true; }
   if (e.target.closest('[data-svqdelask]')){ SVQ.delAsk = e.target.closest('[data-svqdelask]').getAttribute('data-svqdelask'); render(1); return true; }   /* (V22.8) */

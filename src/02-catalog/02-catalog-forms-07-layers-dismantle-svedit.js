@@ -271,8 +271,9 @@ function svqCanDel(p, rec){ if (may('delete')) return true; return !!p && p.by =
    (المهندسُ أيَّ صورة، والرافعُ صورتَه ما لم تُعتمَد الزيارة) بتأكيدٍ ثانٍ، وما في طابور الجهاز يُلغى،
    وتُضاف صورٌ جديدةٌ (واحدةٌ أو أكثر) بنوعها أو «صورة إضافية» — والحذفُ علامةٌ مسجَّلةٌ لا محوٌ صامت */
 function svqPhotos(rec){
-  var id = rec.id, list = (typeof photosOf === 'function' ? photosOf(id) : []).filter(function(p){ return !(p[1] || {}).del; });
-  var q = (typeof PHOTO_Q !== 'undefined' ? PHOTO_Q : []).map(function(x, i){ return [i, x]; }).filter(function(e){ return e[1] && e[1].site === id; });
+  /* (V38.61) the visit's photos only — the installation's are edited in «تعديل التركيب» */
+  var id = rec.id, list = (typeof photosOf === 'function' ? photosOf(id) : []).filter(function(p){ return !(p[1] || {}).del && !/^ins/.test(String((p[1] || {}).kind || '')); });
+  var q = (typeof PHOTO_Q !== 'undefined' ? PHOTO_Q : []).map(function(x, i){ return [i, x]; }).filter(function(e){ return e[1] && e[1].site === id && !/^ins/.test(String(e[1].kind || '')); });
   var row = function(thumb, label, sub, act){ return '<div class="svq-row"><div class="svq-ph">' + thumb + '</div><div class="svq-k" style="flex:1 1 50%"><b style="color:var(--ink)">' + esc(t(label)) + '</b><div class="hint" style="margin:0;font-size:11.5px">' + sub + '</div></div>' + act + '</div>'; };
   var img = function(d){ return d ? '<img src="' + esc(d) + '" alt="" loading="lazy">' : '<span>\u{1F5BC}</span>'; };
   var h = '<div class="wp-sec" style="margin-top:12px">' + esc(t('صور الزيارة')) + ' \u00b7 ' + nm(list.length + q.length) + '</div>';

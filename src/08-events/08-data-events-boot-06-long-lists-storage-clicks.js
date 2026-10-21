@@ -72,6 +72,9 @@ function render0(force){
   /* لوحُ تعديل المسح (V22.3) — فوق كلِّ شيءٍ ما دام مفتوحًا */
   var sqOld = document.getElementById('svqSheet'); if (sqOld) sqOld.parentNode.removeChild(sqOld);
   if (SVQ.id){ var sqW = document.createElement('div'); sqW.innerHTML = svqSheet(); if (sqW.firstChild) document.body.appendChild(sqW.firstChild); }
+  /* (V38.61) and the installation's edit sheet */
+  var iqOld = document.getElementById('insqSheet'); if (iqOld) iqOld.parentNode.removeChild(iqOld);
+  if (typeof insqState === 'function' && insqState().id){ var iqW = document.createElement('div'); iqW.innerHTML = insqSheet(); if (iqW.firstChild) document.body.appendChild(iqW.firstChild); }
   /* لافتةُ الحفظ المحلي (V17.93) — حين يوجد خطرٌ حقيقيٌّ فقط (V19.6) */
   idbBannerUpdate();
   /* لافتةُ الحساب الذي ينتظر التفعيل (V17.93) */

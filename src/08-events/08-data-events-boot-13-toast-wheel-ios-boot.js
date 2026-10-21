@@ -180,6 +180,11 @@ document.addEventListener('change', function(e){
       if (pv > 0) SOL_LINES[pc] = pv; else delete SOL_LINES[pc];
       render(1); return;
     }
+    if (el.hasAttribute('data-insqadd')){   /* (V38.61) photos added from «تعديل التركيب» */
+      var flI = el.files ? Array.prototype.slice.call(el.files) : [], idI = el.getAttribute('data-insqadd');
+      if (flI.length && idI && typeof insPhotoAdd === 'function') insPhotoAdd(idI, flI);
+      return;
+    }
     if (el.hasAttribute('data-svqadd')){   /* (V22.8) صورةٌ أو أكثر بنوعها */
       var fl = el.files ? Array.prototype.slice.call(el.files) : [], ak = (document.getElementById('svqPhKind') || {}).value || 'extra', aid = SVQ.id;
       if (!fl.length || !aid) return;
