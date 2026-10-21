@@ -4581,6 +4581,8 @@ function provReask(uid){
 
 var RELEASE_NOTES = [
 
+  { v:'V38.63', d:'2026-10-21', notes:[
+      'التركيب يخصم من المستودع مباشرة حين لا عهدة عند المنفّذ، وسجل التركيب لايف في المحادثات' ] },
   { v:'V38.62', d:'2026-10-21', notes:[
       'المسح للتوريد والتركيب للمستودع: خصم صافٍ لكل نقطة بلا تكرار، وجدول المعتمد مقابل الوارد والمخزون والمركّب — وصور التركيب تظهر للمكتب خلال ثوانٍ' ] },
   { v:'V38.61', d:'2026-10-21', notes:[
@@ -6512,12 +6514,13 @@ function custodyByWho(){
     if (!by[who]) by[who] = { who:who, items:{}, total:0 };
     return by[who];
   }
-  movesList().forEach(function(m){
+  movesList().slice().sort(function(a, b){ return movAt(a) - movAt(b); }).forEach(function(m){
     var who = m.by || '—', q = cfgN(m.qty), it = m.item || '—';
     if (!q) return;
     var d = 0;
     if (m.kind === 'صرف' || m.kind === 'تصحيح استهلاك') d = q;
-    else if (m.kind === 'استهلاك' || m.kind === 'إرجاع' || m.kind === 'شطب'
+    else if (m.kind === 'استهلاك'){ var held = (by[who] && by[who].items[it]) || 0; d = -Math.min(q, Math.max(0, held)); if (!d) return; }
+    else if (m.kind === 'إرجاع' || m.kind === 'شطب'
              || m.kind === 'إرجاع سليم' || m.kind === 'إرجاع تالف') d = -q;
     else return;
     var r = row(who);

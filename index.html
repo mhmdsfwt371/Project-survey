@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.62</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.63</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1377,7 +1377,7 @@ function nskChunkReady(){
 
   try { if (typeof whatsNewMaybe === 'function' && whatsNewMaybe.pending){ whatsNewMaybe.pending = false; if (whatsNewMaybe() && typeof render === 'function') render(1); } } catch (e3){ LS_ERR = e3; }
 }
-var I18N_FILE = 'i18n/dict-7efc204194.js', I18N_STATE = 0, I18N_WAIT = [];
+var I18N_FILE = 'i18n/dict-0d6167e869.js', I18N_STATE = 0, I18N_WAIT = [];
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }
@@ -6951,11 +6951,13 @@ function chThreadHtml(site, compact){
 }
 function chPageHtml(){
   var all = chMsgs().filter(chVisible), me = STATE.meta.name || '';
-  var f = chPageHtml.f || {}, site = f.site || '', who = f.who || '';
-  var L = all.filter(function(v){ return (!site || v.site === site) && (!who || v.from === who || v.to === who); }).slice(-200);
+  var f = chPageHtml.f || {}, site = f.site || '', who = f.who || '', sys = !!f.sys;
+
+  var L = all.filter(function(v){ return (!site || v.site === site) && (!who || v.from === who || v.to === who) && (!sys || v.kind === 'sys'); }).slice(-200);
   var sites = {}; all.forEach(function(v){ if (v.site) sites[v.site] = (sites[v.site] || 0) + 1; });
   var people = {}; all.forEach(function(v){ [v.from, v.to].forEach(function(n){ if (n && n !== me) people[n] = 1; }); });
-  var chips = '<div class="chips" style="margin:0 0 8px">' + btn(t('الكلّ'), 'chip' + (!site && !who ? ' on' : ''), ' data-chf="all"')
+  var chips = '<div class="chips" style="margin:0 0 8px">' + btn(t('الكلّ'), 'chip' + (!site && !who && !sys ? ' on' : ''), ' data-chf="all"')
+    + btn('\u{1F527} ' + t('سجل التركيب') + ' \u00b7 ' + nm(all.filter(function(v){ return v.kind === 'sys'; }).length), 'chip' + (sys ? ' on' : ''), ' data-chf="sys"')
     + Object.keys(sites).sort(function(a, b){ return sites[b] - sites[a]; }).slice(0, 12).map(function(s){ var x = siteFind(s); return btn((x ? siteKey(x) : s) + ' \u00b7 ' + nm(sites[s]), 'chip' + (site === s ? ' on' : ''), ' data-chf="site:' + esc(s) + '"'); }).join('')
     + Object.keys(people).slice(0, 12).map(function(n){ return btn('\u{1F464} ' + (dispName(n) || n), 'chip' + (who === n ? ' on' : ''), ' data-chf="who:' + esc(n) + '"'); }).join('') + '</div>';
   var names = (typeof techsList === 'function' ? techsList().map(function(x){ return x.n; }) : []).concat(Object.keys(STATE.users || {}).map(function(k){ return (STATE.users[k] || {}).name; })).filter(function(n, i, a){ return n && n !== me && a.indexOf(n) === i; });
@@ -10270,8 +10272,9 @@ function insConsume(site, held, who){
   var had = insConsumed(site), all = {}, take = {}, back = {};
   Object.keys(had).concat(Object.keys(held || {})).forEach(function(k){ all[k] = 1; });
   Object.keys(all).forEach(function(k){ var d = (cfgN((held || {})[k]) || 0) - (had[k] || 0); if (d > 0) take[k] = d; else if (d < 0) back[k] = -d; });
-  Object.keys(take).forEach(function(k){ STATE.moves.push({ at:dayKey(), kind:'استهلاك', item:k, qty:take[k], by:who || STATE.meta.name || '—', site:site, cond:'' }); });
-  Object.keys(back).forEach(function(k){ STATE.moves.push({ at:dayKey(), kind:'تصحيح استهلاك', item:k, qty:back[k], by:who || STATE.meta.name || '—', site:site, cond:'', note:'تعديل تركيب' }); });
+  var ts = Date.now();
+  Object.keys(take).forEach(function(k){ STATE.moves.push({ at:dayKey(), ts:ts, kind:'استهلاك', item:k, qty:take[k], by:who || STATE.meta.name || '—', site:site, cond:'' }); });
+  Object.keys(back).forEach(function(k){ STATE.moves.push({ at:dayKey(), ts:ts, kind:'تصحيح استهلاك', item:k, qty:back[k], by:who || STATE.meta.name || '—', site:site, cond:'', note:'تعديل تركيب' }); });
   if (Object.keys(take).length || Object.keys(back).length) CORE.dirty('moves', site, { take:take, back:back });
   return { take:take, back:back };
 }
@@ -16613,6 +16616,7 @@ function itemCode(v){
   return s0;
 }
 
+function movAt(m){ if (!m) return 0; if (typeof m.ts === 'number') return m.ts; var a = m.at; if (typeof a === 'number') return a; var p = Date.parse(a); return isNaN(p) ? 0 : p + 86399999; }
 function stockBalance(){
   var bal = {};
   function row(item){
@@ -16620,11 +16624,12 @@ function stockBalance(){
     if (!bal[k]) bal[k] = { item:k, key:k, store:0, custody:0, used:0, scrap:0 };
     return bal[k];
   }
-  movesList().forEach(function(m){
+
+  movesList().slice().sort(function(a, b){ return movAt(a) - movAt(b); }).forEach(function(m){
     var r = row(m.item || '\u2014'), q = +m.qty || 0;
     if (m.kind === 'توريد')      r.store   += q;
     else if (m.kind === 'صرف'){  r.store   -= q; r.custody += q; }
-    else if (m.kind === 'استهلاك'){ r.custody -= q; r.used += q; }
+    else if (m.kind === 'استهلاك'){ var fromC = Math.min(q, Math.max(0, r.custody)); r.custody -= fromC; r.store -= (q - fromC); r.used += q; }
     else if (m.kind === 'تصحيح استهلاك'){ r.used -= q; r.custody += q; }
 
     else if (m.kind === 'إرجاع'){ if (m.dis || /^فك /.test(m.note || '')){ r.used -= q; } else { r.custody -= q; } r.store += q; }
@@ -27102,7 +27107,7 @@ function clickTables(e){
     chSend(site, to, txt); if (ta) ta.value = ''; toast('\u{1F4AC} ' + t('أُرسلت')); render(1); return true;
   }
   var chf = e.target.closest('[data-chf]');
-  if (chf){ var chfv = chf.getAttribute('data-chf'); chPageHtml.f = chfv === 'all' ? {} : (chfv.indexOf('site:') === 0 ? { site:chfv.slice(5) } : { who:chfv.slice(4) }); toast(chfv === 'all' ? t('كلُّ الرسائل') : chfv.slice(chfv.indexOf(':') + 1)); render(1); return true; }
+  if (chf){ var chfv = chf.getAttribute('data-chf'); chPageHtml.f = chfv === 'all' ? {} : chfv === 'sys' ? { sys:1 } : (chfv.indexOf('site:') === 0 ? { site:chfv.slice(5) } : { who:chfv.slice(4) }); toast(chfv === 'all' ? t('كلُّ الرسائل') : chfv === 'sys' ? t('سجل التركيب') : chfv.slice(chfv.indexOf(':') + 1)); render(1); return true; }
   var cho = e.target.closest('[data-chopen]');
   if (cho){ chPageHtml.f = { site:cho.getAttribute('data-chopen') }; POP_OPEN = false; goPage('chat'); render(1); return true; }
   var rbpr = e.target.closest('[data-rbpresets]'); if (rbpr){ var nP = rbPresetsAdd(); toast(nP ? '\u26A1 ' + t('أُضيفت') + ' ' + nm(nP) : t('كلُّها موجودةٌ أصلًا')); var rsR = document.getElementById('assistRes'); if (rsR) rsR.innerHTML = assistResHtml(); else render(1); return true; }
@@ -29789,6 +29794,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.62"></script>
+<script defer src="app-office.js?v=38.63"></script>
 </body>
 </html>

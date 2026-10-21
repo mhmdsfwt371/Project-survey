@@ -575,6 +575,16 @@ console.log('\n══ ١٨ · التوريدُ والمستودع ══');
   as('engineer', 'جرد السيناريوهات'); w.STATE.inss[x.id].status = 'مُركّب'; w.STATE.inss[x.id].parts = { [rd.code]:1, [cm.code]:3 }; w.STATE.inss[x.id].solution = { status:'معتمد', items:{ [rd.code]:1, [cm.code]:1 } };
   w.CUR = 'survey'; w.render(1); w.PTAB.survey = 'solution'; w.render(1); const hs = w.document.getElementById('content').innerHTML; w.PTAB.survey = 'qa'; w.render(1); const hq = w.document.getElementById('content').innerHTML;
   T(hs.indexOf('المعتمد من المسح (للتوريد)') > -1 && hs.indexOf('رُكِّب (خُصم)') > -1 && hs.indexOf('المتبقّي للطلب') > -1 && hq.indexOf('عن الحلّ المعتمد') > -1, 'وجدولُ الحلول يضع المعتمدَ للتوريد بجانب الوارد والمخزون والمركَّب والمتبقّي، وصفُّ التدقيق يُري الفرقَ عن الحلّ');
+  /* (V38.63) an installation takes from the installers' custody first, then from the store */
+  { const keepM = w.STATE.moves; w.STATE.moves = [
+      { at:'2026-10-01', kind:'توريد', item:'zz-item', qty:10, by:'مخزن' },
+      { at:'2026-10-02', kind:'صرف', item:'zz-item', qty:2, by:'فني س' },
+      { at:'2026-10-03', kind:'استهلاك', item:'zz-item', qty:5, by:'فني س', site:'S-ZZ' } ];
+    const b = w.stockBalance().find(r => r.item === w.itemKey('zz-item')) || {}, cu = (w.custodyByWho().find(r => r.who === 'فني س') || { items:{} }).items['zz-item'] || 0;
+    T(b.store === 5 && b.custody === 0 && b.used === 5 && cu === 0, 'والتركيبُ يأخذ من عهدة المنفِّذ أوّلًا ثم من المستودع مباشرةً — لا عهدةَ سالبةً ولا مستودعَ لا ينقص');
+    w.STATE.moves = keepM; }
+  /* the chat page has a live installation log */
+  { w.chPageHtml.f = { sys:1 }; const hp = w.chPageHtml(); w.chPageHtml.f = {}; T(hp.indexOf('سجل التركيب') > -1 && hp.indexOf('data-chf="sys"') > -1, 'وصفحةُ المحادثات فيها «سجل التركيب» لايف — كلُّ حفظٍ وتعديلٍ واعتمادٍ وردّ'); }
   /* a photo still travelling to Drive is read from its raw copy, once */
   w.phBlob.c = { 'S-PH-1':'data:image/jpeg;base64,/9j/RAW' }; const src1 = w.phSrc('S-PH-1', { status:'pending', blob:true }), src2 = w.phSrc('S-PH-2', { driveId:'dz' }, 200);
   T(src1.indexOf('RAW') > -1 && /thumbnail\?id=dz&sz=w200/.test(src2), 'والصورةُ التي لم تصل الدرايف بعدُ تُعرَض من نسختها في السحابة خلال ثوانٍ');

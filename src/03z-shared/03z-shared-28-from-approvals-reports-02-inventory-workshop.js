@@ -98,6 +98,9 @@ function itemCode(v){
   return s0;
 }
 
+/* (V38.63) a movement's time as a number: new records carry the instant (ts); older ones only the day («2026-10-21»),
+   read as the end of that day so a same-day receipt or issue still comes before them (the order they were written in) */
+function movAt(m){ if (!m) return 0; if (typeof m.ts === 'number') return m.ts; var a = m.at; if (typeof a === 'number') return a; var p = Date.parse(a); return isNaN(p) ? 0 : p + 86399999; }
 function stockBalance(){
   var bal = {};
   function row(item){
@@ -105,11 +108,14 @@ function stockBalance(){
     if (!bal[k]) bal[k] = { item:k, key:k, store:0, custody:0, used:0, scrap:0 };
     return bal[k];
   }
-  movesList().forEach(function(m){
+  /* (V38.63) in time order, so an installation takes from what the installers hold first and the rest straight from
+     the store — owner's model: «التركيب يخصم من المستودع». Without a recorded issue («صرف») it drove custody negative
+     and left the store untouched. */
+  movesList().slice().sort(function(a, b){ return movAt(a) - movAt(b); }).forEach(function(m){
     var r = row(m.item || '\u2014'), q = +m.qty || 0;
     if (m.kind === 'توريد')      r.store   += q;
     else if (m.kind === 'صرف'){  r.store   -= q; r.custody += q; }
-    else if (m.kind === 'استهلاك'){ r.custody -= q; r.used += q; }
+    else if (m.kind === 'استهلاك'){ var fromC = Math.min(q, Math.max(0, r.custody)); r.custody -= fromC; r.store -= (q - fromC); r.used += q; }
     else if (m.kind === 'تصحيح استهلاك'){ r.used -= q; r.custody += q; }   /* (V38.62) an installation lowered: back to the installer */
     /* (V37.99) ما يعود بالفكِّ يخرج من «رُكّب في الميدان» لا من عهدة الفني — كان يُخصَم من العهدة فتصير سالبةً
        ويبقى «رُكّب» منفوخًا بعد الموسم. يُعرَف بعلامته، والقديمُ بملاحظته «فك …» */

@@ -61,11 +61,13 @@ function chThreadHtml(site, compact){
 }
 function chPageHtml(){
   var all = chMsgs().filter(chVisible), me = STATE.meta.name || '';
-  var f = chPageHtml.f || {}, site = f.site || '', who = f.who || '';
-  var L = all.filter(function(v){ return (!site || v.site === site) && (!who || v.from === who || v.to === who); }).slice(-200);
+  var f = chPageHtml.f || {}, site = f.site || '', who = f.who || '', sys = !!f.sys;
+  /* (V38.63) «سجل التركيب»: only the lines the system writes — every installation saved, edited, approved or returned, live */
+  var L = all.filter(function(v){ return (!site || v.site === site) && (!who || v.from === who || v.to === who) && (!sys || v.kind === 'sys'); }).slice(-200);
   var sites = {}; all.forEach(function(v){ if (v.site) sites[v.site] = (sites[v.site] || 0) + 1; });
   var people = {}; all.forEach(function(v){ [v.from, v.to].forEach(function(n){ if (n && n !== me) people[n] = 1; }); });
-  var chips = '<div class="chips" style="margin:0 0 8px">' + btn(t('الكلّ'), 'chip' + (!site && !who ? ' on' : ''), ' data-chf="all"')
+  var chips = '<div class="chips" style="margin:0 0 8px">' + btn(t('الكلّ'), 'chip' + (!site && !who && !sys ? ' on' : ''), ' data-chf="all"')
+    + btn('\u{1F527} ' + t('سجل التركيب') + ' \u00b7 ' + nm(all.filter(function(v){ return v.kind === 'sys'; }).length), 'chip' + (sys ? ' on' : ''), ' data-chf="sys"')
     + Object.keys(sites).sort(function(a, b){ return sites[b] - sites[a]; }).slice(0, 12).map(function(s){ var x = siteFind(s); return btn((x ? siteKey(x) : s) + ' \u00b7 ' + nm(sites[s]), 'chip' + (site === s ? ' on' : ''), ' data-chf="site:' + esc(s) + '"'); }).join('')
     + Object.keys(people).slice(0, 12).map(function(n){ return btn('\u{1F464} ' + (dispName(n) || n), 'chip' + (who === n ? ' on' : ''), ' data-chf="who:' + esc(n) + '"'); }).join('') + '</div>';
   var names = (typeof techsList === 'function' ? techsList().map(function(x){ return x.n; }) : []).concat(Object.keys(STATE.users || {}).map(function(k){ return (STATE.users[k] || {}).name; })).filter(function(n, i, a){ return n && n !== me && a.indexOf(n) === i; });

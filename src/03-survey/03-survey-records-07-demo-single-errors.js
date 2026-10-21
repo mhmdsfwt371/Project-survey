@@ -137,8 +137,9 @@ function insConsume(site, held, who){
   var had = insConsumed(site), all = {}, take = {}, back = {};
   Object.keys(had).concat(Object.keys(held || {})).forEach(function(k){ all[k] = 1; });
   Object.keys(all).forEach(function(k){ var d = (cfgN((held || {})[k]) || 0) - (had[k] || 0); if (d > 0) take[k] = d; else if (d < 0) back[k] = -d; });
-  Object.keys(take).forEach(function(k){ STATE.moves.push({ at:dayKey(), kind:'استهلاك', item:k, qty:take[k], by:who || STATE.meta.name || '—', site:site, cond:'' }); });
-  Object.keys(back).forEach(function(k){ STATE.moves.push({ at:dayKey(), kind:'تصحيح استهلاك', item:k, qty:back[k], by:who || STATE.meta.name || '—', site:site, cond:'', note:'تعديل تركيب' }); });
+  var ts = Date.now();   /* (V38.63) the instant too — the ledger is read in time order */
+  Object.keys(take).forEach(function(k){ STATE.moves.push({ at:dayKey(), ts:ts, kind:'استهلاك', item:k, qty:take[k], by:who || STATE.meta.name || '—', site:site, cond:'' }); });
+  Object.keys(back).forEach(function(k){ STATE.moves.push({ at:dayKey(), ts:ts, kind:'تصحيح استهلاك', item:k, qty:back[k], by:who || STATE.meta.name || '—', site:site, cond:'', note:'تعديل تركيب' }); });
   if (Object.keys(take).length || Object.keys(back).length) CORE.dirty('moves', site, { take:take, back:back });
   return { take:take, back:back };
 }

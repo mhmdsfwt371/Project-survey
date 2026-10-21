@@ -448,7 +448,7 @@ function clickTables(e){
     chSend(site, to, txt); if (ta) ta.value = ''; toast('\u{1F4AC} ' + t('أُرسلت')); render(1); return true;
   }
   var chf = e.target.closest('[data-chf]');
-  if (chf){ var chfv = chf.getAttribute('data-chf'); chPageHtml.f = chfv === 'all' ? {} : (chfv.indexOf('site:') === 0 ? { site:chfv.slice(5) } : { who:chfv.slice(4) }); toast(chfv === 'all' ? t('كلُّ الرسائل') : chfv.slice(chfv.indexOf(':') + 1)); render(1); return true; }
+  if (chf){ var chfv = chf.getAttribute('data-chf'); chPageHtml.f = chfv === 'all' ? {} : chfv === 'sys' ? { sys:1 } : (chfv.indexOf('site:') === 0 ? { site:chfv.slice(5) } : { who:chfv.slice(4) }); toast(chfv === 'all' ? t('كلُّ الرسائل') : chfv === 'sys' ? t('سجل التركيب') : chfv.slice(chfv.indexOf(':') + 1)); render(1); return true; }
   var cho = e.target.closest('[data-chopen]');
   if (cho){ chPageHtml.f = { site:cho.getAttribute('data-chopen') }; POP_OPEN = false; goPage('chat'); render(1); return true; }
   var rbpr = e.target.closest('[data-rbpresets]'); if (rbpr){ var nP = rbPresetsAdd(); toast(nP ? '\u26A1 ' + t('أُضيفت') + ' ' + nm(nP) : t('كلُّها موجودةٌ أصلًا')); var rsR = document.getElementById('assistRes'); if (rsR) rsR.innerHTML = assistResHtml(); else render(1); return true; }
