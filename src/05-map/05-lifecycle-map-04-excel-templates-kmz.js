@@ -111,12 +111,8 @@ var JSZIP_LOADING = null;
 function jszipLoad(){
   if (typeof JSZip !== 'undefined') return Promise.resolve(true);
   if (JSZIP_LOADING) return JSZIP_LOADING;
-  JSZIP_LOADING = new Promise(function(res){
-    var sc = document.createElement('script');
-    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
-    sc.onload = function(){ res(true); }; sc.onerror = function(){ JSZIP_LOADING = null; res(false); };
-    document.head.appendChild(sc);
-  });
+  JSZIP_LOADING = libLoad('vendor/jszip/3.10.1/jszip.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js', 15000)   /* (V38.54) */
+    .then(function(ok){ ok = !!(ok && typeof JSZip !== 'undefined'); if (!ok) JSZIP_LOADING = null; return ok; });
   return JSZIP_LOADING;
 }
 function xmlEsc(v){ return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }

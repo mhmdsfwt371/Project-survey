@@ -202,7 +202,9 @@ PAGE.acct = { m:'المساعدة', t:'حسابي', l:'دورك وصلاحيات
           + btn('أفرغ الكاش','btn-danger',' data-swclear="1"')
 
           + '</div>'
-          + '<p class="hint">' + esc(t('التثبيت يُبقي التطبيق عاملًا بلا شبكة، والإفراغُ يُجبره على تحميلٍ نظيفٍ عند أول اتصال.')) + '</p>')
+          + '<p class="hint">' + esc(t('التثبيت يُبقي التطبيق عاملًا بلا شبكة، والإفراغُ يُجبره على تحميلٍ نظيفٍ عند أول اتصال.')) + '</p>'
+          + '<p class="hint" id="libsLine" style="margin:6px 0 0"></p>')   /* (V38.54) vendored libraries on this device */
+      + (setTimeout(libsLinePaint, 0), '')
       + '<p class="hint">' + esc(t('إشارات الأجهزة أسرع ما ينمو:')) + ' <b class="num">' + nm((STATE.sites || []).length) + '</b> ' + esc(t('جهازًا × إشارة كل خمس دقائق = نصف مليون سجل يوميًّا لو تُركت بلا سقف.')) + '</p>'
       + deviceCards();
   }};

@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V38.53",
+  "app_version": "V38.54",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2211,7 +2211,8 @@
   "V38.50": "rbPresets() · rbPresetsAdd()",
   "V38.51": "CHUNK-ONLY marker في split-shared · whatsNewMaybe.pending",
   "V38.52": "SOPS: sop-report · aqAnswer how-to",
-  "V38.53": "شرط stn في محرك التقارير"
+  "V38.53": "شرط stn في محرك التقارير",
+  "V38.54": "libLoad(local, cdn) · مخزن nusuk-lib في عامل الخدمة · libsWarm() · libsStatus() · vendor/ · scripts/audit-vendor.mjs"
   },
   "map_and_geolocation": {
     "tile_layers": {

@@ -448,6 +448,7 @@ function onDocClickPart7(e){
   if (e.target.closest('[data-solgo]')){ solGo(); return; }
   if (e.target.closest('[data-pwa]')){ pwaInstall(); return; }
   if (e.target.closest('[data-swclear]')){ swClear(); return; }
+  if (e.target.closest('[data-libswarm]')){ toast(libsWarm(true) ? '\u23F3 ' + t('تُحفَظ المكتباتُ على الجهاز…') : t('يحتاج اتصالًا وتطبيقًا مثبَّتًا')); setTimeout(libsLinePaint, 6000); return; }   /* (V38.54) */
 
   if (e.target.closest('[data-probe]')){ probeRun(); return; }
   var wa = e.target.closest('[data-wa]');

@@ -218,6 +218,7 @@ function swInstall(){
     return navigator.serviceWorker.register('./sw.js', { scope:'./' })
       .then(function(r){
         SW_STATE.reg = r; SW_STATE.ok = true;
+        setTimeout(function(){ libsWarm(false); }, 30000);   /* (V38.54) keep the export libraries for offline — supervisors and up, when online and idle */
         r.addEventListener('updatefound', function(){
           var nw = r.installing;
           if (!nw) return;
@@ -367,4 +368,29 @@ function epochApply(cloud){
   logEvent('عهدٌ جديد — أُفرغ هذا الجهاز (' + nm(n) + ' سجلًّا) وسُحب من القاعدة');
   toast(t('بدايةٌ جديدة من المكتب — أُفرغ هذا الجهازُ ويُسحَب من القاعدة'));
   return true;
+}
+
+/* (V38.54) vendored libraries — readiness on this device and the warm-up request to the service worker */
+function libsWarm(force){
+  try {
+    if (!force && !(typeof rankOf === 'function' && rankOf(ROLE) >= rankOf('supervisor'))) return false;
+    if (!navigator.onLine || !navigator.serviceWorker || !navigator.serviceWorker.controller) return false;
+    if (!libsWarm.hooked){ libsWarm.hooked = true; navigator.serviceWorker.addEventListener('message', function(ev){ if (ev.data && ev.data.type === 'nsk-libs-warm') libsLinePaint(); }); }
+    navigator.serviceWorker.controller.postMessage({ type:'nsk-warm-libs' }); libsWarm.at = Date.now(); return true;
+  } catch (e){ LS_ERR = e; return false; }
+}
+function libsStatus(){
+  var L = ['vendor/xlsx/0.20.3/xlsx.full.min.js', 'vendor/exceljs/4.4.0/exceljs.min.js', 'vendor/jszip/3.10.1/jszip.min.js', 'vendor/firebase/9.23.0/firebase-firestore-compat.js'];
+  if (typeof caches === 'undefined' || !caches.open) return Promise.resolve({ ok:false, have:0, n:L.length });
+  return caches.open('nusuk-lib').then(function(c){ return Promise.all(L.map(function(u){ return c.match(appUrl() + u).then(function(h){ return !!h; }); })); })
+    .then(function(R){ var have = R.filter(Boolean).length; return { ok:have === L.length, have:have, n:L.length }; })
+    .catch(function(){ return { ok:false, have:0, n:L.length }; });
+}
+function libsLinePaint(){
+  var el = document.getElementById('libsLine'); if (!el) return;
+  libsStatus().then(function(s){
+    el.innerHTML = (s.ok ? '\u2705 ' + esc(t('مكتباتُ الدخول والتصدير محفوظةٌ على الجهاز — الإكسلُ والـPDF يعملان بلا شبكة'))
+                         : '\u26A0 ' + esc(t('مكتباتُ التصدير لم تُحفَظ كلُّها على الجهاز بعد')) + ' (' + nm(s.have) + '/' + nm(s.n) + ') ' + btn(t('جهّزها الآن'), 'btn-secondary btn-sm', ' data-libswarm="1"'))
+      + (libLoad.fellBack ? ' <span class="hint" style="margin:0">' + esc(t('استُعمل المصدرُ العامُّ احتياطًا')) + ' \u00d7' + nm(libLoad.fellBack) + '</span>' : '');
+  });
 }

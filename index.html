@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.53</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.54</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1356,7 +1356,7 @@ function nskChunkReady(){
 
   try { if (typeof whatsNewMaybe === 'function' && whatsNewMaybe.pending){ whatsNewMaybe.pending = false; if (whatsNewMaybe() && typeof render === 'function') render(1); } } catch (e3){ LS_ERR = e3; }
 }
-var I18N_FILE = 'i18n/dict-dcb8664ddc.js', I18N_STATE = 0, I18N_WAIT = [];
+var I18N_FILE = 'i18n/dict-39af37f900.js', I18N_STATE = 0, I18N_WAIT = [];
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }
@@ -2442,6 +2442,18 @@ var CORE = {
   pending: function(){ return STATE.queue.length; }
 };
 
+function libLoad(local, cdn, ms){
+  var one = function(src){ return new Promise(function(res){
+    var sc = document.createElement('script'), done = false, fin = function(ok){ if (done) return; done = true; if (!ok && sc.parentNode) sc.parentNode.removeChild(sc); res(ok); };
+    sc.src = src; sc.onload = function(){ fin(true); }; sc.onerror = function(){ fin(false); };
+    document.head.appendChild(sc); if (ms) setTimeout(function(){ fin(false); }, ms);
+  }); };
+  return one(local).then(function(ok){
+    if (ok || !cdn) return ok;
+    libLoad.fellBack = (libLoad.fellBack || 0) + 1; libLoad.last = local;
+    return one(cdn);
+  });
+}
 var FB = {
   app:null, auth:null, db:null, ready:false,
 
@@ -2450,16 +2462,8 @@ var FB = {
     if (typeof window === 'undefined') return Promise.resolve(false);
     if (window.firebase && window.firebase.auth) return Promise.resolve(true);
     if (FB._load) return FB._load;
-    var B = 'https://www.gstatic.com/firebasejs/9.23.0/';
-    var one = function(f){
-      return new Promise(function(res){
-        var sc = document.createElement('script');
-        sc.src = B + f;
-        sc.onload = function(){ res(true); };
-        sc.onerror = function(){ res(false); };
-        document.head.appendChild(sc);
-      });
-    };
+
+    var one = function(f){ return libLoad('vendor/firebase/9.23.0/' + f, 'https://www.gstatic.com/firebasejs/9.23.0/' + f); };
     FB._load = one('firebase-app-compat.js')
       .then(function(ok){ return ok ? one('firebase-auth-compat.js') : false; })
       .then(function(ok){ return ok ? one('firebase-firestore-compat.js') : false; })
@@ -20009,14 +20013,9 @@ var XLSX_READY = false, XLSX_LOADING = null;
 function xlsxLoad(){
   if (XLSX_READY || (typeof window !== 'undefined' && window.XLSX)){ XLSX_READY = true; return Promise.resolve(true); }
   if (XLSX_LOADING) return XLSX_LOADING;
-  XLSX_LOADING = new Promise(function(res){
-    var s = document.createElement('script');
-    s.src = 'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js';
-    s.onload  = function(){ XLSX_READY = true; res(true); };
-    s.onerror = function(){ res(false); };
-    document.head.appendChild(s);
-    setTimeout(function(){ if (!XLSX_READY) res(false); }, 12000);
-  });
+
+  XLSX_LOADING = libLoad('vendor/xlsx/0.20.3/xlsx.full.min.js', 'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js', 12000)
+    .then(function(ok){ ok = !!(ok && window.XLSX); XLSX_READY = ok; if (!ok) XLSX_LOADING = null; return ok; });
   return XLSX_LOADING;
 }
 
@@ -20024,14 +20023,8 @@ var EXLJS_READY = false, EXLJS_LOADING = null;
 function exlLoad(){
   if (EXLJS_READY || (typeof window !== 'undefined' && window.ExcelJS)){ EXLJS_READY = true; return Promise.resolve(true); }
   if (EXLJS_LOADING) return EXLJS_LOADING;
-  EXLJS_LOADING = new Promise(function(res){
-    var s2 = document.createElement('script');
-    s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js';
-    s2.onload  = function(){ EXLJS_READY = true; res(true); };
-    s2.onerror = function(){ res(false); };
-    document.head.appendChild(s2);
-    setTimeout(function(){ if (!EXLJS_READY) res(false); }, 15000);
-  });
+  EXLJS_LOADING = libLoad('vendor/exceljs/4.4.0/exceljs.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js', 15000)
+    .then(function(ok){ ok = !!(ok && window.ExcelJS); EXLJS_READY = ok; if (!ok) EXLJS_LOADING = null; return ok; });
   return EXLJS_LOADING;
 }
 
@@ -20776,12 +20769,8 @@ var JSZIP_LOADING = null;
 function jszipLoad(){
   if (typeof JSZip !== 'undefined') return Promise.resolve(true);
   if (JSZIP_LOADING) return JSZIP_LOADING;
-  JSZIP_LOADING = new Promise(function(res){
-    var sc = document.createElement('script');
-    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
-    sc.onload = function(){ res(true); }; sc.onerror = function(){ JSZIP_LOADING = null; res(false); };
-    document.head.appendChild(sc);
-  });
+  JSZIP_LOADING = libLoad('vendor/jszip/3.10.1/jszip.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js', 15000)
+    .then(function(ok){ ok = !!(ok && typeof JSZip !== 'undefined'); if (!ok) JSZIP_LOADING = null; return ok; });
   return JSZIP_LOADING;
 }
 function xmlEsc(v){ return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -22180,6 +22169,7 @@ function swInstall(){
     return navigator.serviceWorker.register('./sw.js', { scope:'./' })
       .then(function(r){
         SW_STATE.reg = r; SW_STATE.ok = true;
+        setTimeout(function(){ libsWarm(false); }, 30000);
         r.addEventListener('updatefound', function(){
           var nw = r.installing;
           if (!nw) return;
@@ -22302,6 +22292,30 @@ function epochApply(cloud){
   logEvent('عهدٌ جديد — أُفرغ هذا الجهاز (' + nm(n) + ' سجلًّا) وسُحب من القاعدة');
   toast(t('بدايةٌ جديدة من المكتب — أُفرغ هذا الجهازُ ويُسحَب من القاعدة'));
   return true;
+}
+
+function libsWarm(force){
+  try {
+    if (!force && !(typeof rankOf === 'function' && rankOf(ROLE) >= rankOf('supervisor'))) return false;
+    if (!navigator.onLine || !navigator.serviceWorker || !navigator.serviceWorker.controller) return false;
+    if (!libsWarm.hooked){ libsWarm.hooked = true; navigator.serviceWorker.addEventListener('message', function(ev){ if (ev.data && ev.data.type === 'nsk-libs-warm') libsLinePaint(); }); }
+    navigator.serviceWorker.controller.postMessage({ type:'nsk-warm-libs' }); libsWarm.at = Date.now(); return true;
+  } catch (e){ LS_ERR = e; return false; }
+}
+function libsStatus(){
+  var L = ['vendor/xlsx/0.20.3/xlsx.full.min.js', 'vendor/exceljs/4.4.0/exceljs.min.js', 'vendor/jszip/3.10.1/jszip.min.js', 'vendor/firebase/9.23.0/firebase-firestore-compat.js'];
+  if (typeof caches === 'undefined' || !caches.open) return Promise.resolve({ ok:false, have:0, n:L.length });
+  return caches.open('nusuk-lib').then(function(c){ return Promise.all(L.map(function(u){ return c.match(appUrl() + u).then(function(h){ return !!h; }); })); })
+    .then(function(R){ var have = R.filter(Boolean).length; return { ok:have === L.length, have:have, n:L.length }; })
+    .catch(function(){ return { ok:false, have:0, n:L.length }; });
+}
+function libsLinePaint(){
+  var el = document.getElementById('libsLine'); if (!el) return;
+  libsStatus().then(function(s){
+    el.innerHTML = (s.ok ? '\u2705 ' + esc(t('مكتباتُ الدخول والتصدير محفوظةٌ على الجهاز — الإكسلُ والـPDF يعملان بلا شبكة'))
+                         : '\u26A0 ' + esc(t('مكتباتُ التصدير لم تُحفَظ كلُّها على الجهاز بعد')) + ' (' + nm(s.have) + '/' + nm(s.n) + ') ' + btn(t('جهّزها الآن'), 'btn-secondary btn-sm', ' data-libswarm="1"'))
+      + (libLoad.fellBack ? ' <span class="hint" style="margin:0">' + esc(t('استُعمل المصدرُ العامُّ احتياطًا')) + ' \u00d7' + nm(libLoad.fellBack) + '</span>' : '');
+  });
 }
 
 function roleWatch(v){
@@ -24629,7 +24643,9 @@ PAGE.acct = { m:'المساعدة', t:'حسابي', l:'دورك وصلاحيات
           + btn('أفرغ الكاش','btn-danger',' data-swclear="1"')
 
           + '</div>'
-          + '<p class="hint">' + esc(t('التثبيت يُبقي التطبيق عاملًا بلا شبكة، والإفراغُ يُجبره على تحميلٍ نظيفٍ عند أول اتصال.')) + '</p>')
+          + '<p class="hint">' + esc(t('التثبيت يُبقي التطبيق عاملًا بلا شبكة، والإفراغُ يُجبره على تحميلٍ نظيفٍ عند أول اتصال.')) + '</p>'
+          + '<p class="hint" id="libsLine" style="margin:6px 0 0"></p>')
+      + (setTimeout(libsLinePaint, 0), '')
       + '<p class="hint">' + esc(t('إشارات الأجهزة أسرع ما ينمو:')) + ' <b class="num">' + nm((STATE.sites || []).length) + '</b> ' + esc(t('جهازًا × إشارة كل خمس دقائق = نصف مليون سجل يوميًّا لو تُركت بلا سقف.')) + '</p>'
       + deviceCards();
   }};
@@ -28382,6 +28398,7 @@ function onDocClickPart7(e){
   if (e.target.closest('[data-solgo]')){ solGo(); return; }
   if (e.target.closest('[data-pwa]')){ pwaInstall(); return; }
   if (e.target.closest('[data-swclear]')){ swClear(); return; }
+  if (e.target.closest('[data-libswarm]')){ toast(libsWarm(true) ? '\u23F3 ' + t('تُحفَظ المكتباتُ على الجهاز…') : t('يحتاج اتصالًا وتطبيقًا مثبَّتًا')); setTimeout(libsLinePaint, 6000); return; }
 
   if (e.target.closest('[data-probe]')){ probeRun(); return; }
   var wa = e.target.closest('[data-wa]');
@@ -29404,6 +29421,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.53"></script>
+<script defer src="app-office.js?v=38.54"></script>
 </body>
 </html>

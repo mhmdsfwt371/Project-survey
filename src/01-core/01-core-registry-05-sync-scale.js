@@ -402,6 +402,21 @@ var CORE = {
 };
 
 /* ── جسر Firebase — يُحمَّل كسولًا فلا يُعطّل الإقلاع ── */
+/* (V38.54) vendored libraries — the app's own copy under vendor/ first (kept by the service worker in the persistent
+   «nusuk-lib» cache, so it works with no network), the public CDN only as a fallback when the own copy cannot load.
+   Order matters for chained loads (Firebase compat: app → auth → firestore), so callers chain the promises. */
+function libLoad(local, cdn, ms){
+  var one = function(src){ return new Promise(function(res){
+    var sc = document.createElement('script'), done = false, fin = function(ok){ if (done) return; done = true; if (!ok && sc.parentNode) sc.parentNode.removeChild(sc); res(ok); };
+    sc.src = src; sc.onload = function(){ fin(true); }; sc.onerror = function(){ fin(false); };
+    document.head.appendChild(sc); if (ms) setTimeout(function(){ fin(false); }, ms);
+  }); };
+  return one(local).then(function(ok){
+    if (ok || !cdn) return ok;
+    libLoad.fellBack = (libLoad.fellBack || 0) + 1; libLoad.last = local;   /* visible in the device diagnostics */
+    return one(cdn);
+  });
+}
 var FB = {
   app:null, auth:null, db:null, ready:false,
 
@@ -413,16 +428,8 @@ var FB = {
     if (typeof window === 'undefined') return Promise.resolve(false);
     if (window.firebase && window.firebase.auth) return Promise.resolve(true);
     if (FB._load) return FB._load;
-    var B = 'https://www.gstatic.com/firebasejs/9.23.0/';
-    var one = function(f){
-      return new Promise(function(res){
-        var sc = document.createElement('script');
-        sc.src = B + f;
-        sc.onload = function(){ res(true); };
-        sc.onerror = function(){ res(false); };
-        document.head.appendChild(sc);
-      });
-    };
+    /* (V38.54) the app's own copy first; gstatic only if it cannot load */
+    var one = function(f){ return libLoad('vendor/firebase/9.23.0/' + f, 'https://www.gstatic.com/firebasejs/9.23.0/' + f); };
     FB._load = one('firebase-app-compat.js')
       .then(function(ok){ return ok ? one('firebase-auth-compat.js') : false; })
       .then(function(ok){ return ok ? one('firebase-firestore-compat.js') : false; })

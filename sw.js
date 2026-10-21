@@ -1,9 +1,9 @@
 /* Nusuk Survey — offline shell cache */
-const CACHE = 'nusuk-survey-v38.53';
+const CACHE = 'nusuk-survey-v38.54';
 const SHELL = [
   './',
   './index.html',
-  './app-office.js?v=38.53',   /* (V38.39) المجالاتُ المؤجَّلة — تُثبَّت مع الهيكل فتعمل بلا شبكة؛ الرقمُ يُحدَّث مع كلِّ نسخة */
+  './app-office.js?v=38.54',   /* (V38.39) المجالاتُ المؤجَّلة — تُثبَّت مع الهيكل فتعمل بلا شبكة؛ الرقمُ يُحدَّث مع كلِّ نسخة */
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png',
@@ -15,29 +15,65 @@ const SHELL = [
 ];
 /* محرّكُ العرض الثلاثيّ لا يُخزَّن مع الهيكل: ثمانمئةُ كيلوبايتٍ لا يحتاجها
    الفنيُّ في المشاعر، ومن فتح الصفحةَ مرةً خُزِّن له عند أوّل طلب. */
+/* (V38.54) vendored libraries — a persistent cache by file version, kept across app updates (like nusuk-basemap):
+   the app updates many times a day and must not re-download ~750 KB of libraries each time. Firebase is boot-critical
+   for every role, so it is fetched at install; the export libraries and the PDF font are warmed by the page for
+   supervisors and up when online and idle, and cached on first use for everyone else. Change a version → new path. */
+const LIB_CACHE = 'nusuk-lib';
+const LIB_BOOT = [
+  './vendor/firebase/9.23.0/firebase-app-compat.js',
+  './vendor/firebase/9.23.0/firebase-auth-compat.js',
+  './vendor/firebase/9.23.0/firebase-firestore-compat.js'
+];
+const LIB_ALL = LIB_BOOT.concat([
+  './vendor/xlsx/0.20.3/xlsx.full.min.js',
+  './vendor/exceljs/4.4.0/exceljs.min.js',
+  './vendor/jszip/3.10.1/jszip.min.js',
+  './vendor/fonts/readex-pro/readex-pro-arabic-400-normal.woff2',
+  './vendor/fonts/readex-pro/readex-pro-arabic-600-normal.woff2',
+  './vendor/fonts/readex-pro/readex-pro-arabic-700-normal.woff2',
+  './vendor/fonts/readex-pro/readex-pro-latin-400-normal.woff2',
+  './vendor/fonts/readex-pro/readex-pro-latin-600-normal.woff2',
+  './vendor/fonts/readex-pro/readex-pro-latin-700-normal.woff2'
+]);
+const LIB_PATHS = ['/vendor/firebase/', '/vendor/xlsx/', '/vendor/exceljs/', '/vendor/jszip/', '/vendor/fonts/'];
+function libMissing(c, list){ return Promise.all(list.map(function (u) { return c.match(u).then(function (h) { return h ? null : u; }); })).then(function (L) { return L.filter(Boolean); }); }
+
 const LAZY = ['/vendor/maplibre/', '/vendor/protomaps/', '/templates/', '/i18n/', '/layers/'];   /* والقاموسُ باسمه المبصوم (V21.6) */   /* وعارضُ خريطة المشاعر بلا شبكة (V18.0) */
 
 self.addEventListener('install', function (e) {
   e.waitUntil(
-    caches.open(CACHE).then(function (c) {
-      return Promise.all(SHELL.map(function (u) {
-        return c.add(new Request(u, { cache: 'reload', credentials: 'same-origin' }))
-                .catch(function () { /* skip */ });
-      }));
-    }).then(function () { return self.skipWaiting(); })
+    Promise.all([
+      caches.open(CACHE).then(function (c) {
+        return Promise.all(SHELL.map(function (u) {
+          return c.add(new Request(u, { cache: 'reload', credentials: 'same-origin' }))
+                  .catch(function () { /* skip */ });
+        }));
+      }),
+      /* (V38.54) boot libraries once per device — skipped when already in the persistent cache */
+      caches.open(LIB_CACHE).then(function (c) {
+        return libMissing(c, LIB_BOOT).then(function (miss) { return Promise.all(miss.map(function (u) { return c.add(u).catch(function () {}); })); });
+      })
+    ]).then(function () { return self.skipWaiting(); })
   );
 });
 
 /* (V24.9) مخزنُ خريطة الجهاز (nusuk-basemap) يبقى عبر التحديثات: كان التفعيلُ يمسح كلَّ مخزنٍ
    غيرَ الهيكل فتختفي الخريطةُ بلا شبكة مع كلِّ نسخةٍ ويُعاد تنزيلُها — وقد يمسحها في أوّل تثبيتٍ
    بعد تنزيلها بلحظة فلا تظهر في الجلسة كلِّها */
-const KEEP = ['nusuk-basemap'];
+const KEEP = ['nusuk-basemap', LIB_CACHE];   /* (V38.54) and the vendored libraries */
 
 self.addEventListener('activate', function (e) {
   e.waitUntil(
     caches.keys().then(function (keys) {
       return Promise.all(keys.filter(function (k) { return k !== CACHE && KEEP.indexOf(k) === -1; })
                              .map(function (k) { return caches.delete(k); }));
+    }).then(function () {
+      /* (V38.54) the library cache keeps only the versions this release names (a version bump changes the path) */
+      return caches.open(LIB_CACHE).then(function (c) { return c.keys().then(function (ks) {
+        const want = LIB_ALL.map(function (u) { return new URL(u, self.registration.scope).pathname; });
+        return Promise.all(ks.filter(function (r) { return want.indexOf(new URL(r.url).pathname) === -1; }).map(function (r) { return c.delete(r); }));
+      }); }).catch(function () {});
     }).then(function () { return self.clients.claim(); })
   );
 });
@@ -50,6 +86,14 @@ function fetchWithTimeout(req, ms) {
   });
 }
 
+/* (V38.54) the page asks for the export libraries to be kept for offline (supervisors and up, online and idle) */
+self.addEventListener('message', function (e) {
+  if (!e.data || e.data.type !== 'nsk-warm-libs') return;
+  e.waitUntil(caches.open(LIB_CACHE).then(function (c) {
+    return libMissing(c, LIB_ALL).then(function (miss) { return Promise.all(miss.map(function (u) { return c.add(u).catch(function () {}); })).then(function () { return miss.length; }); });
+  }).then(function (n) { if (e.source && e.source.postMessage) e.source.postMessage({ type:'nsk-libs-warm', fetched:n }); }));
+});
+
 self.addEventListener('fetch', function (e) {
   const req = e.request;
   if (req.method !== 'GET') return;
@@ -57,6 +101,17 @@ self.addEventListener('fetch', function (e) {
   // Firebase / Google APIs: network only, never cached (auth + live channels)
   if (req.url.indexOf('googleapis.com') !== -1 || req.url.indexOf('firebaseapp.com') !== -1 || req.url.indexOf('firebaseio.com') !== -1) {
     e.respondWith(fetch(req).catch(function () { return new Response('', { status: 504 }); }));
+    return;
+  }
+
+  /* (V38.54) vendored libraries: from the persistent cache first, else the network into it */
+  if (LIB_PATHS.some(function (p) { return req.url.indexOf(p) !== -1; })) {
+    e.respondWith(caches.open(LIB_CACHE).then(function (c) {
+      return c.match(req, { ignoreSearch: true }).then(function (hit) {
+        return hit || fetch(req).then(function (res) { if (res && res.ok) c.put(req, res.clone()); return res; })
+          .catch(function () { return new Response('', { status: 504 }); });
+      });
+    }));
     return;
   }
 
