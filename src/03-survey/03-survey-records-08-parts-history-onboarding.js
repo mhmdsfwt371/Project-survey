@@ -135,6 +135,10 @@ function apprIns(id, ok){
     logEvent('اعتماد تركيب — ' + id + ' · ' + nm(r.pts || 0) + ' نقطة', id);
     notifPush('اعتماد', 'اعتُمد تركيبُك — ' + nm(r.pts || 0) + ' نقطة',
               { to:r.by || '', site:id, lv:'مهم' });
+    /* (V38.56) the install task closes with the approval — as the visit, dismantling and maintenance tasks do; it stayed
+       «مطلوب» in the installer's «مهامي» forever and kept the site marked as already assigned */
+    var tkI = taskKindOf(id, 'install');
+    if (tkI){ tkI.status = 'معتمد'; tkI.doneAt = Date.now(); CORE.set('tasks', tkI.id, tkI); tasksTouched(); }
   } else {
     r.status = 'مُعاد'; r.approved = false; r.why = 'أُعيد للتصحيح';
     logEvent('ردّ تركيب — ' + id, id);

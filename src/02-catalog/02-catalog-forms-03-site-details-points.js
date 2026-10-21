@@ -41,6 +41,9 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
         + '↗ ' + esc(t('اتجاهات')) + '</a>'
         + btn('◈ ' + t('على الخريطة'),'btn-secondary btn-sm',' data-fly="' + esc(x.id) + '"')
         + btn('🔍 ' + t('امسح هذا الموقع'),'btn-secondary btn-sm',' data-form="' + esc(x.id) + '"')
+        /* (V38.56) the install form from the site page — when an install task is open here, or it is installed, or ready */
+        + (may('edit') && (taskKindOf(x.id, 'install') || insDone(x.id) || (((STATE.inss[x.id] || {}).solution || {}).status === 'معتمد' && typeof minOk === 'function' && minOk(x.id)))
+            ? btn('🔧 ' + t('نموذج التركيب'),'btn-primary btn-sm',' data-insform="' + esc(x.id) + '"') : '')
         + '</div>')
 
       + (SITE_ED && maySiteEditBasic() ? siteEditHtml(x) : '')   /* (V28.6) */

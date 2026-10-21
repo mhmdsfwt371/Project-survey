@@ -425,6 +425,54 @@ console.log('\n══ ١٤ · منشئُ التقارير ══');
   T(card.indexOf('data-aqrep="xls"') > -1 && card.indexOf('data-aqrep="pdf"') > -1 && card.indexOf('63') > -1 || card.indexOf('٦٣') > -1, 'ونتيجةُ الحساب بطاقةٌ بالعدد وزرَّي إكسل وPDF');
 }
 
+/* ── ١٥ · (V38.56) دورةُ التركيب كاملةً كما يعيشها المُسنَد إليه: إسنادٌ مجدول ← «مهامي» ← النموذج ← السيريال والصور ←
+   الرفع ← الاعتماد يُغلق المهمة — لفنيٍّ ولمشرف؛ وسيريالُ نقطةٍ أخرى يُوقف الحفظ ── */
+console.log('\n══ ١٥ · دورةُ التركيب للمُسنَد إليه ══');
+{
+  const d = w.document, IMG2 = 'data:image/jpeg;base64,/9j/' + 'A'.repeat(3000);
+  /* earlier scenarios draw single pages into <body>; restore the app shell (static markup, scripts stripped) so render() has #nav and #content */
+  { const shell = new JSDOM(html.replace(/<script[\s\S]*?<\/script>/g, '')).window.document.body.innerHTML; d.body.innerHTML = shell; }
+  const as = (role, name) => { w.ROLE = role; w.STATE.meta.role = role; w.STATE.meta.name = name; };
+  const keepUsers = w.STATE.users; w.STATE.users = Object.assign({}, keepUsers || {}, { zt1:{ name:'فني الدورة', role:'tech', user:'zt1' }, zs1:{ name:'مشرف الدورة', role:'supervisor', user:'zs1' } });
+  const keepOnline = w.STATE.meta.online;
+  const free = w.STATE.sites.filter(z => z && z.type === 'مخيم' && z.zone === 'منى' && !w.STATE.inss[z.id] && !w.taskKindOf(z.id, 'install')).slice(0, 3);
+  const zz = w.siteZone(free[0]), pp = w.itemsList().filter(i => i.z === zz && i.name), rr = pp.find(i => /^rdr/i.test(i.code) || /قارئ/.test(i.name));
+  free.forEach(x => { w.STATE.recs[x.id] = { id:x.id, access:'تم الوصول', by:'فني الدورة', at:Date.now() - 86400000, review:'approved', mount:'هيكل قائم', power:'شبكة' }; w.STATE.inss[x.id] = { id:x.id, solution:{ status:'معتمد', parts:{ [rr.code]:1 }, at:Date.now() } }; });
+  w.tasksTouched();
+  const cycle = async (x, who, role) => {
+    as('engineer', 'جرد السيناريوهات'); w.selClear(); w.selToggle(x.id); w.ASN_MODE = ''; w.ASN_TO = who; w.ASN_KIND = 'install';
+    const mk = (id, v) => { const el = d.createElement('input'); el.id = id; el.value = v; d.body.appendChild(el); }; mk('asnTo', who); mk('asnKind', 'install'); mk('asnWhen', '2026-10-25');
+    w.asnCommit(); ['asnTo', 'asnKind', 'asnWhen'].forEach(id => d.getElementById(id) && d.getElementById(id).remove());
+    const tk = w.STATE.tasks['TK-install-' + x.id];
+    as(role, who); w.CUR = 'mywork'; w.render(1);
+    const mw = d.getElementById('content').innerHTML, i0 = mw.indexOf('data-insform="' + x.id + '"'); let row = mw.slice(i0, i0 + 1500); const nx = row.indexOf('class="list-item"', 10); if (nx > 0) row = row.slice(0, nx); row = row.split('دورة مهمتك')[0];
+    w.POP_SITE = x.id; w.DETAIL_ID = x.id;
+    const reach = i0 > -1 && /بانتظارك/.test(row) && !/معتمدة/.test(row) && String(w.popHtml()).indexOf('data-insform="' + x.id + '"') > -1 && String(w.PAGE.site.body()).indexOf('data-insform="' + x.id + '"') > -1;
+    w.formReset(); w.formGo(x.id); w.CUR = 'insForm'; w.render(1);
+    const C = d.getElementById('content'), put = (el, v) => { el.value = String(v); el.dispatchEvent(new w.Event('input', { bubbles:true })); el.dispatchEvent(new w.Event('change', { bubbles:true })); };
+    put(C.querySelector('[data-part="' + rr.code + '"]'), 1); const SN = 'CYC' + x.id.slice(-4); put(C.querySelector('[data-serial="' + rr.code + '"]'), SN);
+    w.FORM.status = 'مُركّب'; w.FORM.photos.before = { data:IMG2 + x.id }; w.FORM.photos.after = { data:IMG2 + x.id + 'b' };
+    const q1 = queued().length; w.STATE.meta.online = true;
+    C.querySelector('[data-inssave]').dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
+    for (let i = 0; i < 4 && w.PHOTO_Q.length; i++){ await w.photoFlush(); await new Promise(r => setTimeout(r, 320)); }
+    const up = queued().slice(q1), r = w.STATE.inss[x.id] || {};
+    const saved = r.status === 'مُركّب' && r.by === who && (r.serials || {})[rr.code] === SN && up.some(q => q.kind === 'inss' && q.id === x.id) && up.filter(q => q.kind === 'photos').length >= 2 && up.filter(q => q.kind === 'photoblobs').length >= 2;
+    w.STATE.meta.online = false;
+    as('engineer', 'جرد السيناريوهات'); w.apprIns(x.id, true); const tk2 = w.STATE.tasks['TK-install-' + x.id];
+    as(role, who); w.CUR = 'mywork'; w.render(1); const gone = d.getElementById('content').innerHTML.indexOf('data-insform="' + x.id + '"') < 0;
+    return { assigned: !!tk && tk.to === who && tk.when === '2026-10-25', reach, saved, closed: tk2 && tk2.status === 'معتمد' && gone, SN };
+  };
+  const A = await cycle(free[0], 'فني الدورة', 'tech'), B = await cycle(free[1], 'مشرف الدورة', 'supervisor');
+  T(A.assigned && B.assigned, 'الإسنادُ المجدولُ يُكتَب لصاحبه بموعده — فنيًّا ومشرفًا');
+  T(A.reach && B.reach, 'ويصل إليه: في «مهامي» «بانتظارك» تفتح النموذجَ مباشرةً، وفي نافذة الخريطة وصفحة النقطة زرُّ نموذج التركيب');
+  T(A.saved && B.saved, 'والتركيبُ يُحفَظ بحالته ومنفِّذه والسيريالُ على قطعته، ويدخل الطابورَ مع الصورتين (وثيقةٌ وخامٌ لكلٍّ)');
+  T(A.closed && B.closed, 'والاعتمادُ يُغلق مهمةَ التركيب فتخرج من «مهامي»');
+  as('tech', 'فني الدورة'); const x3 = free[2]; w.formReset(); w.formGo(x3.id); w.CUR = 'insForm'; w.render(1);
+  w.FORM.parts[rr.code] = 1; w.FORM.serials[rr.code] = A.SN; w.FORM.status = 'مُركّب'; w.FORM.photos.before = { data:IMG2 + 'c' }; w.FORM.photos.after = { data:IMG2 + 'd' }; w.insSave(0);
+  T(!((w.STATE.inss[x3.id] || {}).status === 'مُركّب'), 'وسيريالٌ مسجَّلٌ على نقطةٍ أخرى لم تُفَكّ يوقف الحفظ');
+  w.STATE.users = keepUsers; w.STATE.meta.online = keepOnline; as('engineer', 'جرد السيناريوهات');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

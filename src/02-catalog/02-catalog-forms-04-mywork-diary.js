@@ -241,6 +241,16 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
     var me = STATE.meta.name || '';
     /* حالةُ مهمةِ زيارة: من تعليقة الحفظ إلى قرار المهندس */
     function taskPill(x){
+      /* (V38.56) an install task is read from the installation record, not from the survey of the same site — it showed
+         «معتمدة» (the survey's approval) before anything was installed */
+      if (x.kind === 'install'){
+        var ins = STATE.inss[x.site] || {};
+        if (ins.approved) return pill('اعتُمد التركيب', 'ok');
+        if (ins.status === 'مُعاد') return pill('أُعيد للتصحيح', 'off');
+        if (ins.status === 'مُركّب') return pill('رُكِّب — بانتظار التدقيق', 'acc');
+        if (ins.status === 'قيد التركيب' || ins.status === 'مسودّة') return pill(ins.status, 'wrn');
+        return pill('بانتظارك', 'warn');
+      }
       var r = STATE.recs[x.site], rv = svReview(r);
       if (rv === 'approved') return pill('معتمدة', 'ok');
       if (rv === 'revisit')  return pill('تحتاج زيارة أخرى', 'off');
@@ -290,14 +300,15 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
       var x = STATE.tasks[k];
       if (x.to === me && x.status !== 'معتمد') mine.push(x);
     });
-    var done = mine.filter(function(x){ return svVisited(STATE.recs[x.site]); }).length;   /* (V32.8) تمت الزيارة بأيِّ نتيجة */
-    var back = mine.filter(function(x){ return svReview(STATE.recs[x.site]) === 'revisit'; }).length;
+    /* (V38.56) «done» and «returned» by the task's own kind: an installation is done when installed, returned when sent back */
+    var done = mine.filter(function(x){ return x.kind === 'install' ? insDone(x.site) : svVisited(STATE.recs[x.site]); }).length;   /* (V32.8) تمت الزيارة بأيِّ نتيجة */
+    var back = mine.filter(function(x){ return x.kind === 'install' ? (STATE.inss[x.site] || {}).status === 'مُعاد' : svReview(STATE.recs[x.site]) === 'revisit'; }).length;
     var myPts = (typeof scoreOf === 'function') ? (scoreOf(me) || {}).total || 0 : 0;
 
     return stats([['مُسند إليّ', N(mine.length), 'acc'],
                   ['أنجزتُ', N(done), 'ok'],
                   ['المتبقي', N(mine.length - done), mine.length-done?'wrn':''],
-                  ['تحتاج زيارة أخرى', N(back), back ? 'bad' : ''],
+                  ['أُعيد إليّ', N(back), back ? 'bad' : ''],
                   ['نقاطي', N(myPts)]])
       + (mine.length
         ? cardFlush(t('مهامي') + ' — ' + nm(mine.length),
@@ -308,7 +319,8 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
               var rr = STATE.recs[x.site];
               var why = (rr && svReview(rr) === 'revisit' && rr.revisitNote)
                 ? '<div class="hint" style="margin:2px 0 0;color:var(--danger)">\u21a9 ' + esc(rr.revisitNote) + '</div>' : '';
-              return '<div class="list-item" data-site="' + esc(x.site) + '"><div class="li-main">'
+              /* (V38.56) an install task opens its install form directly — the installer's next step; others open the site */
+              return '<div class="list-item" ' + (x.kind === 'install' ? 'data-insform' : 'data-site') + '="' + esc(x.site) + '"><div class="li-main">'
                 + '<div class="li-t">' + (s.sign ? esc(t('شاخص')) + ' ' + esc(s.sign) : esc(s.name.slice(0,36))) + '</div>'
                 + '<div class="li-s"><span class="num">' + esc(x.site) + '</span> · '
                 +   k.i + ' ' + esc(t(k.n)) + (x.when ? ' · ' + esc(x.when) : '') + '</div>' + why
@@ -322,7 +334,7 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
             '<p class="hint" style="text-align:center;margin:0">'
             + esc(t('لا مهام مسندة إليك — يُسندها المشرف من طلبات الزيارة.')) + '</p>',
             btn('\u2753 ' + t('كيف تسير الدورة؟'),'btn-quiet btn-sm',' data-p="wf"')))
-      + card('دورة مهمتك', flow(['مُسندة إليك','زُرتها وحفظت','بانتظار الاعتماد','معتمدة'], 0)
+      + card('دورة مهمتك', flow(['مُسندة إليك','نفّذتها وحفظت','بانتظار الاعتماد','معتمدة'], 0)   /* (V38.56) visit or installation */
         + '<p class="hint">' + esc(t('نقاطُك لا تُحسَب إلا بعد أن يعتمد المهندسُ ما نفّذته — وإذا أعادها «تحتاج زيارةً أخرى» ترجع إلى قائمتك ومعها سببُ الإعادة.')) + '</p>');})();
   }};
 ;

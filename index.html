@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.55</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.56</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1377,7 +1377,7 @@ function nskChunkReady(){
 
   try { if (typeof whatsNewMaybe === 'function' && whatsNewMaybe.pending){ whatsNewMaybe.pending = false; if (whatsNewMaybe() && typeof render === 'function') render(1); } } catch (e3){ LS_ERR = e3; }
 }
-var I18N_FILE = 'i18n/dict-9aaf188f59.js', I18N_STATE = 0, I18N_WAIT = [];
+var I18N_FILE = 'i18n/dict-95d5524700.js', I18N_STATE = 0, I18N_WAIT = [];
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }
@@ -4499,6 +4499,9 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
         + '↗ ' + esc(t('اتجاهات')) + '</a>'
         + btn('◈ ' + t('على الخريطة'),'btn-secondary btn-sm',' data-fly="' + esc(x.id) + '"')
         + btn('🔍 ' + t('امسح هذا الموقع'),'btn-secondary btn-sm',' data-form="' + esc(x.id) + '"')
+
+        + (may('edit') && (taskKindOf(x.id, 'install') || insDone(x.id) || (((STATE.inss[x.id] || {}).solution || {}).status === 'معتمد' && typeof minOk === 'function' && minOk(x.id)))
+            ? btn('🔧 ' + t('نموذج التركيب'),'btn-primary btn-sm',' data-insform="' + esc(x.id) + '"') : '')
         + '</div>')
 
       + (SITE_ED && maySiteEditBasic() ? siteEditHtml(x) : '')
@@ -5019,6 +5022,15 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
     var me = STATE.meta.name || '';
 
     function taskPill(x){
+
+      if (x.kind === 'install'){
+        var ins = STATE.inss[x.site] || {};
+        if (ins.approved) return pill('اعتُمد التركيب', 'ok');
+        if (ins.status === 'مُعاد') return pill('أُعيد للتصحيح', 'off');
+        if (ins.status === 'مُركّب') return pill('رُكِّب — بانتظار التدقيق', 'acc');
+        if (ins.status === 'قيد التركيب' || ins.status === 'مسودّة') return pill(ins.status, 'wrn');
+        return pill('بانتظارك', 'warn');
+      }
       var r = STATE.recs[x.site], rv = svReview(r);
       if (rv === 'approved') return pill('معتمدة', 'ok');
       if (rv === 'revisit')  return pill('تحتاج زيارة أخرى', 'off');
@@ -5068,14 +5080,15 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
       var x = STATE.tasks[k];
       if (x.to === me && x.status !== 'معتمد') mine.push(x);
     });
-    var done = mine.filter(function(x){ return svVisited(STATE.recs[x.site]); }).length;
-    var back = mine.filter(function(x){ return svReview(STATE.recs[x.site]) === 'revisit'; }).length;
+
+    var done = mine.filter(function(x){ return x.kind === 'install' ? insDone(x.site) : svVisited(STATE.recs[x.site]); }).length;
+    var back = mine.filter(function(x){ return x.kind === 'install' ? (STATE.inss[x.site] || {}).status === 'مُعاد' : svReview(STATE.recs[x.site]) === 'revisit'; }).length;
     var myPts = (typeof scoreOf === 'function') ? (scoreOf(me) || {}).total || 0 : 0;
 
     return stats([['مُسند إليّ', N(mine.length), 'acc'],
                   ['أنجزتُ', N(done), 'ok'],
                   ['المتبقي', N(mine.length - done), mine.length-done?'wrn':''],
-                  ['تحتاج زيارة أخرى', N(back), back ? 'bad' : ''],
+                  ['أُعيد إليّ', N(back), back ? 'bad' : ''],
                   ['نقاطي', N(myPts)]])
       + (mine.length
         ? cardFlush(t('مهامي') + ' — ' + nm(mine.length),
@@ -5086,7 +5099,8 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
               var rr = STATE.recs[x.site];
               var why = (rr && svReview(rr) === 'revisit' && rr.revisitNote)
                 ? '<div class="hint" style="margin:2px 0 0;color:var(--danger)">\u21a9 ' + esc(rr.revisitNote) + '</div>' : '';
-              return '<div class="list-item" data-site="' + esc(x.site) + '"><div class="li-main">'
+
+              return '<div class="list-item" ' + (x.kind === 'install' ? 'data-insform' : 'data-site') + '="' + esc(x.site) + '"><div class="li-main">'
                 + '<div class="li-t">' + (s.sign ? esc(t('شاخص')) + ' ' + esc(s.sign) : esc(s.name.slice(0,36))) + '</div>'
                 + '<div class="li-s"><span class="num">' + esc(x.site) + '</span> · '
                 +   k.i + ' ' + esc(t(k.n)) + (x.when ? ' · ' + esc(x.when) : '') + '</div>' + why
@@ -5100,7 +5114,7 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
             '<p class="hint" style="text-align:center;margin:0">'
             + esc(t('لا مهام مسندة إليك — يُسندها المشرف من طلبات الزيارة.')) + '</p>',
             btn('\u2753 ' + t('كيف تسير الدورة؟'),'btn-quiet btn-sm',' data-p="wf"')))
-      + card('دورة مهمتك', flow(['مُسندة إليك','زُرتها وحفظت','بانتظار الاعتماد','معتمدة'], 0)
+      + card('دورة مهمتك', flow(['مُسندة إليك','نفّذتها وحفظت','بانتظار الاعتماد','معتمدة'], 0)
         + '<p class="hint">' + esc(t('نقاطُك لا تُحسَب إلا بعد أن يعتمد المهندسُ ما نفّذته — وإذا أعادها «تحتاج زيارةً أخرى» ترجع إلى قائمتك ومعها سببُ الإعادة.')) + '</p>');})();
   }};
 ;
@@ -10054,6 +10068,15 @@ function insSave(draft){
     if (sn[v]) dup = v; else sn[v] = 1;
   });
   if (dup){ toast(t('رقم تسلسليٌّ مكرّر داخل النقطة') + ': ' + dup); return; }
+
+  var elsewhere = '';
+  Object.keys(sn).forEach(function(v){ if (elsewhere) return; var o = serialOwner(v, s.id); if (o && !disDone(o)) elsewhere = v + ' \u2192 ' + o; });
+  if (elsewhere){
+    if (!(may('approve') && typeof confirm === 'function' && confirm(t('هذا الرقمُ مسجَّلٌ على نقطةٍ أخرى') + ': ' + elsewhere + ' — ' + t('سجّله هنا على أيِّ حال؟')))){
+      toast(t('رقمٌ تسلسليٌّ مسجَّلٌ على نقطةٍ أخرى لم تُفَكّ') + ': ' + elsewhere + ' — ' + t('صحّحه، أو يفكّه المهندسُ من هناك أوّلًا')); return;
+    }
+    logEvent('سيريالٌ مكرَّرٌ بموافقة المهندس — ' + elsewhere + ' \u2192 ' + s.id, s.id);
+  }
   var used = {}, n = 0;
   Object.keys(FORM.parts).forEach(function(k){
     var q = cfgN(FORM.parts[k]);
@@ -10297,6 +10320,9 @@ function apprIns(id, ok){
     logEvent('اعتماد تركيب — ' + id + ' · ' + nm(r.pts || 0) + ' نقطة', id);
     notifPush('اعتماد', 'اعتُمد تركيبُك — ' + nm(r.pts || 0) + ' نقطة',
               { to:r.by || '', site:id, lv:'مهم' });
+
+    var tkI = taskKindOf(id, 'install');
+    if (tkI){ tkI.status = 'معتمد'; tkI.doneAt = Date.now(); CORE.set('tasks', tkI.id, tkI); tasksTouched(); }
   } else {
     r.status = 'مُعاد'; r.approved = false; r.why = 'أُعيد للتصحيح';
     logEvent('ردّ تركيب — ' + id, id);
@@ -13665,7 +13691,9 @@ function popHtml(){
                   ? btn('🔧 ' + t('نموذج التركيب'),'btn-secondary btn-sm',' data-insform="' + esc(s.id) + '"')
                   : '')
               : btn('🔍 ' + t('نموذج المسح'),'btn-secondary btn-sm',' data-form="' + esc(s.id) + '"')
-                + (svqMay(s.id) ? btn('\u270E ' + t('تعديل المسح'),'btn-secondary btn-sm',' data-svq="' + esc(s.id) + '"') : ''))
+                + (svqMay(s.id) ? btn('\u270E ' + t('تعديل المسح'),'btn-secondary btn-sm',' data-svq="' + esc(s.id) + '"') : '')
+
+                + (taskKindOf(s.id, 'install') ? btn('🔧 ' + t('نموذج التركيب'),'btn-primary btn-sm',' data-insform="' + esc(s.id) + '"') : ''))
           : '')
 
     +   (function(){
@@ -29450,6 +29478,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.55"></script>
+<script defer src="app-office.js?v=38.56"></script>
 </body>
 </html>

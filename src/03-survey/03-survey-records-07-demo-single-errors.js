@@ -138,6 +138,16 @@ function insSave(draft){
     if (sn[v]) dup = v; else sn[v] = 1;
   });
   if (dup){ toast(t('رقم تسلسليٌّ مكرّر داخل النقطة') + ': ' + dup); return; }
+  /* (V38.56) the same serial on another site that was not dismantled is the same device recorded twice — custody breaks.
+     Typing it only warned; now the save stops (the engineer may override after confirming, and it is logged) */
+  var elsewhere = '';
+  Object.keys(sn).forEach(function(v){ if (elsewhere) return; var o = serialOwner(v, s.id); if (o && !disDone(o)) elsewhere = v + ' \u2192 ' + o; });
+  if (elsewhere){
+    if (!(may('approve') && typeof confirm === 'function' && confirm(t('هذا الرقمُ مسجَّلٌ على نقطةٍ أخرى') + ': ' + elsewhere + ' — ' + t('سجّله هنا على أيِّ حال؟')))){
+      toast(t('رقمٌ تسلسليٌّ مسجَّلٌ على نقطةٍ أخرى لم تُفَكّ') + ': ' + elsewhere + ' — ' + t('صحّحه، أو يفكّه المهندسُ من هناك أوّلًا')); return;
+    }
+    logEvent('سيريالٌ مكرَّرٌ بموافقة المهندس — ' + elsewhere + ' \u2192 ' + s.id, s.id);
+  }
   var used = {}, n = 0;
   Object.keys(FORM.parts).forEach(function(k){
     var q = cfgN(FORM.parts[k]);
