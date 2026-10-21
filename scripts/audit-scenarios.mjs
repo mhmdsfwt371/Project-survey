@@ -528,7 +528,7 @@ console.log('\n══ ١٦ · محادثةُ الميدان ══');
   w.formReset(); w.formGo(x.id); w.FORM.parts = { [rr2.code]:1 }; w.FORM.serials = { [rr2.code]:'SN-CHAT-9' }; w.FORM.status = 'مُركّب'; w.FORM.photos.before = { data:IMG + 'q' }; w.FORM.photos.after = { data:IMG + 'r' }; w.insSave(0);
   const sys = w.chOf(x.id).filter(v => v.kind === 'sys');
   as('engineer', 'جرد السيناريوهات'); w.apprIns(x.id, 1);
-  T(sys.length === 1 && /رُكِّبت/.test(sys[0].text) && /SN-CHAT-9/.test(sys[0].text) && w.chOf(x.id).some(v => /اعتمد المهندسُ/.test(v.text)), 'وحفظُ التركيب يكتب سطرَه بقطعه وسيريالاته، والاعتمادُ سطرَه');
+  T(sys.length === 1 && /اكتمل التركيب/.test(sys[0].text) && /SN-CHAT-9/.test(sys[0].text) && w.chOf(x.id).some(v => /اعتمد المهندسُ/.test(v.text)), 'وحفظُ التركيب يكتب سطرَه بقطعه وسيريالاته، والاعتمادُ سطرَه');
   w.POP_SITE = x.id; T(String(w.popHtml()).indexOf('محادثة النقطة') > -1, 'والمحادثةُ تظهر في نافذة النقطة على الخريطة');
   w.STATE.users = keepUsers; w.STATE.tasks['TK-install-' + x.id].status = 'معتمد'; w.tasksTouched();
 }
@@ -584,7 +584,7 @@ console.log('\n══ ١٨ · التوريدُ والمستودع ══');
     T(b.store === 5 && b.custody === 0 && b.used === 5 && cu === 0, 'والتركيبُ يأخذ من عهدة المنفِّذ أوّلًا ثم من المستودع مباشرةً — لا عهدةَ سالبةً ولا مستودعَ لا ينقص');
     w.STATE.moves = keepM; }
   /* the chat page has a live installation log */
-  { w.chPageHtml.f = { sys:1 }; const hp = w.chPageHtml(); w.chPageHtml.f = {}; T(hp.indexOf('سجل التركيب') > -1 && hp.indexOf('data-chf="sys"') > -1, 'وصفحةُ المحادثات فيها «سجل التركيب» لايف — كلُّ حفظٍ وتعديلٍ واعتمادٍ وردّ'); }
+  { w.chPageHtml.f = {}; const hl = w.chPageHtml(); w.chPageHtml.f = { sys:1 }; const hp = w.chPageHtml(); w.chPageHtml.f = {}; T(hl.indexOf('data-chf="sys"') > -1 && hp.indexOf('سجل التركيب') > -1 && hp.indexOf('chScroll') > -1, 'وصفحةُ المحادثات فيها «سجل التركيب» لايف — كلُّ حفظٍ وتعديلٍ واعتمادٍ وردّ'); }
   /* a photo still travelling to Drive is read from its raw copy, once */
   w.phBlob.c = { 'S-PH-1':'data:image/jpeg;base64,/9j/RAW' }; const src1 = w.phSrc('S-PH-1', { status:'pending', blob:true }), src2 = w.phSrc('S-PH-2', { driveId:'dz' }, 200);
   T(src1.indexOf('RAW') > -1 && /thumbnail\?id=dz&sz=w200/.test(src2), 'والصورةُ التي لم تصل الدرايف بعدُ تُعرَض من نسختها في السحابة خلال ثوانٍ');

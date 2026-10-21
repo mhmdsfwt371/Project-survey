@@ -120,6 +120,7 @@ function disSave(){
   var tk = taskKindOf(id, 'dis');
   if (tk){ tk.status = 'معتمد'; tk.doneAt = Date.now(); CORE.set('tasks', tk.id, tk); }
   logEvent('فك — ' + id + ' \u00b7 ' + nm(n) + ' قطعة', id);
+  if (typeof chSystem === 'function') chSystem(id, 'فُكَّت النقطة — ' + (STATE.meta.name || '') + ' \u00b7 ' + nm(n) + ' ' + t('قطعة'), '');   /* (V38.65) the point's history keeps its dismantling */
   stepDone('dis', id, nm(n) + ' ' + t('قطعة'), 0);
   toast(t('سُجِّل الفكُّ وأُرجعت العُهدة'));
   DISF = { site:'', items:{}, note:'', photos:{} };
