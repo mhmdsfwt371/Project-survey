@@ -677,6 +677,26 @@ console.log('\n══ ٢١ · لا بديلَ صامت، والدفترُ يصل
   delete w.STATE.inss[x.id]; w.STATE.moves = keepM; w.STATE.queue = keepQ; w.POP_SITE = ''; w.DETAIL_ID = '';
 }
 
+/* ── ٢٢ · (V38.70) زيارةٌ حُفظت على نقطةٍ خطأ تُنقَل إلى نقطتها بصورها هي، وصورُ تركيبٍ أُلغي لا تُعرَض صورًا للنقطة ── */
+console.log('\n══ ٢٢ · نقلُ الزيارة وصورُ التركيب الملغى ══');
+{
+  const src = w.STATE.sites.filter(z => z && z.type === 'مخيم' && !w.STATE.recs[z.id] && !w.STATE.inss[z.id])[0];
+  const to = w.STATE.sites.filter(z => z && z.type === 'مخيم' && !w.STATE.recs[z.id] && !w.STATE.inss[z.id] && z.id !== src.id)[1];
+  const at = Date.now() - 864e5;
+  w.STATE.recs[src.id] = { id:src.id, access:'تم الوصول', review:'pending', by:'فني النقل', at:at, mount:'هيكل قائم' };
+  w.STATE.photos[src.id + '-41'] = { site:src.id, kind:'site', seq:41, by:'فني النقل', at:at, driveId:'mv41', status:'done' };
+  w.STATE.photos[src.id + '-42'] = { site:src.id, kind:'site', seq:42, by:'غيره', at:at - 9e8, driveId:'mv42', status:'done' };
+  w.STATE.photos[src.id + '-43'] = { site:src.id, kind:'ins_after', seq:43, by:'منفِّذ', at:at, driveId:'mv43', status:'done' };
+  w.STATE.inss[src.id] = { id:src.id, status:'', voided:{ by:'مدير', at:Date.now(), why:'خطأ' } }; w.PH_IDX = null;
+  w.ROLE = 'admin'; w.STATE.meta.role = 'admin'; w.POP_SITE = src.id; w.FIELD_MODE = 'install'; const hp = String(w.popHtml()); w.FIELD_MODE = 'survey';
+  const kp = w.prompt, kc = w.confirm; w.prompt = () => to.id; w.confirm = () => true; const ok = w.svqMove(src.id); w.prompt = kp; w.confirm = kc;
+  const r = w.STATE.recs[to.id] || {};
+  T(hp.indexOf('mv43') < 0 && ok && r.by === 'فني النقل' && r.review === 'pending' && (r.movedFrom || {}).site === src.id && w.STATE.recs[src.id].deleted && w.STATE.recs[src.id].movedTo === to.id
+    && w.STATE.photos[src.id + '-41'].site === to.id && w.STATE.photos[src.id + '-41'].rehome && w.STATE.photos[src.id + '-42'].site === src.id,
+    'صورُ التركيب الملغى لا تُعرَض، والزيارةُ تُنقَل بصورها هي وحدَها وتعود للاعتماد، والنقطةُ الخطأ ترجع بلا زيارةٍ وعليها أثرُ النقل');
+  delete w.STATE.inss[src.id]; w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

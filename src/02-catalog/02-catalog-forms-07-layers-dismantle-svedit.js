@@ -255,6 +255,7 @@ function svqSheet(){
     + '<p class="hint" style="margin:6px 0 10px">' + esc(t(appr && !boss ? 'هذا المسحُ معتمد — تعديلُ أيِّ حقلٍ يعيده لانتظار اعتماد المهندس.' : 'اختر الحقلَ الذي تعدّله — يُحفَظ وحدَه، وتبقى الصورُ وبقيةُ المسح كما هي، ويُسجَّل التعديلُ باسمك.')) + '</p>'
     + (rows || '<p class="hint">' + esc(t('لا حقولَ مكتوبةً في هذه الزيارة — افتح نموذجَ المسح.')) + '</p>')
     + svqPhotos(rec)
+    + (may('approve') ? '<div class="actions" style="margin-top:10px">' + btn('\u21AA ' + t('انقل هذه الزيارة إلى نقطتها الصحيحة'), 'btn-secondary btn-sm', ' data-svqmove="' + esc(rec.id) + '"') + '</div>' : '')   /* (V38.70) */
     + (hist ? '<div class="wp-sec" style="margin-top:10px">' + esc(t('آخر التعديلات')) + '</div><ul class="wp-steps">' + hist + '</ul>' : '')
     + '<div class="actions" style="margin:14px 0 0">' + btn('\u2715 ' + t('إغلاق'), 'btn-secondary', ' data-svqx="1" style="width:100%"') + '</div>'
     + '</div></div>';
@@ -367,3 +368,37 @@ function svqSave(id, key, val, quiet){   /* (V38.20) quiet: جزءٌ من حفظ
   return true;
 }
 var BRIEF_ST = ['تمام', 'تحدٍّ', 'ملاحظة'];
+
+/* (V38.70) a visit saved on the wrong point (the formSite() fallback put 15 on Arafat 0001) moves to its right point: the
+   record goes there for review again (marked with where it came from), the visit's own photos follow it (and the server moves
+   their Drive files: rehome), and the wrong point returns to «not visited» with the move written on it. */
+function svqVisitPhotos(src, rec){
+  var day = dayKey(rec.at || 0);
+  return (typeof photosOf === 'function' ? photosOf(src) : []).filter(function(p){ var ph = p[1] || {}; return !ph.del && !/^ins|^dis/.test(String(ph.kind || '')) && (ph.by || '') === (rec.by || '') && dayKey(ph.at || 0) === day; });
+}
+function svqMove(src){
+  if (!may('approve')){ toast(t('نقلُ زيارةٍ للمهندس فما فوق')); return false; }
+  var rec = STATE.recs[src], from = siteFind(src); if (!rec || !from) return false;
+  var q = (typeof prompt === 'function') ? prompt(t('إلى أيِّ نقطة؟ — اكتب معرِّفها أو شاخصها (مثل 38/56)'), '') : '';
+  if (!q) return false; q = String(q).trim();
+  var to = siteFind(q) || (siteSearch(q, 2).length === 1 ? siteSearch(q, 1)[0] : null);
+  if (!to){ toast(t('لم تُعرَف النقطة — اكتب المعرِّفَ كاملًا') + ': ' + q); return false; }
+  if (to.id === src){ toast(t('هي النقطةُ نفسُها')); return false; }
+  var ph = svqVisitPhotos(src, rec), has = !!STATE.recs[to.id] && !STATE.recs[to.id].deleted;
+  var ok = (typeof confirm === 'function') ? confirm(t('تُنقَل زيارةُ') + ' ' + (rec.by || '') + ' (' + fmtDT(rec.at) + ') ' + t('ومعها') + ' ' + nm(ph.length) + ' ' + t('صورة') + ' ' + t('إلى') + ' ' + siteKey(to) + ' \u00b7 ' + to.name + (has ? '\n' + t('وللنقطة الهدف زيارةٌ ستُستبدَل') : '') + '\n' + t('متابعة؟')) : true;
+  if (!ok) return false;
+  var who = STATE.meta.name || '', now = Date.now();
+  var moved = Object.assign({}, rec, { id:to.id, review:'pending', movedFrom:{ site:src, by:who, at:now } });
+  delete moved.deleted;
+  STATE.recs[to.id] = moved; CORE.set('recs', to.id, moved);
+  ph.forEach(function(p){ var np = Object.assign({}, p[1], { site:to.id, rehome:true, movedFrom:src }); delete np.data; STATE.photos[p[0]] = np; CORE.set('photos', p[0], np); });
+  if (typeof phTouch === 'function') phTouch();
+  var gone = { id:src, deleted:true, movedTo:to.id, movedAt:now, movedBy:who, was:{ by:rec.by || '', at:rec.at || 0 } };
+  STATE.recs[src] = gone; CORE.set('recs', src, gone);
+  logEvent('نقل زيارة — ' + src + ' \u2192 ' + to.id + ' · ' + (rec.by || '') + ' ' + fmtDT(rec.at) + ' · ' + ph.length + ' صورة', src);
+  logEvent('زيارةٌ وصلت بالنقل من ' + src + ' — ' + (rec.by || ''), to.id);
+  if (typeof statBump === 'function') statBump();
+  SVQ = { id:'', key:'', tmp:null };
+  toast(t('نُقلت الزيارة إلى') + ' ' + siteKey(to) + ' — ' + t('بانتظار اعتمادها'));
+  return true;
+}

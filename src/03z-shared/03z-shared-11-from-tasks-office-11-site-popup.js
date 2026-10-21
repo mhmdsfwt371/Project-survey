@@ -41,7 +41,10 @@ function popPhotosHtml(id){
                  : '<span class="hint" title="' + esc(t('وصلت وتُنقَل إلى الدرايف')) + '" style="width:72px;height:72px;display:flex;align-items:center;justify-content:center;border:1px dashed var(--line);border-radius:8px;margin:0;flex:0 0 auto">\u23F3</span>'; }).join('');
     return '<div style="margin:8px 0 0"><div class="hint" style="margin:0 0 4px">\u{1F4F7} ' + esc(t(label)) + ' \u00b7 ' + nm(list.length) + (pend ? ' \u00b7 \u23F3 ' + nm(pend) + ' ' + esc(t('تُنقَل إلى الدرايف')) : '') + (list.length > 6 ? ' \u2014 ' + esc(t('أوّلُ ستٍّ — والباقي في «التفاصيل»')) : '') + '</div><div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">' + th + '</div></div>';
   };
-  var isIns = function(x){ return /^ins/.test(String(x[1].kind || '')); };
+  /* (V38.70) a voided installation's photos are not this point's installation photos (Arafat 0001: Mina 0449's photo) */
+  var vd = ((STATE.inss || {})[id] || {}).voided, vAt = vd ? (+vd.at || 0) : 0;
+  var isIns = function(x){ return /^ins/.test(String(x[1].kind || '')) && !(vAt && (+x[1].at || 0) <= vAt); };
+  if (vAt) L = L.filter(function(x){ return !(/^ins/.test(String(x[1].kind || '')) && (+x[1].at || 0) <= vAt); });
   /* (V38.61) owner's rule: the survey map shows the visit's photos, the installation map the installation's, «brief» both */
   var sv = group(L.filter(function(x){ return !isIns(x); }), 'صور الزيارة'), ins = group(L.filter(isIns), 'صور التركيب');
   return FIELD_MODE === 'install' ? ins : (FIELD_MODE === 'survey' ? sv : sv + ins);

@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.69</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.70</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1377,7 +1377,7 @@ function nskChunkReady(){
 
   try { if (typeof whatsNewMaybe === 'function' && whatsNewMaybe.pending){ whatsNewMaybe.pending = false; if (whatsNewMaybe() && typeof render === 'function') render(1); } } catch (e3){ LS_ERR = e3; }
 }
-var I18N_FILE = 'i18n/dict-2027492b9e.js', I18N_STATE = 0, I18N_WAIT = [];
+var I18N_FILE = 'i18n/dict-56386328f2.js', I18N_STATE = 0, I18N_WAIT = [];
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }
@@ -6530,6 +6530,7 @@ function svqSheet(){
     + '<p class="hint" style="margin:6px 0 10px">' + esc(t(appr && !boss ? 'هذا المسحُ معتمد — تعديلُ أيِّ حقلٍ يعيده لانتظار اعتماد المهندس.' : 'اختر الحقلَ الذي تعدّله — يُحفَظ وحدَه، وتبقى الصورُ وبقيةُ المسح كما هي، ويُسجَّل التعديلُ باسمك.')) + '</p>'
     + (rows || '<p class="hint">' + esc(t('لا حقولَ مكتوبةً في هذه الزيارة — افتح نموذجَ المسح.')) + '</p>')
     + svqPhotos(rec)
+    + (may('approve') ? '<div class="actions" style="margin-top:10px">' + btn('\u21AA ' + t('انقل هذه الزيارة إلى نقطتها الصحيحة'), 'btn-secondary btn-sm', ' data-svqmove="' + esc(rec.id) + '"') + '</div>' : '')
     + (hist ? '<div class="wp-sec" style="margin-top:10px">' + esc(t('آخر التعديلات')) + '</div><ul class="wp-steps">' + hist + '</ul>' : '')
     + '<div class="actions" style="margin:14px 0 0">' + btn('\u2715 ' + t('إغلاق'), 'btn-secondary', ' data-svqx="1" style="width:100%"') + '</div>'
     + '</div></div>';
@@ -6639,6 +6640,38 @@ function svqSave(id, key, val, quiet){
   return true;
 }
 var BRIEF_ST = ['تمام', 'تحدٍّ', 'ملاحظة'];
+
+function svqVisitPhotos(src, rec){
+  var day = dayKey(rec.at || 0);
+  return (typeof photosOf === 'function' ? photosOf(src) : []).filter(function(p){ var ph = p[1] || {}; return !ph.del && !/^ins|^dis/.test(String(ph.kind || '')) && (ph.by || '') === (rec.by || '') && dayKey(ph.at || 0) === day; });
+}
+function svqMove(src){
+  if (!may('approve')){ toast(t('نقلُ زيارةٍ للمهندس فما فوق')); return false; }
+  var rec = STATE.recs[src], from = siteFind(src); if (!rec || !from) return false;
+  var q = (typeof prompt === 'function') ? prompt(t('إلى أيِّ نقطة؟ — اكتب معرِّفها أو شاخصها (مثل 38/56)'), '') : '';
+  if (!q) return false; q = String(q).trim();
+  var to = siteFind(q) || (siteSearch(q, 2).length === 1 ? siteSearch(q, 1)[0] : null);
+  if (!to){ toast(t('لم تُعرَف النقطة — اكتب المعرِّفَ كاملًا') + ': ' + q); return false; }
+  if (to.id === src){ toast(t('هي النقطةُ نفسُها')); return false; }
+  var ph = svqVisitPhotos(src, rec), has = !!STATE.recs[to.id] && !STATE.recs[to.id].deleted;
+  var ok = (typeof confirm === 'function') ? confirm(t('تُنقَل زيارةُ') + ' ' + (rec.by || '') + ' (' + fmtDT(rec.at) + ') ' + t('ومعها') + ' ' + nm(ph.length) + ' ' + t('صورة') + ' ' + t('إلى') + ' ' + siteKey(to) + ' \u00b7 ' + to.name + (has ? '\n' + t('وللنقطة الهدف زيارةٌ ستُستبدَل') : '') + '\n' + t('متابعة؟')) : true;
+  if (!ok) return false;
+  var who = STATE.meta.name || '', now = Date.now();
+  var moved = Object.assign({}, rec, { id:to.id, review:'pending', movedFrom:{ site:src, by:who, at:now } });
+  delete moved.deleted;
+  STATE.recs[to.id] = moved; CORE.set('recs', to.id, moved);
+  ph.forEach(function(p){ var np = Object.assign({}, p[1], { site:to.id, rehome:true, movedFrom:src }); delete np.data; STATE.photos[p[0]] = np; CORE.set('photos', p[0], np); });
+  if (typeof phTouch === 'function') phTouch();
+  var gone = { id:src, deleted:true, movedTo:to.id, movedAt:now, movedBy:who, was:{ by:rec.by || '', at:rec.at || 0 } };
+  STATE.recs[src] = gone; CORE.set('recs', src, gone);
+  logEvent('نقل زيارة — ' + src + ' \u2192 ' + to.id + ' · ' + (rec.by || '') + ' ' + fmtDT(rec.at) + ' · ' + ph.length + ' صورة', src);
+  logEvent('زيارةٌ وصلت بالنقل من ' + src + ' — ' + (rec.by || ''), to.id);
+  if (typeof statBump === 'function') statBump();
+  SVQ = { id:'', key:'', tmp:null };
+  toast(t('نُقلت الزيارة إلى') + ' ' + siteKey(to) + ' — ' + t('بانتظار اعتمادها'));
+  return true;
+}
+
 function rbState(){ return rbState.s || (rbState.s = { sel:{}, open:false }); }
 
 function rbOptions(){
@@ -13875,7 +13908,10 @@ function popPhotosHtml(id){
                  : '<span class="hint" title="' + esc(t('وصلت وتُنقَل إلى الدرايف')) + '" style="width:72px;height:72px;display:flex;align-items:center;justify-content:center;border:1px dashed var(--line);border-radius:8px;margin:0;flex:0 0 auto">\u23F3</span>'; }).join('');
     return '<div style="margin:8px 0 0"><div class="hint" style="margin:0 0 4px">\u{1F4F7} ' + esc(t(label)) + ' \u00b7 ' + nm(list.length) + (pend ? ' \u00b7 \u23F3 ' + nm(pend) + ' ' + esc(t('تُنقَل إلى الدرايف')) : '') + (list.length > 6 ? ' \u2014 ' + esc(t('أوّلُ ستٍّ — والباقي في «التفاصيل»')) : '') + '</div><div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">' + th + '</div></div>';
   };
-  var isIns = function(x){ return /^ins/.test(String(x[1].kind || '')); };
+
+  var vd = ((STATE.inss || {})[id] || {}).voided, vAt = vd ? (+vd.at || 0) : 0;
+  var isIns = function(x){ return /^ins/.test(String(x[1].kind || '')) && !(vAt && (+x[1].at || 0) <= vAt); };
+  if (vAt) L = L.filter(function(x){ return !(/^ins/.test(String(x[1].kind || '')) && (+x[1].at || 0) <= vAt); });
 
   var sv = group(L.filter(function(x){ return !isIns(x); }), 'صور الزيارة'), ins = group(L.filter(isIns), 'صور التركيب');
   return FIELD_MODE === 'install' ? ins : (FIELD_MODE === 'survey' ? sv : sv + ins);
@@ -27604,6 +27640,7 @@ function clickAPart3(e){
   if (e.target.closest('[data-insqx]')){ insqState().id = ''; insqState().st = ''; render(1); return true; }
   var iqs = e.target.closest('[data-insqst]'); if (iqs){ insqState().st = iqs.getAttribute('data-insqst'); render(1); return true; }
   if (e.target.closest('[data-insqsave]')){ if (insqSave()) render(1); return true; }
+  var svm = e.target.closest('[data-svqmove]'); if (svm){ if (svqMove(svm.getAttribute('data-svqmove'))) render(1); return true; }
   if (e.target.closest('[data-mvsettle]')){ insLedgerSettle(); render(1); return true; }
   var iqv = e.target.closest('[data-insqvoid]'); if (iqv){ if (insqVoid(iqv.getAttribute('data-insqvoid'))) render(1); return true; }
   var iqa = e.target.closest('[data-insqdelask]'); if (iqa){ insqState().delAsk = iqa.getAttribute('data-insqdelask'); render(1); return true; }
@@ -29986,6 +30023,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.69"></script>
+<script defer src="app-office.js?v=38.70"></script>
 </body>
 </html>
