@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.56</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.57</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1377,7 +1377,7 @@ function nskChunkReady(){
 
   try { if (typeof whatsNewMaybe === 'function' && whatsNewMaybe.pending){ whatsNewMaybe.pending = false; if (whatsNewMaybe() && typeof render === 'function') render(1); } } catch (e3){ LS_ERR = e3; }
 }
-var I18N_FILE = 'i18n/dict-95d5524700.js', I18N_STATE = 0, I18N_WAIT = [];
+var I18N_FILE = 'i18n/dict-fd3728b591.js', I18N_STATE = 0, I18N_WAIT = [];
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }
@@ -2367,6 +2367,7 @@ var CORE = {
 
   _busy: false,
   flush: function(){
+    if (typeof pzInssRetry === 'function') pzInssRetry();
     if (!STATE.meta.online || !STATE.queue.length) return Promise.resolve(0);
 
     if (EPOCH_PENDING) return Promise.resolve(0);
@@ -2463,6 +2464,21 @@ var CORE = {
   pending: function(){ return STATE.queue.length; }
 };
 
+function pzInssRetry(){
+  try {
+    if (!STATE.meta.online || !Array.isArray(STATE.poison) || !STATE.poison.length) return 0;
+    var R = {}; try { R = JSON.parse(lsGet('nsk14.pzIns') || '{}'); } catch (e0){ R = {}; }
+    var now = Date.now(), back = 0;
+    STATE.poison = STATE.poison.filter(function(p){
+      if (!p || p.kind !== 'inss' || !/permission|insufficient|PERMISSION_DENIED/i.test(String(p.err || ''))) return true;
+      var k = String(p.id), r = R[k] || { n:0, at:0 };
+      if (r.n >= 8 || now - r.at < 1800000) return true;
+      R[k] = { n:r.n + 1, at:now }; CORE.dirty(p.kind, p.id, p.v); back++; return false;
+    });
+    if (back){ lsSet('nsk14.pzIns', JSON.stringify(R)); CORE.saveSoon(); logEventQuiet('أُعيد إرسالُ ' + back + ' تركيبٍ رفضته القاعدةُ القديمة'); }
+    return back;
+  } catch (e){ LS_ERR = e; return 0; }
+}
 function libLoad(local, cdn, ms){
 
   var t0 = Date.now();
@@ -5025,6 +5041,9 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
 
       if (x.kind === 'install'){
         var ins = STATE.inss[x.site] || {};
+
+        if ((STATE.poison || []).some(function(p){ return p && p.kind === 'inss' && String(p.id) === String(x.site); })) return pill('\u26A0 ' + t('لم يصل المكتب — يُعاد إرسالُه'), 'bad');
+        if ((STATE.queue || []).some(function(q){ return q && q.kind === 'inss' && String(q.id) === String(x.site); })) return pill('\u23F3 ' + t('محفوظٌ على الجهاز — لم يُرفَع بعد'), 'wrn');
         if (ins.approved) return pill('اعتُمد التركيب', 'ok');
         if (ins.status === 'مُعاد') return pill('أُعيد للتصحيح', 'off');
         if (ins.status === 'مُركّب') return pill('رُكِّب — بانتظار التدقيق', 'acc');
@@ -10094,6 +10113,8 @@ function insSave(draft){
   if (s.pilot && prevIns && insRevs(prevIns).length) nIns.revs = insRevs(prevIns).slice(-30);
   if (keepRev) nIns.revs = insRevs(prevIns).concat([insRevSnap(prevIns)]).slice(-30);
   CORE.set('inss', s.id, nIns);
+
+  if (prevIns && (prevIns.solution || prevIns.hand)) STATE.inss[s.id] = Object.assign({}, nIns, prevIns.solution ? { solution:prevIns.solution } : {}, prevIns.hand ? { hand:prevIns.hand } : {});
   Object.keys(FORM.photos).forEach(function(k){
     if (typeof photoQueue === 'function') photoQueue(s.id, (s.pilot ? 'ins_r' + (insRevs(nIns).length + 1) + '_' + k : 'ins_' + k), FORM.photos[k].data);
   });
@@ -29478,6 +29499,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.56"></script>
+<script defer src="app-office.js?v=38.57"></script>
 </body>
 </html>

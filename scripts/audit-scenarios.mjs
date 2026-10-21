@@ -458,15 +458,26 @@ console.log('\n══ ١٥ · دورةُ التركيب للمُسنَد إلي�
     const up = queued().slice(q1), r = w.STATE.inss[x.id] || {};
     const saved = r.status === 'مُركّب' && r.by === who && (r.serials || {})[rr.code] === SN && up.some(q => q.kind === 'inss' && q.id === x.id) && up.filter(q => q.kind === 'photos').length >= 2 && up.filter(q => q.kind === 'photoblobs').length >= 2;
     w.STATE.meta.online = false;
+    /* (V38.57) the installer sees that it is on the phone and not yet uploaded; the approved solution stays on the local record */
+    w.CUR = 'mywork'; w.render(1); const mwq = d.getElementById('content').innerHTML;
+    const told = mwq.indexOf('لم يُرفَع بعد') > -1 && ((w.STATE.inss[x.id] || {}).solution || {}).status === 'معتمد';
     as('engineer', 'جرد السيناريوهات'); w.apprIns(x.id, true); const tk2 = w.STATE.tasks['TK-install-' + x.id];
     as(role, who); w.CUR = 'mywork'; w.render(1); const gone = d.getElementById('content').innerHTML.indexOf('data-insform="' + x.id + '"') < 0;
-    return { assigned: !!tk && tk.to === who && tk.when === '2026-10-25', reach, saved, closed: tk2 && tk2.status === 'معتمد' && gone, SN };
+    return { assigned: !!tk && tk.to === who && tk.when === '2026-10-25', reach, saved, told, closed: tk2 && tk2.status === 'معتمد' && gone, SN };
   };
   const A = await cycle(free[0], 'فني الدورة', 'tech'), B = await cycle(free[1], 'مشرف الدورة', 'supervisor');
   T(A.assigned && B.assigned, 'الإسنادُ المجدولُ يُكتَب لصاحبه بموعده — فنيًّا ومشرفًا');
   T(A.reach && B.reach, 'ويصل إليه: في «مهامي» «بانتظارك» تفتح النموذجَ مباشرةً، وفي نافذة الخريطة وصفحة النقطة زرُّ نموذج التركيب');
   T(A.saved && B.saved, 'والتركيبُ يُحفَظ بحالته ومنفِّذه والسيريالُ على قطعته، ويدخل الطابورَ مع الصورتين (وثيقةٌ وخامٌ لكلٍّ)');
+  T(A.told && B.told, 'ويرى المنفِّذُ أن تركيبَه «محفوظٌ على الجهاز — لم يُرفَع بعد» حتى يصل، ويبقى الحلُّ المعتمدُ على سجلِّه');
   T(A.closed && B.closed, 'والاعتمادُ يُغلق مهمةَ التركيب فتخرج من «مهامي»');
+  /* (V38.57) an install the old database rule refused comes back to the queue by itself — once per 30 minutes */
+  { const keepPz = w.STATE.poison, keepOn = w.STATE.meta.online; w.localStorage.removeItem('nsk14.pzIns');
+    w.STATE.poison = [{ kind:'inss', id:free[2].id, v:{ id:free[2].id, status:'مُركّب' }, err:'FirebaseError: Missing or insufficient permissions.', at:Date.now() }];
+    w.STATE.meta.online = true; const q0 = queued().length, n1 = w.pzInssRetry(); const back = queued().slice(q0).some(q => q.kind === 'inss' && q.id === free[2].id);
+    w.STATE.poison.push({ kind:'inss', id:free[2].id, v:{}, err:'permission denied' }); const n2 = w.pzInssRetry();
+    T(n1 === 1 && back && n2 === 0, 'والتركيبُ الذي رفضته القاعدةُ القديمةُ يعود إلى طابور الرفع وحدَه (مرةً كلَّ نصف ساعة)');
+    w.STATE.poison = keepPz; w.STATE.meta.online = keepOn; }
   as('tech', 'فني الدورة'); const x3 = free[2]; w.formReset(); w.formGo(x3.id); w.CUR = 'insForm'; w.render(1);
   w.FORM.parts[rr.code] = 1; w.FORM.serials[rr.code] = A.SN; w.FORM.status = 'مُركّب'; w.FORM.photos.before = { data:IMG2 + 'c' }; w.FORM.photos.after = { data:IMG2 + 'd' }; w.insSave(0);
   T(!((w.STATE.inss[x3.id] || {}).status === 'مُركّب'), 'وسيريالٌ مسجَّلٌ على نقطةٍ أخرى لم تُفَكّ يوقف الحفظ');

@@ -245,6 +245,9 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
          «معتمدة» (the survey's approval) before anything was installed */
       if (x.kind === 'install'){
         var ins = STATE.inss[x.site] || {};
+        /* (V38.57) the installer must know the save reached the office, not only that it was saved on the phone */
+        if ((STATE.poison || []).some(function(p){ return p && p.kind === 'inss' && String(p.id) === String(x.site); })) return pill('\u26A0 ' + t('لم يصل المكتب — يُعاد إرسالُه'), 'bad');
+        if ((STATE.queue || []).some(function(q){ return q && q.kind === 'inss' && String(q.id) === String(x.site); })) return pill('\u23F3 ' + t('محفوظٌ على الجهاز — لم يُرفَع بعد'), 'wrn');
         if (ins.approved) return pill('اعتُمد التركيب', 'ok');
         if (ins.status === 'مُعاد') return pill('أُعيد للتصحيح', 'off');
         if (ins.status === 'مُركّب') return pill('رُكِّب — بانتظار التدقيق', 'acc');

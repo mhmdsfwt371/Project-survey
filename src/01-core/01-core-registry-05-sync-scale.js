@@ -285,6 +285,7 @@ var CORE = {
   /* الرفع — يُحاوَل ويُترك الطابور إن فشل */
   _busy: false,
   flush: function(){
+    if (typeof pzInssRetry === 'function') pzInssRetry();   /* (V38.57) installs the old rule refused come back to the queue */
     if (!STATE.meta.online || !STATE.queue.length) return Promise.resolve(0);
     /* لا يُرفَع شيءٌ قبل أن يُعرَف العهدُ — وإلا عاد القديمُ إلى قاعدةٍ صُفِّرت */
     if (EPOCH_PENDING) return Promise.resolve(0);
@@ -405,6 +406,24 @@ var CORE = {
 /* (V38.54) vendored libraries — the app's own copy under vendor/ first (kept by the service worker in the persistent
    «nusuk-lib» cache, so it works with no network), the public CDN only as a fallback when the own copy cannot load.
    Order matters for chained loads (Firebase compat: app → auth → firestore), so callers chain the promises. */
+/* (V38.57) installation records the old database rule refused (an approved solution in the merged document) sit isolated
+   on the installers' phones. Once the corrected rule is live they go through: re-send them — every 30 minutes while online,
+   at most 8 rounds per record, so a phone that updates before the rule is deployed still delivers later. */
+function pzInssRetry(){
+  try {
+    if (!STATE.meta.online || !Array.isArray(STATE.poison) || !STATE.poison.length) return 0;
+    var R = {}; try { R = JSON.parse(lsGet('nsk14.pzIns') || '{}'); } catch (e0){ R = {}; }
+    var now = Date.now(), back = 0;
+    STATE.poison = STATE.poison.filter(function(p){
+      if (!p || p.kind !== 'inss' || !/permission|insufficient|PERMISSION_DENIED/i.test(String(p.err || ''))) return true;
+      var k = String(p.id), r = R[k] || { n:0, at:0 };
+      if (r.n >= 8 || now - r.at < 1800000) return true;
+      R[k] = { n:r.n + 1, at:now }; CORE.dirty(p.kind, p.id, p.v); back++; return false;
+    });
+    if (back){ lsSet('nsk14.pzIns', JSON.stringify(R)); CORE.saveSoon(); logEventQuiet('أُعيد إرسالُ ' + back + ' تركيبٍ رفضته القاعدةُ القديمة'); }
+    return back;
+  } catch (e){ LS_ERR = e; return 0; }
+}
 function libLoad(local, cdn, ms){
   /* one deadline for both attempts (the caller's ms, as before vendoring): a local copy that errors fast leaves the rest
      of the budget to the CDN; a local copy that hangs until the deadline does not double the wait */

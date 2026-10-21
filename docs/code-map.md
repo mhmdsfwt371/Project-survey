@@ -8,7 +8,7 @@
 |---|---:|---:|---|
 | `00-head.html` | 1323 | 0 |  |
 
-## `01-core/` — النواة — اللغة والمحرك والمزامنة والسجل  (8 ملفات · 2835 سطر · 135 دالة)
+## `01-core/` — النواة — اللغة والمحرك والمزامنة والسجل  (8 ملفات · 2854 سطر · 136 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -16,19 +16,19 @@
 | `01-core-registry-02-data-display-search.js` | 222 | 23 | Project constants, display helpers (HTML escaping, pills, cards, tables), isolation of Latin tokens inside Arabic text, and the per-page search box. |
 | `01-core-registry-03-config-values.js` | 189 | 18 | Single source of configurable values (CFG): rates, weights keyed by zone and type, numeric constants edited from Settings and synced to every device. |
 | `01-core-registry-04-engine-storage.js` | 223 | 14 | Local-first storage engine: IndexedDB/localStorage persistence, resilience when the local store fails, and the save banner when data is at risk. |
-| `01-core-registry-05-sync-scale.js` | 1117 | 2 | CORE: the write queue, deduplication, upload with backoff and poison isolation, pending-upload limit and pending-file export/import, pull scheduling and scale-o |
+| `01-core-registry-05-sync-scale.js` | 1136 | 3 | CORE: the write queue, deduplication, upload with backoff and poison isolation, pending-upload limit and pending-file export/import, pull scheduling and scale-o |
 | `01-core-registry-06-data-gate-live.js` | 412 | 13 | DB gate (the only path to Firestore), silent-failure capture, live listeners that mirror other devices' writes, sync counters and pull accounting. |
 | `01-core-registry-07-blackbox-registry.js` | 242 | 17 | Black box (crash forensics) and the embedded site registry SITES_RAW with its publish/cache cycle to the database. |
 | `01-core-registry-08-egates-seed.js` | 79 | 8 | Al Mashaaer train: the nine stations and their 62 E-GATE points (registry points at the station reference, owner decision Q-023), the station card listing its g |
 
-## `02-catalog/` — الكتالوج والنقطة — التعريفات والتصنيف والصلاحيات وتعديل المسح  (10 ملفات · 4344 سطر · 257 دالة)
+## `02-catalog/` — الكتالوج والنقطة — التعريفات والتصنيف والصلاحيات وتعديل المسح  (10 ملفات · 4347 سطر · 257 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
 | `02-catalog-forms-01-site-edit-twins.js` | 397 | 32 | Site rows from the registry (siteRow/loadSites), zone-of-type rules, editing site data without a visit (override layer), bulk data corrections, twin points on o |
 | `02-catalog-forms-02-types-shapes-filters.js` | 554 | 37 | Point classification and map shapes per type, owner taxonomy (five zones, nine types), path filters, ministry camera details, tafweej layer, camp path and the f |
 | `02-catalog-forms-03-site-details-points.js` | 375 | 11 | Full site details page (PAGE.site) and technician points computed from work. |
-| `02-catalog-forms-04-mywork-diary.js` | 548 | 10 | 'My work' screens, project diary, weight/target simulator and how dues are computed. |
+| `02-catalog-forms-04-mywork-diary.js` | 551 | 10 | 'My work' screens, project diary, weight/target simulator and how dues are computed. |
 | `02-catalog-forms-05-management-performance.js` | 522 | 15 | Management records, methodology matching and the single performance page with five levels. |
 | `02-catalog-forms-06-teams-accounts-perms.js` | 551 | 12 | Teams and shares, crews and rates, the permissions module (UI + Firebase rules mirror) and role/team assignment to users. |
 | `02-catalog-forms-07-layers-dismantle-svedit.js` | 367 | 19 | Three map layers (what each shows and assigns), dismantle and maintenance forms, the brief line on visit documents, and editing a survey without redoing it (svq |
@@ -36,7 +36,7 @@
 | `02-definitions-08-definitions.js` | 523 | 77 | Canonical definitions used everywhere: visit/survey/installation states, challenge categories (chalCats), location choices (locOpts/locApplies), helper predicat |
 | `02-edit-09-edit-requests.js` | 230 | 15 | Data-correction requests from the field (fixreqs) and their review. |
 
-## `03-survey/` — المسح والتركيب — النماذج والنقاط والإسناد والخطة  (11 ملفات · 5202 سطر · 250 دالة)
+## `03-survey/` — المسح والتركيب — النماذج والنقاط والإسناد والخطة  (11 ملفات · 5205 سطر · 250 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -46,7 +46,7 @@
 | `03-survey-records-04-readiness-conditions.js` | 407 | 10 | What is ready per request type and the condition chain explaining why a point cannot be assigned. |
 | `03-survey-records-05-forms-approvals.js` | 234 | 17 | Field forms that write to the engine, the two approvals, missing survey fields, required-field marking and save blocking. |
 | `03-survey-records-06-survey-form.js` | 460 | 19 | The survey form: basic fields first and details on demand, prefix generation, automatic photo checks, and the draft that survives iOS closing the page. |
-| `03-survey-records-07-demo-single-errors.js` | 305 | 21 | Demo-point kits, single-point form, production error capture, events carrying their point and actor. |
+| `03-survey-records-07-demo-single-errors.js` | 308 | 21 | Demo-point kits, single-point form, production error capture, events carrying their point and actor. |
 | `03-survey-records-08-parts-history-onboarding.js` | 424 | 23 | Parts picker, three items missing from the worker, the point's full history, and the first-run tour. |
 | `03-survey-records-09-team-bugs-companies.js` | 506 | 33 | Team numbers in one pass, bug report and bug screen, accepted-only work rule, daily WhatsApp briefing, company phone book and company rename. |
 | `03-survey-records-10-wbs-plan-trials.js` | 680 | 44 | Work breakdown structure, plan versus actual, plan export with formulas, item file and the trials page. |
@@ -158,7 +158,7 @@
 | `05-lifecycle-map-12-ministry-screen-progress.js` | 384 | 22 | Ministry hall screen, completion forecast, progress map, far points, satellite in the ministry screen, week sentence and the hall view. |
 | `05-lifecycle-map-13-ministry-followup.js` | 471 | 49 | Ministry follow-up page: dynamic follow-up, season brief header, 'whose turn' groups, two modes, and the no-challenge camps card. |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4073 سطر · 151 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4075 سطر · 151 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -172,7 +172,7 @@
 | `06-ministry-alerts-08-pptx-template.js` | 966 | 16 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 285 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 991 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 993 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
 
@@ -216,4 +216,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 159 ملفًّا · 43266 سطر · 1941 دالة.
+**الإجمالي:** 159 ملفًّا · 43293 سطر · 1942 دالة.

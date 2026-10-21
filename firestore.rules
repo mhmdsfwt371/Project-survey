@@ -228,8 +228,12 @@ service cloud.firestore {
       allow create: if pm('inss', 'w', canW()) && request.resource.data.get('deleted', false) != true;   // (V29.3)
       allow update: if pm('inss', 'w', canW()) && (request.resource.data.get('deleted', false) != true || pm('inss', 'd', mgr())) && (
         pm('inss', 'a', mgr()) ||
-        (request.resource.data.approved != true &&
-        (!('solution' in request.resource.data) ||
+        (request.resource.data.get('approved', false) != true &&
+        // (V38.57) writes merge into the whole document, so an install saved by the field on a site whose solution is
+        // already approved carries that approved solution in request.resource.data — the old test rejected every such
+        // save (the installations never reached the office). The field may not change an approved solution; leaving it is allowed.
+        (request.resource.data.get('solution', null) == resource.data.get('solution', null) ||
+         !('solution' in request.resource.data) ||
          !('status' in request.resource.data.solution) ||
          request.resource.data.solution.status != 'معتمد'))
       );

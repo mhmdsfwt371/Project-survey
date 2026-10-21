@@ -166,6 +166,9 @@ function insSave(draft){
   if (s.pilot && prevIns && insRevs(prevIns).length) nIns.revs = insRevs(prevIns).slice(-30);
   if (keepRev) nIns.revs = insRevs(prevIns).concat([insRevSnap(prevIns)]).slice(-30);
   CORE.set('inss', s.id, nIns);
+  /* (V38.57) the upload merges into the cloud document (which keeps the approved solution); the local copy keeps it too —
+     it was dropped on the installer's device, so the site looked «without an approved solution» there after saving */
+  if (prevIns && (prevIns.solution || prevIns.hand)) STATE.inss[s.id] = Object.assign({}, nIns, prevIns.solution ? { solution:prevIns.solution } : {}, prevIns.hand ? { hand:prevIns.hand } : {});
   Object.keys(FORM.photos).forEach(function(k){
     if (typeof photoQueue === 'function') photoQueue(s.id, (s.pilot ? 'ins_r' + (insRevs(nIns).length + 1) + '_' + k : 'ins_' + k), FORM.photos[k].data);   /* (V37.79) */
   });
