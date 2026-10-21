@@ -4480,8 +4480,9 @@ var FILT_CACHE = null, FILT_KEY = '';
 function filtered(){
   var k = FILT.zone + '|' + FILT.type + '|' + FILT.work + '|' + FILT.life + '|' + STAT_VER
         + '|' + CO_SEL.join(',');
-  if (FILT_CACHE && FILT_KEY === k) return FILT_CACHE;
-  FILT_KEY = k;
+
+  if (FILT_CACHE && FILT_KEY === k && filtered.of === STATE.sites && filtered.n === STATE.sites.length) return FILT_CACHE;
+  FILT_KEY = k; filtered.of = STATE.sites; filtered.n = STATE.sites.length;
   FILT_CACHE = filtOn() ? STATE.sites.filter(filtPass) : STATE.sites;
   return FILT_CACHE;
 }

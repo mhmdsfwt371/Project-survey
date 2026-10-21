@@ -21,12 +21,12 @@
 | `01-core-registry-07-blackbox-registry.js` | 242 | 17 | Black box (crash forensics) and the embedded site registry SITES_RAW with its publish/cache cycle to the database. |
 | `01-core-registry-08-egates-seed.js` | 79 | 8 | Al Mashaaer train: the nine stations and their 62 E-GATE points (registry points at the station reference, owner decision Q-023), the station card listing its g |
 
-## `02-catalog/` — الكتالوج والنقطة — التعريفات والتصنيف والصلاحيات وتعديل المسح  (12 ملفات · 4732 سطر · 291 دالة)
+## `02-catalog/` — الكتالوج والنقطة — التعريفات والتصنيف والصلاحيات وتعديل المسح  (12 ملفات · 4733 سطر · 291 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
 | `02-catalog-forms-01-site-edit-twins.js` | 397 | 32 | Site rows from the registry (siteRow/loadSites), zone-of-type rules, editing site data without a visit (override layer), bulk data corrections, twin points on o |
-| `02-catalog-forms-02-types-shapes-filters.js` | 554 | 37 | Point classification and map shapes per type, owner taxonomy (five zones, nine types), path filters, ministry camera details, tafweej layer, camp path and the f |
+| `02-catalog-forms-02-types-shapes-filters.js` | 555 | 37 | Point classification and map shapes per type, owner taxonomy (five zones, nine types), path filters, ministry camera details, tafweej layer, camp path and the f |
 | `02-catalog-forms-03-site-details-points.js` | 379 | 11 | Full site details page (PAGE.site) and technician points computed from work. |
 | `02-catalog-forms-04-mywork-diary.js` | 558 | 10 | 'My work' screens, project diary, weight/target simulator and how dues are computed. |
 | `02-catalog-forms-05-management-performance.js` | 522 | 15 | Management records, methodology matching and the single performance page with five levels. |
@@ -218,4 +218,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 161 ملفًّا · 43927 سطر · 1984 دالة.
+**الإجمالي:** 161 ملفًّا · 43928 سطر · 1984 دالة.
