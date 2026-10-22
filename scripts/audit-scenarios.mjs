@@ -825,6 +825,26 @@ console.log('\n══ ٢٩ · الممرات والجمرات: التحدي من
   w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.statBump();
 }
 
+/* ── ٣٠ · (V38.79) نموذجُ المسح: الممراتُ والجمراتُ بلا شرائح تحديات — «موقع النقطة» مطلوبٌ وهو التحدي ── */
+console.log('\n══ ٣٠ · نموذجُ المسح للممرات والجمرات ══');
+{
+  const d = w.document, cor = w.STATE.sites.filter(x => x && x.type === 'ممر' && !w.STATE.recs[x.id])[7], camp = w.STATE.sites.filter(x => x && x.type === 'مخيم' && !w.STATE.recs[x.id])[7];
+  const toastsS = []; const t0 = w.toast; w.toast = (m) => { toastsS.push(String(m)); };
+  const open = (x) => { w.formReset(); w.FORM.site = x.id; w.PTAB = w.PTAB || {}; w.PTAB.forms = SVF; w.CUR = 'forms'; w.render(1); return d.getElementById('content').innerHTML; };
+  const SVF = 'svForm';
+  const hc = open(cor);
+  T(hc.indexOf('data-chal="') < 0 && hc.indexOf('data-svloc="') > -1 && hc.indexOf('موقع النقطة» وحده') > -1, 'الممرُّ: لا شرائحَ تحديات في النموذج، و«موقع النقطة» حاضرٌ وسطرٌ يقول إنه التحدي');
+  Object.assign(w.FORM, { mount:'هيكل قائم', power:'شبكة', wid_m:'1', hgt_m:'1', fit:'نعم', access:'تم الوصول' }); w.FORM.loc = [];
+  (w.SV_PHOTOS || []).forEach(p => { const k = Array.isArray(p) ? p[0] : (p && (p.k || p.key || p.kind)); if (k) w.FORM.photos[k] = 'data:image/gif;base64,R0lGODlhAQABAAAAACw='; });   /* the two required photos */
+  toastsS.length = 0; try { w.svSave(false); } catch (e){}
+  T(!w.STATE.recs[cor.id] && toastsS.join(' ').indexOf('موقع النقطة') > -1 && toastsS.join(' ').indexOf('تحديات التركيب') < 0, 'وبلا «موقع النقطة» لا يُحفَظ — ويُطلَب الموقع لا التحديات');
+  const hk = open(camp);
+  T(hk.indexOf('data-chal="') > -1, 'والمخيمُ نموذجُه كما هو بشرائح التحديات');
+  w.STATE.recs[cor.id] = { id:cor.id, access:'تم الوصول', review:'approved', by:'فني', at:Date.now(), chals:['لا يوجد سطح تثبيت'], loc:['تحت كوبري'] };
+  T(w.svqKeys(w.STATE.recs[cor.id]).indexOf('chals') < 0 && w.svqKeys(w.STATE.recs[cor.id]).indexOf('loc') > -1, 'وفي «تعديل المسح» للممرِّ يُعدَّل «موقع النقطة» ولا صفَّ للشرائح');
+  delete w.STATE.recs[cor.id]; w.toast = t0; w.formReset(); w.CUR = 'map';
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

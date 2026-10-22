@@ -202,6 +202,8 @@ function svqKeys(rec){
   if (rec.access === 'تم الوصول' && ks.indexOf('loc') < 0 && locApplies(siteFind(rec.id))){ var mi = ks.indexOf('mount'); ks.splice(mi > -1 ? mi + 1 : 0, 0, 'loc'); }   /* (V38.24) للممرات والجمرات */
   var hasCh = (rec.chals || []).some(function(c){ return c && c !== 'لا توجد تحديات'; });
   if (hasCh && ks.indexOf('chal_note') < 0){ var ci = ks.indexOf('chals'); ks.splice(ci > -1 ? ci + 1 : ks.length, 0, 'chal_note'); }
+  /* (V38.79) corridors and Jamarat: the challenge is edited through «موقع النقطة» — no chips row */
+  if (locOnly(siteFind(rec.id))) ks = ks.filter(function(k){ return k !== 'chals'; });
   return ks;
 }
 function svqLabel(k){ if (String(k).indexOf('ph:') === 0) return 'صورة: ' + svqKindLabel(k.slice(3)); return k === 'chals' ? 'تحديات التركيب' : (SV_LABELS[k] || k); }

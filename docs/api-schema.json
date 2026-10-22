@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V38.78",
+  "app_version": "V38.79",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2240,7 +2240,8 @@
   "V38.75": "locList كلمات فقط · siteIdHtml رابط للخريطة · svListPop: اسم النقطة رابط وصور الزيارة وحدها · data-fly يغلق النافذة · سيناريو ٢٧",
   "V38.76": "svHasChalAny · svClean: المركّبة خارج العوائق والتحدي بكل فئاته · mfuObstacles وmtGrpOf بالتعريف الواحد · svPrimWhyAny · جولة الزائر: رقم واحد",
   "V38.77": "photoView/photoDownload عبر phSrc على السجل نفسه · provision.yml: دورة كل ٥ دقائق لـ٥٫٥ ساعة مع concurrency · سيناريو ٢٨",
-  "V38.78": "locOnly · chalCats0 للممرات والجمرات من locChalKeys · obsLocTags بلا استنتاج لهما · recMove ورفع أثر التحريك إلى rec.moved · locList بلا «[object Object]» · قائمة locnone · سيناريو ٢٩"
+  "V38.78": "locOnly · chalCats0 للممرات والجمرات من locChalKeys · obsLocTags بلا استنتاج لهما · recMove ورفع أثر التحريك إلى rec.moved · locList بلا «[object Object]» · قائمة locnone · سيناريو ٢٩",
+  "V38.79": "svForm: locOnly يخفي شرائح التحديات ووصفها ويجعل loc مطلوبًا · svSave: chals [] للممرات والجمرات · svqKeys بلا chals لهما · خطوة في SOPS · سيناريو ٣٠"
   },
   "map_and_geolocation": {
     "tile_layers": {

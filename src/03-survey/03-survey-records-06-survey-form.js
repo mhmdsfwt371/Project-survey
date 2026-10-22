@@ -391,8 +391,12 @@ function svSave(next){
     var need = [];
     if (!FORM.mount) need.push('نوع التركيب');
     if (!FORM.power) need.push('مصدر الكهرباء');
-    if (!(FORM.chals || []).length) need.push('تحديات التركيب');
-    if ((FORM.chals || []).indexOf(chalOther()) > -1 && !String(FORM.chal_note || '').trim()) need.push('وصف التحدي بالتفصيل');   /* (V38.20) «أخرى» بلا وصفٍ لا تفيد المكتب */
+    /* (V38.79) corridors and Jamarat: «موقع النقطة» is required instead of the challenge chips */
+    if (locOnly(s)){ if (!locList(FORM.loc).length) need.push('موقع النقطة'); }
+    else {
+      if (!(FORM.chals || []).length) need.push('تحديات التركيب');
+      if ((FORM.chals || []).indexOf(chalOther()) > -1 && !String(FORM.chal_note || '').trim()) need.push('وصف التحدي بالتفصيل');
+    }   /* (V38.20) «أخرى» بلا وصفٍ لا تفيد المكتب */
     if (!cfgN(FORM.wid_m)) need.push('العرض المتاح (متر)');
     if (!cfgN(FORM.hgt_m)) need.push('الارتفاع المتاح (متر)');
     if (!FORM.fit) need.push('هل الموقع مناسب للتركيب؟');
@@ -410,12 +414,12 @@ function svSave(next){
   var rec = {
     id:s.id, by:STATE.meta.name || '', at:Date.now(),
     mount:FORM.mount, power:FORM.power, height:cfgN(FORM.height), cable:cfgN(FORM.cable),
-    chals:FORM.chals.slice(), note:FORM.note, photos:Object.keys(FORM.photos),
+    chals:locOnly(s) ? [] : FORM.chals.slice(), note:FORM.note, photos:Object.keys(FORM.photos),
     access:FORM.access
   };
   /* (V37.1) السببُ والفئاتُ مفاتيحُ ثابتة؛ ومحاولاتُ الوصول وبدايةُ التوقف تُحمَل من الزيارة السابقة */
   if (!reached){ var pv = STATE.recs[s.id]; rec.why = FORM.why; rec.tries = (pv && svStuck(pv) ? (+pv.tries || 1) : 0) + 1; rec.stuckSince = (pv && svStuck(pv) && (+pv.stuckSince || +pv.at)) || Date.now(); }
-  else rec.chalCats = chalCats({ chals:FORM.chals }).filter(function(k){ return k !== 'review'; });
+  else rec.chalCats = locOnly(s) ? [] : chalCats({ chals:FORM.chals }).filter(function(k){ return k !== 'review'; });
   SV_EXTRA_KEYS.forEach(function(k){ if (FORM[k] !== '' && FORM[k] != null) rec[k] = FORM[k]; });
   /* العنوانُ الذي قرأه الفنيُّ من الجهاز يُكتَب على النقطة نفسِها — فتخرج من
      قائمة «بلا عنوان» بعنوانها الحقيقيِّ لا بعنوانٍ مولَّد */

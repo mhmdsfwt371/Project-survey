@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.78</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.79</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1377,7 +1377,7 @@ function nskChunkReady(){
 
   try { if (typeof whatsNewMaybe === 'function' && whatsNewMaybe.pending){ whatsNewMaybe.pending = false; if (whatsNewMaybe() && typeof render === 'function') render(1); } } catch (e3){ LS_ERR = e3; }
 }
-var I18N_FILE = 'i18n/dict-10936d842c.js', I18N_STATE = 0, I18N_WAIT = [];
+var I18N_FILE = 'i18n/dict-b4bda46f2f.js', I18N_STATE = 0, I18N_WAIT = [];
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }
@@ -6479,6 +6479,8 @@ function svqKeys(rec){
   if (rec.access === 'تم الوصول' && ks.indexOf('loc') < 0 && locApplies(siteFind(rec.id))){ var mi = ks.indexOf('mount'); ks.splice(mi > -1 ? mi + 1 : 0, 0, 'loc'); }
   var hasCh = (rec.chals || []).some(function(c){ return c && c !== 'لا توجد تحديات'; });
   if (hasCh && ks.indexOf('chal_note') < 0){ var ci = ks.indexOf('chals'); ks.splice(ci > -1 ? ci + 1 : ks.length, 0, 'chal_note'); }
+
+  if (locOnly(siteFind(rec.id))) ks = ks.filter(function(k){ return k !== 'chals'; });
   return ks;
 }
 function svqLabel(k){ if (String(k).indexOf('ph:') === 0) return 'صورة: ' + svqKindLabel(k.slice(3)); return k === 'chals' ? 'تحديات التركيب' : (SV_LABELS[k] || k); }
@@ -8677,7 +8679,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
 
           + '</div>'
 
-          + (locApplies(s) ? '<div class="field" style="margin:10px 0 0"><label>' + esc(t('موقع النقطة')) + ' <span class="hint" style="margin:0;font-weight:400">' + esc(t('اختر كل ما ينطبق')) + '</span></label>'
+          + (locApplies(s) ? '<div class="field" style="margin:10px 0 0"><label>' + esc(t('موقع النقطة')) + (locOnly(s) ? ' <span class="req">*</span>' : '') + ' <span class="hint" style="margin:0;font-weight:400">' + esc(t('اختر كل ما ينطبق')) + '</span></label>'
               + '<div class="chips" style="margin:6px 0 0">' + locOpts().map(function(o){ var L = locList(FORM.loc);
                   return '<button type="button" class="chip' + (L.indexOf(o) > -1 ? ' on' : '') + '" data-svloc="' + esc(o) + '">' + esc(t(o)) + '</button>'; }).join('') + '</div></div>' : '')
           + '<div class="grid cols-2">'
@@ -8691,6 +8693,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           + '<input type="number" min="0" data-form="cable" value="' + esc(FORM.cable) + '"></div>'
           + '</div>'
 
+          + (locOnly(s) ? '<p class="hint" style="margin:10px 0 0">' + esc(t('تحدي الممرات والجمرات يُؤخذ من «موقع النقطة» وحده — اختره أعلاه')) + '</p>' : ('')
           + '<div class="field"><label>' + esc(t('تحديات التركيب')) + ' <span class="req">*</span> <span class="hint" style="margin:0;font-weight:400">' + esc(t('اختر واحدًا أو أكثر')) + '</span></label>'
           + '<div class="chips" style="margin:6px 0 0">'
           + ((FORM.chals = chalsToCats(FORM.chals, FORM.chal_note || FORM.note)), chalNames()).map(function(c){
@@ -8703,7 +8706,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
               ? '<div class="field"><label>' + esc(t('وصف التحدي بالتفصيل')) + ' '
                 + (FORM.chals.indexOf(chalOther()) > -1 ? '<span class="req">*</span> <span class="hint" style="margin:0;font-weight:400">' + esc(t('مطلوب مع «أخرى»')) + '</span>' : '<span class="hint" style="margin:0;font-weight:400">' + esc(t('اختياري')) + '</span>')
                 + '</label><textarea data-form="chal_note" rows="2" placeholder="'
-                + esc(t('مثال: الجدار مائل ولا يتحمّل الحامل — نحتاج عمودًا بارتفاع ٣ م')) + '">' + esc(FORM.chal_note || '') + '</textarea></div>' : '')
+                + esc(t('مثال: الجدار مائل ولا يتحمّل الحامل — نحتاج عمودًا بارتفاع ٣ م')) + '">' + esc(FORM.chal_note || '') + '</textarea></div>' : ''))
           + '<div class="field"><label>' + esc(t('ملاحظات (اختيارية)')) + '</label>'
           + '<textarea rows="3" data-form="note">' + esc(FORM.note) + '</textarea></div>')
 
@@ -10291,8 +10294,12 @@ function svSave(next){
     var need = [];
     if (!FORM.mount) need.push('نوع التركيب');
     if (!FORM.power) need.push('مصدر الكهرباء');
-    if (!(FORM.chals || []).length) need.push('تحديات التركيب');
-    if ((FORM.chals || []).indexOf(chalOther()) > -1 && !String(FORM.chal_note || '').trim()) need.push('وصف التحدي بالتفصيل');
+
+    if (locOnly(s)){ if (!locList(FORM.loc).length) need.push('موقع النقطة'); }
+    else {
+      if (!(FORM.chals || []).length) need.push('تحديات التركيب');
+      if ((FORM.chals || []).indexOf(chalOther()) > -1 && !String(FORM.chal_note || '').trim()) need.push('وصف التحدي بالتفصيل');
+    }
     if (!cfgN(FORM.wid_m)) need.push('العرض المتاح (متر)');
     if (!cfgN(FORM.hgt_m)) need.push('الارتفاع المتاح (متر)');
     if (!FORM.fit) need.push('هل الموقع مناسب للتركيب؟');
@@ -10310,12 +10317,12 @@ function svSave(next){
   var rec = {
     id:s.id, by:STATE.meta.name || '', at:Date.now(),
     mount:FORM.mount, power:FORM.power, height:cfgN(FORM.height), cable:cfgN(FORM.cable),
-    chals:FORM.chals.slice(), note:FORM.note, photos:Object.keys(FORM.photos),
+    chals:locOnly(s) ? [] : FORM.chals.slice(), note:FORM.note, photos:Object.keys(FORM.photos),
     access:FORM.access
   };
 
   if (!reached){ var pv = STATE.recs[s.id]; rec.why = FORM.why; rec.tries = (pv && svStuck(pv) ? (+pv.tries || 1) : 0) + 1; rec.stuckSince = (pv && svStuck(pv) && (+pv.stuckSince || +pv.at)) || Date.now(); }
-  else rec.chalCats = chalCats({ chals:FORM.chals }).filter(function(k){ return k !== 'review'; });
+  else rec.chalCats = locOnly(s) ? [] : chalCats({ chals:FORM.chals }).filter(function(k){ return k !== 'review'; });
   SV_EXTRA_KEYS.forEach(function(k){ if (FORM[k] !== '' && FORM[k] != null) rec[k] = FORM[k]; });
 
   var netIn = String(FORM.old_net || '').trim().replace(/\.+$/, '');
@@ -13460,6 +13467,7 @@ var SOPS = [
       ['الفني','يرى المهمّةَ في «مهامي» ويتوجّه بالأقرب أولًا','مهامي'],
       ['الفني','يفتح نموذج المسح فيرى المعلومَ ويجمع المجهول','نموذج المسح'],
       ['الفني','يلتقط صورةَ الموقع وصورةَ نقطة التركيب — إلزامٌ لا يُتجاوَز','نموذج المسح'],
+      ['الفني','في الممرات والجمرات يختار «موقع النقطة» وهو تحدّيها — ولا تُطلَب لها شرائحُ التحديات','نموذج المسح'],
       ['النظام','يضغط الصورَ على الجهاز ويحفظ محليًّا ثم يرفع','—'],
       ['المهندس','يراجع ما جُمع فيعتمده أو يردّه بسبب','التدقيق الهندسي'],
       ['النظام','يحتسب نقاطَ الزيارة للفني بوزنها من الإعدادات','أدائي']
@@ -30134,6 +30142,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.78"></script>
+<script defer src="app-office.js?v=38.79"></script>
 </body>
 </html>

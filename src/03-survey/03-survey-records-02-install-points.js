@@ -631,7 +631,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
              لأن النقطةَ قد تكون على جدارٍ وتحت كوبري معًا. منه يُبنى «حسب الموقع» في التحديات والمعوقات */
           + '</div>'
           /* (V38.25) «موقع النقطة» شرائحُ تُختار (أكثرُ من واحد) — للممرات والجمرات وكاميرات الوزارة وحدَها */
-          + (locApplies(s) ? '<div class="field" style="margin:10px 0 0"><label>' + esc(t('موقع النقطة')) + ' <span class="hint" style="margin:0;font-weight:400">' + esc(t('اختر كل ما ينطبق')) + '</span></label>'
+          + (locApplies(s) ? '<div class="field" style="margin:10px 0 0"><label>' + esc(t('موقع النقطة')) + (locOnly(s) ? ' <span class="req">*</span>' : '') + ' <span class="hint" style="margin:0;font-weight:400">' + esc(t('اختر كل ما ينطبق')) + '</span></label>'
               + '<div class="chips" style="margin:6px 0 0">' + locOpts().map(function(o){ var L = locList(FORM.loc);
                   return '<button type="button" class="chip' + (L.indexOf(o) > -1 ? ' on' : '') + '" data-svloc="' + esc(o) + '">' + esc(t(o)) + '</button>'; }).join('') + '</div></div>' : '')
           + '<div class="grid cols-2">'
@@ -645,6 +645,8 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           + '<input type="number" min="0" data-form="cable" value="' + esc(FORM.cable) + '"></div>'
           + '</div>'
           /* (V38.21) «خلّيها أسهل وواضحة وصريحة»: عنوانٌ يقول ماذا يُفعَل، و«أخرى» مميّزة، وسطرٌ يقول متى تُختار */
+          /* (V38.79) owner: corridors and Jamarat — the challenge is «موقع النقطة» alone, so the chips are not asked for */
+          + (locOnly(s) ? '<p class="hint" style="margin:10px 0 0">' + esc(t('تحدي الممرات والجمرات يُؤخذ من «موقع النقطة» وحده — اختره أعلاه')) + '</p>' : ('')
           + '<div class="field"><label>' + esc(t('تحديات التركيب')) + ' <span class="req">*</span> <span class="hint" style="margin:0;font-weight:400">' + esc(t('اختر واحدًا أو أكثر')) + '</span></label>'
           + '<div class="chips" style="margin:6px 0 0">'
           + ((FORM.chals = chalsToCats(FORM.chals, FORM.chal_note || FORM.note)), chalNames()).map(function(c){   /* (V37.1) الفئاتُ الثماني — اختيارٌ لا كتابة */
@@ -657,7 +659,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
               ? '<div class="field"><label>' + esc(t('وصف التحدي بالتفصيل')) + ' '
                 + (FORM.chals.indexOf(chalOther()) > -1 ? '<span class="req">*</span> <span class="hint" style="margin:0;font-weight:400">' + esc(t('مطلوب مع «أخرى»')) + '</span>' : '<span class="hint" style="margin:0;font-weight:400">' + esc(t('اختياري')) + '</span>')
                 + '</label><textarea data-form="chal_note" rows="2" placeholder="'
-                + esc(t('مثال: الجدار مائل ولا يتحمّل الحامل — نحتاج عمودًا بارتفاع ٣ م')) + '">' + esc(FORM.chal_note || '') + '</textarea></div>' : '')
+                + esc(t('مثال: الجدار مائل ولا يتحمّل الحامل — نحتاج عمودًا بارتفاع ٣ م')) + '">' + esc(FORM.chal_note || '') + '</textarea></div>' : ''))
           + '<div class="field"><label>' + esc(t('ملاحظات (اختيارية)')) + '</label>'
           + '<textarea rows="3" data-form="note">' + esc(FORM.note) + '</textarea></div>')
 
