@@ -55,12 +55,33 @@ const LW = JSON.parse(w.eval(`(function(){
   });
   return JSON.stringify({ n:n, found:found, thrown:thrown, noFly:noFly });
 })()`));
+/* (V38.76) one number everywhere: visited, installed and «with obstacles» computed by every screen that shows them (the
+   dashboard stages, the survey stats, the Ministry follow-up, the hall screen, the obstacles tab, the daily roll-up) must agree
+   — the owner's standing rule: a report with a wrong figure is a top-priority defect */
+const NUM = JSON.parse(w.eval(`(function(){
+  var inst = STATE.sites.filter(function(x){ var r = STATE.recs[x.id]; return r && Array.isArray(r.chals) && r.chals.length; }).slice(0, 3);
+  inst.forEach(function(x){ STATE.inss[x.id] = { id:x.id, status:'مركب', by:'منفِّذ', at:Date.now(), parts:{ rdr4c:1 } }; });
+  statBump(); ROLE = 'admin'; STATE.meta.role = 'admin';
+  var st = stageCounts0(), sv = svStats0(), kp = mfuKpis(), k = kioskObsTally().T, ro = rollupToday();
+  var mt = 0; mtSites().forEach(function(x){ if (mtGrpOf(x.id)) mt++; });
+  var obs0 = 0, cln0 = 0; STATE.sites.forEach(function(x){ var r = STATE.recs[x.id]; if (svObstacle(r)) obs0++; if (svClean(r)) cln0++; });
+  /* two metrics with two names: «بعوائق / بدون عوائق» (the single definition V33.0 — hall screen, summary lists) and
+     «معوّقات» (the follow-up's impediments: excludes installed points, reads clearly written challenges) */
+  return JSON.stringify({ visited:[st.vis, sv.O.sv, kp.sv, ro.surveyed, k.ok + k.ob], installed:[st.ins, kp.ins, ro.installed],
+    withObs:[k.ob, obs0], clean:[k.ok, cln0], impediments:[mfuObstacles().length, kp.obs, mt], inst:inst.length });
+})()`));
 let fails = 0;
 const T = (c, msg) => { if (c) console.log('  \u2713 ' + msg); else { fails++; console.log('  \u2717 ' + msg); console.log('::error title=فحصٌ ساقط::' + msg.replace(/[\r\n]+/g, ' ').slice(0, 300)); } };
 console.log('\n══ جولةُ الزائر — Firebase قائم، كلُّ دورٍ وكلُّ شاشةٍ وشريحة (' + R.n + ') ══');
 T(R.n > 300, 'الجولةُ مرّت على ' + R.n + ' شاشةً وشريحةً بكلِّ الأدوار');
 T(!R.thrown.length, 'لا شاشةَ ترمي خطأً' + (R.thrown.length ? ' — ' + R.thrown.slice(0, 5).join(' | ') : ''));
 T(!R.found.length, 'ولا «undefined / NaN / null» على الشاشة' + (R.found.length ? ' — ' + R.found.slice(0, 5).join(' | ') : ''));
+console.log('\n══ رقمٌ واحدٌ في كلِّ الشاشات ══');
+const same = (a) => a.every(v => v === a[0]);
+T(same(NUM.visited), 'تمت الزيارة: اللوحة · إحصاء المسح · متابعة الوزارة · الحصيلة اليومية · شاشة القاعة = ' + NUM.visited.join(' · '));
+T(same(NUM.installed) && NUM.installed[0] >= NUM.inst, 'تم التركيب: اللوحة · متابعة الوزارة · الحصيلة اليومية = ' + NUM.installed.join(' · '));
+T(same(NUM.withObs) && same(NUM.clean), 'بعوائق / بدون عوائق: شاشة القاعة · قائمتا الملخّص = ' + NUM.withObs.join(' · ') + ' / ' + NUM.clean.join(' · '));
+T(same(NUM.impediments), 'المعوّقات: متابعة الوزارة · مؤشراتها · شريحة العوائق = ' + NUM.impediments.join(' · '));
 console.log('\n══ نوافذُ القوائم — الإدارة والوزارة (' + LW.n + ') ══');
 T(LW.n > 50, 'فُتحت ' + LW.n + ' نافذةَ قائمةٍ بدوري الإدارة والوزارة');
 T(!LW.thrown.length, 'لا نافذةَ ترمي خطأً' + (LW.thrown.length ? ' — ' + LW.thrown.slice(0, 4).join(' | ') : ''));
