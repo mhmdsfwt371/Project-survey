@@ -293,6 +293,13 @@ await ok  ('والنبضُ والتقريرُ يقرؤهما المهندس (V17
 await deny('ولا الفنيّ',                                     getDoc(doc(as('tec'), 'settings/sysreport')));
 await deny('ولا الوزارة',                                    getDoc(doc(as('vwr'), 'settings/sysreport')));
 await deny('ولا يكتبه أحدٌ من التطبيق',                      setDoc(doc(as('eng'), 'settings/sysreport'), { pulse:{ at:2 } }, { merge:true }));
+/* (V38.80) تكلفةُ قاعدة البيانات: يكتبها الخادمُ وحدَه، ويقرؤها المكتبُ والإدارةُ العليا — لا الفنيُّ ولا الوزارة */
+await env.withSecurityRulesDisabled(async (ctx) => { await setDoc(doc(ctx.firestore(), 'settings/cost'), { at:1, g:{ '2026-10-01':[1, 0, 0, 0] } }); });
+await ok  ('وتكلفةُ القاعدة يقرؤها المهندس (V38.80)',          getDoc(doc(as('eng'), 'settings/cost')));
+await ok  ('والإدارةُ العليا',                                  getDoc(doc(as('exe'), 'settings/cost')));
+await deny('ولا الفنيّ',                                     getDoc(doc(as('tec'), 'settings/cost')));
+await deny('ولا الوزارة',                                    getDoc(doc(as('vwr'), 'settings/cost')));
+await deny('ولا يكتبها أحدٌ من التطبيق',                      setDoc(doc(as('eng'), 'settings/cost'), { at:2 }, { merge:true }));
 /* سجلاتُ الإدارة (V19.3) */
 await ok  ('سجلاتُ الإدارة يكتبها المهندس',                  setDoc(doc(as('eng'), 'settings/pmo'), { lessons:{ L1:{ t:'درس', at:1 } } }, { merge:true }));
 await ok  ('ويقرؤها',                                         getDoc(doc(as('eng'), 'settings/pmo')));
