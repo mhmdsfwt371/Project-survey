@@ -55,8 +55,16 @@ say('٣ · القائمةُ الكاملةُ على staging (الشرائحُ ا
 const prior = ((await api('/actions/workflows/docs-check.yml/runs?branch=staging&event=workflow_dispatch&per_page=10')).workflow_runs || [])
   .filter(r => r.head_sha === sha && (r.status !== 'completed' || r.conclusion === 'success'))[0];
 let run = prior;
+/* (V38.82) the gate now starts the full list itself on the server — wait for that run before starting one here,
+   so this tool only watches (and stays the fallback if the server's link did not fire) */
+if (!run){
+  const findRun = async () => ((await api('/actions/workflows/docs-check.yml/runs?branch=staging&event=workflow_dispatch&per_page=10')).workflow_runs || [])
+    .filter(r => r.head_sha === sha && (r.status !== 'completed' || r.conclusion === 'success'))[0] || null;
+  for (let i = 0; i < 9 && !run; i++){ await sleep(20000); run = await findRun(); }
+  if (run) say('   ↻ القائمةُ الكاملةُ انطلقت من البوابة على الخادم — تُتابَع لا تُعاد');
+}
 if (prior) say('   ↻ قائمةٌ كاملةٌ موجودةٌ لهذا الالتزام (' + prior.status + ') — تُستكمَل لا تُعاد');
-else {
+else if (!run) {
   const t0 = new Date(Date.now() - 60000).toISOString();
   const c1 = await api('/actions/workflows/docs-check.yml/dispatches', { method:'POST', body:JSON.stringify({ ref:'staging' }) });
   if (c1 !== 204) die('تعذّر تشغيلُ القائمة الكاملة (' + c1 + ')');
@@ -82,9 +90,12 @@ say('   ✓ الشرائحُ الأربعُ خضراء');
 
 say('٤ · القطار…');
 /* (V38.42) resumable: skip the train when the commit is already on main */
-const mainHead = (await api('/branches/main')).commit.sha;
-const onMain = mainHead === sha || ((await api('/compare/' + sha + '...' + mainHead)) || {}).status === 'ahead';
-if (onMain) say('   ↻ الأصلُ يحتوي الالتزامَ أصلًا — لا قطارَ ثانيًا');
+const mainHas = async () => { const h = (await api('/branches/main')).commit.sha; if (h === sha) return true;
+  const c = await api('/compare/' + sha + '...' + h); return !!(c && (c.status === 'ahead' || c.status === 'identical')); };
+let onMain = await mainHas();
+/* (V38.82) the chain job promotes on the server right after the shards — give it its minutes before a train of ours */
+for (let i = 0; i < 15 && !onMain; i++){ await sleep(20000); onMain = await mainHas(); }
+if (onMain) say('   ↻ الأصلُ يحتوي الالتزام — رقّاه الخادم، لا قطارَ ثانيًا');
 else {
   const c2 = await api('/actions/workflows/train.yml/dispatches', { method:'POST', body:JSON.stringify({ ref:'main' }) });
   if (c2 !== 204) die('تعذّر تشغيلُ القطار (' + c2 + ')');

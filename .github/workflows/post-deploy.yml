@@ -20,6 +20,9 @@ jobs:
     # حدثُ النشر يقع مرتين: عند بدئه وعند نجاحه — ولا يُفحَص إلا الناجح
     if: github.event_name != 'deployment_status' || github.event.deployment_status.state == 'success'
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      issues: write      # (V38.82) بلاغُ المالك إن سقط فحصُ ما بعد النشر
     steps:
       # النسخةُ المتوقَّعةُ تُقرأ من الشجرة التي نُشرت لا من رأس الفرع:
       # دفعةٌ تالية أثناء النشر كانت تجعل الفحصَ ينتظر نسخةً لم تُنشَر بعد
@@ -43,3 +46,48 @@ jobs:
           echo "::error::تعذّر التثبيتُ بعد ثلاث محاولات"; exit 1
       - name: النسخةُ الحيّةُ تُقلع وترسم كلَّ شاشة
         run: node scripts/post-deploy.mjs
+      # (V38.82) سلسلةُ النشر تكمل وحدَها على الخادم — فإن سقط فحصُ ما بعد النشر بعد إعادته التلقائية
+      # (rerun.yml يعيد المرةَ الأولى) يُبلَّغ المالك: النسخةُ نُشرت، وفحصُها سقط
+      - name: فحصُ ما بعد النشر سقط مرتين — بلاغٌ للمالك
+        if: failure() && github.event_name == 'deployment_status' && github.run_attempt > 1
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CHAIN_LIVE: '1'
+          CHAIN_SHA: ${{ github.event.deployment.sha }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+        run: |
+          npm i --no-save --no-audit --no-fund nodemailer@^6 >/dev/null 2>&1 || true
+          node scripts/chain-alert.mjs "فحص ما بعد النشر" "النسخةُ الحيّةُ لم تُقلع أو لم ترسم شاشاتِها — مرتين" || true
+
+  # (V38.82) النشرُ نفسُه فشل: الإنتاجُ بقي على النسخة السابقة — بلاغٌ للمالك
+  deploy-failed:
+    if: github.event_name == 'deployment_status' && (github.event.deployment_status.state == 'failure' || github.event.deployment_status.state == 'error')
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.deployment.sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+      - name: النشرُ فشل — بلاغٌ للمالك
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CHAIN_SHA: ${{ github.event.deployment.sha }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+        run: |
+          npm i --no-save --no-audit --no-fund nodemailer@^6 >/dev/null 2>&1 || true
+          node scripts/chain-alert.mjs "النشر" "صفحاتُ المستودع لم تنشر النسخة — الإنتاجُ على النسخة السابقة" || true

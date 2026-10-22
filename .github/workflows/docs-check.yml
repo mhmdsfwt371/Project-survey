@@ -502,6 +502,7 @@ jobs:
       contents: write
       actions: write
       statuses: write
+      issues: write      # (V38.82) بلاغُ المالك إن وقف الإصدار
     steps:
       - uses: actions/checkout@v5
         with:
@@ -522,6 +523,7 @@ jobs:
           if [ -n "$bad" ]; then
             echo "::notice title=لا ترقية::سقط:$bad — التفصيلُ في تعليقات الالتزام ${{ github.sha }}"
             echo "GATE=closed" >> "$GITHUB_ENV"
+            echo "GATE_BAD=$bad" >> "$GITHUB_ENV"
           else
             echo "✓ البوابةُ خضراء: الطبقةُ السريعةُ والمتصفّحُ والمحاكي"
             echo "GATE=open" >> "$GITHUB_ENV"
@@ -548,7 +550,7 @@ jobs:
             echo "::notice title=طوارئ::الالتزامُ يحمل «Release: hotfix» — يُرقَّى الآن"
             node scripts/train-promote.mjs "$(git rev-parse HEAD)"
           else
-            echo "::notice title=ينتظر القطار::البوابةُ خضراء — الترقيةُ مع قطار الأحد أو الأربعاء ٠١:٠٠ UTC، أو تشغيلٌ يدويٌّ لـtrain.yml"
+            echo "::notice title=القائمةُ الكاملةُ تنطلق::البوابةُ خضراء — القائمةُ الكاملةُ على الشرائح الأربع ثم الترقيةُ وحدَها (V38.82)"
           fi
       - name: إطلاقُ سير التغذية بعد الترقية
         if: env.HOTFIX == '1'
@@ -556,3 +558,122 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh workflow run season.yml --ref main && echo "✓ أُطلقت التغذية" || echo "::warning::تعذّر إطلاقُ التغذية — تعمل مع الدفعة القادمة إلى الأصل"
+      # ═══ (V38.82) سلسلةُ النشر على خادم المستودع — الحلقةُ الأولى ═══
+      # كانت أداةُ النشر (release-now) تُطلق القائمةَ الكاملةَ من داخل ردِّ المساعد فتقف بانتهائه، ويقف الإصدارُ
+      # في منتصفه حتى يعود أحد. الآن البوابةُ الخضراءُ تُطلقها بنفسها على هذا الالتزام — إن بقي رأسَ فرع التجربة؛
+      # وإلا فالأحدثُ منه يُطلق قائمتَه من بوابته (وهو يحمله).
+      - name: البوابةُ الخضراءُ تُطلق القائمةَ الكاملة
+        if: env.GATE == 'open' && env.HOTFIX != '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          head=$(gh api "repos/${{ github.repository }}/branches/staging" --jq .commit.sha)
+          if [ "$head" != "${{ github.sha }}" ]; then
+            echo "::notice title=لا إطلاق::فرعُ التجربة تقدّم إلى ${head:0:8} — قائمتُه تنطلق من بوابته"; exit 0
+          fi
+          gh workflow run docs-check.yml --ref staging && echo "✓ أُطلقت القائمةُ الكاملةُ على ${GITHUB_SHA:0:8}" || echo "::warning::تعذّر إطلاقُ القائمة الكاملة — تُكمَل بأداة النشر"
+      - name: الإصدارُ وقف عند البوابة — بلاغٌ للمالك
+        if: failure() || env.GATE == 'closed'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+        run: |
+          : > /tmp/gate-stop.txt
+          for n in fast browser rules; do f="gates/$n.txt"
+            if [ ! -f "$f" ] || [ "$(head -1 "$f")" != "PASS" ]; then { echo "── $n"; tail -n +2 "$f" 2>/dev/null | head -20; } >> /tmp/gate-stop.txt; fi
+          done
+          npm i --no-save --no-audit --no-fund nodemailer@^6 >/dev/null 2>&1 || true
+          node scripts/chain-alert.mjs "بوابة الدفع" "سقط:${GATE_BAD:- تعطّلت خطوةٌ في الترقية}" /tmp/gate-stop.txt || true
+
+  # ═══ (V38.82) فحصٌ تعطّل على الدفعة قبل أن يحكم — فلا ترقيةَ ولا بلاغَ منها ═══
+  gate-crash:
+    needs: [fast, real]
+    if: ${{ failure() && github.ref == 'refs/heads/staging' && github.event_name == 'push' }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+      - name: الإصدارُ وقف — بلاغٌ للمالك
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+        run: |
+          npm i --no-save --no-audit --no-fund nodemailer@^6 >/dev/null 2>&1 || true
+          node scripts/chain-alert.mjs "بوابة الدفع" "تعطّل فحصٌ على الخادم قبل أن يحكم — يُعاد تشغيلُه" || true
+
+  # ═══ (V38.82) سلسلةُ النشر على خادم المستودع — الحلقةُ الثانية ═══
+  # الشرائحُ الأربعُ الخضراءُ ترقّي الالتزامَ الذي فُحص بعينه إلى الأصل (لا أحدثَ منه لم يُفحَص كاملًا)،
+  # بشرط أن تكون بوابتُه خضراء، ثم تتأكّد أن الأصلَ يحمله وتُطلق التغذية. النشرُ وفحصُ ما بعده يعملان
+  # بالدفعة إلى الأصل كما كانا. وإن وقف شيءٌ في الطريق: بلاغٌ للمالك بالمرحلة والسبب.
+  chain:
+    needs: [shards]
+    if: ${{ always() && github.ref == 'refs/heads/staging' && github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      actions: write
+      statuses: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          token: ${{ secrets.PROMOTE_TOKEN || github.token }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+      - uses: actions/download-artifact@v7
+        with:
+          pattern: gate-shard-*
+          path: gates
+          merge-multiple: true
+      - name: الشرائحُ الأربعُ والبوابة — ثم الترقيةُ إلى الأصل
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sha="${{ github.sha }}"; bad=""; : > /tmp/chain-stop-detail.txt
+          for n in 1 2 3 4; do f="gates/shard-$n.txt"
+            if [ ! -f "$f" ] || [ "$(head -1 "$f")" != "PASS" ]; then bad="$bad $n"; { echo "── الشريحة $n"; tail -n +2 "$f" 2>/dev/null | head -20; } >> /tmp/chain-stop-detail.txt; fi
+          done
+          if [ -n "$bad" ]; then echo "STOP_AT=الفحوصات الكاملة" >> "$GITHUB_ENV"; echo "STOP=سقطت الشرائح:$bad" >> "$GITHUB_ENV"; exit 0; fi
+          gate=$(gh api "repos/${{ github.repository }}/commits/$sha/status" --jq '[.statuses[] | select(.context=="nusuk/gate")][0].state // "none"')
+          if [ "$gate" != "success" ]; then echo "STOP_AT=الترقية" >> "$GITHUB_ENV"; echo "STOP=بوابةُ هذا الالتزام ليست خضراء ($gate)" >> "$GITHUB_ENV"; exit 0; fi
+          git fetch -q origin main
+          if git merge-base --is-ancestor "$sha" origin/main; then echo "::notice title=لا جديد::الأصلُ يحمل ${sha:0:8} أصلًا"; exit 0; fi
+          node scripts/train-promote.mjs "$sha"
+          git fetch -q origin main
+          if git merge-base --is-ancestor "$sha" origin/main; then
+            echo "✓ الأصلُ يحمل ${sha:0:8} — النشرُ يبدأ"
+            gh workflow run season.yml --ref main && echo "✓ أُطلقت التغذية" || echo "::warning::تعذّر إطلاقُ التغذية"
+          else
+            echo "STOP_AT=الترقية" >> "$GITHUB_ENV"; echo "STOP=الأصلُ لم يقبل الترقية — تقدّم بغير أعداد النسخ أو انتهت صلاحيةُ مفتاح الترقية" >> "$GITHUB_ENV"
+          fi
+      - name: الإصدارُ وقف — بلاغٌ للمالك
+        if: failure() || env.STOP != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+        run: |
+          npm i --no-save --no-audit --no-fund nodemailer@^6 >/dev/null 2>&1 || true
+          node scripts/chain-alert.mjs "${STOP_AT:-الترقية}" "${STOP:-تعطّلت خطوةٌ في السلسلة}" /tmp/chain-stop-detail.txt || true

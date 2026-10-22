@@ -126,6 +126,8 @@ GH_TOKEN=… node scripts/release-now.mjs     # gate → full list (4 shards) �
 
 `release-now.mjs` runs the whole promotion in the right order and **stops on any red step**, reading the job annotations (a failed shard can still look green in the UI). Do not trigger the full list manually while the push gate is running — they share a concurrency group and cancel each other (decision Q-020). It is resumable (V38.42): started again after a crash, it reuses the running or finished full-list run of the same commit and skips the train when the commit is already on `main`.
 
+**Since V38.82 the chain runs itself on the server:** a green push gate starts the full list on that commit (`promote` job), and a green full list promotes that exact commit to main (`chain` job), then deploy and the post-deploy smoke follow as before. Any stop opens an issue that @-mentions the owner (GitHub mails it) and mails the owner when the SMTP secrets are set (`scripts/chain-alert.mjs`). `release-now.mjs` now waits for those server runs and only steps in when a link did not fire — run it to watch, or as the fallback.
+
 If the gate blocks you: read the annotation it prints, fix the **code** when the behaviour is wrong, fix the **audit** only when the behaviour changed on purpose (and say so in the commit message).
 
 ## 9. Glossary (Arabic ↔ English as used in code and UI)

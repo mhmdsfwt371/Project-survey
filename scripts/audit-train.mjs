@@ -44,6 +44,29 @@ T(/Release: hotfix/.test(A) && /train\.yml/.test(A) && /الأحد/.test(A), 'AG
 T(/Release: hotfix/.test(C) === false || /لا/.test(C), 'CLAUDE.md لا يوصي بالترويسة للدفعات العادية');
 T(/train\.yml/.test(S) && /Release: hotfix/.test(S), 'وsystem.md §١٤ يوثّقه');
 
+console.log('\n══ (V38.82) سلسلةُ النشر تكمل وحدَها على الخادم ══');
+T(/gh workflow run docs-check\.yml --ref staging/.test(gate) && /if: env\.GATE == 'open' && env\.HOTFIX != '1'/.test(gate),
+  'البوابةُ الخضراءُ تُطلق القائمةَ الكاملةَ بنفسها — والطوارئُ لا (تُرقَّى فورًا)');
+T(/branches\/staging" --jq \.commit\.sha/.test(gate), 'وعلى الالتزام نفسِه إن بقي رأسَ فرع التجربة — وإلا فالأحدثُ يُطلق قائمتَه من بوابته');
+const ch = gate.slice(gate.indexOf('\n  chain:'));
+T(gate.indexOf('\n  chain:') > -1 && /needs: \[shards\]/.test(ch) && /github\.event_name == 'workflow_dispatch'/.test(ch) && /for n in 1 2 3 4/.test(ch) && /!= "PASS"/.test(ch),
+  'الترقيةُ بعد الشرائح الأربع خضراءَ كلِّها (علامةُ PASS في كلٍّ منها)');
+T(/context=="nusuk\/gate"/.test(ch) && /node scripts\/train-promote\.mjs "\$sha"/.test(ch) && /sha="\$\{\{ github\.sha \}\}"/.test(ch),
+  'وتشترط بوابةً خضراءَ لهذا الالتزام، وترقّي الالتزامَ الذي فُحص بعينه لا رأسَ الفرع');
+T((ch.match(/merge-base --is-ancestor "\$sha" origin\/main/g) || []).length >= 2, 'وتتأكّد بعد الترقية أن الأصلَ يحمله — الترقيةُ المرفوضةُ وقوفٌ لا نجاح');
+T(/node scripts\/chain-alert\.mjs/.test(ch) && /if: failure\(\) \|\| env\.STOP != ''/.test(ch), 'وأيُّ وقوفٍ في الطريق بلاغٌ للمالك بالمرحلة والسبب');
+T(/node scripts\/chain-alert\.mjs "بوابة الدفع"/.test(gate) && /\n  gate-crash:/.test(gate), 'وكذلك وقوفُ البوابة — سقوطًا أو تعطّلًا');
+const pd = readFileSync('.github/workflows/post-deploy.yml', 'utf8');
+T(/github\.run_attempt > 1/.test(pd) && /CHAIN_LIVE: '1'/.test(pd) && /\n  deploy-failed:/.test(pd),
+  'وبعد النشر: فحصٌ سقط مرتين أو نشرٌ فشل — بلاغ، لا مع أوّل سقوطٍ تعيده الإعادةُ التلقائية');
+const { alertText } = await import('./chain-alert.mjs');
+const am = alertText({ ver:'V38.82', sha:'0123456789ab', stage:'الفحوصات الكاملة', why:'سقطت الشرائح: 2', subject:'V38.82 — x', details:'✗ y', owner:'o', live:false, runUrl:'u' });
+T(am.title === 'الإصدار V38.82 وقف عند: الفحوصات الكاملة' && /^@o\n/.test(am.body) && /الإنتاجُ على حاله/.test(am.body) && /سقطت الشرائح: 2/.test(am.body),
+  'والبلاغُ يذكر المالكَ باسمه، والإصدارَ والمرحلةَ والسبب، وأن الإنتاجَ على حاله');
+T(/النسخةُ نُشرت/.test(alertText({ ver:'V1.0', sha:'x', stage:'s', owner:'o', live:true, runUrl:'u' }).body), 'وإن نُشرت النسخةُ وسقط فحصُها قاله صراحةً');
+const rn = readFileSync('scripts/release-now.mjs', 'utf8');
+T(/القائمةُ الكاملةُ انطلقت من البوابة على الخادم/.test(rn) && /رقّاه الخادم/.test(rn), 'وأداةُ النشر تتابع ما يفعله الخادمُ ولا تكرّره — وتبقى احتياطًا');
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length) process.exit(1);
 console.log('جردُ القطار نظيف \u2705');

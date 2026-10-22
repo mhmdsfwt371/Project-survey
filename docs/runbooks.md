@@ -64,11 +64,11 @@
 
 ## البوابة — `docs-check.yml`
 
-**ماذا يفعل:** يفحص كلَّ دفعةٍ إلى فرع التجربة (staging) بالطبقة السريعة ثم المتصفّح الحقيقيّ ومحاكي القواعد، ويرقّي إلى الأصل (main) إن اخضرّت؛ والجردُ الكاملُ (١٥٠ خطوة على أربع شرائح) ليلًا ٢:٣٠ بمكة ببريدٍ إن سقط.
+**ماذا يفعل:** يفحص كلَّ دفعةٍ إلى فرع التجربة (staging) بالطبقة السريعة ثم المتصفّح الحقيقيّ ومحاكي القواعد، ويرقّي إلى الأصل (main) إن اخضرّت؛ والجردُ الكاملُ (١٥٠ خطوة على أربع شرائح) ليلًا ٢:٣٠ بمكة ببريدٍ إن سقط. ومنذ V38.82 **تكمل سلسلةُ النشر وحدَها على الخادم**: البوابةُ الخضراءُ تُطلق القائمةَ الكاملةَ على الالتزام نفسِه، والقائمةُ الخضراءُ (مهمّة `chain`) ترقّي ذلك الالتزامَ بعينه إلى الأصل ثم يعمل النشرُ وفحصُ ما بعده — بلا انتظار أداة النشر.
 
-**ماذا يشغّل:** `scripts/audit-accounts.mjs`، `scripts/audit-adr.mjs`، `scripts/audit-agents.mjs`، `scripts/audit-asnq.mjs`، `scripts/audit-att.mjs`، `scripts/audit-backup.mjs`، `scripts/audit-basemap.mjs`، `scripts/audit-bidi.mjs`، `scripts/audit-boot.mjs`، `scripts/audit-box.mjs`، `scripts/audit-bridge.mjs`، `scripts/audit-brief.mjs` (و148 غيرُها)
+**ماذا يشغّل:** `scripts/audit-accounts.mjs`، `scripts/audit-adr.mjs`، `scripts/audit-agents.mjs`، `scripts/audit-asnq.mjs`، `scripts/audit-att.mjs`، `scripts/audit-backup.mjs`، `scripts/audit-basemap.mjs`، `scripts/audit-bidi.mjs`، `scripts/audit-boot.mjs`، `scripts/audit-box.mjs`، `scripts/audit-bridge.mjs`، `scripts/audit-brief.mjs`، `scripts/chain-alert.mjs`، `scripts/train-promote.mjs`
 
-**إن سقط:** لا يُرقّى شيء — اقرأ تعليقَ البوابة على الالتزام وسطرَ «✗»، أصلِح محليًّا بـ`node scripts/fast-run.mjs` ثم ادفع.
+**إن سقط:** لا يُرقّى شيء، ويُفتح بلاغٌ في المستودع يذكر المالكَ باسمه (يصله بالبريد من جيت هب، وبالبريد العاديّ أيضًا متى ضُبطت أسرارُه) بالمرحلة والسبب — `scripts/chain-alert.mjs`. اقرأ تعليقَ البوابة على الالتزام وسطرَ «✗»، أصلِح محليًّا بـ`node scripts/fast-run.mjs` ثم ادفع. وإن لم تنطلق حلقةٌ من السلسلة فـ`release-now.mjs` يكملها يدويًّا.
 
 **المقابلُ على خوادمكم:** خادمُ تكاملٍ مستمرّ (أيُّ CI): `node scripts/fast-run.mjs` على كلِّ دفعة، و`node scripts/check-version.mjs` ليلًا.
 
@@ -96,9 +96,9 @@
 
 **ماذا يفعل:** بعد كلِّ نشرٍ للصفحات وكلَّ ست ساعات: يفتح التطبيقَ المنشورَ فعلًا ويتأكد أنه يعمل بالنسخة الصحيحة.
 
-**ماذا يشغّل:** `scripts/post-deploy.mjs`
+**ماذا يشغّل:** `scripts/chain-alert.mjs`، `scripts/post-deploy.mjs`
 
-**إن سقط:** تنبيهٌ بأن المنشورَ يختلف عن الأصل — راجع النشر.
+**إن سقط:** تنبيهٌ بأن المنشورَ يختلف عن الأصل — راجع النشر. وبعد نشرٍ: إن سقط الفحصُ مرتين (بعد إعادته التلقائية) أو فشل النشرُ نفسُه، بلاغٌ للمالك (V38.82).
 
 **المقابلُ على خوادمكم:** فحصٌ بعد كلِّ نشرٍ على الخادم: `node scripts/post-deploy.mjs`.
 
