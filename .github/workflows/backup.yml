@@ -4,6 +4,9 @@ on:
     - cron: '30 2 * * *'   # 05:30 صباحًا بتوقيت السعودية يوميًا
   workflow_dispatch: {}
   push:
+    # (V38.85) على الأصل وحدَه: دفعةٌ إلى فرع التجربة كانت تشغّلها فتدفع التزامَ «backup» فوق الإصدار المفحوص،
+    # فيتقدّم رأسُ الفرع بالتزامٍ لا بوابةَ له وتقف سلسلةُ النشر (٣٨٫٨٤)
+    branches: [main]
     paths:
       - '.github/workflows/backup.yml'
       - 'scripts/backup.mjs'
@@ -160,7 +163,7 @@ jobs:
             echo 'no changes'
           else
             git commit -m "backup: $(date -u +%F_%H%M)"
-            git push
+            if [ "$GITHUB_REF" = "refs/heads/main" ]; then git push; else echo "::notice::ليس الأصل (${GITHUB_REF#refs/heads/}) — لا دفعَ للنسخة"; fi
           fi
       # (V38.84) ما قرأته هذه المهمّةُ من القاعدة يُضاف إلى settings/jobreads — تسمّيه بطاقةُ التكلفة باسمه
       - name: عدّادُ قراءات المهمّة

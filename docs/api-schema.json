@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V38.84",
+  "app_version": "V38.85",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2246,7 +2246,8 @@
   "V38.81": "usage-cost.mjs: نهاية المدة على رأس آخر ساعة كاملة (END) فتصير كل ساعة ساعةً على الساعة، والتخزين من ساعات لا أيام · audit-usage: فحصان للمهمة",
   "V38.82": "docs-check.yml: خطوة في promote تُطلق القائمة الكاملة على الالتزام نفسه + مهمة chain بعد الشرائح ترقّي github.sha بعينه وتتأكد أن الأصل يحمله + gate-crash · post-deploy.yml: بلاغ إن سقط الفحص مرتين أو فشل النشر · scripts/chain-alert.mjs: بلاغ في المستودع يذكر المالك + بريد متى ضُبط · release-now.mjs: يتابع ولا يكرّر ويبقى احتياطًا · audit-train: ١١ فحصًا للسلسلة",
   "V38.83": "audit-writes: انتظار الأثر حتى ١٫٥ ث على خطوات ١٠٠ م.ث بدل دورة حدث واحدة · docs-check.yml: طابور لكل نوع تشغيل (gate-<الفرع>-<الحدث>) · audit-train: فحص الطابور",
-  "V38.84": "lib/reads.mjs + reads-flush.mjs: عدّاد قراءات لكل مهمة خادم (١٣ سكربتًا، ١٠ سيور) ← settings/jobreads ← settings/cost.jobs · photos-sync: مرور المشاركة بمؤشر وختم (photosShare) ووسم shared عند الرفع · pageHist/pghLast: سجل الصفحات يومًا بيوم على الجهاز ← pgh_<جهاز> ← usage-cost يجمعه في settings/usage بالأكبر، والنبض يدمج بالأكبر · costDevices: صفوف المهام بأسمائها + ما لا يعدّه أحد · svqPhotos: phSrc + فتح الصورة · سيناريو ٣٢ (١٧٢ فحصًا) · audit-usage ٢٢"
+  "V38.84": "lib/reads.mjs + reads-flush.mjs: عدّاد قراءات لكل مهمة خادم (١٣ سكربتًا، ١٠ سيور) ← settings/jobreads ← settings/cost.jobs · photos-sync: مرور المشاركة بمؤشر وختم (photosShare) ووسم shared عند الرفع · pageHist/pghLast: سجل الصفحات يومًا بيوم على الجهاز ← pgh_<جهاز> ← usage-cost يجمعه في settings/usage بالأكبر، والنبض يدمج بالأكبر · costDevices: صفوف المهام بأسمائها + ما لا يعدّه أحد · svqPhotos: phSrc + فتح الصورة · سيناريو ٣٢ (١٧٢ فحصًا) · audit-usage ٢٢",
+  "V38.85": "dispTick/displayMode: شاشات العرض (الوزارة والإدارة العليا ودورة القاعة) تسأل الخادم كل ٥ دقائق وتطبّق الجديد متى تُركت دقيقة، وتفتح الصفحة طازجة إن لم يأخذها العامل في ربع ساعة · backup.yml: الدفع على الأصل وحده · docs-check: رأس لا يزيد إلا أعداد النسخ يُطلق القائمة، والترقية تأخذ بوابة السلف الأخضر · سيناريو ٣٣ (١٧٨ فحصًا) · audit-train ٣١"
   },
   "map_and_geolocation": {
     "tile_layers": {

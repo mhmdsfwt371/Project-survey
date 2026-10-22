@@ -106,6 +106,39 @@ function verCheck(){
     .catch(function(){ toast(t('تعذّر الفحص — لا شبكة')); });
 }
 
+/* ═══ (V38.85) Display screens update by themselves ═══
+   The Ministry's screen ran V38.59 while production was twenty-four versions ahead, showing obstacles by the old
+   definition: a screen nobody touches updates only when the browser happens to look for a new worker and the worker
+   manages to install. A display (the viewer and top-management roles, or the hall's kiosk cycle) now asks the server
+   for the published version every five minutes; a newer one is fetched at once, applied as soon as the screen has been
+   left alone for a minute, and if the worker has not taken it within fifteen minutes the page is loaded fresh from the
+   network — once per version (a display needs no offline copy for that). Field roles keep the bar and their offline copy. */
+function displayMode(){ return ROLE === 'viewer' || ROLE === 'exec' || (typeof KIOSK_ON !== 'undefined' && !!KIOSK_ON); }
+function dispState(){ return SW_STATE.disp || (SW_STATE.disp = { lastIn:0, seen:'', since:0 }); }
+function dispTick(){
+  var d = dispState();
+  if (!displayMode() || SW_RELOADED || typeof fetch !== 'function') return Promise.resolve('');
+  return fetch('sw.js?ts=' + Date.now(), { cache:'reload' }).then(function(r){ return r && r.ok ? r.text() : ''; }).then(function(txt){
+    var m = /nusuk-survey-v(\d+\.\d+)/.exec(txt || ''), there = m ? 'V' + m[1] : '';
+    if (!there || verNum(there) <= verNum(appVer())){ d.seen = ''; return 'current'; }
+    if (d.seen !== there){ d.seen = there; d.since = Date.now(); swPoll(); return 'fetching'; }
+    if (Date.now() - d.lastIn < 60000 || swBusy()) return 'busy';
+    if (SW_STATE.waiting){ swNow(); return 'applied'; }
+    if (Date.now() - d.since < 900000) return 'waiting';
+    var k = 'nsk.disp.' + there;
+    try { if (sessionStorage.getItem(k)) return 'tried'; sessionStorage.setItem(k, '1'); } catch (e){ LS_ERR = e; }
+    SW_RELOADED = true;
+    var go = function(){ try { location.reload(); } catch (e){ LS_ERR = e; } };
+    if (navigator.serviceWorker && navigator.serviceWorker.getRegistration)
+      navigator.serviceWorker.getRegistration().then(function(r){ return r ? r.unregister() : null; }).then(go, go);
+    else go();
+    return 'fresh';
+  }).catch(function(){ return 'offline'; });
+}
+if (typeof document === 'object' && document.addEventListener)
+  ['pointerdown', 'keydown', 'touchstart'].forEach(function(ev){ document.addEventListener(ev, function(){ dispState().lastIn = Date.now(); }, { passive:true, capture:true }); });
+setInterval(dispTick, 300000);
+
 function quotaEstimate(){
   var users = cfgGet('users') || 150;
   var perDay = { survey:20, install:8, syncs:8 };

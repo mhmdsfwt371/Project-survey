@@ -942,6 +942,32 @@ console.log('\n══ ٣٢ · مَن قرأ كم — الأجهزةُ والمه
   } else T(false, 'لا زيارةَ في البيانات لفحص لوح التعديل');
 }
 
+/* ── ٣٣ · (V38.85) شاشاتُ العرض تتحدّث وحدَها ── */
+console.log('\n══ ٣٣ · شاشاتُ العرض تتحدّث وحدَها ══');
+{
+  const role0 = w.ROLE, fetch0 = w.fetch, now0 = w.swNow, rel0 = w.SW_RELOADED, wait0 = w.SW_STATE.waiting;
+  let applied = 0;
+  w.fetch = () => Promise.resolve({ ok:true, text:() => Promise.resolve("const CACHE = 'nusuk-survey-v99.9';") });
+  w.swNow = () => { applied++; };
+  w.SW_STATE.disp = null; w.SW_RELOADED = false; w.SW_STATE.waiting = false;
+  w.ROLE = 'tech';
+  T((await w.dispTick()) === '', 'جوالُ الفنيِّ لا يُحدَّث قسرًا — يبقى شريطُ «حدّث الآن» ونسختُه بلا شبكة');
+  w.ROLE = 'viewer';
+  T((await w.dispTick()) === 'fetching', 'شاشةُ الوزارة تسأل الخادمَ كلَّ خمس دقائق فترى ٩٩٫٩ وتجلبها فورًا');
+  w.SW_STATE.disp.lastIn = Date.now();
+  T((await w.dispTick()) === 'busy', 'ولا تُحدَّث وأحدٌ يستعملها');
+  w.SW_STATE.disp.lastIn = 0; w.SW_STATE.waiting = true;
+  T((await w.dispTick()) === 'applied' && applied === 1, 'وتُطبَّق النسخةُ متى تُركت دقيقةً — بلا شريطٍ ولا ضغطة');
+  w.SW_STATE.waiting = false; w.SW_STATE.disp.since = Date.now() - 16 * 60000;
+  try { w.sessionStorage.removeItem('nsk.disp.V99.9'); } catch {}
+  const r1 = await w.dispTick(), r2 = (w.SW_RELOADED = false, await w.dispTick());
+  T(r1 === 'fresh' && r2 === 'tried', 'وإن لم يأخذها العاملُ في ربع ساعة تُفتح الصفحةُ من الشبكة طازجةً — مرةً واحدةً للنسخة');
+  w.fetch = () => Promise.resolve({ ok:true, text:() => Promise.resolve("const CACHE = 'nusuk-survey-v" + String(w.appVer()).slice(1) + "';") });
+  w.SW_RELOADED = false;
+  T((await w.dispTick()) === 'current', 'وعلى أحدث نسخةٍ لا تفعل شيئًا');
+  w.ROLE = role0; w.fetch = fetch0; w.swNow = now0; w.SW_RELOADED = rel0; w.SW_STATE.waiting = wait0; w.SW_STATE.disp = null;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

@@ -65,6 +65,11 @@ T(am.title === 'الإصدار V38.82 وقف عند: الفحوصات الكام
   'والبلاغُ يذكر المالكَ باسمه، والإصدارَ والمرحلةَ والسبب، وأن الإنتاجَ على حاله');
 T(/النسخةُ نُشرت/.test(alertText({ ver:'V1.0', sha:'x', stage:'s', owner:'o', live:true, runUrl:'u' }).body), 'وإن نُشرت النسخةُ وسقط فحصُها قاله صراحةً');
 T(/group: gate-\$\{\{ github\.ref \}\}-\$\{\{ github\.event_name \}\}/.test(gate), 'وطابورٌ لكلِّ نوع تشغيل — فالقائمةُ التي تُطلقها البوابةُ لا تُلغي البوابةَ نفسَها (V38.83)');
+const bk = readFileSync('.github/workflows/backup.yml', 'utf8');
+T(/push:\n(\s*#[^\n]*\n)*\s+branches: \[main\]/.test(bk) && /if \[ "\$GITHUB_REF" = "refs\/heads\/main" \]; then git push/.test(bk),
+  'والنسخةُ الاحتياطيةُ لا تدفع التزامَها فوق فرع التجربة — كان يوقف السلسلةَ برأسٍ بلا بوابة (V38.85)');
+T(/select\(startswith\("backups\/latest\/"\) \| not\)/.test(gate) && /git diff --name-only "\$anc" "\$sha" \| grep -v '\^backups\/latest\/'/.test(ch),
+  'ورأسٌ لا يزيد إلا أعدادَ النسخ لا يوقفها: البوابةُ تُطلق القائمةَ عليه، والترقيةُ تأخذ بوابةَ سلفه الأخضر');
 const rn = readFileSync('scripts/release-now.mjs', 'utf8');
 T(/القائمةُ الكاملةُ انطلقت من البوابة على الخادم/.test(rn) && /رقّاه الخادم/.test(rn), 'وأداةُ النشر تتابع ما يفعله الخادمُ ولا تكرّره — وتبقى احتياطًا');
 

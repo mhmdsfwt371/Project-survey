@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.84</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.85</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -23067,6 +23067,32 @@ function verCheck(){
     .catch(function(){ toast(t('تعذّر الفحص — لا شبكة')); });
 }
 
+function displayMode(){ return ROLE === 'viewer' || ROLE === 'exec' || (typeof KIOSK_ON !== 'undefined' && !!KIOSK_ON); }
+function dispState(){ return SW_STATE.disp || (SW_STATE.disp = { lastIn:0, seen:'', since:0 }); }
+function dispTick(){
+  var d = dispState();
+  if (!displayMode() || SW_RELOADED || typeof fetch !== 'function') return Promise.resolve('');
+  return fetch('sw.js?ts=' + Date.now(), { cache:'reload' }).then(function(r){ return r && r.ok ? r.text() : ''; }).then(function(txt){
+    var m = /nusuk-survey-v(\d+\.\d+)/.exec(txt || ''), there = m ? 'V' + m[1] : '';
+    if (!there || verNum(there) <= verNum(appVer())){ d.seen = ''; return 'current'; }
+    if (d.seen !== there){ d.seen = there; d.since = Date.now(); swPoll(); return 'fetching'; }
+    if (Date.now() - d.lastIn < 60000 || swBusy()) return 'busy';
+    if (SW_STATE.waiting){ swNow(); return 'applied'; }
+    if (Date.now() - d.since < 900000) return 'waiting';
+    var k = 'nsk.disp.' + there;
+    try { if (sessionStorage.getItem(k)) return 'tried'; sessionStorage.setItem(k, '1'); } catch (e){ LS_ERR = e; }
+    SW_RELOADED = true;
+    var go = function(){ try { location.reload(); } catch (e){ LS_ERR = e; } };
+    if (navigator.serviceWorker && navigator.serviceWorker.getRegistration)
+      navigator.serviceWorker.getRegistration().then(function(r){ return r ? r.unregister() : null; }).then(go, go);
+    else go();
+    return 'fresh';
+  }).catch(function(){ return 'offline'; });
+}
+if (typeof document === 'object' && document.addEventListener)
+  ['pointerdown', 'keydown', 'touchstart'].forEach(function(ev){ document.addEventListener(ev, function(){ dispState().lastIn = Date.now(); }, { passive:true, capture:true }); });
+setInterval(dispTick, 300000);
+
 function quotaEstimate(){
   var users = cfgGet('users') || 150;
   var perDay = { survey:20, install:8, syncs:8 };
@@ -30197,6 +30223,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.84"></script>
+<script defer src="app-office.js?v=38.85"></script>
 </body>
 </html>

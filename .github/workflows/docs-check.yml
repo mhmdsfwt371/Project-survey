@@ -571,7 +571,12 @@ jobs:
         run: |
           head=$(gh api "repos/${{ github.repository }}/branches/staging" --jq .commit.sha)
           if [ "$head" != "${{ github.sha }}" ]; then
-            echo "::notice title=لا إطلاق::فرعُ التجربة تقدّم إلى ${head:0:8} — قائمتُه تنطلق من بوابته"; exit 0
+            # (V38.85) رأسٌ تقدّم بأعداد النسخ وحدَها (التزامُ بوتٍ لا بوابةَ له) لا يُوقف السلسلة: القائمةُ تنطلق على رأسه
+            other=$(gh api "repos/${{ github.repository }}/compare/${{ github.sha }}...$head" --jq '[.files[].filename | select(startswith("backups/latest/") | not)] | length')
+            if [ "$other" != "0" ]; then
+              echo "::notice title=لا إطلاق::فرعُ التجربة تقدّم إلى ${head:0:8} — قائمتُه تنطلق من بوابته"; exit 0
+            fi
+            echo "::notice title=أعدادُ النسخ وحدَها::فرعُ التجربة تقدّم إلى ${head:0:8} بأعداد النسخ وحدَها — القائمةُ تنطلق على رأسه"
           fi
           gh workflow run docs-check.yml --ref staging && echo "✓ أُطلقت القائمةُ الكاملةُ على ${GITHUB_SHA:0:8}" || echo "::warning::تعذّر إطلاقُ القائمة الكاملة — تُكمَل بأداة النشر"
       - name: الإصدارُ وقف عند البوابة — بلاغٌ للمالك
@@ -655,6 +660,16 @@ jobs:
           done
           if [ -n "$bad" ]; then echo "STOP_AT=الفحوصات الكاملة" >> "$GITHUB_ENV"; echo "STOP=سقطت الشرائح:$bad" >> "$GITHUB_ENV"; exit 0; fi
           gate=$(gh api "repos/${{ github.repository }}/commits/$sha/status" --jq '[.statuses[] | select(.context=="nusuk/gate")][0].state // "none"')
+          if [ "$gate" != "success" ]; then
+            # (V38.85) التزامٌ لا يزيد على سلفٍ خضراءَ بوابتُه إلا أعدادَ النسخ هو ذلك السلفُ نفسُه
+            for anc in $(git rev-list --max-count=10 "$sha" | tail -n +2); do
+              st=$(gh api "repos/${{ github.repository }}/commits/$anc/status" --jq '[.statuses[] | select(.context=="nusuk/gate")][0].state // "none"')
+              if [ "$st" = "success" ]; then
+                if git diff --name-only "$anc" "$sha" | grep -v '^backups/latest/' | grep -q .; then break; fi
+                gate=success; echo "::notice title=بوابةُ السلف::${sha:0:8} لا يزيد على ${anc:0:8} (بوابتُه خضراء) إلا أعدادَ النسخ"; break
+              fi
+            done
+          fi
           if [ "$gate" != "success" ]; then echo "STOP_AT=الترقية" >> "$GITHUB_ENV"; echo "STOP=بوابةُ هذا الالتزام ليست خضراء ($gate)" >> "$GITHUB_ENV"; exit 0; fi
           git fetch -q origin main
           if git merge-base --is-ancestor "$sha" origin/main; then echo "::notice title=لا جديد::الأصلُ يحمل ${sha:0:8} أصلًا"; exit 0; fi
