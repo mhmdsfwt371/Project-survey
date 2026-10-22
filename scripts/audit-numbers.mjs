@@ -43,7 +43,9 @@ S.forEach((x, k) => {
     if (review === 'revisit') truth.revisit++;
     if (mkDay(at) === mkDay(now)) truth.today++; else if (mkDay(at) === mkDay(now - DAY)) truth.yesterday++;
     if (!installed){
-      const cats = chals.slice(); if (access !== 'تم الوصول') cats.push('تعذّر الوصول');
+      /* (V38.76) the single definition (owner-approved): a returned visit stays «تحتاج زيارة أخرى» — as the hall screen and the
+         obstacles tab counted it — so the follow-up's impediments count it too */
+      const cats = chals.slice(); if (access !== 'تم الوصول') cats.push('تعذّر الوصول'); else if (review === 'revisit' && !chals.length) cats.push('تحتاج زيارة أخرى');
       if (cats.length){ truth.obst++; truth.catInst += cats.length; if (chals.length >= 2) truth.twoChal++; }
       if (access !== 'تم الوصول') truth.notReached++;
     }
@@ -57,7 +59,7 @@ console.log('بذرة:', JSON.stringify({ recs:truth.recs, obst:truth.obst, ins:
 
 console.log('\n══ ١ · المعوقات: الإجماليُّ وجهاتُه وفئاتُه ══');
 { const O = w.mfuObstacles();
-  T(O.length === truth.obst, 'عددُ المعوقات = نقاطٌ لم تُركَّب وفي مسحها تحدٍّ أو تعذّرُ وصول (' + O.length + ' / ' + truth.obst + ')');
+  T(O.length === truth.obst, 'عددُ المعوقات = نقاطٌ لم تُركَّب وفي مسحها تحدٍّ أو تعذّرُ وصول أو رُدَّت لزيارةٍ أخرى (' + O.length + ' / ' + truth.obst + ')');
   T(O.reduce((s, o) => s + o.cats.length, 0) === truth.catInst, 'ومجموعُ الفئات = مجموعُ ما سُجّل على النقاط (' + truth.catInst + ')');
   T(O.filter(o => o.cats.some(c => /^لم يُمسح/.test(c))).length === truth.notReached, '(V37.3) وما لم يُمسح يُعَدّ فئةً بسببه مرةً لكلِّ نقطة (' + truth.notReached + ')');
   w.goPage('mfu'); w.render(1); await wait(40);

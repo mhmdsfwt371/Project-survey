@@ -47,7 +47,14 @@ function svHasChal(r){ return chalKeys((r && r.chals) || []).some(function(k){ r
 function svNeedsRevisit(r){ return svVisited(r) && (svStuck(r) || r.review === 'revisit'); }
 /* (V33.4) بلاغُ المالك: «محطاتُ القطار ما فيها عوائق نهائيًّا» — وظهرت ١٠٨/١٠٨ بعوائق. سجلّاتُها كلُّها «زيارةٌ بقرار المهندس»
    (quick) بلا حقل وصولٍ ولا تحديات، وكان الشرطُ «تم الوصول» حرفًا فيسقطها. الوصولُ هنا كما في svReached: «تم الوصول» أو لا حقل. */
-function svClean(r){ return svVisited(r) && svDone(r) && !svHasChal(r); }
+/* (V38.76) one definition of «بعوائق / بدون عوائق» for every screen — the owner approved it: a challenge is any category the
+   point carries (chosen, written, or its «موقع النقطة» — V38.26: «أي حاجة مش على مظلة تحدّي»), a visit that did not reach or
+   — and an INSTALLED point leaves the obstacles. A visit returned for another survey stays «تحتاج زيارة أخرى» (V33.0), so the
+   dashboard's «الزيارة − المسح» equals that group in the obstacles tab (audit-reconcile). The hall screen and the summary lists used the chosen
+   challenges only and kept installed points; the Ministry follow-up used the categories and dropped them — 51 vs 91 on the same
+   records. svHasChal (chosen only) stays for the forms. */
+function svHasChalAny(r){ return !!r && chalCats(r).length > 0; }
+function svClean(r){ return svVisited(r) && ((r.id && insDone(r.id)) || (svDone(r) && !svHasChalAny(r))); }
 function svObstacle(r){ return svVisited(r) && !svClean(r); }
 
 /* ── عرضُ التحديات للوزارة ── */

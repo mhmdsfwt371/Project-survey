@@ -80,8 +80,8 @@ console.log('\n══ رقمٌ واحدٌ في كلِّ الشاشات ══');
 const same = (a) => a.every(v => v === a[0]);
 T(same(NUM.visited), 'تمت الزيارة: اللوحة · إحصاء المسح · متابعة الوزارة · الحصيلة اليومية · شاشة القاعة = ' + NUM.visited.join(' · '));
 T(same(NUM.installed) && NUM.installed[0] >= NUM.inst, 'تم التركيب: اللوحة · متابعة الوزارة · الحصيلة اليومية = ' + NUM.installed.join(' · '));
-T(same(NUM.withObs) && same(NUM.clean), 'بعوائق / بدون عوائق: شاشة القاعة · قائمتا الملخّص = ' + NUM.withObs.join(' · ') + ' / ' + NUM.clean.join(' · '));
-T(same(NUM.impediments), 'المعوّقات: متابعة الوزارة · مؤشراتها · شريحة العوائق = ' + NUM.impediments.join(' · '));
+/* (V38.76) one definition: the hall screen, the summary lists, the follow-up and its obstacles tab count the same points */
+T(same(NUM.withObs.concat(NUM.impediments)) && same(NUM.clean), 'بعوائق: شاشة القاعة · قائمة الملخّص · متابعة الوزارة · مؤشراتها · شريحة العوائق = ' + NUM.withObs.concat(NUM.impediments).join(' · ') + ' — وبدون عوائق ' + NUM.clean.join(' · '));
 console.log('\n══ نوافذُ القوائم — الإدارة والوزارة (' + LW.n + ') ══');
 T(LW.n > 50, 'فُتحت ' + LW.n + ' نافذةَ قائمةٍ بدوري الإدارة والوزارة');
 T(!LW.thrown.length, 'لا نافذةَ ترمي خطأً' + (LW.thrown.length ? ' — ' + LW.thrown.slice(0, 4).join(' | ') : ''));

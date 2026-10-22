@@ -159,6 +159,13 @@ var SV_WHY = [   /* «ليه مش جاهزة؟» — كلمةٌ واحدةٌ و�
    الآن لكلِّ نقطةٍ سببٌ رئيسٌ واحدٌ بالأولوية (عائق ← هيكل ← المدخل ← العارضة ← ارتفاع ← قيد المراجعة)، واللونُ منه: العائقُ أحمر وما سواه برتقالي. */
 var SV_WHY_ORDER = [3, 0, 1, 2, 4, 5];
 
+/* (V38.76) the primary reason of a point's challenges whatever its review state — the obstacles tab counts a returned visit's
+   challenges too (the single definition); svPrimWhy keeps its gate for the installation workflow */
+function svPrimWhyAny(rec){
+  if (!rec || rec.deleted) return -1; var cc = chalCats(rec); if (!cc.length) return -1;
+  for (var q = 0; q < SV_WHY_ORDER.length; q++){ var w = SV_WHY[SV_WHY_ORDER[q]]; if (w.ks.some(function(k){ return cc.indexOf(k) > -1; })) return SV_WHY_ORDER[q]; }
+  return 5;
+}
 function svPrimWhy(rec){
   if (!rec || !svDone(rec)) return -1; var cc = chalCats(rec); if (!cc.length) return -1;
   for (var q = 0; q < SV_WHY_ORDER.length; q++){ var w = SV_WHY[SV_WHY_ORDER[q]]; if (w.ks.some(function(k){ return cc.indexOf(k) > -1; })) return SV_WHY_ORDER[q]; }

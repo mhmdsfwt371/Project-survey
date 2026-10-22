@@ -62,10 +62,12 @@ function mfuObstacles(){
   if (DB.memo && DB.memo.obst) return DB.memo.obst;
   var out = [];
   (STATE.sites || []).forEach(function(x){
-    var ins = STATE.inss[x.id]; if (ins && ins.status === 'مُركّب') return;
-    var r = STATE.recs[x.id]; if (!r) return;
+    /* (V38.76) the single definition: svObstacle — a challenge (chosen, written, location), a visit that did not reach or was
+       returned for another survey («تحتاج زيارة أخرى», V33.0); installed points leave */
+    var r = STATE.recs[x.id]; if (!r || !svObstacle(r)) return;
     var cats = chalCatNames(r);   /* (V37.3) الفئاتُ الثماني أو النصُّ الأصليُّ الواضح */
-    if (svStuck(r)){ var w0 = visitWhy(r); cats.push(t('لم يُمسح') + ': ' + (w0 ? t(whyOf(w0).n) : t('بلا سبب مسجّل — يصنّفه المهندس'))); }   /* والمعادةُ للزيارة التقنية ليست عائقًا (تعريفُ V33.0) */
+    if (svStuck(r)){ var w0 = visitWhy(r); cats.push(t('لم يُمسح') + ': ' + (w0 ? t(whyOf(w0).n) : t('بلا سبب مسجّل — يصنّفه المهندس'))); }
+    else if (!svDone(r) && !cats.length) cats.push(t('تحتاج زيارة أخرى'));
     if (cats.length) out.push({ x:x, cats:cats });
   });
   if (DB.memo) DB.memo.obst = out;

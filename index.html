@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.75</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.76</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -7250,7 +7250,8 @@ function svDone(r){ return svReached(r) && r.review !== 'revisit'; }
 function svHasChal(r){ return chalKeys((r && r.chals) || []).some(function(k){ return k && k !== 'لا توجد تحديات'; }); }
 function svNeedsRevisit(r){ return svVisited(r) && (svStuck(r) || r.review === 'revisit'); }
 
-function svClean(r){ return svVisited(r) && svDone(r) && !svHasChal(r); }
+function svHasChalAny(r){ return !!r && chalCats(r).length > 0; }
+function svClean(r){ return svVisited(r) && ((r.id && insDone(r.id)) || (svDone(r) && !svHasChalAny(r))); }
 function svObstacle(r){ return svVisited(r) && !svClean(r); }
 
 var CHAL_SHOW = { 'المدخل غير واضح — لم يُستدل عليه':'المدخل غير واضح — يحتاج تحديد', 'أخرى':'ملاحظات فنية متنوعة' };
@@ -15742,7 +15743,11 @@ function mtSites(){ return (STATE.sites || []).filter(function(x){ return !x.hid
 
 var MT_GRP = [ { k:'make', e:'\u{1F3ED}', c:'#F59E0B', w:[0, 2, 4] }, { k:'study', e:'\u{1F50E}', c:'#E67E22', w:[1, 5] }, { k:'owner', e:'\u{1F91D}', c:'#EF4444', w:[3] }, { k:'access', e:'\u{1F501}', c:'#8D6E63', w:[] } ];
 
-function mtGrpOf(id){ var st = svStOf(id); if (st === 'again') return 'access'; if (st !== 'prep' && st !== 'coord') return ''; var pw = svPrimWhy(STATE.recs[id]); for (var i = 0; i < MT_GRP.length; i++) if (MT_GRP[i].w.indexOf(pw) > -1) return MT_GRP[i].k; return 'study'; }
+function mtGrpOf(id){
+  if (insDone(id)) return ''; var r = STATE.recs[id]; if (!r || !svVisited(r)) return ''; if (!svDone(r)) return 'access';
+  var pw = svPrimWhyAny(r); if (pw < 0) return '';
+  for (var i = 0; i < MT_GRP.length; i++) if (MT_GRP[i].w.indexOf(pw) > -1) return MT_GRP[i].k; return 'study';
+}
 
 function obsLocTags(x){
   var r = STATE.recs[x.id], out = {};
@@ -15957,6 +15962,11 @@ var SV_WHY = [
 
 var SV_WHY_ORDER = [3, 0, 1, 2, 4, 5];
 
+function svPrimWhyAny(rec){
+  if (!rec || rec.deleted) return -1; var cc = chalCats(rec); if (!cc.length) return -1;
+  for (var q = 0; q < SV_WHY_ORDER.length; q++){ var w = SV_WHY[SV_WHY_ORDER[q]]; if (w.ks.some(function(k){ return cc.indexOf(k) > -1; })) return SV_WHY_ORDER[q]; }
+  return 5;
+}
 function svPrimWhy(rec){
   if (!rec || !svDone(rec)) return -1; var cc = chalCats(rec); if (!cc.length) return -1;
   for (var q = 0; q < SV_WHY_ORDER.length; q++){ var w = SV_WHY[SV_WHY_ORDER[q]]; if (w.ks.some(function(k){ return cc.indexOf(k) > -1; })) return SV_WHY_ORDER[q]; }
@@ -24510,10 +24520,11 @@ function mfuObstacles(){
   if (DB.memo && DB.memo.obst) return DB.memo.obst;
   var out = [];
   (STATE.sites || []).forEach(function(x){
-    var ins = STATE.inss[x.id]; if (ins && ins.status === 'مُركّب') return;
-    var r = STATE.recs[x.id]; if (!r) return;
+
+    var r = STATE.recs[x.id]; if (!r || !svObstacle(r)) return;
     var cats = chalCatNames(r);
     if (svStuck(r)){ var w0 = visitWhy(r); cats.push(t('لم يُمسح') + ': ' + (w0 ? t(whyOf(w0).n) : t('بلا سبب مسجّل — يصنّفه المهندس'))); }
+    else if (!svDone(r) && !cats.length) cats.push(t('تحتاج زيارة أخرى'));
     if (cats.length) out.push({ x:x, cats:cats });
   });
   if (DB.memo) DB.memo.obst = out;
@@ -30109,6 +30120,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.75"></script>
+<script defer src="app-office.js?v=38.76"></script>
 </body>
 </html>

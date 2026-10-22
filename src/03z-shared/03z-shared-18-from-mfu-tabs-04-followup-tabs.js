@@ -33,7 +33,13 @@ function mtSites(){ return (STATE.sites || []).filter(function(x){ return !x.hid
 /* (V37.64) توحيد: الأسماءُ من تعريف المالك CC_GROUPS نفسِه، والألوانُ بمعنى واحدٍ في الخريطة واللوحات */
 var MT_GRP = [ { k:'make', e:'\u{1F3ED}', c:'#F59E0B', w:[0, 2, 4] }, { k:'study', e:'\u{1F50E}', c:'#E67E22', w:[1, 5] }, { k:'owner', e:'\u{1F91D}', c:'#EF4444', w:[3] }, { k:'access', e:'\u{1F501}', c:'#8D6E63', w:[] } ];
 
-function mtGrpOf(id){ var st = svStOf(id); if (st === 'again') return 'access'; if (st !== 'prep' && st !== 'coord') return ''; var pw = svPrimWhy(STATE.recs[id]); for (var i = 0; i < MT_GRP.length; i++) if (MT_GRP[i].w.indexOf(pw) > -1) return MT_GRP[i].k; return 'study'; }
+/* (V38.76) the single definition: a point scheduled for installation keeps its challenge until it is installed (svStOf says
+   «sched» first and dropped it from this tab while the hall screen and the follow-up counted it) */
+function mtGrpOf(id){
+  if (insDone(id)) return ''; var r = STATE.recs[id]; if (!r || !svVisited(r)) return ''; if (!svDone(r)) return 'access';
+  var pw = svPrimWhyAny(r); if (pw < 0) return '';
+  for (var i = 0; i < MT_GRP.length; i++) if (MT_GRP[i].w.indexOf(pw) > -1) return MT_GRP[i].k; return 'study';
+}
 
 /* (V38.26) كلُّ النقاط عدا المخيمات ومراكز التفويج */
 function obsLocTags(x){
