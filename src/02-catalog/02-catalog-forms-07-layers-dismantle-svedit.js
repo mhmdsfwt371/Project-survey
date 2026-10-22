@@ -205,7 +205,7 @@ function svqKeys(rec){
   return ks;
 }
 function svqLabel(k){ if (String(k).indexOf('ph:') === 0) return 'صورة: ' + svqKindLabel(k.slice(3)); return k === 'chals' ? 'تحديات التركيب' : (SV_LABELS[k] || k); }
-function svqFmt(v){ return Array.isArray(v) ? v.map(function(x){ return t(x); }).join(' \u00b7 ') : (v === '' || v == null ? '\u2014' : (typeof v === 'number' ? nm(v) : t(String(v)))); }
+function svqFmt(v){ return Array.isArray(v) ? v.filter(function(x){ return typeof x !== 'object' && !/^\[object /.test(String(x)); }).map(function(x){ return t(x); }).join(' \u00b7 ')   /* (V38.78) */ : (v === '' || v == null ? '\u2014' : (typeof v === 'number' ? nm(v) : t(String(v)))); }
 function svqEditor(k, rec, s){
   var v = rec[k];
   if (k === 'loc'){

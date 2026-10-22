@@ -226,7 +226,19 @@ function locChalKeys(r){
   if ((L.indexOf('لوحة استرشادية') > -1 && !can) || L.indexOf('بدون إطار معدني للتثبيت') > -1) out.push('mount');
   return out;
 }
+/* (V38.78) owner: «التحديات الخاصة بنقاط الممرات والجمرات كلها تكون مربوطة فقط بالاختيار بتاع موقع النقطة» — for these two
+   types the location choice is the whole challenge: chosen chips, saved categories and words in the notes no longer count. */
+function locOnly(x){ return !!x && (x.type === 'ممر' || x.type === 'جسر'); }
+/* (V38.78) a point moved on the map leaves its trace in rec.moved; before this it was written over rec.loc — the visit's
+   location choice — and lost it. Older traces are still read where they were left. */
+function recMove(r){
+  if (!r) return null; if (r.moved && +r.moved.lat && +r.moved.lng) return r.moved;
+  var L = r.loc; if (L && !Array.isArray(L) && +L.lat && +L.lng) return L;
+  if (Array.isArray(L)) for (var i = 0; i < L.length; i++) if (L[i] && typeof L[i] === 'object' && +L[i].lat && +L[i].lng) return L[i];
+  return null;
+}
 function chalCats0(r){
+  var x0 = r && r.id && typeof siteFind === 'function' ? siteFind(r.id) : null; if (x0 && locOnly(x0)) return locChalKeys(r);
   var lk = locChalKeys(r), mg = function(a){ lk.forEach(function(k){ if (a.indexOf(k) < 0) a.push(k); }); return a; };
   if (Array.isArray(r.chalCats) && r.chalCats.length) return mg(r.chalCats.slice());
   var out = [], add = function(k){ if (out.indexOf(k) < 0) out.push(k); };
@@ -293,7 +305,7 @@ function locOpts(){ return ['لا شيء مما سبق', 'تحت كوبري', '�
 function locList(v){
   /* (V38.75) words only: rec.loc also carries a moved position ({lat,lng}, V32.2) — it showed «[object Object]» in the
      obstacles lists and, read as the technician's choice, stopped the inference for older visits (wrong counts by type) */
-  if (Array.isArray(v)) return v.filter(function(x){ return typeof x === 'string' && x.trim(); });
+  if (Array.isArray(v)) return v.filter(function(x){ return typeof x === 'string' && x.trim() && !/^\[object /.test(x); });   /* (V38.78) and not the literal «[object Object]» an edit before V38.75 saved as a choice */
   if (v && typeof v === 'object') return [];
   var s0 = String(v || '').trim(); if (!s0) return [];
   if (s0 === 'مدخل أو مخرج نفق') return ['نفق — غير محدد'];

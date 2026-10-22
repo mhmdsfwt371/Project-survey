@@ -33,7 +33,7 @@ T(w.chalKey('أخرى — اذكرها في وصف التحدي') === 'أخرى'
 T(JSON.stringify(w.chalKeys([A, B, 'لا توجد تحديات', A])) === JSON.stringify(['لا يوجد سطح تثبيت']), 'والقائمةُ تُطوى بلا تكرارٍ وبلا «لا توجد تحديات»');
 
 console.log('\n══ ٢ · العدُّ واحدٌ في كلِّ موضع ══');
-const now = Date.now(), camps = w.STATE.sites.filter(x => x.type === 'مخيم').slice(0, 30), paths = w.STATE.sites.filter(x => x.type !== 'مخيم').slice(0, 20);
+const now = Date.now(), camps = w.STATE.sites.filter(x => x.type === 'مخيم').slice(0, 30), paths = w.STATE.sites.filter(x => x.type !== 'مخيم' && x.type !== 'ممر' && x.type !== 'جسر').slice(0, 20);   /* (V38.78) corridors and Jamarat read «موقع النقطة» alone */
 w.STATE.recs = {};
 camps.forEach((x, i) => { w.STATE.recs[x.id] = { id:x.id, at: now - i * 36e5, by:'أحمد', access:'تم الوصول', chals:[A], chal_note:'' }; });
 paths.forEach((x, i) => { w.STATE.recs[x.id] = { id:x.id, at: now - i * 36e5, by:'أحمد', access:'تم الوصول', chals:[B, 'أخرى — اذكرها في وصف التحدي'], chal_note: i % 2 ? 'المخيم  مقفول بالحديد' : 'المخيم مقفول بالحديد ' }; });

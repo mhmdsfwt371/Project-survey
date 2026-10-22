@@ -45,8 +45,10 @@ S.forEach((x, k) => {
     if (!installed){
       /* (V38.76) the single definition (owner-approved): a returned visit stays «تحتاج زيارة أخرى» — as the hall screen and the
          obstacles tab counted it — so the follow-up's impediments count it too */
-      const cats = chals.slice(); if (access !== 'تم الوصول') cats.push('تعذّر الوصول'); else if (review === 'revisit' && !chals.length) cats.push('تحتاج زيارة أخرى');
-      if (cats.length){ truth.obst++; truth.catInst += cats.length; if (chals.length >= 2) truth.twoChal++; }
+      /* (V38.78) corridors and Jamarat: their challenge is «موقع النقطة» alone — the chosen chips seeded here do not count */
+      const chE = (x.type === 'ممر' || x.type === 'جسر') ? [] : chals;
+      const cats = chE.slice(); if (access !== 'تم الوصول') cats.push('تعذّر الوصول'); else if (review === 'revisit' && !chE.length) cats.push('تحتاج زيارة أخرى');
+      if (cats.length){ truth.obst++; truth.catInst += cats.length; if (chE.length >= 2) truth.twoChal++; }
       if (access !== 'تم الوصول') truth.notReached++;
     }
   }

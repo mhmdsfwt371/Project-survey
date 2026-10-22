@@ -21,7 +21,7 @@
 | `01-core-registry-07-blackbox-registry.js` | 242 | 17 | Black box (crash forensics) and the embedded site registry SITES_RAW with its publish/cache cycle to the database. |
 | `01-core-registry-08-egates-seed.js` | 79 | 8 | Al Mashaaer train: the nine stations and their 62 E-GATE points (registry points at the station reference, owner decision Q-023), the station card listing its g |
 
-## `02-catalog/` — الكتالوج والنقطة — التعريفات والتصنيف والصلاحيات وتعديل المسح  (12 ملفات · 4763 سطر · 294 دالة)
+## `02-catalog/` — الكتالوج والنقطة — التعريفات والتصنيف والصلاحيات وتعديل المسح  (12 ملفات · 4775 سطر · 296 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -35,7 +35,7 @@
 | `02-catalog-forms-10-report-builder.js` | 277 | 29 | (V38.43) Report builder — the owner composes any point report from dropdowns (place, owner category, type, survey, |
 | `02-catalog-forms-11-chat.js` | 196 | 22 | (V38.60) Field chat between the office and the installers: a message is a small append-only document |
 | `02-catalog-forms-12-install-edit.js` | 136 | 9 | (V38.61) «تعديل التركيب» — the installation's counterpart of «تعديل المسح»: status, parts and serials edited |
-| `02-definitions-08-definitions.js` | 551 | 81 | Canonical definitions used everywhere: visit/survey/installation states, challenge categories (chalCats), location choices (locOpts/locApplies), helper predicat |
+| `02-definitions-08-definitions.js` | 563 | 83 | Canonical definitions used everywhere: visit/survey/installation states, challenge categories (chalCats), location choices (locOpts/locApplies), helper predicat |
 | `02-edit-09-edit-requests.js` | 230 | 15 | Data-correction requests from the field (fixreqs) and their review. |
 
 ## `03-survey/` — المسح والتركيب — النماذج والنقاط والإسناد والخطة  (11 ملفات · 5263 سطر · 255 دالة)
@@ -54,7 +54,7 @@
 | `03-survey-records-10-wbs-plan-trials.js` | 680 | 44 | Work breakdown structure, plan versus actual, plan export with formulas, item file and the trials page. |
 | `03-survey-records-11-weekly-tasks-paths.js` | 517 | 37 | Weekly tasks as sentence cards, meeting mode, the one filter for screen and paper, and path filtering with each path's status. |
 
-## `03z-shared/` — المشتركُ — تعريفاتٌ تحتاجها النواةُ قبل مجالات المكتب والوزارة والتقارير (نُقلت حرفيًّا، لا كودَ جديدًا هنا)  (63 ملفات · 9002 سطر · 535 دالة)
+## `03z-shared/` — المشتركُ — تعريفاتٌ تحتاجها النواةُ قبل مجالات المكتب والوزارة والتقارير (نُقلت حرفيًّا، لا كودَ جديدًا هنا)  (63 ملفات · 9003 سطر · 535 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -75,7 +75,7 @@
 | `03z-shared-15-from-tasks-office-15-handover-minutes.js` | 184 | 8 | Definitions moved verbatim from src/04-office/04-tasks-office-15-handover-minutes.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these n |
 | `03z-shared-16-from-exec-report-01-exec-report.js` | 116 | 13 | Definitions moved verbatim from src/06-ministry/06-exec-report-01-exec-report.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names |
 | `03z-shared-17-from-ext-camps-03-nusuk-card-system.js` | 515 | 35 | Definitions moved verbatim from src/06-ministry/06-ext-camps-03-nusuk-card-system.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these n |
-| `03z-shared-18-from-mfu-tabs-04-followup-tabs.js` | 124 | 17 | Definitions moved verbatim from src/06-ministry/06-mfu-tabs-04-followup-tabs.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, |
+| `03z-shared-18-from-mfu-tabs-04-followup-tabs.js` | 125 | 17 | Definitions moved verbatim from src/06-ministry/06-mfu-tabs-04-followup-tabs.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, |
 | `03z-shared-19-from-ministry-alerts-05-alerts-dashboard.js` | 285 | 30 | Definitions moved verbatim from src/06-ministry/06-ministry-alerts-05-alerts-dashboard.js (V38.38, stage A of core + chunks): the core (01–05, 08) references th |
 | `03z-shared-20-from-ministry-alerts-06-followup-sources-daily.js` | 155 | 16 | Definitions moved verbatim from src/06-ministry/06-ministry-alerts-06-followup-sources-daily.js (V38.38, stage A of core + chunks): the core (01–05, 08) referen |
 | `03z-shared-21-from-ministry-alerts-07-weekly-export-scope.js` | 86 | 5 | Definitions moved verbatim from src/06-ministry/06-ministry-alerts-07-weekly-export-scope.js (V38.38, stage A of core + chunks): the core (01–05, 08) references |
@@ -160,29 +160,29 @@
 | `05-lifecycle-map-12-ministry-screen-progress.js` | 384 | 22 | Ministry hall screen, completion forecast, progress map, far points, satellite in the ministry screen, week sentence and the hall view. |
 | `05-lifecycle-map-13-ministry-followup.js` | 473 | 49 | Ministry follow-up page: dynamic follow-up, season brief header, 'whose turn' groups, two modes, and the no-challenge camps card. |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4129 سطر · 151 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4140 سطر · 151 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
 | `06-exec-report-01-exec-report.js` | 118 | 7 | Executive report builder. |
 | `06-exec-template-02-exec-template.js` | 13 | 0 | Executive report template. |
 | `06-ext-camps-03-nusuk-card-system.js` | 581 | 35 | Nusuk card system bridge: bulk linking, signal status, overview sheet, point status card, setup bar. |
-| `06-mfu-tabs-04-followup-tabs.js` | 208 | 22 | Ministry follow-up tabs: installation status, challenges (who handles, which challenge, by location per zone), daily summary. |
+| `06-mfu-tabs-04-followup-tabs.js` | 217 | 22 | Ministry follow-up tabs: installation status, challenges (who handles, which challenge, by location per zone), daily summary. |
 | `06-ministry-alerts-05-alerts-dashboard.js` | 178 | 11 | Alert rules configured from Settings, card popups from the ministry page, and the readable dashboard. |
 | `06-ministry-alerts-06-followup-sources-daily.js` | 195 | 16 | Challenges from three sources, everything linked and heard in the report, weekly tasks in follow-up, follow-up maturity and the daily work summary. |
 | `06-ministry-alerts-07-weekly-export-scope.js` | 217 | 16 | Weekly update export, scope selection of points for the file, and the pre-download file check. |
 | `06-ministry-alerts-08-pptx-template.js` | 980 | 16 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 285 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 1033 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 1035 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
 
-## `07-reports/` — الاعتمادُ والتقارير — المخزن والورشة والأجهزة والإشعارات والأدوار  (11 ملفات · 3283 سطر · 105 دالة)
+## `07-reports/` — الاعتمادُ والتقارير — المخزن والورشة والأجهزة والإشعارات والأدوار  (11 ملفات · 3284 سطر · 105 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
-| `07-approvals-reports-01-approvals-review.js` | 192 | 11 | Visit approvals by the engineer, challenge/notification search, review of unreachable and stalled points. |
+| `07-approvals-reports-01-approvals-review.js` | 193 | 11 | Visit approvals by the engineer, challenge/notification search, review of unreachable and stalled points. |
 | `07-approvals-reports-02-inventory-workshop.js` | 254 | 13 | Inventory, purchases and catalogue from movements, workshop requests (CR/AR/IR), request log and the single item key. |
 | `07-approvals-reports-03-trials-invoices.js` | 508 | 15 | Trials with cost and hours, trial kits from the catalogue, trial points on camps, and invoice photos. |
 | `07-approvals-reports-04-devices-reset-pulse.js` | 178 | 10 | Live crew list, device versions, season reset, pulse and in-app report, page usage card, cost guard, field performance card and devices needing action. |
@@ -218,4 +218,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 161 ملفًّا · 44067 سطر · 1992 دالة.
+**الإجمالي:** 161 ملفًّا · 44092 سطر · 1994 دالة.

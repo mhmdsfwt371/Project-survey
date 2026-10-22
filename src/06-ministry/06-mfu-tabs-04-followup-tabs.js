@@ -102,8 +102,17 @@ function mtObsLoc(){
     return '<div style="' + MT_TILE + ';margin:0 0 10px"><div style="font-weight:700;margin:0 0 8px">\u{1F4CD} ' + esc(t(z)) + '</div>'
       + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px">' + cells + '</div></div>';
   }).join('');
+  /* (V38.78) corridors and Jamarat count from «موقع النقطة» alone — the office sees which of them were visited without one */
+  var none = '';
+  if (ROLE !== 'viewer' && rankOf(ROLE) >= rankOf('engineer')){
+    MFU.lists.locnone = MFU.lists.locnone || { title:'ممرات وجمرات زيرت بلا اختيار «موقع النقطة»', head:['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'الزائر'],
+      rows:function(){ return mtSites().filter(function(x){ var r = STATE.recs[x.id]; return locOnly(x) && r && svVisited(r) && !locList(r.loc).length && !insDone(x.id); })
+        .map(function(x){ var r = STATE.recs[x.id] || {}; return [x.id, x.name || '', taxOf(x).g, x.type, x.co || '', r.by || '']; }); } };
+    var nn = MFU.lists.locnone.rows().length;
+    if (nn) none = '<p class="hint" style="margin:-6px 0 12px;font-size:12px"><button type="button" class="chip"' + mtOpen('locnone', '', '') + ' style="margin:0 0 0 6px"><b class="num">' + nm(nn) + '</b></button>' + esc(t('ممرات وجمرات زيرت بلا اختيار «موقع النقطة» — لا تُعدّ عليها تحديات حتى يُحدَّد موقعها من «تعديل المسح»')) + '</p>';
+  }
   return mtSec('حسب الموقع — في كل منطقة') + blocks
-    + '<p class="hint" style="margin:-4px 0 12px;font-size:12px">' + esc(t('لكل النقاط عدا المخيمات ومراكز التفويج — من «موقع النقطة» في المسح (اختيار متعدد)، وللزيارات الأقدم بلا اختيار من كلمات وصف التحدي والملاحظة · كلُّها تحدٍّ عدا «على مظلة» (واللوحة التي عليها مظلة) · اضغط الرقم لقائمته وإكسلها')) + '</p>';
+    + '<p class="hint" style="margin:-4px 0 12px;font-size:12px">' + esc(t('الممرات والجمرات من «موقع النقطة» وحده، وباقي النقاط عدا المخيمات ومراكز التفويج من «موقع النقطة» وللزيارات الأقدم بلا اختيار من كلمات وصف التحدي والملاحظة · كلُّها تحدٍّ عدا «على مظلة» (واللوحة التي عليها مظلة) · اضغط الرقم لقائمته وإكسلها')) + '</p>' + none;
 }
 function mtObs(){
   var S = mtSites(), vis = 0, gc = {}, wc = {}, zc = {}, chal = 0;

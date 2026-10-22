@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.77</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.78</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1377,7 +1377,7 @@ function nskChunkReady(){
 
   try { if (typeof whatsNewMaybe === 'function' && whatsNewMaybe.pending){ whatsNewMaybe.pending = false; if (whatsNewMaybe() && typeof render === 'function') render(1); } } catch (e3){ LS_ERR = e3; }
 }
-var I18N_FILE = 'i18n/dict-74cd5421d7.js', I18N_STATE = 0, I18N_WAIT = [];
+var I18N_FILE = 'i18n/dict-10936d842c.js', I18N_STATE = 0, I18N_WAIT = [];
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }
@@ -6482,7 +6482,7 @@ function svqKeys(rec){
   return ks;
 }
 function svqLabel(k){ if (String(k).indexOf('ph:') === 0) return 'صورة: ' + svqKindLabel(k.slice(3)); return k === 'chals' ? 'تحديات التركيب' : (SV_LABELS[k] || k); }
-function svqFmt(v){ return Array.isArray(v) ? v.map(function(x){ return t(x); }).join(' \u00b7 ') : (v === '' || v == null ? '\u2014' : (typeof v === 'number' ? nm(v) : t(String(v)))); }
+function svqFmt(v){ return Array.isArray(v) ? v.filter(function(x){ return typeof x !== 'object' && !/^\[object /.test(String(x)); }).map(function(x){ return t(x); }).join(' \u00b7 ')    : (v === '' || v == null ? '\u2014' : (typeof v === 'number' ? nm(v) : t(String(v)))); }
 function svqEditor(k, rec, s){
   var v = rec[k];
   if (k === 'loc'){
@@ -7385,7 +7385,17 @@ function locChalKeys(r){
   if ((L.indexOf('لوحة استرشادية') > -1 && !can) || L.indexOf('بدون إطار معدني للتثبيت') > -1) out.push('mount');
   return out;
 }
+
+function locOnly(x){ return !!x && (x.type === 'ممر' || x.type === 'جسر'); }
+
+function recMove(r){
+  if (!r) return null; if (r.moved && +r.moved.lat && +r.moved.lng) return r.moved;
+  var L = r.loc; if (L && !Array.isArray(L) && +L.lat && +L.lng) return L;
+  if (Array.isArray(L)) for (var i = 0; i < L.length; i++) if (L[i] && typeof L[i] === 'object' && +L[i].lat && +L[i].lng) return L[i];
+  return null;
+}
 function chalCats0(r){
+  var x0 = r && r.id && typeof siteFind === 'function' ? siteFind(r.id) : null; if (x0 && locOnly(x0)) return locChalKeys(r);
   var lk = locChalKeys(r), mg = function(a){ lk.forEach(function(k){ if (a.indexOf(k) < 0) a.push(k); }); return a; };
   if (Array.isArray(r.chalCats) && r.chalCats.length) return mg(r.chalCats.slice());
   var out = [], add = function(k){ if (out.indexOf(k) < 0) out.push(k); };
@@ -7443,7 +7453,7 @@ function locOpts(){ return ['لا شيء مما سبق', 'تحت كوبري', '�
 
 function locList(v){
 
-  if (Array.isArray(v)) return v.filter(function(x){ return typeof x === 'string' && x.trim(); });
+  if (Array.isArray(v)) return v.filter(function(x){ return typeof x === 'string' && x.trim() && !/^\[object /.test(x); });
   if (v && typeof v === 'object') return [];
   var s0 = String(v || '').trim(); if (!s0) return [];
   if (s0 === 'مدخل أو مخرج نفق') return ['نفق — غير محدد'];
@@ -14512,7 +14522,7 @@ function moveApply(lat, lng){
   siteOvSet(s.id, { lat:lat, lng:lng, movedFrom:old, movedAt:Date.now(), movedBy:STATE.meta.name || '' });
   var rec = STATE.recs[s.id];
   if (rec){
-    rec = Object.assign({}, rec, { loc:{ lat:lat, lng:lng, from:old, at:Date.now(), by:STATE.meta.name || '' } });
+    rec = Object.assign({}, rec, { moved:{ lat:lat, lng:lng, from:old, at:Date.now(), by:STATE.meta.name || '' } });
     if (rec.review === 'approved' || !rec.review) rec.review = 'pending';
     CORE.set('recs', s.id, rec);
   }
@@ -14596,7 +14606,7 @@ function statBump(){
 
 function recLocApply(){
   var R = STATE.recs || {}, ov = STATE.siteOv || {};
-  Object.keys(R).forEach(function(id){ var r = R[id], L0 = r && r.loc; if (!L0 || !(+L0.lat) || !(+L0.lng)) return; var o = ov[id]; if (o && +o.lat && +o.lng) return;
+  Object.keys(R).forEach(function(id){ var r = R[id], L0 = recMove(r); if (!L0) return; var o = ov[id]; if (o && +o.lat && +o.lng) return;
     var x = siteFind(id); if (x && (+x.lat !== +L0.lat || +x.lng !== +L0.lng)){ x.lat = +L0.lat; x.lng = +L0.lng; } });
 }
 
@@ -15755,6 +15765,7 @@ function obsLocTags(x){
   var L = locList(r.loc), pick = 'اختيار الفني', txtSrc = 'وصف التحدي أو الملاحظة';
   var map = { 'تحت كوبري':'bridge', 'مدخل نفق':'tin', 'مخرج نفق':'tout', 'نفق — غير محدد':'tgen', 'لوحة استرشادية':'sign', 'بدون إطار معدني للتثبيت':'nomount', 'على مظلة':'canopy' };
   L.forEach(function(v){ if (map[v]) out[map[v]] = pick; });
+  if (locOnly(x)) return out;
   if (r.mount === 'لوحة استرشادية') out.sign = pick;
   if (chalCats(r).indexOf('mount') > -1 && !out.nomount) out.nomount = pick;
   if (L.length) return out;
@@ -30123,6 +30134,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.77"></script>
+<script defer src="app-office.js?v=38.78"></script>
 </body>
 </html>

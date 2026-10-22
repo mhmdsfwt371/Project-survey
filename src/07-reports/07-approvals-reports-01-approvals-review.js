@@ -23,8 +23,9 @@ var SV_LABEL = { mount:'التثبيت', power:'الكهرباء', height:'ال�
 /* ما أفاد به المشرفُ في الزيارة — كلُّ حقلٍ له قيمة، بتسميته */
 function svFacts(r){
   var out = [];
-  if (r.loc && r.loc.from){
-    var m = Math.round(distKm(r.loc.from, { lat:r.loc.lat, lng:r.loc.lng }) * 1000);
+  var mv = recMove(r);   /* (V38.78) */
+  if (mv && mv.from){
+    var m = Math.round(distKm(mv.from, { lat:mv.lat, lng:mv.lng }) * 1000);
     out.push(['نُقلت النقطة', nm(m) + ' ' + t('م') + ' \u2014 ' + t('عن موقعها المسجَّل')]);
   }
   ['mount','power','height','cable'].concat(SV_EXTRA_KEYS).forEach(function(k){

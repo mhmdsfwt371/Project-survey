@@ -2632,8 +2632,17 @@ function mtObsLoc(){
     return '<div style="' + MT_TILE + ';margin:0 0 10px"><div style="font-weight:700;margin:0 0 8px">\u{1F4CD} ' + esc(t(z)) + '</div>'
       + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px">' + cells + '</div></div>';
   }).join('');
+
+  var none = '';
+  if (ROLE !== 'viewer' && rankOf(ROLE) >= rankOf('engineer')){
+    MFU.lists.locnone = MFU.lists.locnone || { title:'ممرات وجمرات زيرت بلا اختيار «موقع النقطة»', head:['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'الزائر'],
+      rows:function(){ return mtSites().filter(function(x){ var r = STATE.recs[x.id]; return locOnly(x) && r && svVisited(r) && !locList(r.loc).length && !insDone(x.id); })
+        .map(function(x){ var r = STATE.recs[x.id] || {}; return [x.id, x.name || '', taxOf(x).g, x.type, x.co || '', r.by || '']; }); } };
+    var nn = MFU.lists.locnone.rows().length;
+    if (nn) none = '<p class="hint" style="margin:-6px 0 12px;font-size:12px"><button type="button" class="chip"' + mtOpen('locnone', '', '') + ' style="margin:0 0 0 6px"><b class="num">' + nm(nn) + '</b></button>' + esc(t('ممرات وجمرات زيرت بلا اختيار «موقع النقطة» — لا تُعدّ عليها تحديات حتى يُحدَّد موقعها من «تعديل المسح»')) + '</p>';
+  }
   return mtSec('حسب الموقع — في كل منطقة') + blocks
-    + '<p class="hint" style="margin:-4px 0 12px;font-size:12px">' + esc(t('لكل النقاط عدا المخيمات ومراكز التفويج — من «موقع النقطة» في المسح (اختيار متعدد)، وللزيارات الأقدم بلا اختيار من كلمات وصف التحدي والملاحظة · كلُّها تحدٍّ عدا «على مظلة» (واللوحة التي عليها مظلة) · اضغط الرقم لقائمته وإكسلها')) + '</p>';
+    + '<p class="hint" style="margin:-4px 0 12px;font-size:12px">' + esc(t('الممرات والجمرات من «موقع النقطة» وحده، وباقي النقاط عدا المخيمات ومراكز التفويج من «موقع النقطة» وللزيارات الأقدم بلا اختيار من كلمات وصف التحدي والملاحظة · كلُّها تحدٍّ عدا «على مظلة» (واللوحة التي عليها مظلة) · اضغط الرقم لقائمته وإكسلها')) + '</p>' + none;
 }
 function mtObs(){
   var S = mtSites(), vis = 0, gc = {}, wc = {}, zc = {}, chal = 0;
@@ -4581,6 +4590,8 @@ function provReask(uid){
 
 var RELEASE_NOTES = [
 
+  { v:'V38.78', d:'2026-10-22', notes:[
+      'تحديات الممرات والجمرات صارت من «موقع النقطة» وحده، وتحريك النقطة على الخريطة لا يمحو اختيار موقعها' ] },
   { v:'V38.77', d:'2026-10-22', notes:[
       'الصور التي ما زالت في طريقها إلى الدرايف تُفتح كاملة وتُنزَّل من نسختها الخام، ونقل الصور إلى الدرايف صار يعمل كل خمس دقائق على الخادم' ] },
   { v:'V38.76', d:'2026-10-22', notes:[
@@ -5714,8 +5725,9 @@ var SV_LABEL = { mount:'التثبيت', power:'الكهرباء', height:'ال�
 
 function svFacts(r){
   var out = [];
-  if (r.loc && r.loc.from){
-    var m = Math.round(distKm(r.loc.from, { lat:r.loc.lat, lng:r.loc.lng }) * 1000);
+  var mv = recMove(r);
+  if (mv && mv.from){
+    var m = Math.round(distKm(mv.from, { lat:mv.lat, lng:mv.lng }) * 1000);
     out.push(['نُقلت النقطة', nm(m) + ' ' + t('م') + ' \u2014 ' + t('عن موقعها المسجَّل')]);
   }
   ['mount','power','height','cable'].concat(SV_EXTRA_KEYS).forEach(function(k){

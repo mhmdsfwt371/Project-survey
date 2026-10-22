@@ -277,7 +277,7 @@ function moveApply(lat, lng){
   siteOvSet(s.id, { lat:lat, lng:lng, movedFrom:old, movedAt:Date.now(), movedBy:STATE.meta.name || '' });
   var rec = STATE.recs[s.id];
   if (rec){   /* لها زيارةٌ فعلًا: يبقى الأثرُ فيها وتعود للمراجعة كما كان */
-    rec = Object.assign({}, rec, { loc:{ lat:lat, lng:lng, from:old, at:Date.now(), by:STATE.meta.name || '' } });
+    rec = Object.assign({}, rec, { moved:{ lat:lat, lng:lng, from:old, at:Date.now(), by:STATE.meta.name || '' } });   /* (V38.78) was written over rec.loc — the location choice */
     if (rec.review === 'approved' || !rec.review) rec.review = 'pending';
     CORE.set('recs', s.id, rec);
   }

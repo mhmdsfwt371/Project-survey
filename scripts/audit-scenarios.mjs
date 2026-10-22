@@ -280,9 +280,10 @@ console.log('\n══ ١١ · التحديات حسب الموقع ══');
 {
   const base = { access:'تم الوصول', at:Date.now(), by:'فني' };
   const pick = ty => w.STATE.sites.find(z => z && z.type === ty && !w.STATE.recs[z.id]);
-  const P0 = pick('ممر'); w.STATE.recs[P0.id] = Object.assign({ id:P0.id, chals:['المسار تحت كوبري'] }, base);
-  const P1 = pick('ممر'); w.STATE.recs[P1.id] = Object.assign({ id:P1.id, chals:['لا يوجد سطح تثبيت — يحتاج هيكلًا أو عمودًا'], chal_note:'عند مخرج النفق — على لوحة استرشادية تحت المظلة' }, base);
-  const P2 = pick('ممر'); w.STATE.recs[P2.id] = Object.assign({ id:P2.id, chals:['عائق في الموقع (إنشائي أو درج أو حواجز أو حفر أو نفق أو كوبري)'] }, base);
+  /* (V38.78) corridors and Jamarat read «موقع النقطة» alone — the inference of older visits is checked on the other types */
+  const P0 = pick('كاميرا'); w.STATE.recs[P0.id] = Object.assign({ id:P0.id, chals:['المسار تحت كوبري'] }, base);
+  const P1 = pick('بوابة'); w.STATE.recs[P1.id] = Object.assign({ id:P1.id, chals:['لا يوجد سطح تثبيت — يحتاج هيكلًا أو عمودًا'], chal_note:'عند مخرج النفق — على لوحة استرشادية تحت المظلة' }, base);
+  const P2 = pick('محطة'); w.STATE.recs[P2.id] = Object.assign({ id:P2.id, chals:['عائق في الموقع (إنشائي أو درج أو حواجز أو حفر أو نفق أو كوبري)'] }, base);
   w.statBump();
   const g0 = w.obsLocTags(P0), g1 = w.obsLocTags(P1), g2 = w.obsLocTags(P2);
   T(!!g0.bridge, 'اختيارُ الفني القديم «تحت كوبري» يُحسَب كوبري');
@@ -788,6 +789,40 @@ console.log('\n══ ٢٨ · عرضُ صورةٍ في طريقها إلى ال�
   delete w.phBlob.c[key]; w.phBlob.w = w.phBlob.w || {}; w.phBlob.w[key] = 1; w.photoView(key);   /* not on this phone yet */
   T(!d.getElementById('phView') && /الدرايف/.test(msg), 'وإن لم تكن نسختُها وصلت الجهازَ يقول إنها في الطريق بدل الصمت');
   w.toast = toast0; delete w.STATE.photos[key]; w.PH_IDX = null;
+}
+
+/* ── ٢٩ · (V38.78) الممراتُ والجمراتُ: التحدي من «موقع النقطة» وحده، وتحريكُ النقطة لا يمحو اختيارَ الموقع ── */
+console.log('\n══ ٢٩ · الممرات والجمرات: التحدي من «موقع النقطة» وحده ══');
+{
+  const S = w.STATE.sites, now = Date.now();
+  const cor = S.filter(x => x && x.type === 'ممر' && !w.STATE.recs[x.id]);
+  const jam = S.filter(x => x && x.type === 'جسر' && !w.STATE.recs[x.id]);
+  const camp = S.filter(x => x && x.type === 'مخيم' && !w.STATE.recs[x.id])[0];
+  const mk = (x, o) => { w.STATE.recs[x.id] = Object.assign({ id:x.id, access:'تم الوصول', review:'approved', by:'فني', at:now }, o); };
+  mk(cor[0], { chals:['لا يوجد سطح تثبيت'], chal_note:'تحت الكوبري', loc:[] });        /* chips and words, no location */
+  mk(cor[1], { chals:[], loc:['تحت كوبري'] });                                           /* the location says bridge */
+  mk(jam[0], { chals:['لا يوجد سطح تثبيت'], loc:['على مظلة'] });                         /* on a canopy: no challenge */
+  mk(jam[1], { chals:[], loc:['لوحة استرشادية'] });                                      /* signboard, no canopy: needs a structure */
+  mk(camp,   { chals:['لا يوجد سطح تثبيت'] });                                           /* camps keep their chips */
+  w.statBump();
+  const R = id => w.STATE.recs[id];
+  T(!w.svObstacle(R(cor[0].id)) && w.svObstacle(R(cor[1].id)) && w.chalCats(R(cor[1].id)).join() === 'block',
+    'ممرٌّ: تحدياتُه المختارةُ وكلماتُ وصفه لا تُحتسب، و«تحت كوبري» في موقع النقطة هو تحدّيه');
+  T(!w.svObstacle(R(jam[0].id)) && w.svObstacle(R(jam[1].id)) && w.chalCats(R(jam[1].id)).join() === 'mount',
+    'الجمراتُ كذلك: «على مظلة» بلا تحدٍّ ولو اختير تحدٍّ، و«لوحة استرشادية» بلا مظلة تحتاج هيكلًا');
+  T(w.svObstacle(R(camp.id)), 'والمخيماتُ باقيةٌ على تحدياتها المختارة');
+  const tg = w.obsLocTags(cor[0]);
+  T(tg && !Object.keys(tg).length && w.obsLocTags(cor[1]).bridge, 'وفي «حسب الموقع» لا يُستنتج للممرِّ من الكلمات — يُعدّ من اختياره وحده');
+  /* moving a point keeps its location choice */
+  w.ROLE = 'admin'; w.STATE.meta.role = 'admin';
+  const old = { lat:+cor[1].lat, lng:+cor[1].lng };
+  if (typeof w.moveApply === 'function'){ w.MOVE_ID = cor[1].id; try { w.moveApply(old.lat + 0.0003, old.lng + 0.0003); } catch (e){} }
+  const r1 = R(cor[1].id);
+  T(w.locList(r1.loc).join() === 'تحت كوبري' && (!r1.moved || +r1.moved.lat > 0), 'وتحريكُ النقطة على الخريطة يحفظ أثرَه في حقله ولا يمحو «موقع النقطة»');
+  T(w.locList(['[object Object]', 'مدخل نفق']).join() === 'مدخل نفق' && w.svqFmt(['[object Object]', 'مدخل نفق']).indexOf('object') < 0,
+    'وما حُفظ قديمًا نصًّا «[object Object]» لا يظهر في تعديل المسح ولا سجلِّه');
+  [cor[0], cor[1], jam[0], jam[1], camp].forEach(x => { delete w.STATE.recs[x.id]; });
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.statBump();
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

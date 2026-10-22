@@ -48,6 +48,7 @@ function obsLocTags(x){
   var L = locList(r.loc), pick = 'اختيار الفني', txtSrc = 'وصف التحدي أو الملاحظة';
   var map = { 'تحت كوبري':'bridge', 'مدخل نفق':'tin', 'مخرج نفق':'tout', 'نفق — غير محدد':'tgen', 'لوحة استرشادية':'sign', 'بدون إطار معدني للتثبيت':'nomount', 'على مظلة':'canopy' };
   L.forEach(function(v){ if (map[v]) out[map[v]] = pick; });
+  if (locOnly(x)) return out;   /* (V38.78) corridors and Jamarat: the location choice alone — no mount, no category, no words */
   if (r.mount === 'لوحة استرشادية') out.sign = pick;   /* ما حُفظ في V38.23 */
   if (chalCats(r).indexOf('mount') > -1 && !out.nomount) out.nomount = pick;   /* فئةُ «لا يوجد سطح تثبيت» */
   if (L.length) return out;   /* اختارَ الفنيُّ (ولو «لا شيء مما سبق») — لا استنتاجَ من الكلام */

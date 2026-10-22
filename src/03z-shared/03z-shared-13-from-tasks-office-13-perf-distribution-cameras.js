@@ -70,7 +70,7 @@ function statBump(){
 /* (V32.2) ما حُرِّك قبل V32.2 كُتب في الزيارة (rec.loc) وحدَها — يُطبَّق هنا على النقطة في كلِّ جهازٍ ما لم يكن لها تجاوزُ موضع */
 function recLocApply(){
   var R = STATE.recs || {}, ov = STATE.siteOv || {};
-  Object.keys(R).forEach(function(id){ var r = R[id], L0 = r && r.loc; if (!L0 || !(+L0.lat) || !(+L0.lng)) return; var o = ov[id]; if (o && +o.lat && +o.lng) return;
+  Object.keys(R).forEach(function(id){ var r = R[id], L0 = recMove(r); if (!L0) return; var o = ov[id]; if (o && +o.lat && +o.lng) return;
     var x = siteFind(id); if (x && (+x.lat !== +L0.lat || +x.lng !== +L0.lng)){ x.lat = +L0.lat; x.lng = +L0.lng; } });
 }
 
