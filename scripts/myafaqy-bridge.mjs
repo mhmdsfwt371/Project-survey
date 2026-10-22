@@ -1,3 +1,4 @@
+import { countReads } from './lib/reads.mjs';   /* (V38.84) this job's reads, by name, in the cost card */
 /* ═══════════════════════════════════════════════════════════════════════════
    جسرُ ماي أفاقي — node scripts/myafaqy-bridge.mjs
    ───────────────────────────────────────────────────────────────────────────
@@ -70,6 +71,7 @@ if (V('BRIDGE_DB')){
   const { createRequire } = await import('module');
   const admin = createRequire(import.meta.url)('firebase-admin');
   admin.initializeApp({ credential: admin.credential.cert(JSON.parse(V('FIREBASE_SERVICE_ACCOUNT'))) });
+  countReads(admin, 'bridge');
   const fs = admin.firestore();
   const load = async (name, lim) => { const m = {}; (await fs.collection(name).limit(lim).get()).forEach(d => { m[d.id] = d.data(); }); return m; };
   DB = { tasks: await load('tasks', 5000), inss: await load('inss', 5000), newsites: await load('newsites', 3000), points: (await fs.collection('settings').doc('points').get()).data() || {} };

@@ -57,3 +57,9 @@ jobs:
           MYAFAQY_ITEM_PRICE: ${{ vars.MYAFAQY_ITEM_PRICE }}
           MYAFAQY_ITEM_UNIT: ${{ vars.MYAFAQY_ITEM_UNIT }}
         run: node scripts/myafaqy-bridge.mjs
+      # (V38.84) ما قرأته هذه المهمّةُ من القاعدة يُضاف إلى settings/jobreads — تسمّيه بطاقةُ التكلفة باسمه
+      - name: عدّادُ قراءات المهمّة
+        if: always()
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/reads-flush.mjs || true

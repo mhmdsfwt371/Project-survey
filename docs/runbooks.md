@@ -26,7 +26,7 @@
 
 **ماذا يفعل:** ٥:٣٠ صباحًا بمكة: تصديرُ القاعدة كاملةً مشفّرةً بمفتاح BACKUP_KEY، والتحقّقُ منها، ورفعُها إلى الدرايف، وبريد.
 
-**ماذا يشغّل:** `scripts/backup-verify.mjs`، `scripts/backup.mjs`، `scripts/drive-upload.mjs`، `scripts/mail-send.mjs`
+**ماذا يشغّل:** `scripts/backup-verify.mjs`، `scripts/backup.mjs`، `scripts/drive-upload.mjs`، `scripts/mail-send.mjs`، `scripts/reads-flush.mjs`
 
 **إن سقط:** يصل بريدُ السقوط — أعِد تشغيله يدويًّا؛ آخرُ نسخةٍ سليمةٍ في الدرايف.
 
@@ -56,7 +56,7 @@
 
 **ماذا يفعل:** كلَّ ست ساعات: يزامن سجلَّ القارئات والأجهزة من نظامها الخارجي.
 
-**ماذا يشغّل:** `scripts/devices.mjs`
+**ماذا يشغّل:** `scripts/devices.mjs`، `scripts/reads-flush.mjs`
 
 **إن سقط:** السجلُّ يبقى على آخر مزامنة.
 
@@ -76,7 +76,7 @@
 
 **ماذا يفعل:** لقطةُ شاشة الوزارة كلَّ ست ساعات، والتقريرُ الأسبوعيُّ (باوربوينت وبي دي إف وملخّص) الأحد ٧:٣٠ بمكة بالبريد والدرايف، وملفُّ البيانات اليوميُّ (إكسل وجيسون وجيوجيسون) ٥:٣٠ صباحًا.
 
-**ماذا يشغّل:** `scripts/mail-send.mjs`، `scripts/ministry-pdf.mjs`، `scripts/ministry-report.mjs`، `scripts/weekly-drive.mjs`، `scripts/weekly-pack.mjs`
+**ماذا يشغّل:** `scripts/mail-send.mjs`، `scripts/ministry-pdf.mjs`، `scripts/ministry-report.mjs`، `scripts/reads-flush.mjs`، `scripts/weekly-drive.mjs`، `scripts/weekly-pack.mjs`
 
 **إن سقط:** يتأخر ملفٌّ — شغّله يدويًّا (mail=no للاختبار بلا بريد).
 
@@ -86,7 +86,7 @@
 
 **ماذا يفعل:** كلَّ ربع ساعة: يزامن مع نظام أفاقي الداخلي.
 
-**ماذا يشغّل:** `scripts/myafaqy-bridge.mjs`
+**ماذا يشغّل:** `scripts/myafaqy-bridge.mjs`، `scripts/reads-flush.mjs`
 
 **إن سقط:** البياناتُ المشتركةُ تتأخر حتى أوّل نجاح.
 
@@ -106,7 +106,7 @@
 
 **ماذا يفعل:** ينفّذ طلباتِ الحسابات عند كلِّ دفعٍ أيضًا كي لا تنتظر الجدولة.
 
-**ماذا يشغّل:** `scripts/provision.mjs`
+**ماذا يشغّل:** `scripts/provision.mjs`، `scripts/reads-flush.mjs`
 
 **إن سقط:** لا ضرر — الجدولةُ تتولّاها.
 
@@ -116,7 +116,7 @@
 
 **ماذا يفعل:** كلَّ عشر دقائق: ينشئ الحساباتِ المطلوبةَ من التطبيق، ويمحو كلماتِ الطلبات المنجزة بعد ٧٢ ساعة، وينقل الصورَ المرفوعةَ إلى الدرايف، وينقل بلاغاتِ الميدان إلى قائمة القضايا.
 
-**ماذا يشغّل:** `scripts/bugs-sync.mjs`، `scripts/photos-sync.mjs`، `scripts/provision.mjs`
+**ماذا يشغّل:** `scripts/bugs-sync.mjs`، `scripts/photos-sync.mjs`، `scripts/provision.mjs`، `scripts/reads-flush.mjs`
 
 **إن سقط:** الطلباتُ تبقى «يُنشَأ» والصورُ في القاعدة حتى أوّل تشغيلٍ ناجح — لا فقد؛ وزرُّ «أنشئه من هذا الجهاز الآن» بديلٌ فوريّ.
 
@@ -124,9 +124,9 @@
 
 ## تكلفة قاعدة البيانات — `usage-cost.yml`
 
-**ماذا يفعل:** كلَّ ثلاث ساعات: يسأل عدّاداتِ جوجل (Cloud Monitoring) بمفتاح المشروع نفسِه عن القراءات والكتابة والحذف لكلِّ ساعةٍ منذ إنشاء القاعدة، ويجمعها في أيام فوترة جوجل (توقيت المحيط الهادي — حين تتجدّد الحصةُ المجانية)، ويضيف حجمَ التخزين، ويضمّ سجلَّ كلِّ جهازٍ يومًا بيوم من نبضات الحضور (`rdh_…`)، ويكتب وثيقةً واحدةً `settings/cost` تقرؤها بطاقةُ «تكلفة قاعدة البيانات» في صحة النظام ← الاستهلاك.
+**ماذا يفعل:** كلَّ ثلاث ساعات: يسأل عدّاداتِ جوجل (Cloud Monitoring) بمفتاح المشروع نفسِه عن القراءات والكتابة والحذف لكلِّ ساعةٍ منذ إنشاء القاعدة، ويجمعها في أيام فوترة جوجل (توقيت المحيط الهادي — حين تتجدّد الحصةُ المجانية)، ويضيف حجمَ التخزين، ويضمّ سجلَّ كلِّ جهازٍ يومًا بيوم من نبضات الحضور (`rdh_…`)، ويكتب وثيقةً واحدةً `settings/cost` تقرؤها بطاقةُ «تكلفة قاعدة البيانات» في صحة النظام ← الاستهلاك. ومنذ V38.84: يضمّ قراءاتِ كلِّ مهمّة خادمٍ باسمها (`settings/jobreads` — يعدّها `scripts/lib/reads.mjs` ويرفعها `scripts/reads-flush.mjs` في آخر كلِّ سير) فتظهر في البطاقة سطرًا سطرًا، ويجمع فتحَ الصفحات لكلِّ جهازٍ يومًا بيوم (`pgh_…`) في `settings/usage`.
 
-**ماذا يشغّل:** `scripts/usage-cost.mjs`
+**ماذا يشغّل:** `scripts/reads-flush.mjs`، `scripts/usage-cost.mjs`
 
 **إن سقط:** تبقى البطاقةُ على آخر سحب، ولا يضيع يوم: كلُّ تشغيلٍ يعيد التاريخَ كلَّه. وإن تغيّرت منطقةُ القاعدة عن eur3 كتب تحذيرًا لتُراجَع الأسعار في رأس السكربت.
 
@@ -136,7 +136,7 @@
 
 **ماذا يفعل:** ٦:٣٠ صباحًا بمكة: بريدُ نبضٍ يوميٌّ وتقريرُ حالةٍ في القاعدة.
 
-**ماذا يشغّل:** `scripts/mail-send.mjs`، `scripts/pulse.mjs`، `scripts/sysreport-write.mjs`
+**ماذا يشغّل:** `scripts/mail-send.mjs`، `scripts/pulse.mjs`، `scripts/reads-flush.mjs`، `scripts/sysreport-write.mjs`
 
 **إن سقط:** لا يصل بريدُ الصباح فقط.
 
@@ -156,7 +156,7 @@
 
 **ماذا يفعل:** كلَّ ثلاثة أيام: تقريرُ صحةٍ شاملٌ بالبريد.
 
-**ماذا يشغّل:** `scripts/mail-send.mjs`، `scripts/report-system.mjs`، `scripts/sysreport-write.mjs`
+**ماذا يشغّل:** `scripts/mail-send.mjs`، `scripts/reads-flush.mjs`، `scripts/report-system.mjs`، `scripts/sysreport-write.mjs`
 
 **إن سقط:** لا يصل التقرير — لا أثرَ على التشغيل.
 
@@ -176,7 +176,7 @@
 
 **ماذا يفعل:** عند الدفع إلى الأصل: بياناتُ الموسم المؤكَّدةُ من الملف إلى القاعدة.
 
-**ماذا يشغّل:** `scripts/season-seed.mjs`
+**ماذا يشغّل:** `scripts/reads-flush.mjs`، `scripts/season-seed.mjs`
 
 **إن سقط:** البياناتُ تبقى على آخر تغذية.
 

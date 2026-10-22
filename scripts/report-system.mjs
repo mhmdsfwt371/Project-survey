@@ -1,3 +1,4 @@
+import { countReads } from './lib/reads.mjs';   /* (V38.84) this job's reads, by name, in the cost card */
 /* ═══════════════════════════════════════════════════════════════════════════
    تقريرُ النظام — node scripts/report-system.mjs
    ───────────────────────────────────────────────────────────────────────────
@@ -62,6 +63,7 @@ if (SA){
   try {
     const admin = (await import('firebase-admin')).default;
     if (!admin.apps.length) admin.initializeApp({ credential: admin.credential.cert(JSON.parse(SA)) });
+    countReads(admin, 'report');
     const db = admin.firestore();
     const [users, pres, evs] = await Promise.all([
       db.collection('users').limit(500).get(),

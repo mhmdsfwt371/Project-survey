@@ -1,3 +1,4 @@
+import { countReads } from './lib/reads.mjs';   /* (V38.84) this job's reads, by name, in the cost card */
 /* ═══════════════════════════════════════════════════════════════════════════
    تغذيةُ الموسم — node scripts/season-seed.mjs
    ───────────────────────────────────────────────────────────────────────────
@@ -35,6 +36,7 @@ if (process.env.SEED_DB){
   const require = createRequire(import.meta.url);
   const admin = require('firebase-admin');
   admin.initializeApp({ credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)) });
+  countReads(admin, 'season');
   const ref = admin.firestore().collection('settings').doc('points');
   const doc = await ref.get();
   cur = doc.exists ? (doc.data() || {}) : {};

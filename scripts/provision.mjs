@@ -1,3 +1,4 @@
+import { countReads } from './lib/reads.mjs';   /* (V38.84) this job's reads, by name, in the cost card */
 /* ═══════════════════════════════════════════════════════════════════════════
    إنشاءُ الحسابات من الخادم — node scripts/provision.mjs
    ───────────────────────────────────────────────────────────────────────────
@@ -14,6 +15,7 @@ import admin from 'firebase-admin';
 const raw = process.env.FIREBASE_SERVICE_ACCOUNT || '';
 if (!raw){ console.log('::error::FIREBASE_SERVICE_ACCOUNT غير مضبوط'); process.exit(1); }
 admin.initializeApp({ credential: admin.credential.cert(JSON.parse(raw)) });
+countReads(admin, 'provision');
 const db = admin.firestore(), auth = admin.auth();
 const DOMAIN = process.env.NUSUK_DOMAIN || 'nusuk.local';
 function genPass(){

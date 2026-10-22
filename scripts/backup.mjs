@@ -1,9 +1,11 @@
+import { countReads } from './lib/reads.mjs';   /* (V38.84) this job's reads, by name, in the cost card */
 // نسخة احتياطية يومية لكل كولكشنز Firestore → backups/latest (تاريخ git = آلة الزمن)
 import admin from 'firebase-admin';
 import { writeFileSync, mkdirSync } from 'fs';
 
 const sa = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 admin.initializeApp({ credential: admin.credential.cert(sa) });
+countReads(admin, 'backup');
 const db = admin.firestore();
 
 const out = 'backups/latest';

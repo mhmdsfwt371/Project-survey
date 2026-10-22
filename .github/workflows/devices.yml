@@ -35,3 +35,9 @@ jobs:
           DEVICES_FIELD_NAME:   ${{ vars.DEVICES_FIELD_NAME }}
           DEVICES_NAME_FILTER:  ${{ vars.DEVICES_NAME_FILTER }}
         run: node scripts/devices.mjs
+      # (V38.84) ما قرأته هذه المهمّةُ من القاعدة يُضاف إلى settings/jobreads — تسمّيه بطاقةُ التكلفة باسمه
+      - name: عدّادُ قراءات المهمّة
+        if: always()
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/reads-flush.mjs || true

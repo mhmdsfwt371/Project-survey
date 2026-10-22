@@ -37,4 +37,9 @@ jobs:
         run: |
           { echo "### تغذيةُ الموسم — $(date -u +%FT%H:%M)"; echo '```'; tail -c 6000 /tmp/seed.txt; echo '```'; } > /tmp/seed-comment.md
           gh api "repos/${{ github.repository }}/commits/${{ github.sha }}/comments" -f body="$(cat /tmp/seed-comment.md)" > /dev/null && echo "✓ كُتبت النتيجة" || echo "::warning::تعذّر تعليقُ النتيجة"
-
+      # (V38.84) ما قرأته هذه المهمّةُ من القاعدة يُضاف إلى settings/jobreads — تسمّيه بطاقةُ التكلفة باسمه
+      - name: عدّادُ قراءات المهمّة
+        if: always()
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/reads-flush.mjs || true

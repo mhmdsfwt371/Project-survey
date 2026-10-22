@@ -1,3 +1,4 @@
+import { countReads } from './lib/reads.mjs';   /* (V38.84) this job's reads, by name, in the cost card */
 /* ═══════════════════════════════════════════════════════════════════════════
    تقريرُ الوزارة — node scripts/ministry-report.mjs
    ───────────────────────────────────────────────────────────────────────────
@@ -30,6 +31,7 @@ async function loadData(){
   if (!sa){ console.log('::notice::لا حسابَ خدمة — التقريرُ من الحالة المدمجة وحدَها'); return {}; }
   const admin = require('firebase-admin');
   admin.initializeApp({ credential: admin.credential.cert(JSON.parse(sa)) });
+  countReads(admin, 'ministry');
   const fs = admin.firestore(), out = {};
   for (const name of ['recs', 'inss', 'tasks', 'newsites', 'steps']){
     const m = {}; (await fs.collection(name).limit(6000).get()).forEach(d => { m[d.id] = d.data(); }); out[name] = m;

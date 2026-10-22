@@ -284,7 +284,10 @@ function svqPhotos(rec){
   var id = rec.id, list = (typeof photosOf === 'function' ? photosOf(id) : []).filter(function(p){ return !(p[1] || {}).del && !/^ins/.test(String((p[1] || {}).kind || '')); });
   var q = (typeof PHOTO_Q !== 'undefined' ? PHOTO_Q : []).map(function(x, i){ return [i, x]; }).filter(function(e){ return e[1] && e[1].site === id && !/^ins/.test(String(e[1].kind || '')); });
   var row = function(thumb, label, sub, act){ return '<div class="svq-row"><div class="svq-ph">' + thumb + '</div><div class="svq-k" style="flex:1 1 50%"><b style="color:var(--ink)">' + esc(t(label)) + '</b><div class="hint" style="margin:0;font-size:11.5px">' + sub + '</div></div>' + act + '</div>'; };
-  var img = function(d){ return d ? '<img src="' + esc(d) + '" alt="" loading="lazy">' : '<span>\u{1F5BC}</span>'; };
+  /* (V38.84) «لا يمكن رؤية الصور المضافة إلا بعد نزول تحديث» (بلاغ ١٩ أكتوبر): الصفُّ كان يعرض data أو thumb وحدَهما — والصورةُ
+     إذا وصلت الدرايف تُمحى data منها ولا thumb لها، فتظهر أيقونةً فارغة. يُعرَض كما يعرضه العارض (phSrc: الجهاز أو الطابور أو
+     الدرايف)، وتُفتَح الصورةُ بالضغط عليها للتأكّد قبل حذفها أو استبدالها */
+  var img = function(d, key){ return d ? '<img src="' + esc(d) + '" alt="" loading="lazy"' + (key ? ' data-phview="' + esc(key) + '" style="cursor:zoom-in"' : '') + '>' : '<span>\u{1F5BC}</span>'; };
   var h = '<div class="wp-sec" style="margin-top:12px">' + esc(t('صور الزيارة')) + ' \u00b7 ' + nm(list.length + q.length) + '</div>';
   h += list.map(function(p){
     var ph = p[1] || {}, ask = SVQ.delAsk === p[0];
@@ -292,7 +295,7 @@ function svqPhotos(rec){
       ? (ask ? btn(t('تأكيد الحذف'), 'btn-sm', ' data-svqdel="' + esc(p[0]) + '" style="background:#C0392B;color:#fff"') + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-svqdelx="1"')
              : btn('\u{1F5D1} ' + t('احذف'), 'btn-quiet btn-sm', ' data-svqdelask="' + esc(p[0]) + '"'))
       : '<span class="hint" style="margin:0;font-size:11px">' + esc(t('حذفُها للمهندس')) + '</span>';
-    return row(img(ph.data || ph.thumb || ''), svqKindLabel(ph.kind), esc(fmtDT(ph.at)) + (ph.by ? ' \u00b7 ' + esc(dispName(ph.by)) : '') + (ph.link || ph.driveId ? ' \u00b7 ' + esc(t('على الدرايف')) : ''), act);
+    return row(img((typeof phSrc === 'function' ? phSrc(p[0], ph, 200) : '') || ph.data || ph.thumb || '', p[0]), svqKindLabel(ph.kind), esc(fmtDT(ph.at)) + (ph.by ? ' \u00b7 ' + esc(dispName(ph.by)) : '') + (ph.link || ph.driveId ? ' \u00b7 ' + esc(t('على الدرايف')) : ''), act);
   }).join('');
   h += q.map(function(e){
     return row(img(e[1].data), svqKindLabel(e[1].kind), esc(t('في طابور جهازك — تُرفَع مع المزامنة')), btn('\u2715 ' + t('ألغِها'), 'btn-quiet btn-sm', ' data-svqqx="' + e[0] + '"'));

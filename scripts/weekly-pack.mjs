@@ -1,3 +1,4 @@
+import { countReads } from './lib/reads.mjs';   /* (V38.84) this job's reads, by name, in the cost card */
 /* ═══════════════════════════════════════════════════════════════════════════
    التحديثُ الأسبوعيُّ يُولَّد في السحابة من التطبيق نفسِه — node scripts/weekly-pack.mjs
    ───────────────────────────────────────────────────────────────────────────
@@ -23,6 +24,7 @@ let data = { recs:[], inss:[], newsites:[], sites:[], tasks:[], photos:[], setti
 if (!TEST){
   const admin = (await import('firebase-admin')).default;
   const sa = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT); admin.initializeApp({ credential:admin.credential.cert(sa) }); const db = admin.firestore();
+  countReads(admin, 'weekly');
   const get = async c => { try { return (await db.collection(c).get()).docs.map(d => ({ id:d.id, v:d.data() || {} })); } catch (e){ return []; } };
   const [recs, inss, newsites, sites, tasks, photos, settings] = await Promise.all(['recs', 'inss', 'newsites', 'sites', 'tasks', 'photos', 'settings'].map(get));
   data = { recs, inss, newsites, sites, tasks, photos, settings:Object.fromEntries(settings.map(d => [d.id, d.v])) };

@@ -1,3 +1,4 @@
+import { countReads } from './lib/reads.mjs';   /* (V38.84) this job's reads, by name, in the cost card */
 /* ═══════════════════════════════════════════════════════════════════════════
    كتابةُ النبض والتقرير في القاعدة — node scripts/sysreport-write.mjs <pulse|report> <ملف>
    ───────────────────────────────────────────────────────────────────────────
@@ -17,6 +18,7 @@ if (!SA){ console.log('::notice::بلا مفتاحِ خدمة — لا يُكت�
 try {
   const admin = (await import('firebase-admin')).default;
   admin.initializeApp({ credential: admin.credential.cert(JSON.parse(SA)) });
+  countReads(admin, 'sysreport');
   await admin.firestore().collection('settings').doc('sysreport').set({ [kind]: { at: Date.now(), text: text.slice(0, 60000), run: process.env.GITHUB_RUN_NUMBER || '' } }, { merge: true });
   console.log('✓ كُتب ' + kind + ' في settings/sysreport (' + text.length + ' حرفًا)');
 } catch (e){ console.log('::warning title=sysreport::' + String(e.message).slice(0, 160)); }

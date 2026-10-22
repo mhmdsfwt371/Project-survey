@@ -1,3 +1,4 @@
+import { countReads } from './lib/reads.mjs';   /* (V38.84) this job's reads, by name, in the cost card */
 // مزامنة سجل الأجهزة من نظام العميل → Firestore: settings/devices
 // يخرج بهدوء إن لم تُضبط الأسرار بعد (لا يُفشل سير العمل)
 import admin from 'firebase-admin';
@@ -57,6 +58,7 @@ if (list.length > 8000) {
 }
 
 admin.initializeApp({ credential: admin.credential.cert(JSON.parse(SA)) });
+countReads(admin, 'devices');
 const at = new Date().toISOString().slice(0, 16).replace('T', ' ');
 await admin.firestore().collection('settings').doc('devices')
   .set({ list, n: list.length, at, src: 'api' });

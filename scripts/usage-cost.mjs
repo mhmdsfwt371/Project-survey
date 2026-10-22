@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { countReads } from './lib/reads.mjs';   /* (V38.84) this job's reads, by name, in the cost card */
 /* ═══ (V38.80) تكلفةُ قاعدة البيانات يومًا بيوم — من عدّادات جوجل نفسِها ═══
    Google bills on its own counters, not on what the phones count: the server jobs (backup, photo bridge, ministry
    snapshots) read the database too, and a phone only counts what the app counts. Until now nothing kept the daily
@@ -19,6 +20,7 @@ if (!SA){ console.log('::warning::FIREBASE_SERVICE_ACCOUNT غيرُ موجود �
 let admin; try { admin = require('firebase-admin'); } catch { console.log('::warning::firebase-admin غيرُ مثبَّت — لا سحب'); process.exit(0); }
 const sa = JSON.parse(SA);
 if (!admin.apps.length) admin.initializeApp({ credential: admin.credential.cert(sa) });
+countReads(admin, 'cost');
 const P = sa.project_id;
 const START = '2026-07-30T00:00:00Z';                       /* the database was created on 30-31 July 2026 */
 /* eur3 (Europe multi-region) — Firestore Standard: reads $0.06, writes $0.18, deletes $0.02 per 100,000 beyond the
@@ -94,9 +96,50 @@ trim(120);
 if (JSON.stringify(dev).length > 700000) trim(60);
 Object.keys(dev).forEach(k => { if (!Object.keys(dev[k].d || {}).length) delete dev[k]; });
 
-await fsdb.collection('settings').doc('cost').set({ at: Date.now(), loc: loc || PRICE.loc, price: PRICE, g, dev }, { merge: false });
+/* (V38.84) each server job's reads by name — counted by lib/reads.mjs, added up by reads-flush.mjs in settings/jobreads;
+   days older than 120 are dropped there too, so the counter document stays small */
+const JR = fsdb.collection('settings').doc('jobreads'), jr = await JR.get(), jobs = {}, drop = {};
+const cutJ = pac.format(new Date(Date.now() - 120 * 864e5));
+if (jr.exists) Object.entries(jr.data() || {}).forEach(([job, days]) => {
+  if (!days || typeof days !== 'object') return;
+  Object.entries(days).forEach(([day, n]) => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return;
+    if (day < cutJ){ (drop[job] = drop[job] || {})[day] = admin.firestore.FieldValue.delete(); return; }
+    (jobs[job] = jobs[job] || {})[day] = Math.round(+n || 0);
+  });
+});
+if (Object.keys(drop).length) await JR.set(drop, { merge: true });
+
+await fsdb.collection('settings').doc('cost').set({ at: Date.now(), loc: loc || PRICE.loc, price: PRICE, g, dev, jobs }, { merge: false });
+
+/* (V38.84) page opens per device per day (pgh_<device>, Makkah days) → settings/usage.days. The morning pulse alone
+   kept only the day each device happened to report last, so most opens were lost; now every device's last seven days
+   are added up here every three hours, and a page's count on a day never drops below what was already stored. */
+const usageNow = {};
+pres.forEach(doc => {
+  const p = doc.data() || {};
+  Object.keys(p).filter(k => /^pgh_[A-Za-z0-9]{1,16}$/.test(k)).forEach(k => {
+    let m = {}; try { m = JSON.parse(p[k] || '{}') || {}; } catch {}
+    Object.keys(m).forEach(day => {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !m[day] || typeof m[day] !== 'object') return;
+      const u = usageNow[day] = usageNow[day] || {};
+      Object.keys(m[day]).forEach(pg => { u[pg] = (u[pg] || 0) + Math.round(+m[day][pg] || 0); });
+    });
+  });
+});
+if (Object.keys(usageNow).length){
+  const UD = fsdb.collection('settings').doc('usage'), ud = await UD.get();
+  const days = Object.assign({}, (ud.exists && ud.data().days) || {});
+  Object.keys(usageNow).forEach(day => {
+    const cur = days[day] || {}, out = Object.assign({}, cur);
+    Object.keys(usageNow[day]).forEach(pg => { out[pg] = Math.max(+cur[pg] || 0, usageNow[day][pg]); });
+    days[day] = out;
+  });
+  const keep = Object.keys(days).sort().slice(-45), trimmed = {}; keep.forEach(k => { trimmed[k] = days[k]; });
+  if (ud.exists) await UD.update({ days: trimmed, daysAt: Date.now() }); else await UD.set({ days: trimmed, daysAt: Date.now() });
+}
 
 /* the run's summary, in the log: total reads and what they cost */
 let reads = 0, usd = 0;
 Object.keys(g).forEach(k => { const a = g[k]; reads += a[0]; usd += Math.max(0, a[0] - PRICE.fr) / 1e5 * PRICE.r + Math.max(0, a[1] - PRICE.fw) / 1e5 * PRICE.w + Math.max(0, a[2] - PRICE.fd) / 1e5 * PRICE.d; });
-console.log(`✓ settings/cost: ${Object.keys(g).length} يومًا · ${reads.toLocaleString('en')} قراءة · $${usd.toFixed(2)} = ${(usd * PRICE.fx).toFixed(1)} ريال · ${Object.keys(dev).length} جهازًا`);
+console.log(`✓ settings/cost: ${Object.keys(g).length} يومًا · ${reads.toLocaleString('en')} قراءة · $${usd.toFixed(2)} = ${(usd * PRICE.fx).toFixed(1)} ريال · ${Object.keys(dev).length} جهازًا · ${Object.keys(jobs).length} مهمّةً · استعمالُ الصفحات ${Object.keys(usageNow).length} يومًا`);

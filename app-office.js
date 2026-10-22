@@ -4590,6 +4590,8 @@ function provReask(uid){
 
 var RELEASE_NOTES = [
 
+  { v:'V38.84', d:'2026-10-23', notes:[
+      'من يقرأ القاعدة بالاسم، ونقل الصور بلا هدر، وسجل الصفحات الصحيح، وصور لوح التعديل' ] },
   { v:'V38.83', d:'2026-10-22', notes:[
       'سلسلة النشر بلا وقفات كاذبة: فحص الأزرار يمهل الزر البطيء حتى ثانية ونصف، والبوابة لا تُلغيها القائمة التي تُطلقها' ] },
   { v:'V38.82', d:'2026-10-22', notes:[
@@ -6756,37 +6758,49 @@ function costCalc(g, from, to, P){
   return o;
 }
 
+USAGE.costJobs = { photos:'نقل الصور إلى الدرايف', provision:'تجهيز الحسابات', bugs:'مزامنة البلاغات', bridge:'جسر ماي أفاقي', ministry:'ملفات الوزارة',
+  weekly:'التحديث الأسبوعي للوزارة', backup:'النسخ الاحتياطي', devices:'صحة الأجهزة', pulse:'نبض الصباح', report:'تقرير النظام',
+  sysreport:'حفظ التقارير', season:'تغذية الموسم', cost:'حساب التكلفة' };
 function costDevices(v, from, to, P){
   P = P || USAGE.costP0;
-  var g = (v && v.g) || {}, dev = (v && v.dev) || {}, devDay = {}, rows = [], first = '';
+  var g = (v && v.g) || {}, dev = (v && v.dev) || {}, jobs = (v && v.jobs) || {}, devDay = {}, jobDay = {}, rows = [], jrows = [], first = '';
+  var inRange = function(day){ return !((from && day < from) || (to && day > to)); };
   Object.keys(dev).forEach(function(k){
     Object.keys((dev[k] && dev[k].d) || {}).forEach(function(day){
       if (!first || day < first) first = day;
-      if ((from && day < from) || (to && day > to)) return;
-      devDay[day] = (devDay[day] || 0) + (+dev[k].d[day] || 0);
+      if (inRange(day)) devDay[day] = (devDay[day] || 0) + (+dev[k].d[day] || 0);
     });
   });
+  Object.keys(jobs).forEach(function(j){
+    Object.keys(jobs[j] || {}).forEach(function(day){ if (inRange(day)) jobDay[day] = (jobDay[day] || 0) + (+jobs[j][day] || 0); });
+  });
+
   var share = function(day, n){
     var a = g[day]; if (!a) return 0;
-    var gr = +a[0] || 0, den = Math.max(gr, devDay[day] || 0);
+    var gr = +a[0] || 0, den = Math.max(gr, (devDay[day] || 0) + (jobDay[day] || 0));
     return den ? costDayUsd(a, P, day).r * n / den : 0;
   };
   Object.keys(dev).forEach(function(k){
     var x = dev[k] || {}, reads = 0, usd = 0;
-    Object.keys(x.d || {}).forEach(function(day){
-      if ((from && day < from) || (to && day > to)) return;
-      var n = +x.d[day] || 0; reads += n; usd += share(day, n);
-    });
+    Object.keys(x.d || {}).forEach(function(day){ if (!inRange(day)) return; var n = +x.d[day] || 0; reads += n; usd += share(day, n); });
     if (reads > 0) rows.push({ k:k, n:x.n || '', ro:x.ro || '', ua:x.ua || '', reads:reads, usd:usd });
   });
-  var covered = 0, devTot = 0, otherUsd = 0;
-  Object.keys(devDay).forEach(function(day){
-    var a = g[day]; if (!a) return;
-    var gr = +a[0] || 0; covered += gr; devTot += devDay[day];
-    otherUsd += share(day, Math.max(0, gr - devDay[day]));
+  Object.keys(jobs).forEach(function(j){
+    var reads = 0, usd = 0;
+    Object.keys(jobs[j] || {}).forEach(function(day){ if (!inRange(day)) return; var n = +jobs[j][day] || 0; reads += n; usd += share(day, n); });
+    if (reads > 0) jrows.push({ job:j, name:USAGE.costJobs[j] || j, reads:reads, usd:usd });
   });
-  rows.sort(function(a, b){ return b.reads - a.reads; });
-  return { rows:rows, first:first, covered:covered, devTot:devTot, other:Math.max(0, covered - devTot), otherUsd:otherUsd };
+  var days = {}; Object.keys(devDay).concat(Object.keys(jobDay)).forEach(function(d){ days[d] = 1; });
+  var covered = 0, devTot = 0, jobTot = 0, otherUsd = 0;
+  Object.keys(days).forEach(function(day){
+    var a = g[day]; if (!a) return;
+    var gr = +a[0] || 0, dn = devDay[day] || 0, jn = jobDay[day] || 0;
+    covered += gr; devTot += dn; jobTot += jn;
+    otherUsd += share(day, Math.max(0, gr - dn - jn));
+  });
+  rows.sort(function(a, b){ return b.reads - a.reads; }); jrows.sort(function(a, b){ return b.reads - a.reads; });
+  return { rows:rows, jobs:jrows, first:first, covered:covered, devTot:devTot, jobTot:jobTot,
+           other:Math.max(0, covered - devTot - jobTot), otherUsd:otherUsd };
 }
 function costMoney(usd, P){ return '$' + nm(+usd.toFixed(2)) + ' = ' + nm(+(usd * P.fx).toFixed(1)) + ' ' + t('ريال'); }
 function costCard(){
@@ -6815,13 +6829,13 @@ function costCard(){
   var mt = mos.length > 1 ? table(['الشهر', 'القراءات', 'أيامٌ فوق المجاني', 'التكلفة'], mos.map(function(k){
       var x = c.months[k]; return [esc(k), nm(x.reads), nm(x.paid), esc(costMoney(x.usd, P))]; })) : '';
   var dt;
-  if (dv.rows.length){
+  if (dv.rows.length || dv.jobs.length){
     var model = function(ua){ return (typeof uaModel === 'function' && ua) ? uaModel(ua) : '—'; };
+    var pct = function(n){ return nm(dv.covered ? Math.round(n / dv.covered * 100) : 0) + '٪'; };
     var rows = dv.rows.slice(0, 30).map(function(x){
-      return [esc(x.n || x.k), esc(t(roleName(x.ro))), esc(model(x.ua)), nm(x.reads),
-              nm(dv.covered ? Math.round(x.reads / dv.covered * 100) : 0) + '٪', esc(costMoney(x.usd, P))]; });
-    rows.push([esc(t('الخادمُ والمهامُّ الآلية وما لا يعدّه الجهاز')), '—', '—', nm(dv.other),
-               nm(dv.covered ? Math.round(dv.other / dv.covered * 100) : 0) + '٪', esc(costMoney(dv.otherUsd, P))]);
+      return [esc(x.n || x.k), esc(t(roleName(x.ro))), esc(model(x.ua)), nm(x.reads), pct(x.reads), esc(costMoney(x.usd, P))]; });
+    dv.jobs.forEach(function(x){ rows.push([esc(t('الخادم')) + ' — ' + esc(t(x.name)), '—', '—', nm(x.reads), pct(x.reads), esc(costMoney(x.usd, P))]); });
+    rows.push([esc(t(dv.jobs.length ? 'ما لا يعدّه جهازٌ ولا مهمّة' : 'الخادمُ والمهامُّ الآلية وما لا يعدّه الجهاز')), '—', '—', nm(dv.other), pct(dv.other), esc(costMoney(dv.otherUsd, P))]);
     dt = table(['المستخدم', 'الدور', 'الجهاز', 'القراءات', 'النسبة', 'نصيبُه من التكلفة'], rows);
   } else {
     dt = '<p class="hint" style="margin:8px 0 0">' + esc(t('تقسيمُ القراءات على الأجهزة يبدأ من يوم وصول الإصدار ٣٨٫٨٠ إلى الجوالات — قبله الإجماليُّ من جوجل وحدَه.')) + '</p>';

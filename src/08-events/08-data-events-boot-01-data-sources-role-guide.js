@@ -103,8 +103,20 @@ function pageUse(){
   }
   return PG_USE;
 }
+/* (V38.84) and a per-day history (Makkah days, the last 14 kept) that the beat carries as pgh_<device>: the morning pulse
+   alone kept only the day each device happened to report last, so the usage log lost most opens — the server job now
+   adds every device's last seven days up (scripts/usage-cost.mjs) */
+function pageHist(){
+  if (!pageHist.m){ try { pageHist.m = JSON.parse(lsGet('nsk14.pgh') || '{}') || {}; } catch (e){ LS_ERR = e; pageHist.m = {}; } }
+  return pageHist.m;
+}
+function pghLast(n){ var h = pageHist(), o = {}; Object.keys(h).sort().slice(-(n || 7)).forEach(function(k){ o[k] = h[k]; }); return JSON.stringify(o); }
 function pageTick(id){
   if (!id) return;
+  var h = pageHist(), dk = dayKey(), dm = h[dk] = h[dk] || {};
+  if (dm[id] != null || Object.keys(dm).length < 60) dm[id] = (dm[id] || 0) + 1;
+  var hk = Object.keys(h).sort(); if (hk.length > 14) hk.slice(0, hk.length - 14).forEach(function(k){ delete h[k]; });
+  try { lsSet('nsk14.pgh', JSON.stringify(h)); } catch (e){ LS_ERR = e; }
   var u = pageUse(); u.n[id] = (u.n[id] || 0) + 1;
   if (Object.keys(u.n).length > 60) return;   /* سقفٌ: لا يتضخّم المفتاحُ بمعرِّفاتٍ غريبة */
   try { lsSet('nsk14.pg', JSON.stringify(u)); } catch (e){ /* تخزينٌ ممنوعٌ في التصفّح الخاص — يُعَدُّ في الذاكرة فقط */ PG_USE.noStore = 1; }

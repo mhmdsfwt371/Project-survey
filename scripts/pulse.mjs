@@ -1,3 +1,4 @@
+import { countReads } from './lib/reads.mjs';   /* (V38.84) this job's reads, by name, in the cost card */
 /* ═══════════════════════════════════════════════════════════════════════════
    نبضُ المشروع — node scripts/pulse.mjs
    ───────────────────────────────────────────────────────────────────────────
@@ -34,6 +35,7 @@ async function load(){
   try { admin = require('firebase-admin'); }
   catch { console.log('::warning::firebase-admin غير مثبَّت — لا نبضَ اليوم'); process.exit(0); }
   admin.initializeApp({ credential: admin.credential.cert(JSON.parse(sa)) });
+  countReads(admin, 'pulse');
   const fs = admin.firestore();
   const out = {};
   for (const name of ['recs', 'tasks', 'newsites', 'bugs', 'steps', 'presence']){
@@ -159,7 +161,10 @@ if (!process.env.PULSE_SRC && process.env.FIREBASE_SERVICE_ACCOUNT){
   try {
     const { createRequire } = await import('module'); const admin = createRequire(import.meta.url)('firebase-admin');
     const fsdb = admin.firestore(); const old = await fsdb.collection('settings').doc('usage').get();
-    const days = Object.assign({}, (old.exists && old.data().days) || {}, usage.days);
+    /* (V38.84) a day's pages are merged by the larger count, not replaced: the devices still reporting a past day shrink
+       as they move on, and replacing the day with that smaller sum lost most of its opens */
+    const days = Object.assign({}, (old.exists && old.data().days) || {});
+    Object.keys(usage.days).forEach(day => { const cur = days[day] || {}, o = Object.assign({}, cur); Object.keys(usage.days[day]).forEach(pg => { o[pg] = Math.max(+cur[pg] || 0, +usage.days[day][pg] || 0); }); days[day] = o; });
     const keep = Object.keys(days).sort().slice(-45); const trimmed = {}; keep.forEach(k => { trimmed[k] = days[k]; });
     await fsdb.collection('settings').doc('usage').set({ at: now, days: trimmed, readsToday, devToday }, { merge: false });
     console.log('✓ settings/usage: ' + keep.length + ' يومًا');

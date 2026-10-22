@@ -1,3 +1,4 @@
+import { countReads } from './lib/reads.mjs';   /* (V38.84) this job's reads, by name, in the cost card */
 /* ═══════════════════════════════════════════════════════════════════════════
    جسرُ البلاغات — node scripts/bugs-sync.mjs
    ───────────────────────────────────────────────────────────────────────────
@@ -14,6 +15,7 @@ if (!SA){ console.log('بلا مفتاحِ خدمة — لا جسرَ للبلا
 if (!TOKEN){ console.log('بلا مفتاحِ مستودع — لا تُفتَح بلاغات'); process.exit(0); }
 
 admin.initializeApp({ credential: admin.credential.cert(JSON.parse(SA)) });
+countReads(admin, 'bugs');
 const db = admin.firestore();
 
 const gh = async (path, init = {}) => {

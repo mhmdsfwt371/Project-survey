@@ -903,6 +903,45 @@ console.log('\n══ ٣١ · تكلفةُ قاعدة البيانات بأيِ�
   delete w.STATE.presence['u-cost'];
 }
 
+/* ── ٣٢ · (V38.84) مهامُّ الخادم بأسمائها في التكلفة، وسجلُّ الصفحات يومًا بيوم، وصورُ الزيارة في لوح التعديل ── */
+console.log('\n══ ٣٢ · مَن قرأ كم — الأجهزةُ والمهامُّ بأسمائها · سجلُّ الصفحات · صورُ لوح التعديل ══');
+{
+  const d = w.document, P = w.costPrice(null), near = (a, b) => Math.abs(a - b) < 1e-9;
+  /* a 150k day ($0.06 of reads): a phone 30k, the photo bridge 90k — the 30k left is nobody's */
+  const v = { at:Date.now(), g:{ '2026-10-20':[150000, 0, 0, 0] }, dev:{ u1_A:{ n:'أحمد', ro:'tech', d:{ '2026-10-20':30000 } } }, jobs:{ photos:{ '2026-10-20':90000 } } };
+  const dv = w.costDevices(v, '', '', P);
+  T(near(dv.rows[0].usd, 0.012) && dv.jobs.length === 1 && dv.jobs[0].name === 'نقل الصور إلى الدرايف' && near(dv.jobs[0].usd, 0.036) && dv.other === 30000 && near(dv.otherUsd, 0.012),
+    'التكلفةُ تُقسَم على الجهاز ومهامِّ الخادم بأسمائها: ٠٫٠١٢ للجوال و٠٫٠٣٦ لنقل الصور، والباقي ٣٠ ألفًا بلا اسم');
+  const role0 = w.ROLE; w.ROLE = 'admin'; w.USAGE.cost.v = v; w.USAGE.cost.at = Date.now(); w.USAGE.costF.r = 'all';
+  const html = w.costCard();
+  T(html.indexOf('نقل الصور إلى الدرايف') > -1 && html.indexOf('ما لا يعدّه جهازٌ ولا مهمّة') > -1, 'والبطاقةُ تسمّي المهمّةَ، وسطرٌ لما لا يعدّه أحد');
+  w.USAGE.cost.v = null; w.USAGE.cost.at = 0; w.ROLE = role0;
+  /* the page log, per day, rides the beat */
+  w.localStorage.removeItem('nsk14.pgh'); w.pageHist.m = null;
+  w.pageTick('map'); w.pageTick('map'); w.pageTick('sites');
+  const dk = w.dayKey(), h = JSON.parse(w.localStorage.getItem('nsk14.pgh') || '{}');
+  T(h[dk] && h[dk].map === 2 && h[dk].sites === 1 && JSON.parse(w.pghLast(7))[dk].map === 2, 'سجلُّ الصفحات يومًا بيوم على الجهاز: الخريطة ٢ · السجل ١');
+  const uid0 = w.STATE.meta.uid; w.STATE.meta.uid = 'u-pg'; w.presenceBeat(true);
+  const pr = w.STATE.presence['u-pg'] || {}, f = pr['pgh_' + w.rdhKey().slice(4)];
+  T(typeof f === 'string' && JSON.parse(f)[dk].map === 2, 'ونبضةُ الحضور تحمله نصًّا لكلِّ جهاز (pgh_…) — يجمعه الخادمُ كلَّ ثلاث ساعات');
+  delete w.STATE.presence['u-pg']; w.STATE.meta.uid = uid0;
+  /* the survey-edit sheet shows a visit's photos wherever they are — on Drive too — and opens them */
+  const rid = Object.keys(w.STATE.recs || {})[0];
+  if (rid){
+    const ph0 = w.STATE.photos; w.STATE.photos = Object.assign({}, ph0, { [rid + '-77']:{ site:rid, kind:'front', at:Date.now(), by:'x', status:'done', driveId:'DRV77', link:'https://drive.google.com/x' } });
+    if (typeof w.phTouch === 'function') w.phTouch();
+    const sh = w.svqPhotos(Object.assign({ id:rid }, w.STATE.recs[rid]));
+    T(sh.indexOf('thumbnail?id=DRV77') > -1 && sh.indexOf('data-phview="' + rid + '-77"') > -1,
+      'صورةُ الزيارة المنقولةُ إلى الدرايف تظهر في لوح التعديل مصغّرةً وتُفتَح بالضغط — لا أيقونةً فارغة (بلاغ ١٩ أكتوبر)');
+    w.STATE.photos = ph0; if (typeof w.phTouch === 'function') w.phTouch();
+    /* and «other» in the challenges always brings its description box (report of 18 October, fixed in V38.20) */
+    w.SVQ.tmp = [w.chalOther()]; w.SVQ.note = null;
+    const ed = w.svqEditor('chals', Object.assign({ id:rid }, w.STATE.recs[rid]), w.SITES ? w.SITES[rid] : null);
+    T(ed.indexOf('id="svqNote"') > -1 && ed.indexOf('مطلوب مع «أخرى»') > -1, 'واختيارُ «أخرى» في تعديل التحديات يُظهر مربّعَ الوصف مطلوبًا (بلاغ ١٨ أكتوبر)');
+    w.SVQ.tmp = null;
+  } else T(false, 'لا زيارةَ في البيانات لفحص لوح التعديل');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

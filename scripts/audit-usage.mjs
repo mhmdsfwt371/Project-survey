@@ -74,6 +74,33 @@ T(/const END = new Date\(Math\.floor\(Date\.now\(\) \/ 3600000\) \* 3600000\)/.t
 T((uc.match(/doc\('cost'\)\.set\(/g) || []).length === 1 && /merge: false/.test(uc) && /trim\(120\)/.test(uc),
   'وكتابةٌ واحدةٌ لوثيقة التكلفة في كلِّ تشغيل، وسجلُّ الأجهزة يُقصّ على ١٢٠ يومًا');
 
+/* (V38.84) the server's reads by job, the photo bridge's waste, and the page log per device per day */
+{
+  const { countReads, readsAdd } = await import('./lib/reads.mjs');
+  const tmp = '/tmp/nusuk-reads-audit.json'; try { (await import('fs')).unlinkSync(tmp); } catch {}
+  readsAdd(tmp, 'photos', '2026-10-22', 300); const m = readsAdd(tmp, 'photos', '2026-10-22', 5);
+  T(m.photos['2026-10-22'] === 305, 'عدّادُ المهمّة يجمع عملياتِها في الملف المؤقّت يومًا بيوم (٣٠٠ + ٥)');
+  class Q { async get(){ return { size: this.n || 0 }; } } class Dc { async get(){ return {}; } } class Fs { async getAll(...a){ return a; } }
+  const st = countReads({ firestore: Object.assign(() => ({}), { Query:Q, DocumentReference:Dc, Firestore:Fs }) }, 'audit');
+  const q = new Q(); q.n = 120; await q.get(); await new Q().get(); await new Dc().get(); await new Fs().getAll(1, 2);
+  T(st.n === 120 + 1 + 1 + 2, 'ويعدّ الاستعلامَ بوثائقه (والفارغَ قراءةً)، والوثيقةَ، وgetAll — ' + st.n);
+  const lib = readFileSync('scripts/lib/reads.mjs', 'utf8'), fl = readFileSync('scripts/reads-flush.mjs', 'utf8');
+  T(/process\.on\('exit'/.test(lib) && /FieldValue\.increment/.test(fl) && /doc\('jobreads'\)/.test(fl), 'ويُضاف عند الخروج، ويُرفَع بزيادةٍ إلى settings/jobreads');
+  const jobsScripts = ['backup', 'bugs-sync', 'devices', 'ministry-report', 'myafaqy-bridge', 'photos-sync', 'provision', 'pulse', 'report-system', 'season-seed', 'sysreport-write', 'usage-cost', 'weekly-pack'];
+  const bare = jobsScripts.filter(f => { const x = readFileSync('scripts/' + f + '.mjs', 'utf8'); return !/from '\.\/lib\/reads\.mjs'/.test(x) || !/countReads\(admin, '[a-z]+'\)/.test(x); });
+  T(!bare.length, 'كلُّ مهمّةٍ تقرأ القاعدةَ تعدّ قراءاتِها (' + jobsScripts.length + ')' + (bare.length ? ' — ناقص: ' + bare.join(' · ') : ''));
+  const wfs = ['provision', 'provision-on-push', 'myafaqy', 'ministry', 'backup', 'devices', 'pulse', 'report', 'usage-cost', 'season'];
+  const noFlush = wfs.filter(f => !/if: always\(\)\n\s+env:\n\s+FIREBASE_SERVICE_ACCOUNT: \$\{\{ secrets\.FIREBASE_SERVICE_ACCOUNT \}\}\n\s+run: node scripts\/reads-flush\.mjs/.test(readFileSync('.github/workflows/' + f + '.yml', 'utf8')));
+  T(!noFlush.length, 'وكلُّ سيرٍ يشغّلها يرفع العدّادَ في آخره ولو تعثّر (' + wfs.length + ')' + (noFlush.length ? ' — ناقص: ' + noFlush.join(' · ') : ''));
+  const ps = readFileSync('scripts/photos-sync.mjs', 'utf8');
+  T(/doc\('photosShare'\)/.test(ps) && /if \(sh\.done\) throw/.test(ps) && /startAfter\(sh\.cursor\)/.test(ps) && /shared: true, data: admin\.firestore\.FieldValue\.delete\(\)/.test(ps),
+    'نقلُ الصور لا يعيد قراءةَ ٣٠٠ صورةٍ منقولةٍ كلَّ دورة: مرورٌ واحدٌ بمؤشّرٍ ثم يُختَم، والجديدةُ تُوسَم مشارَكةً عند رفعها');
+  const uc = readFileSync('scripts/usage-cost.mjs', 'utf8');
+  T(/doc\('jobreads'\)/.test(uc) && /jobs \}, \{ merge: false \}/.test(uc) && /pgh_\[A-Za-z0-9\]\{1,16\}/.test(uc) && /Math\.max\(\+cur\[pg\] \|\| 0, usageNow\[day\]\[pg\]\)/.test(uc),
+    'ومهمّةُ التكلفة تسمّي المهامَّ في settings/cost، وتجمع صفحاتِ كلِّ جهازٍ يومًا بيوم في settings/usage بالأكبر لا بالأحدث');
+  T(/o\[pg\] = Math\.max\(\+cur\[pg\] \|\| 0, \+usage\.days\[day\]\[pg\] \|\| 0\)/.test(pl), 'والنبضُ الصباحيُّ يدمج اليومَ بالأكبر — لا يستبدله بمجموعٍ أصغر');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ try { dom.window.close(); } catch {} process.exit(1); }
 console.log('جردُ الاستعمال نظيف \u2705'); try { dom.window.close(); } catch {} process.exit(0);

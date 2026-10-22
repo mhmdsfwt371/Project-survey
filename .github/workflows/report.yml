@@ -56,3 +56,9 @@ jobs:
           [ -s /tmp/report.md ] || { echo "::notice::لا تقريرَ يُرسَل"; exit 0; }
           npm i nodemailer@^6 --no-save --no-audit --no-fund || exit 0
           node scripts/mail-send.mjs "نُسُك — تقريرُ النظام $(date -u +%F)" /tmp/report.md
+      # (V38.84) ما قرأته هذه المهمّةُ من القاعدة يُضاف إلى settings/jobreads — تسمّيه بطاقةُ التكلفة باسمه
+      - name: عدّادُ قراءات المهمّة
+        if: always()
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/reads-flush.mjs || true

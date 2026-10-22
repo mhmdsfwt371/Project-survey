@@ -1,3 +1,4 @@
+import { countReads } from './lib/reads.mjs';   /* (V38.84) this job's reads, by name, in the cost card */
 /* ═══════════════════════════════════════════════════════════════════════════
    نقلُ الصور من القاعدة إلى الدرايف — node scripts/photos-sync.mjs
    ───────────────────────────────────────────────────────────────────────────
@@ -59,6 +60,7 @@ const SA = process.env.FIREBASE_SERVICE_ACCOUNT || process.env.GDRIVE_SA || '';
 if (!SA){ console.log('::warning::FIREBASE_SERVICE_ACCOUNT غير مضبوط — لا نقلَ للصور'); process.exit(0); }
 const key = JSON.parse(SA);
 admin.initializeApp({ credential: admin.credential.cert(key) });
+countReads(admin, 'photos');
 const db = admin.firestore();
 if (!SITE_LABEL.size){
   try { const R1 = await regFromDb(db); if (R1) siteLabels(R1); else console.log('لا سجلَّ منشورًا — تبقى المجلداتُ بمعرِّفاتها'); }
@@ -76,8 +78,17 @@ async function folder(name, parent){
 }
 
 /* ═══ ما نُقل من قبلُ بلا مشاركة: يُشارَك برابطٍ مرةً — فيفتح التنزيلُ والمصغَّراتُ للفريق ═══ */
+/* (V38.84) كانت هذه الدورةُ تقرأ أوّلَ ٣٠٠ صورةٍ منقولةٍ نفسَها في كلِّ دورةٍ (كلَّ ٥ دقائق: ~٨٦ ألفَ قراءةٍ في اليوم والطابورُ
+   فارغ) ولا تتجاوزها — فلا تصل صورةً بعد الثلاثمئة الأولى. صارت تمرّ على الصور كلِّها مرةً واحدةً بمؤشّرٍ في settings/photosShare
+   ثم تُختَم وتسكت؛ والصورُ الجديدةُ تُشارَك عند رفعها وتُوسَم shared هناك. */
+const SHARE = db.collection('settings').doc('photosShare');
 try {
-  const old = await db.collection('photos').where('status', '==', 'done').limit(300).get();
+  const sh = (await SHARE.get()).data() || {};
+  if (sh.done) throw { quiet: true };
+  let q0 = db.collection('photos').where('status', '==', 'done').orderBy(admin.firestore.FieldPath.documentId()).limit(300);
+  if (sh.cursor) q0 = q0.startAfter(sh.cursor);
+  const old = await q0.get();
+  await SHARE.set(old.empty ? { done: true, at: Date.now(), cursor: admin.firestore.FieldValue.delete() } : { cursor: old.docs[old.docs.length - 1].id, at: Date.now() }, { merge: true });
   let shared = 0;
   for (const d of old.docs){
     const p = d.data();
@@ -88,7 +99,7 @@ try {
     } catch (e){ await d.ref.set({ shared: true, shareWhy: String(e && e.message || e).slice(0, 120) }, { merge: true }).catch(() => {}); }
   }
   if (shared) console.log(`::notice title=photos::شُورك ${shared} ملفًا برابط`);
-} catch (e){ console.log('مشاركةُ القديم تعذّرت: ' + (e && e.message)); }
+} catch (e){ if (!(e && e.quiet)) console.log('مشاركةُ القديم تعذّرت: ' + (e && e.message)); }
 
 /* ═══ ما عُلِّم «خطأً» بسبب الدرايف يُعاد إلى الطابور ═══
    قبل V16.34 كان تعثّرُ السعة أو الإذن يُعلِّم الصورةَ `error` نهائيًّا — ثم
@@ -304,7 +315,7 @@ for (const d of snap.docs){
     /* (V38.67) _at moves with the document: phones pull photos by _at, so a moved photo without it stayed «⏳ to Drive» on
        every phone forever (its raw copy deleted, its Drive id never pulled) */
     await d.ref.set({ status: 'done', driveId: made.data.id, link: made.data.webViewLink, movedAt: Date.now(), _at: Date.now(),
-                      inSite: true, folderId: dirId, data: admin.firestore.FieldValue.delete() }, { merge: true });
+                      inSite: true, folderId: dirId, shared: true, data: admin.firestore.FieldValue.delete() }, { merge: true });   /* (V38.84) shared at upload, marked here */
     if (p.blob) await db.collection('photoblobs').doc(d.id).delete().catch(() => {});   /* (V37.18) */
     done++;
     console.log(`  ✓ ${name} (${Math.round(buf.length / 1024)}KB)`);

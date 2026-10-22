@@ -54,6 +54,7 @@ function presenceBeat(force){
               pf:(typeof perfSummary === 'function' ? perfSummary() : null),               /* مؤشّراتُ الأداء (V17.98) */
               on:(typeof navigator === 'object' && navigator.onLine !== false) };
   if (typeof rdhLast === 'function') doc[rdhKey()] = rdhLast(7);   /* (V38.80) this device's reads per billing day — one string field per device */
+  if (typeof pghLast === 'function' && typeof rdhKey === 'function') doc['pgh_' + rdhKey().slice(4)] = pghLast(7);   /* (V38.84) its page opens per day, the same way */
   STATE.presence = STATE.presence || {};
   STATE.presence[u] = doc;
   CORE.dirty('presence', u, doc);
