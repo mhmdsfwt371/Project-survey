@@ -195,11 +195,16 @@ check(promises > 0, `وُجدت وعودُ حفظٍ لتُفحَص (${promises} 
         try { live.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); }
         catch (e){ blew = String(e.message).slice(0,45); break; }
         /* بعضُ الأزرار يبدأ عملًا غيرَ متزامنٍ — تنزيلُ محرّك إكسل مثلًا —
-           فالأثرُ يقع بعد الضغطة لا معها. تُمهَل دورةُ حدثٍ واحدة. */
-        await new Promise(r => setTimeout(r, 0));
+           فالأثرُ يقع بعد الضغطة لا معها. (V38.83) دورةُ حدثٍ واحدةٌ لم تكفِ تحت الحِمل: «تصدير القائمة»
+           في لوحة المسح سقط مرتين في يومٍ واحد (عند الجرد الكامل محليًّا وعلى الشريحة ٣) ونجح وحدَه،
+           فأوقف سلسلةَ النشر بلا عطل. يُمهَل الزرُّ حتى ثانيةٍ ونصف على خطواتٍ قصيرة — ويظلّ الأثرُ شرطًا. */
         let afterHtml = '';
-        try { afterHtml = snap(); } catch {}
-        if (writes || said.length || w.CUR !== beforeCur || afterHtml !== beforeHtml){ hit = true; break; }
+        for (let k = 0; k < 16 && !hit; k++){
+          await new Promise(r => setTimeout(r, k ? 100 : 0));
+          try { afterHtml = snap(); } catch {}
+          if (writes || said.length || w.CUR !== beforeCur || afterHtml !== beforeHtml) hit = true;
+        }
+        if (hit) break;
       }
       if (blew) threw2.push(id + ' · ' + attr + ' → ' + blew);
       else if (!hit) silent2.push(id + ' · ' + attr);
