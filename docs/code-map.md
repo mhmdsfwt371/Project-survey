@@ -54,7 +54,7 @@
 | `03-survey-records-10-wbs-plan-trials.js` | 680 | 44 | Work breakdown structure, plan versus actual, plan export with formulas, item file and the trials page. |
 | `03-survey-records-11-weekly-tasks-paths.js` | 517 | 37 | Weekly tasks as sentence cards, meeting mode, the one filter for screen and paper, and path filtering with each path's status. |
 
-## `03z-shared/` — المشتركُ — تعريفاتٌ تحتاجها النواةُ قبل مجالات المكتب والوزارة والتقارير (نُقلت حرفيًّا، لا كودَ جديدًا هنا)  (63 ملفات · 8998 سطر · 535 دالة)
+## `03z-shared/` — المشتركُ — تعريفاتٌ تحتاجها النواةُ قبل مجالات المكتب والوزارة والتقارير (نُقلت حرفيًّا، لا كودَ جديدًا هنا)  (63 ملفات · 9002 سطر · 535 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -96,7 +96,7 @@
 | `03z-shared-36-from-approvals-reports-11-import-roles-perms.js` | 630 | 24 | Definitions moved verbatim from src/07-reports/07-approvals-reports-11-import-roles-perms.js (V38.38, stage A of core + chunks): the core (01–05, 08) references |
 | `03z-shared-b-01-from-tasks-office-01-task-panel-map3d.js` | 60 | 4 | Definitions moved verbatim from src/04-office/04-tasks-office-01-task-panel-map3d.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08) ref |
 | `03z-shared-b-02-from-tasks-office-02-newsite-schedule.js` | 11 | 0 | Definitions moved verbatim from src/04-office/04-tasks-office-02-newsite-schedule.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08) ref |
-| `03z-shared-b-03-from-tasks-office-03-photos-drive.js` | 56 | 3 | Definitions moved verbatim from src/04-office/04-tasks-office-03-photos-drive.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08) referen |
+| `03z-shared-b-03-from-tasks-office-03-photos-drive.js` | 60 | 3 | Definitions moved verbatim from src/04-office/04-tasks-office-03-photos-drive.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08) referen |
 | `03z-shared-b-04-from-tasks-office-04-pmi-weekplan.js` | 9 | 1 | Definitions moved verbatim from src/04-office/04-tasks-office-04-pmi-weekplan.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08) referen |
 | `03z-shared-b-05-from-tasks-office-05-account-backup-continuity.js` | 9 | 1 | Definitions moved verbatim from src/04-office/04-tasks-office-05-account-backup-continuity.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05 |
 | `03z-shared-b-06-from-tasks-office-06-risks-changes-coverage.js` | 177 | 8 | Definitions moved verbatim from src/04-office/04-tasks-office-06-risks-changes-coverage.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 0 |
@@ -160,7 +160,7 @@
 | `05-lifecycle-map-12-ministry-screen-progress.js` | 384 | 22 | Ministry hall screen, completion forecast, progress map, far points, satellite in the ministry screen, week sentence and the hall view. |
 | `05-lifecycle-map-13-ministry-followup.js` | 473 | 49 | Ministry follow-up page: dynamic follow-up, season brief header, 'whose turn' groups, two modes, and the no-challenge camps card. |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4127 سطر · 151 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4129 سطر · 151 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -174,7 +174,7 @@
 | `06-ministry-alerts-08-pptx-template.js` | 980 | 16 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 285 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 1031 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 1033 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
 
@@ -218,4 +218,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 161 ملفًّا · 44061 سطر · 1992 دالة.
+**الإجمالي:** 161 ملفًّا · 44067 سطر · 1992 دالة.

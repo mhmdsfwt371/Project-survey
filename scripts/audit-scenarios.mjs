@@ -773,6 +773,23 @@ console.log('\n══ ٢٧ · قوائمُ المتابعة والانتقال �
   delete w.STATE.recs[p.id]; w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.CUR = 'map';
 }
 
+/* ── ٢٨ · (V38.77) صورةٌ في طريقها إلى الدرايف تُفتح كاملةً من نسختها الخام، وإن لم تصل النسخةُ بعد يقول ذلك ── */
+console.log('\n══ ٢٨ · عرضُ صورةٍ في طريقها إلى الدرايف ══');
+{
+  const d = w.document, p = w.STATE.sites[9], key = p.id + '-9';
+  w.STATE.photos[key] = { site:p.id, kind:'site', seq:9, status:'pending', at:Date.now() }; w.PH_IDX = null;
+  const toast0 = w.toast; let msg = '';
+  w.phBlob.c = w.phBlob.c || {}; w.phBlob.c[key] = 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';   /* the raw copy already on this phone */
+  w.toast = (m) => { msg = String(m); };
+  w.photoView(key);
+  const v = d.getElementById('phView');
+  T(!!v && v.querySelector('img').getAttribute('src').indexOf('data:image') === 0, 'الضغطُ على صورةٍ لم تصل الدرايف بعد يفتحها كاملةً من نسختها الخام');
+  if (v) v.remove();
+  delete w.phBlob.c[key]; w.phBlob.w = w.phBlob.w || {}; w.phBlob.w[key] = 1; w.photoView(key);   /* not on this phone yet */
+  T(!d.getElementById('phView') && /الدرايف/.test(msg), 'وإن لم تكن نسختُها وصلت الجهازَ يقول إنها في الطريق بدل الصمت');
+  w.toast = toast0; delete w.STATE.photos[key]; w.PH_IDX = null;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

@@ -16,9 +16,15 @@ on:
 permissions:
   contents: read
   issues: write        # جسرُ البلاغات: يفتح بلاغَ المستودع من بلاغ التطبيق
+# (V38.77) the schedule fired twice in ten hours on 22 Oct and photos waited all morning: GitHub drops most scheduled starts
+# under load. One run now keeps working for five and a half hours, a cycle every five minutes, and a newer start replaces it.
+concurrency:
+  group: provision-loop
+  cancel-in-progress: true
 jobs:
   provision:
     runs-on: ubuntu-24.04
+    timeout-minutes: 350
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -33,18 +39,18 @@ jobs:
             sleep $((i*15))
           done
           echo "::error::تعذّر التثبيتُ بعد ثلاث محاولات"; exit 1
-      - name: إنشاءُ ما طلبه المكتب
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/provision.mjs
-      - name: نقلُ الصور من القاعدة إلى الدرايف
+      - name: دورةُ الخادم — الحسابات والصور والبلاغات كلَّ خمس دقائق لخمس ساعات ونصف
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           GDRIVE_OAUTH: ${{ secrets.GDRIVE_OAUTH }}
           GDRIVE_FOLDER: ${{ secrets.GDRIVE_FOLDER }}
-        run: node scripts/photos-sync.mjs
-      - name: البلاغات — من التطبيق إلى المستودع
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node scripts/bugs-sync.mjs
+        run: |
+          for i in $(seq 1 66); do
+            echo "::group::الدورة $i — $(date -u +%H:%M)"
+            node scripts/provision.mjs   || echo "::warning::الحسابات: الدورة $i تعثّرت"
+            node scripts/photos-sync.mjs || echo "::warning::الصور: الدورة $i تعثّرت"
+            node scripts/bugs-sync.mjs   || echo "::warning::البلاغات: الدورة $i تعثّرت"
+            echo "::endgroup::"
+            [ "$i" -lt 66 ] && sleep 300
+          done

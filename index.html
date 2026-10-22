@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.76</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.77</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -18582,14 +18582,17 @@ function photoDownload(key){
     if (!dl(b, p.name)) toast(t('تعذّر التنزيل'));
     return;
   }
+
+  if (!p.driveId){ var raw = phSrc(key, (STATE.photos || {})[key] || p, 1600); if (raw){ window.open(raw, '_blank'); return; } }
   if (p.driveId){ window.open('https://drive.google.com/uc?export=download&id=' + encodeURIComponent(p.driveId), '_blank', 'noopener'); return; }
   toast(t('لا صورة'));
 }
 
 function photoView(key){
   var p = photoFind(key); if (!p) return;
-  var src = p.data || (p.driveId ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(p.driveId) + '&sz=w1600' : '');
-  if (!src) return;
+
+  var src = phSrc(key, (STATE.photos || {})[key] || p, 1600);
+  if (!src){ toast(t('الصورة وصلت وتُنقَل إلى الدرايف — تظهر خلال دقائق')); return; }
   var old = document.getElementById('phView'); if (old) old.remove();
   var box = document.createElement('div'); box.id = 'phView';
   box.style.cssText = 'position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:14px';
@@ -30120,6 +30123,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.76"></script>
+<script defer src="app-office.js?v=38.77"></script>
 </body>
 </html>

@@ -35,14 +35,18 @@ function photoDownload(key){
     if (!dl(b, p.name)) toast(t('تعذّر التنزيل'));
     return;
   }
+  /* (V38.77) still on its way to Drive: the raw copy opens in a new tab so it can be saved from there */
+  if (!p.driveId){ var raw = phSrc(key, (STATE.photos || {})[key] || p, 1600); if (raw){ window.open(raw, '_blank'); return; } }
   if (p.driveId){ window.open('https://drive.google.com/uc?export=download&id=' + encodeURIComponent(p.driveId), '_blank', 'noopener'); return; }
   toast(t('لا صورة'));
 }
 
 function photoView(key){
   var p = photoFind(key); if (!p) return;
-  var src = p.data || (p.driveId ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(p.driveId) + '&sz=w1600' : '');
-  if (!src) return;
+  /* (V38.77) owner: «مش عارف أفتح الصور» — a photo still on its way to Drive has no data and no drive id; the thumbnail
+     showed it (phSrc reads the raw copy) but the viewer refused it. The viewer reads the same source. */
+  var src = phSrc(key, (STATE.photos || {})[key] || p, 1600);   /* the record itself: photoFind trims the status away */
+  if (!src){ toast(t('الصورة وصلت وتُنقَل إلى الدرايف — تظهر خلال دقائق')); return; }
   var old = document.getElementById('phView'); if (old) old.remove();
   var box = document.createElement('div'); box.id = 'phView';
   box.style.cssText = 'position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:14px';
