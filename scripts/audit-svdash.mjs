@@ -85,7 +85,8 @@ console.log('\n══ ٢ · الشاشةُ تعرض البطاقات وتفتح 
   d.querySelector('[data-svd="metal"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
   await wait(250);
   h = d.getElementById('content').innerHTML;
-  T(w.SVD_PICK === 'metal' && (h.match(/data-fly="/g) || []).length === 2, 'والضغطُ يفتح قائمتَها: ٢ سطرًا');
+  /* (V38.75) a point's id is a map link inside its row too — count the points, not the attributes */
+  T(w.SVD_PICK === 'metal' && new Set(h.match(/data-fly="[^"]+"/g) || []).size === 2, 'والضغطُ يفتح قائمتَها: ٢ سطرًا');
   T(h.indexOf('data-fly="' + camps[1].id + '"') > -1 && h.indexOf('data-fly="' + camps[2].id + '"') > -1,
     'وفيها النقطتان اللتان تحتاجان حديدًا');
   T(h.indexOf('data-svdxls') > -1, 'ومعها زرُّ التصدير');

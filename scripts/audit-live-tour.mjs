@@ -35,11 +35,36 @@ const R = JSON.parse(w.eval(`(function(){
   });
   return JSON.stringify({ n:n, found:found, thrown:thrown });
 })()`));
+/* (V38.76) and every follow-up list window (the Ministry's and the office's), with realistic records — a moved position kept in
+   «موقع النقطة» showed «[object Object]» inside a window the page tour never opened. Each row's point must open the map. */
+const LW = JSON.parse(w.eval(`(function(){
+  STATE.sites.forEach(function(x, i){ if (i % 7) return; STATE.recs[x.id] = STATE.recs[x.id] || { id:x.id, access:'تم الوصول', review:i % 2 ? 'approved' : 'pending', by:'فني', at:Date.now() - i * 1000, loc:i % 3 ? ['تحت كوبري'] : [{ lat:21.4, lng:39.9 }, 'مدخل نفق'], chals:i % 5 ? [] : ['لا يوجد سطح تثبيت'], chal_note:i % 4 ? '' : 'تحت الكوبري', photos:['site'] }; });
+  statBump();
+  var bad = /\\bundefined\\b|\\bNaN\\b|\\[object Object\\]|\\bInfinity\\b|\\bnull\\b/, found = [], thrown = [], noFly = [], n = 0;
+  ['admin', 'viewer'].forEach(function(role){
+    ROLE = role; STATE.meta.role = role; CUR = 'mfu'; try { render(1); } catch (e0){}
+    if (typeof obsLocLists === 'function') obsLocLists();
+    Object.keys(MFU.lists || {}).concat(Object.keys(typeof SV_LISTS === 'object' ? SV_LISTS : {})).filter(function(k, i, a){ return a.indexOf(k) === i; }).forEach(function(k){
+      try { SV_POP = k; SV_VIEW = 'list'; SV_ZF = ''; SV_SUB = ''; render(1); n++;
+        var pop = document.querySelector('.svpop'); if (!pop) return; var tx = pop.textContent, m = bad.exec(tx);
+        if (m) found.push(role + ' · ' + k + ' → «' + tx.slice(Math.max(0, m.index - 30), m.index + 18).replace(/\\s+/g, ' ') + '»');
+        var r0 = pop.querySelector('tbody tr'); if (r0 && !r0.querySelector('[data-fly]') && /NSK-/.test(r0.textContent)) noFly.push(role + ' · ' + k);
+      } catch (e){ thrown.push(role + ' · ' + k + ' → ' + e.message); }
+    });
+    SV_POP = '';
+  });
+  return JSON.stringify({ n:n, found:found, thrown:thrown, noFly:noFly });
+})()`));
 let fails = 0;
 const T = (c, msg) => { if (c) console.log('  \u2713 ' + msg); else { fails++; console.log('  \u2717 ' + msg); console.log('::error title=فحصٌ ساقط::' + msg.replace(/[\r\n]+/g, ' ').slice(0, 300)); } };
 console.log('\n══ جولةُ الزائر — Firebase قائم، كلُّ دورٍ وكلُّ شاشةٍ وشريحة (' + R.n + ') ══');
 T(R.n > 300, 'الجولةُ مرّت على ' + R.n + ' شاشةً وشريحةً بكلِّ الأدوار');
 T(!R.thrown.length, 'لا شاشةَ ترمي خطأً' + (R.thrown.length ? ' — ' + R.thrown.slice(0, 5).join(' | ') : ''));
 T(!R.found.length, 'ولا «undefined / NaN / null» على الشاشة' + (R.found.length ? ' — ' + R.found.slice(0, 5).join(' | ') : ''));
+console.log('\n══ نوافذُ القوائم — الإدارة والوزارة (' + LW.n + ') ══');
+T(LW.n > 50, 'فُتحت ' + LW.n + ' نافذةَ قائمةٍ بدوري الإدارة والوزارة');
+T(!LW.thrown.length, 'لا نافذةَ ترمي خطأً' + (LW.thrown.length ? ' — ' + LW.thrown.slice(0, 4).join(' | ') : ''));
+T(!LW.found.length, 'ولا «[object Object] / undefined / NaN» في أيِّ نافذة' + (LW.found.length ? ' — ' + LW.found.slice(0, 4).join(' | ') : ''));
+T(!LW.noFly.length, 'ونقطةُ كلِّ صفٍّ رابطٌ يفتحها على الخريطة' + (LW.noFly.length ? ' — ' + LW.noFly.slice(0, 4).join(' | ') : ''));
 if (fails){ console.log('جولةُ الزائر فشلت \u2717 (' + fails + ')'); process.exit(1); }
 console.log('جولةُ الزائر نظيفة — كلُّ الأدوار، وFirebase قائم \u2705'); process.exit(0);
