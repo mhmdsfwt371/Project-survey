@@ -61,6 +61,7 @@ export const HOSTILE = {
   'settings/sysreport':{ str:DENY3, ina:DENY3, tec:'DDD' },
   'settings/pmo':      { str:DENY3, ina:DENY3, tec:'DDD' },
   'settings/extApi':   { str:DENY3, ina:DENY3, tec:'DDD' },   /* (V37.80) توكنُ نظام البطاقات — للمكتب وحده */
+  'settings/cost':     { str:DENY3, ina:DENY3, tec:'DDD' },   /* (V38.80) تكلفةُ قاعدة البيانات — يكتبها الخادم، ويقرؤها المكتبُ والإدارةُ العليا */
   'settings/contacts': { str:DENY3, ina:DENY3, tec:'ADD' },
   'settings/cotel':    { str:DENY3, ina:DENY3, tec:'ADD' },
   'settings/wtask':    { str:DENY3, ina:DENY3, tec:'ADD' },
