@@ -151,7 +151,7 @@ function clickAPart7(e){
   if (svd){ sk = svd.getAttribute('data-svd'); SVD_PICK = (SVD_PICK === sk ? '' : sk); render(1); return true; }
   if (e.target.closest('[data-svdxls]')){ svdXls(); return true; }
   var fl = e.target.closest('[data-fly]');
-  if (fl){ POP_SITE = fl.getAttribute('data-fly'); POP_OPEN = true; CUR = 'map'; render();
+  if (fl){ POP_SITE = fl.getAttribute('data-fly'); POP_OPEN = true; if (typeof SV_POP !== 'undefined'){ SV_POP = ''; SV_PHO = ''; } CUR = 'map'; render();   /* (V38.75) the list window closes — it would cover the map */
            if (typeof MAP === 'undefined' || !MAP) toast('\u23F3 ' + t('تُفتَح الخريطةُ على النقطة…'));   /* (V38.21) يرى أن الضغطة وصلت */
            mapFlySoon(POP_SITE); return true; }   /* (V38.20) ينتظر الخريطة */
   var fm = e.target.closest('[data-form]');

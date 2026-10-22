@@ -121,7 +121,8 @@ function siteShared(x){   /* (V35.1) كم سطرًا يحمل هذا الشاخ�
   return U.c[x.zone + '|' + String(x.sign).trim()] || 1;
 }
 function siteIdHtml(x){ if (!x) return ''; var k = siteKey(x), sh = siteShared(x) > 1 && x.co;
-  return '<b class="num">' + bdi(k) + '</b>' + (sh ? '<div class="hint" style="margin:0;font-size:11px">' + esc(x.co) + '</div>' : '') + (k !== x.id ? '<div class="num hint" style="margin:0;font-size:11px">' + bdi(x.id) + '</div>' : ''); }
+  /* (V38.75) owner: a point's name in any list opens it on the map — the key is a link to the point */
+  return '<b class="num" data-fly="' + esc(x.id) + '" role="link" title="' + esc(t('على الخريطة')) + '" style="cursor:pointer;text-decoration:underline dotted">' + bdi(k) + '</b>' + (sh ? '<div class="hint" style="margin:0;font-size:11px">' + esc(x.co) + '</div>' : '') + (k !== x.id ? '<div class="num hint" style="margin:0;font-size:11px">' + bdi(x.id) + '</div>' : ''); }
 function siteKeyLabel(x){ return x && x.type === 'مخيم' ? 'رقم الشاخص' : (x && x.type === 'ممر' && siteKey(x) !== x.id ? 'الاسم في ١٤٤٧' : 'المعرّف'); }
 
 /* ── قرارُ المالك (V36.4): ما رُكّب لا يُحذَف ── */
@@ -283,7 +284,10 @@ function locApplies(x){ return !!x && x.type !== 'مخيم' && x.type !== 'LPR';
 function locOpts(){ return ['لا شيء مما سبق', 'تحت كوبري', 'مدخل نفق', 'مخرج نفق', 'لوحة استرشادية', 'بدون إطار معدني للتثبيت', 'على مظلة']; }
 /* القيمةُ قائمةٌ دائمًا عند القراءة — وما حُفظ نصًّا في V38.23–V38.24 يُقرأ بمعناه */
 function locList(v){
-  if (Array.isArray(v)) return v.filter(Boolean);
+  /* (V38.75) words only: rec.loc also carries a moved position ({lat,lng}, V32.2) — it showed «[object Object]» in the
+     obstacles lists and, read as the technician's choice, stopped the inference for older visits (wrong counts by type) */
+  if (Array.isArray(v)) return v.filter(function(x){ return typeof x === 'string' && x.trim(); });
+  if (v && typeof v === 'object') return [];
   var s0 = String(v || '').trim(); if (!s0) return [];
   if (s0 === 'مدخل أو مخرج نفق') return ['نفق — غير محدد'];
   if (s0 === 'تحت كوبري وعند نفق') return ['تحت كوبري', 'نفق — غير محدد'];

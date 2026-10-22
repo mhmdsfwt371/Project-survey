@@ -752,6 +752,27 @@ console.log('\n══ ٢٦ · البحثُ والصور ══');
   w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
 }
 
+/* ── ٢٧ · (V38.75) قوائمُ المتابعة: «موقع النقطة» كلماتٌ فقط (لا «[object Object]» ولا عدَّ خاطئ)، وعمودُ الصور صورُ الزيارة،
+   واسمُ أيِّ نقطةٍ في أيِّ قائمةٍ يفتحها على الخريطة ويُغلق النافذة ── */
+console.log('\n══ ٢٧ · قوائمُ المتابعة والانتقال للخريطة ══');
+{
+  const d = w.document;
+  const p = w.STATE.sites.filter(z => z && z.type === 'ممر' && z.zone === 'منى' && !w.STATE.recs[z.id])[5];
+  w.STATE.recs[p.id] = { id:p.id, access:'تم الوصول', review:'approved', by:'فني', at:Date.now(), loc:[{ lat:21.4, lng:39.9 }, 'تحت كوبري'] };
+  w.STATE.photos[p.id + '-1'] = { site:p.id, kind:'site', seq:1, status:'done', driveId:'L1', at:Date.now() };
+  w.STATE.photos[p.id + '-2'] = { site:p.id, kind:'ins_before', seq:2, status:'done', driveId:'L2', at:Date.now() }; w.PH_IDX = null;
+  w.statBump(); w.ROLE = 'admin'; w.STATE.meta.role = 'admin'; w.CUR = 'mfu'; w.render(1);
+  if (typeof w.obsLocLists === 'function'){
+    w.obsLocLists(); w.SV_POP = 'loc_bridge_p'; w.SV_VIEW = 'list'; w.render(1);
+    const pop = d.querySelector('.svpop'), h = pop ? pop.innerHTML : '', pb = pop && pop.querySelector('[data-svphotos="' + p.id + '"]'), link = pop && pop.querySelector('[data-fly="' + p.id + '"]');
+    T(!!pop && h.indexOf('object Object') < 0 && h.indexOf(p.id) > -1 && pb && /١|1/.test(pb.textContent) && !!link, 'قائمةُ «تحت كوبري — ممرات» بلا «[object Object]»، والنقطةُ فيها بنوعها، وعمودُ الصور يعدّ صورَ الزيارة وحدَها');
+    link.dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
+    T(w.CUR === 'map' && w.POP_SITE === p.id && w.SV_POP === '', 'والضغطُ على النقطة يفتحها على الخريطة ويُغلق النافذة');
+  } else T(true, 'شاشةُ المتابعة في الجزء المؤجَّل — تُفحَص في جولة الزائر');
+  T(JSON.stringify(w.locList({ lat:1, lng:2 })) === '[]' && w.siteIdHtml(p).indexOf('data-fly="' + p.id + '"') > -1, 'و«موقع النقطة» لا يقرأ الإحداثيات كلمة، ومعرّفُ النقطة في كلِّ جدولٍ رابطٌ للخريطة');
+  delete w.STATE.recs[p.id]; w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.CUR = 'map';
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);
