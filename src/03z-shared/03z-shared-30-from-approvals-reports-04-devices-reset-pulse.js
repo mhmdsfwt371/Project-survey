@@ -53,6 +53,7 @@ function presenceBeat(force){
               pg:(typeof pageUse === 'function' ? pageUse().n : {}),                       /* فتحُ الصفحات اليومَ (V17.95) */
               pf:(typeof perfSummary === 'function' ? perfSummary() : null),               /* مؤشّراتُ الأداء (V17.98) */
               on:(typeof navigator === 'object' && navigator.onLine !== false) };
+  if (typeof rdhLast === 'function') doc[rdhKey()] = rdhLast(7);   /* (V38.80) this device's reads per billing day — one string field per device */
   STATE.presence = STATE.presence || {};
   STATE.presence[u] = doc;
   CORE.dirty('presence', u, doc);
@@ -66,8 +67,7 @@ function presenceFetch(force){
   return DB.col('presence').limit(500).get().then(function(sn){
     FB.readCount = (FB.readCount || 0) + sn.size;
     STATE.presence = STATE.presence || {};
-    sn.forEach(function(d){ STATE.presence[d.id] = d.data(); });
-    FB.readCount = (FB.readCount || 0) + sn.size;
+    sn.forEach(function(d){ STATE.presence[d.id] = d.data(); });   /* (V38.80) the size was added twice — the read is counted once above */
     if (CUR === 'sys') render(1);
     return sn.size;
   }).catch(function(e){ softErr('سحب نسخ الأجهزة', e, ''); return 0; });

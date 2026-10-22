@@ -845,6 +845,64 @@ console.log('\n══ ٣٠ · نموذجُ المسح للممرات والجم�
   delete w.STATE.recs[cor.id]; w.toast = t0; w.formReset(); w.CUR = 'map';
 }
 
+/* ── ٣١ · (V38.80) تكلفةُ قاعدة البيانات: كلُّ يومٍ بحصّته، والمدّة، ونصيبُ كلِّ جهاز، وسجلُّ الجهاز يومًا بيوم ── */
+console.log('\n══ ٣١ · تكلفةُ قاعدة البيانات بأيِّ مدّة ══');
+{
+  const d = w.document, P = w.costPrice(null), near = (a, b) => Math.abs(a - b) < 1e-9;
+  /* day 1 under every quota; day 2: 100k reads + 5k writes over, 2 GiB stored (1 over, September = 30 days); day 3: 200k reads over */
+  const g = { '2026-09-01':[40000, 100, 0, 1e8], '2026-09-02':[150000, 25000, 0, 2 * 1073741824], '2026-10-01':[250000, 1000, 10, 1e8] };
+  const all = w.costCalc(g, '', '', P);
+  T(near(all.usd, 0.06 + 0.009 + 0.006 + 0.12) && all.br === 300000 && all.paid === 2 && near(all.sar, all.usd * 3.75),
+    'كلُّ يومٍ يخسر حصّتَه المجانيةَ وحدَه ثم السعر: ٠٫٠٦ + ٠٫٠٠٩ + ٠٫٠٠٦ + ٠٫١٢ = ٠٫١٩٥ دولار، وبالريال × ٣٫٧٥');
+  const sep = w.costCalc(g, '2026-09-01', '2026-09-30', P);
+  T(near(sep.usd, 0.075) && Object.keys(sep.months).join() === '2026-09' && sep.peak.day === '2026-09-02', 'والمدّةُ تحصر الأيام: سبتمبر وحده ٠٫٠٧٥، وأعلى أيامه ٢ سبتمبر');
+  const oct22 = Date.parse('2026-10-22T12:00:00Z');
+  T(w.costRange('prev', oct22).join() === '2026-09-01,2026-09-30' && w.costRange('month', oct22).join() === '2026-10-01,2026-10-22'
+    && w.costRange('prev', Date.parse('2027-01-15T12:00:00Z')).join() === '2026-12-01,2026-12-31', 'والأزرار: الشهرُ الماضي كاملًا، وهذا الشهرُ حتى اليوم، ويناير يرجع إلى ديسمبر');
+  T(w.billDay(Date.parse('2026-10-22T06:30:00Z')) === '2026-10-21' && w.billDay(Date.parse('2026-10-22T07:30:00Z')) === '2026-10-22',
+    'واليومُ يومُ فوترة جوجل: يبدأ مع تجدّد الحصة نحو العاشرة صباحًا بمكة');
+  /* devices: 60k + 40k of a 150k day whose read cost is $0.06 — the rest is the server's */
+  const v = { g:{ '2026-10-01':[150000, 0, 0, 0] }, dev:{ u1_A:{ n:'أحمد', ro:'tech', d:{ '2026-10-01':60000 } }, u2_B:{ n:'سالم', ro:'engineer', d:{ '2026-10-01':40000 } } } };
+  const dv = w.costDevices(v, '', '', P);
+  T(dv.rows[0].k === 'u1_A' && near(dv.rows[0].usd, 0.024) && near(dv.rows[1].usd, 0.016) && dv.other === 50000 && near(dv.otherUsd, 0.02),
+    'ونصيبُ كلِّ جهازٍ بنسبة ما قرأ يومَها: ٠٫٠٢٤ و٠٫٠١٦، والخادمُ ٥٠ ألفًا بـ٠٫٠٢');
+  v.dev.u1_A.d['2026-10-01'] = 120000; v.dev.u2_B.d['2026-10-01'] = 80000;
+  const dv2 = w.costDevices(v, '', '', P);
+  T(near(dv2.rows[0].usd + dv2.rows[1].usd + dv2.otherUsd, 0.06) && dv2.other === 0, 'ولو عدّت الأجهزةُ أكثرَ من جوجل لا يتجاوز مجموعُ الأنصبة تكلفةَ اليوم');
+  /* the device's own log: survives a new session, rides the beat as one string per device */
+  const fb0 = w.FB.readCount, uid0 = w.STATE.meta.uid;
+  w.localStorage.removeItem('nsk14.rdh'); w.FB.rdh = null;
+  const d0 = w.billDay();
+  w.FB.readCount = 120; w.rdhTick(true); w.FB.readCount = 200; w.rdhTick(true);
+  T(w.FB.rdh.map[d0] === 200 && JSON.parse(w.localStorage.getItem('nsk14.rdh'))[d0] === 200, 'سجلُّ الجهاز يومًا بيوم: ما قرأه منذ آخر عدٍّ يُضاف ليومه ويُحفَظ في الجهاز');
+  w.FB.readCount = 30; w.rdhTick(true);
+  T(w.FB.rdh.map[d0] === 230, 'وجلسةٌ جديدةٌ (عدّادٌ عاد إلى الصفر) تُضاف ولا تمحو ما سبق');
+  w.STATE.meta.uid = 'u-cost'; w.presenceBeat(true);
+  const pr = w.STATE.presence['u-cost'] || {}, fld = pr[w.rdhKey()];
+  T(typeof fld === 'string' && JSON.parse(fld)[d0] === 230 && /^rdh_[A-Za-z0-9]{1,16}$/.test(w.rdhKey()), 'ونبضةُ الحضور تحمله نصًّا واحدًا لكلِّ جهاز — لا يكبر ولا يمحو جهازًا آخر للمستخدم نفسِه');
+  /* the card: office and top management only, every number from the same calculation */
+  const role0 = w.ROLE;
+  w.USAGE.cost.v = Object.assign({ at:Date.now() }, v, { g:Object.assign({}, g, v.g) }); w.USAGE.cost.at = Date.now(); w.USAGE.costF.r = 'all';
+  w.ROLE = 'admin';
+  const html = w.costCard();
+  T(html.indexOf('تكلفةُ قاعدة البيانات') > -1 && html.indexOf('data-ucr="prev"') > -1 && html.indexOf('data-ucf="1"') > -1 && html.indexOf('أحمد') > -1
+    && html.indexOf('الخادمُ والمهامُّ الآلية') > -1, 'البطاقةُ للمكتب: أزرارُ المدّة وخانتا من/إلى، ومن قرأ كم، وسطرُ الخادم');
+  w.ROLE = 'viewer';
+  T(w.costCard() === '', 'والوزارةُ لا ترى تكلفةَ المشروع — ولو ملكت التصديرَ الكامل');
+  w.ROLE = 'admin';
+  const inp = d.createElement('input'); inp.type = 'date'; inp.setAttribute('data-ucf', '1'); inp.value = '2026-09-02'; d.body.appendChild(inp);
+  inp.dispatchEvent(new w.Event('change', { bubbles:true }));
+  T(w.USAGE.costF.r === 'custom' && w.USAGE.costF.from === '2026-09-02' && !!w.USAGE.costF.to, 'وتغييرُ «من» يجعل المدّةَ مخصّصةً ويُبقي طرفَها الآخر');
+  inp.remove();
+  const cur0 = w.CUR, pop0 = w.POP_OPEN; w.CUR = 'sys'; w.POP_OPEN = false;   /* the chip lives on System Health — no map popup there to close first */
+  const chip = d.createElement('button'); chip.setAttribute('data-ucr', 'month'); d.body.appendChild(chip);
+  chip.dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
+  T(w.USAGE.costF.r === 'month' && !w.USAGE.costF.from, 'وزرُّ «هذا الشهر» يعيد المدّةَ إلى الشهر الجاري');
+  chip.remove(); w.CUR = cur0; w.POP_OPEN = pop0;
+  w.ROLE = role0; w.STATE.meta.uid = uid0; w.FB.readCount = fb0; w.USAGE.cost.v = null; w.USAGE.cost.at = 0; w.USAGE.costF.r = 'all';
+  delete w.STATE.presence['u-cost'];
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

@@ -54,7 +54,7 @@
 | `03-survey-records-10-wbs-plan-trials.js` | 680 | 44 | Work breakdown structure, plan versus actual, plan export with formulas, item file and the trials page. |
 | `03-survey-records-11-weekly-tasks-paths.js` | 517 | 37 | Weekly tasks as sentence cards, meeting mode, the one filter for screen and paper, and path filtering with each path's status. |
 
-## `03z-shared/` — المشتركُ — تعريفاتٌ تحتاجها النواةُ قبل مجالات المكتب والوزارة والتقارير (نُقلت حرفيًّا، لا كودَ جديدًا هنا)  (63 ملفات · 9004 سطر · 535 دالة)
+## `03z-shared/` — المشتركُ — تعريفاتٌ تحتاجها النواةُ قبل مجالات المكتب والوزارة والتقارير (نُقلت حرفيًّا، لا كودَ جديدًا هنا)  (63 ملفات · 9045 سطر · 539 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -71,7 +71,7 @@
 | `03z-shared-11-from-tasks-office-11-site-popup.js` | 404 | 5 | Definitions moved verbatim from src/04-office/04-tasks-office-11-site-popup.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names,  |
 | `03z-shared-12-from-tasks-office-12-draw-paths-areas.js` | 307 | 28 | Definitions moved verbatim from src/04-office/04-tasks-office-12-draw-paths-areas.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these n |
 | `03z-shared-13-from-tasks-office-13-perf-distribution-cameras.js` | 260 | 14 | Definitions moved verbatim from src/04-office/04-tasks-office-13-perf-distribution-cameras.js (V38.38, stage A of core + chunks): the core (01–05, 08) reference |
-| `03z-shared-14-from-tasks-office-14-pull-scope-listen-map.js` | 306 | 16 | Definitions moved verbatim from src/04-office/04-tasks-office-14-pull-scope-listen-map.js (V38.38, stage A of core + chunks): the core (01–05, 08) references th |
+| `03z-shared-14-from-tasks-office-14-pull-scope-listen-map.js` | 347 | 20 | Definitions moved verbatim from src/04-office/04-tasks-office-14-pull-scope-listen-map.js (V38.38, stage A of core + chunks): the core (01–05, 08) references th |
 | `03z-shared-15-from-tasks-office-15-handover-minutes.js` | 184 | 8 | Definitions moved verbatim from src/04-office/04-tasks-office-15-handover-minutes.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these n |
 | `03z-shared-16-from-exec-report-01-exec-report.js` | 116 | 13 | Definitions moved verbatim from src/06-ministry/06-exec-report-01-exec-report.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names |
 | `03z-shared-17-from-ext-camps-03-nusuk-card-system.js` | 515 | 35 | Definitions moved verbatim from src/06-ministry/06-ext-camps-03-nusuk-card-system.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these n |
@@ -160,7 +160,7 @@
 | `05-lifecycle-map-12-ministry-screen-progress.js` | 384 | 22 | Ministry hall screen, completion forecast, progress map, far points, satellite in the ministry screen, week sentence and the hall view. |
 | `05-lifecycle-map-13-ministry-followup.js` | 473 | 49 | Ministry follow-up page: dynamic follow-up, season brief header, 'whose turn' groups, two modes, and the no-challenge camps card. |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4142 سطر · 151 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4144 سطر · 151 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -174,18 +174,18 @@
 | `06-ministry-alerts-08-pptx-template.js` | 980 | 16 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 285 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 1037 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 1039 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
 
-## `07-reports/` — الاعتمادُ والتقارير — المخزن والورشة والأجهزة والإشعارات والأدوار  (11 ملفات · 3284 سطر · 105 دالة)
+## `07-reports/` — الاعتمادُ والتقارير — المخزن والورشة والأجهزة والإشعارات والأدوار  (11 ملفات · 3427 سطر · 114 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
 | `07-approvals-reports-01-approvals-review.js` | 193 | 11 | Visit approvals by the engineer, challenge/notification search, review of unreachable and stalled points. |
 | `07-approvals-reports-02-inventory-workshop.js` | 254 | 13 | Inventory, purchases and catalogue from movements, workshop requests (CR/AR/IR), request log and the single item key. |
 | `07-approvals-reports-03-trials-invoices.js` | 508 | 15 | Trials with cost and hours, trial kits from the catalogue, trial points on camps, and invoice photos. |
-| `07-approvals-reports-04-devices-reset-pulse.js` | 178 | 10 | Live crew list, device versions, season reset, pulse and in-app report, page usage card, cost guard, field performance card and devices needing action. |
+| `07-approvals-reports-04-devices-reset-pulse.js` | 321 | 19 | Live crew list, device versions, season reset, pulse and in-app report, page usage card, cost guard, field performance card and devices needing action. |
 | `07-approvals-reports-05-speed-board.js` | 577 | 5 | Speed board per device and per page (presence heartbeat: version, pending queue, photos). |
 | `07-approvals-reports-06-people-functions.js` | 202 | 15 | People and functions: who gets field work, unified department page, functions from which roles derive. |
 | `07-approvals-reports-07-network-notifications.js` | 72 | 5 | Network addresses, notifications (four channels, one message), generated where read, collision detection, bell window and per-device controls. |
@@ -194,7 +194,7 @@
 | `07-approvals-reports-10-point-actions-export-pdf.js` | 69 | 0 | Point window actions, click identity, export centre by section, export by role, PDF cover page. |
 | `07-approvals-reports-11-import-roles-perms.js` | 322 | 10 | Import via downloaded template, roles (who sees and does what), the owner is never locked out, database permissions matrix, custom roles, ranks, org tree and me |
 
-## `08-events/` — البياناتُ والأحداث — الإعدادات والمستخدمون والنقرات والإقلاع  (13 ملفات · 5774 سطر · 158 دالة)
+## `08-events/` — البياناتُ والأحداث — الإعدادات والمستخدمون والنقرات والإقلاع  (13 ملفات · 5784 سطر · 158 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -209,8 +209,8 @@
 | `08-data-events-boot-09-clicks-a-3.js` | 255 | 2 | Delegated click handlers, group A part 3. |
 | `08-data-events-boot-10-clicks-doc-1.js` | 346 | 4 | Document-level click handlers part 1 (onDocClick and parts 1–3): settings, constants, survey edit, pending file, E-GATE verification. |
 | `08-data-events-boot-11-clicks-doc-2.js` | 526 | 4 | Document-level click handlers part 2 (parts 4–7). |
-| `08-data-events-boot-12-clicks-doc-3.js` | 259 | 3 | Document-level click handlers part 3 (parts 8–9). |
-| `08-data-events-boot-13-toast-wheel-ios-boot.js` | 784 | 11 | Toast, label cells, mouse wheel never types numbers, iOS viewport stability, assistant scroll fix, file-input change handlers and the boot sequence. |
+| `08-data-events-boot-12-clicks-doc-3.js` | 262 | 3 | Document-level click handlers part 3 (parts 8–9). |
+| `08-data-events-boot-13-toast-wheel-ios-boot.js` | 791 | 11 | Toast, label cells, mouse wheel never types numbers, iOS viewport stability, assistant scroll fix, file-input change handlers and the boot sequence. |
 
 ## `99-shell/` — الهيكل — ذيلُ الصفحة  (1 ملفات · 4 سطر · 0 دالة)
 
@@ -218,4 +218,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 161 ملفًّا · 44103 سطر · 1994 دالة.
+**الإجمالي:** 161 ملفًّا · 44299 سطر · 2007 دالة.

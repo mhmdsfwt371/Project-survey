@@ -139,6 +139,149 @@ function usageCard(){
       : '<p class="hint" style="margin:8px 0 0">' + esc(t('لا تجميعَ بعد — يكتبه ملخّصُ الصباح مرةً في اليوم.')) + '</p>') + unused);
 }
 
+/* ═══ (V38.80) Database cost by period — from Google's own counters ═══
+   The owner asked what the database cost him and for any period he picks. Google bills on its own counters, which
+   include the server jobs (backup, photo bridge, ministry snapshots), so the totals come from Cloud Monitoring via
+   scripts/usage-cost.mjs into settings/cost (one read, on demand, every ten minutes at most). Each day is a Google
+   billing day: the free quota (50,000 reads, 20,000 writes, 20,000 deletes, 1 GiB stored) is taken off that day
+   alone, then the eur3 price applies. Devices are split by their own per-day logs (rdh_*), from the day they started
+   sending them; what the devices do not account for is shown as the server's share. Data transfer is not in the
+   counters (first 10 GiB a month free) — it shows on the invoice only, and the card says so. */
+USAGE.cost = { at:0, v:null, err:'' }; USAGE.costF = { r:'all', from:'', to:'' };   /* beside the usage card's own state */
+USAGE.costP0 = { loc:'eur3', r:0.06, w:0.18, d:0.02, s:0.18, fx:3.75, fr:50000, fw:20000, fd:20000, fs:1, tx:0.12, ftx:10 };
+/* the office and top management only — the same circle the database rule opens settings/cost to (the Ministry
+   holds the full-export permission, so that permission alone is not the test here) */
+function costMay(){ return ['admin', 'engineer', 'exec'].indexOf(ROLE) > -1; }
+function costPrice(v){ return Object.assign({}, USAGE.costP0, (v && v.price) || {}); }
+function costFetch(force){
+  if (!costMay()) return Promise.resolve(null);
+  if (!force && Date.now() - USAGE.cost.at < 600000) return Promise.resolve(USAGE.cost.v);
+  if (!FB.ready || !FB.db) return Promise.resolve(null);
+  USAGE.cost.at = Date.now();
+  return DB.col('settings').doc('cost').get().then(function(doc){
+    FB.readCount = (FB.readCount || 0) + 1;
+    USAGE.cost.v = (doc && doc.exists) ? doc.data() : null; USAGE.cost.err = '';
+    if (CUR === 'sys') render(1); return USAGE.cost.v;
+  }).catch(function(e){ USAGE.cost.err = String((e && e.code) || e || ''); if (CUR === 'sys') render(1); return null; });
+}
+/* the preset periods, in billing days */
+function costRange(r, now){
+  var today = billDay(now), y = +today.slice(0, 4), m = +today.slice(5, 7);
+  var pad = function(n){ return (n < 10 ? '0' : '') + n; };
+  if (r === 'month') return [today.slice(0, 8) + '01', today];
+  if (r === 'prev'){
+    var py = m === 1 ? y - 1 : y, pm = m === 1 ? 12 : m - 1;
+    return [py + '-' + pad(pm) + '-01', py + '-' + pad(pm) + '-' + pad(new Date(Date.UTC(py, pm, 0)).getUTCDate())];
+  }
+  if (r === '30') return [billDay((now || Date.now()) - 29 * 864e5), today];
+  return ['', today];
+}
+function costDayUsd(a, P, day){
+  var r = +a[0] || 0, w = +a[1] || 0, d = +a[2] || 0, s = +a[3] || 0;
+  var dim = new Date(Date.UTC(+day.slice(0, 4), +day.slice(5, 7), 0)).getUTCDate();
+  return { r:Math.max(0, r - P.fr) / 1e5 * P.r, w:Math.max(0, w - P.fw) / 1e5 * P.w, d:Math.max(0, d - P.fd) / 1e5 * P.d,
+           s:Math.max(0, s / 1073741824 - P.fs) * P.s / dim };
+}
+/* Google's totals for a period: each day loses its own free quota, then the price applies */
+function costCalc(g, from, to, P){
+  P = P || USAGE.costP0;
+  var o = { days:0, reads:0, writes:0, deletes:0, br:0, bw:0, bd:0, paid:0, sMax:0, usd:0, uR:0, uW:0, uD:0, uS:0, peak:null, months:{} };
+  Object.keys(g || {}).sort().forEach(function(k){
+    if ((from && k < from) || (to && k > to)) return;
+    var a = g[k] || [], c = costDayUsd(a, P, k), r = +a[0] || 0, usd = c.r + c.w + c.d + c.s;
+    o.days++; o.reads += r; o.writes += +a[1] || 0; o.deletes += +a[2] || 0;
+    o.br += Math.max(0, r - P.fr); o.bw += Math.max(0, (+a[1] || 0) - P.fw); o.bd += Math.max(0, (+a[2] || 0) - P.fd);
+    if (r > P.fr) o.paid++;
+    o.sMax = Math.max(o.sMax, +a[3] || 0);
+    o.uR += c.r; o.uW += c.w; o.uD += c.d; o.uS += c.s; o.usd += usd;
+    if (!o.peak || r > o.peak.r) o.peak = { day:k, r:r, usd:usd };
+    var mo = o.months[k.slice(0, 7)] = o.months[k.slice(0, 7)] || { reads:0, paid:0, usd:0 };
+    mo.reads += r; mo.usd += usd; if (r > P.fr) mo.paid++;
+  });
+  o.sar = o.usd * P.fx;
+  return o;
+}
+/* each device's share of the read cost, day by day, in proportion to what it read that day */
+function costDevices(v, from, to, P){
+  P = P || USAGE.costP0;
+  var g = (v && v.g) || {}, dev = (v && v.dev) || {}, devDay = {}, rows = [], first = '';
+  Object.keys(dev).forEach(function(k){
+    Object.keys((dev[k] && dev[k].d) || {}).forEach(function(day){
+      if (!first || day < first) first = day;
+      if ((from && day < from) || (to && day > to)) return;
+      devDay[day] = (devDay[day] || 0) + (+dev[k].d[day] || 0);
+    });
+  });
+  var share = function(day, n){
+    var a = g[day]; if (!a) return 0;
+    var gr = +a[0] || 0, den = Math.max(gr, devDay[day] || 0);
+    return den ? costDayUsd(a, P, day).r * n / den : 0;
+  };
+  Object.keys(dev).forEach(function(k){
+    var x = dev[k] || {}, reads = 0, usd = 0;
+    Object.keys(x.d || {}).forEach(function(day){
+      if ((from && day < from) || (to && day > to)) return;
+      var n = +x.d[day] || 0; reads += n; usd += share(day, n);
+    });
+    if (reads > 0) rows.push({ k:k, n:x.n || '', ro:x.ro || '', ua:x.ua || '', reads:reads, usd:usd });
+  });
+  var covered = 0, devTot = 0, otherUsd = 0;
+  Object.keys(devDay).forEach(function(day){
+    var a = g[day]; if (!a) return;
+    var gr = +a[0] || 0; covered += gr; devTot += devDay[day];
+    otherUsd += share(day, Math.max(0, gr - devDay[day]));
+  });
+  rows.sort(function(a, b){ return b.reads - a.reads; });
+  return { rows:rows, first:first, covered:covered, devTot:devTot, other:Math.max(0, covered - devTot), otherUsd:otherUsd };
+}
+function costMoney(usd, P){ return '$' + nm(+usd.toFixed(2)) + ' = ' + nm(+(usd * P.fx).toFixed(1)) + ' ' + t('ريال'); }
+function costCard(){
+  if (!costMay()) return '';
+  if (!USAGE.cost.v && !USAGE.cost.err) costFetch();
+  var v = USAGE.cost.v, P = costPrice(v);
+  var rg = USAGE.costF.r === 'custom' ? [USAGE.costF.from, USAGE.costF.to] : costRange(USAGE.costF.r), from = rg[0], to = rg[1];
+  var flt = '<div class="chips" style="margin-bottom:8px">'
+    + [['all', 'منذ البداية'], ['month', 'هذا الشهر'], ['prev', 'الشهر الماضي'], ['30', 'آخر ٣٠ يومًا']].map(function(c){
+        return '<button type="button" class="chip' + (USAGE.costF.r === c[0] ? ' on' : '') + '" data-ucr="' + c[0] + '">' + esc(t(c[1])) + '</button>'; }).join('')
+    + '</div><div class="wt-row" style="gap:10px;flex-wrap:wrap;align-items:center">'
+    + '<label>' + esc(t('من')) + ' <input type="date" data-ucf="1" value="' + esc(from) + '"></label>'
+    + '<label>' + esc(t('إلى')) + ' <input type="date" data-uct="1" value="' + esc(to) + '"></label></div>';
+  if (!v || !v.g) return card('تكلفةُ قاعدة البيانات', flt + '<p class="hint" style="margin:8px 0 0">'
+    + esc(USAGE.cost.err ? t('تعذّر تحميلُ الأرقام') + ': ' + USAGE.cost.err : t('لا أرقامَ بعد — تسحبها مهمّةُ الخادم من جوجل كلَّ ثلاث ساعات.')) + '</p>');
+  var c = costCalc(v.g, from, to, P), dv = costDevices(v, from, to, P);
+  var mb = function(b){ return nm(Math.round(b / 1048576)) + ' ' + t('ميغابايت'); };
+  var sum = table(['البند', 'في المدّة', 'المجانيُّ في اليوم'], [
+      [esc(t('القراءات')), '<b class="num">' + nm(c.reads) + '</b>', nm(P.fr)],
+      [esc(t('منها فوق المجاني')), '<span class="num">' + nm(c.br) + '</span> <span class="hint" style="margin:0">(' + nm(c.paid) + ' ' + esc(t('يومًا')) + ')</span>', '—'],
+      [esc(t('الكتابة')), '<span class="num">' + nm(c.writes) + '</span>', nm(P.fw)],
+      [esc(t('الحذف')), '<span class="num">' + nm(c.deletes) + '</span>', nm(P.fd)],
+      [esc(t('أعلى حجمٍ مخزَّن')), mb(c.sMax), nm(P.fs) + ' ' + esc(t('غيغابايت'))]
+    ], [esc(t('التكلفة')), '<b>' + esc(costMoney(c.usd, P)) + '</b>', '']);
+  var mos = Object.keys(c.months).sort();
+  var mt = mos.length > 1 ? table(['الشهر', 'القراءات', 'أيامٌ فوق المجاني', 'التكلفة'], mos.map(function(k){
+      var x = c.months[k]; return [esc(k), nm(x.reads), nm(x.paid), esc(costMoney(x.usd, P))]; })) : '';
+  var dt;
+  if (dv.rows.length){
+    var model = function(ua){ return (typeof uaModel === 'function' && ua) ? uaModel(ua) : '—'; };
+    var rows = dv.rows.slice(0, 30).map(function(x){
+      return [esc(x.n || x.k), esc(t(roleName(x.ro))), esc(model(x.ua)), nm(x.reads),
+              nm(dv.covered ? Math.round(x.reads / dv.covered * 100) : 0) + '٪', esc(costMoney(x.usd, P))]; });
+    rows.push([esc(t('الخادمُ والمهامُّ الآلية وما لا يعدّه الجهاز')), '—', '—', nm(dv.other),
+               nm(dv.covered ? Math.round(dv.other / dv.covered * 100) : 0) + '٪', esc(costMoney(dv.otherUsd, P))]);
+    dt = table(['المستخدم', 'الدور', 'الجهاز', 'القراءات', 'النسبة', 'نصيبُه من التكلفة'], rows);
+  } else {
+    dt = '<p class="hint" style="margin:8px 0 0">' + esc(t('تقسيمُ القراءات على الأجهزة يبدأ من يوم وصول الإصدار ٣٨٫٨٠ إلى الجوالات — قبله الإجماليُّ من جوجل وحدَه.')) + '</p>';
+  }
+  var note = '<p class="hint" style="margin:8px 0 0">'
+    + esc(t('الحسبةُ لكلِّ يومٍ وحدَه: (قراءاتُ اليوم − ٥٠٬٠٠٠) ÷ ١٠٠٬٠٠٠ × سعرِ القراءة، ومثلُها الكتابةُ والحذف فوق ٢٠ ألفًا — ثم × سعرِ الدولار بالريال.'))
+    + ' ' + esc(t('الأسعار')) + ' (' + esc(P.loc) + '): ' + esc(t('القراءة')) + ' $' + nm(P.r) + ' · ' + esc(t('الكتابة')) + ' $' + nm(P.w) + ' · ' + esc(t('الحذف')) + ' $' + nm(P.d) + ' ' + esc(t('لكلِّ ١٠٠ ألف')) + ' · ' + esc(t('الدولار')) + ' = ' + nm(P.fx) + ' ' + esc(t('ريال')) + '.'
+    + '<br>' + esc(t('اليومُ يومُ فوترة جوجل: يبدأ مع تجدّد الحصة المجانية نحو العاشرة صباحًا بمكة.'))
+    + '<br>' + esc(t('نقلُ البيانات إلى الجوالات لا تُظهره العدّادات: أوّلُ ١٠ غيغابايت في الشهر مجانية ثم $٠٫١٢ للغيغابايت — يظهر في الفاتورة وحدَها مع الضريبة إن وُجدت.'))
+    + (c.peak ? '<br>' + esc(t('أعلى يوم')) + ': ' + esc(c.peak.day) + ' — ' + nm(c.peak.r) + ' ' + esc(t('قراءة')) + ' (' + esc(costMoney(c.peak.usd, P)) + ')' : '')
+    + '<br>' + esc(t('آخرُ سحبٍ من جوجل')) + ': ' + esc(agoTxt(v.at)) + '</p>';
+  return card('تكلفةُ قاعدة البيانات', flt + sum + mt + '<h3 style="margin:12px 0 4px">' + esc(t('من قرأ كم')) + '</h3>' + dt + note);
+}
+
 /* ═══ بطاقةُ أداء الميدان (V17.98) ═══
    من نبضات الحضور المحمَّلة أصلًا للمكتب: أبطأُ الأجهزة (الطرازُ من وكيل
    المستخدم، لا اسمٌ)، وأبطأُ الصفحات، والمؤشّراتُ الثلاثةُ على عتبات جوجل

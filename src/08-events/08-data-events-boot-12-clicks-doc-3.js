@@ -18,6 +18,9 @@ function onDocClickPart8(e){
   }
   if (e.target.closest('[data-impx]')){ IMP_PREVIEW = null; render(); return; }
 
+  var ucr = e.target.closest('[data-ucr]');   /* (V38.80) database-cost period presets */
+  if (ucr){ USAGE.costF.r = ucr.getAttribute('data-ucr'); USAGE.costF.from = ''; USAGE.costF.to = ''; render(1); return; }
+
   var urf = e.target.closest('[data-usrrolef]');
   if (urf){ USR.role = urf.getAttribute('data-usrrolef'); render(1); return; }
 

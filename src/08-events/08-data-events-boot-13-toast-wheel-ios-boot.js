@@ -526,6 +526,13 @@ document.addEventListener('change', function(e){
   if (el && el.hasAttribute && el.hasAttribute('data-vlgd')){
     VLOG_D = el.value || ''; render(1); return;
   }
+  /* (V38.80) the database-cost period: editing either date keeps the other end of the period shown */
+  if (el && el.hasAttribute && (el.hasAttribute('data-ucf') || el.hasAttribute('data-uct'))){
+    var urg = USAGE.costF.r === 'custom' ? [USAGE.costF.from, USAGE.costF.to] : costRange(USAGE.costF.r);
+    USAGE.costF.r = 'custom'; USAGE.costF.from = urg[0]; USAGE.costF.to = urg[1];
+    if (el.hasAttribute('data-ucf')) USAGE.costF.from = el.value || ''; else USAGE.costF.to = el.value || '';
+    render(1); return;
+  }
   if (el && el.hasAttribute && el.hasAttribute('data-mld')){
     mileDateSet(el.getAttribute('data-mld'), el.value || ''); render(); return;
   }

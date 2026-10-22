@@ -122,6 +122,7 @@ function readBudget(){
   var day = dayKey(Date.now());
   if (READ_DAY !== day){ READ_DAY = day; READ_DAY_N = FB.readCount || 0; READ_WARNED = 0; }
   var n = (FB.readCount || 0) - READ_DAY_N;
+  rdhTick();
   if (n > READ_CAP_SLOW && READ_WARNED < 2){
     READ_WARNED = 2;
     /* (V33.1) قرارُ المالك ق-٠١١: الخطةُ بالاستهلاك — يُسجَّل للعلم ولا يُبطَّأ سحبُ الجهاز (كان يُضاعَف موعدُه فيتأخّر الميدان) */
@@ -135,6 +136,46 @@ function readBudget(){
 }
 
 function readSlowFactor(){ readBudget(); return 1; }
+
+/* ═══ (V38.80) Each device's reads, day by day ═══
+   readBudget counted today's reads for this session only, and the presence beat sent that one number — overwritten
+   the next day — so nothing kept a device's reads per day, and the owner could not tell what a period cost.
+   Each device now adds what it read since the last tick into a per-day map in localStorage, keyed by Google's
+   billing day (America/Los_Angeles: the free quota resets at midnight Pacific, ~10:00 in Makkah), and the beat
+   carries the last seven days as one string field per device (rdh_<device>). A string is replaced whole on the
+   merged write, so the field never grows, and a second device of the same user writes its own field. The server
+   job (scripts/usage-cost.mjs) folds these into settings/cost next to Google's own totals. */
+function billDay(ts){
+  var d = new Date(+ts || Date.now());
+  try {
+    if (!billDay.fmt) billDay.fmt = new Intl.DateTimeFormat('en-CA', { timeZone:'America/Los_Angeles', year:'numeric', month:'2-digit', day:'2-digit' });
+    var s = billDay.fmt.format(d);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  } catch (e){}
+  return new Date(d.getTime() - 7 * 3600000).toISOString().slice(0, 10);
+}
+function rdhTick(save){
+  var RDH = FB.rdh || (FB.rdh = { last:0, map:null, saved:0 });   /* the day log sits beside the counter it reads */
+  if (!RDH.map){ try { RDH.map = JSON.parse(lsGet('nsk14.rdh') || '{}') || {}; } catch (e){ RDH.map = {}; } }
+  var cur = (typeof FB === 'object' && FB.readCount) || 0;
+  if (cur < RDH.last) RDH.last = 0;                       /* the session counter was reset */
+  var inc = cur - RDH.last;
+  if (inc > 0){ var d = billDay(); RDH.map[d] = (+RDH.map[d] || 0) + inc; RDH.last = cur; }
+  if (save || Date.now() - RDH.saved > 60000){
+    RDH.saved = Date.now();
+    var o = {}; Object.keys(RDH.map).sort().slice(-40).forEach(function(k){ o[k] = RDH.map[k]; });
+    RDH.map = o; lsSet('nsk14.rdh', JSON.stringify(o));
+  }
+  return RDH.map;
+}
+function rdhLast(n){
+  var m = rdhTick(true), o = {};
+  Object.keys(m).sort().slice(-(n || 7)).forEach(function(k){ o[k] = m[k]; });
+  return JSON.stringify(o);
+}
+function rdhKey(){ return 'rdh_' + (String(typeof DEV_ID === 'string' ? DEV_ID : '').replace(/[^A-Za-z0-9]/g, '').slice(0, 16) || 'dev'); }
+if (typeof document === 'object' && document.addEventListener)
+  document.addEventListener('visibilitychange', function(){ if (document.hidden) rdhTick(true); }, { passive:true });
 
 /* (V33.1) ق-٠١١: لا إبطاءَ — العدُّ والتنبيهُ يبقيان */
 function readDelta(col, key, cap){

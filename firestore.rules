@@ -301,11 +301,13 @@ service cloud.firestore {
     match /settings/roles    { allow read: if ok(); allow write: if ok() && myRank() >= 90; }
     // (V37.80) توكنُ نظام البطاقات (نظام البطاقات) حسابُ صاحب المشروع نفسِه — يقرؤه المكتبُ وحدَه لا كلُّ فعّال
     match /settings/extApi { allow read: if mgr(); }
+    // (V38.80) تكلفةُ قاعدة البيانات: يكتبها الخادمُ وحدَه (مفتاحُ الخدمة يتجاوز القواعد) ويقرؤها المكتبُ والإدارةُ العليا
+    match /settings/cost { allow read: if mgr() || (ok() && role() == 'exec'); allow write: if false; }
     match /settings/{id} {
       // الكتلُ المتطابقةُ تُجمَع بـ«أو»: ما لوثيقةٍ بعينها قاعدةٌ أضيقُ يُستثنى هنا
       // صراحةً وإلا فتحته هذه — كما استُثنيت الجوالات، ويُستثنى التقرير (V17.94)
-      allow read: if ok() && id != 'contacts' && id != 'cotel' && id != 'sysreport' && id != 'pmo' && id != 'extApi';
-      allow write: if pm('settings', 'w', mgr()) && id != 'sysreport' && id != 'pmo';
+      allow read: if ok() && id != 'contacts' && id != 'cotel' && id != 'sysreport' && id != 'pmo' && id != 'extApi' && id != 'cost';
+      allow write: if pm('settings', 'w', mgr()) && id != 'sysreport' && id != 'pmo' && id != 'cost';
     }
 
     // القائمة الموحّدة للشركات: المدير يضيف ويعتمد — المشرف طلبات فقط

@@ -1,0 +1,38 @@
+# ═══ تكلفةُ قاعدة البيانات — من عدّادات جوجل نفسِها (V38.80) ═══
+# الفاتورةُ تُحسَب على عدّادات جوجل لا على ما تعدّه الجوالات: مهامُّ الخادم
+# تقرأ القاعدةَ أيضًا. فتسحب هذه المهمّةُ القراءاتِ والكتاباتِ والحذفَ لكلِّ
+# يومٍ منذ إنشاء القاعدة، وتضمّ سجلَّ كلِّ جهازٍ يومًا بيوم، وتكتب وثيقةً
+# واحدةً settings/cost تقرؤها بطاقةُ «تكلفة قاعدة البيانات» بأيِّ مدّة.
+# كلَّ ثلاث ساعات، والتاريخُ كلُّه يُعاد في كلِّ تشغيل — فلا يضيع يومٌ بتشغيلٍ فائت.
+name: Database cost
+on:
+  schedule:
+    - cron: '40 */3 * * *'    # كلَّ ثلاث ساعات
+  workflow_dispatch: {}
+permissions:
+  contents: read
+concurrency:
+  group: usage-cost
+  cancel-in-progress: false
+jobs:
+  cost:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+      - name: الحزم
+        run: |
+          for i in 1 2 3; do
+            npm i --no-save --no-audit --no-fund firebase-admin@^12 && exit 0
+            echo "::warning::محاولةُ التثبيت $i تعثّرت — إعادةٌ بعد $((i*15))ث"
+            sleep $((i*15))
+          done
+          echo "::warning::تعذّر التثبيتُ — لا سحبَ هذه المرة"
+          exit 0
+      - name: عدّاداتُ جوجل وسجلُّ الأجهزة ← settings/cost
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/usage-cost.mjs

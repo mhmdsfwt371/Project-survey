@@ -377,7 +377,7 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
               + nosign.slice(0, 30).map(row).join('')
             : '<p class="hint" style="margin:0">' + esc(t('كلُّ مخيمٍ له مربعٌ وشاخص.')) + '</p>');
   })();
-if (cur === 'usage') return head + devActCard() + speedCard() + usageCard() + perfCard() + (function(){
+if (cur === 'usage') return head + costCard() + devActCard() + speedCard() + usageCard() + perfCard() + (function(){
     if (may('users') || may('exportAll')) presenceFetch(false);
     var rows = presenceRows(), now = Date.now(), cur9 = appVer();
     var H = 3600000, work = (function(){ var h = new Date().getHours(); return h >= 7 && h <= 23; })();
