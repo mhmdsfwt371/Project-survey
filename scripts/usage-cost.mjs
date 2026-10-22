@@ -34,10 +34,16 @@ async function get(url){
 }
 const em = b => (b && b.error) ? (b.error.status + ': ' + String(b.error.message).slice(0, 160)) : String(b).slice(0, 160);
 
+/* (V38.81) Cloud Monitoring cuts the hours back from the interval's END. Ending "now" made every hour straddle
+   the clock (…:49 to …:49), so an hour around Pacific midnight could land on the neighbouring day — and on a day near
+   the 50,000 free reads that moved a few cents (September read $2.57 against $2.59). Ending on the top of the last
+   whole hour makes every hour a clock hour, and Pacific midnight is always on one, so each day is exactly the day
+   Google bills; the hour still under way is counted on the next run. */
+const END = new Date(Math.floor(Date.now() / 3600000) * 3600000).toISOString();
 async function series(type, aligner, period){
   const by = {}; let tk = '', pages = 0;
   do {
-    const q = new URLSearchParams({ filter: `metric.type = "${type}"`, 'interval.startTime': START, 'interval.endTime': new Date().toISOString(),
+    const q = new URLSearchParams({ filter: `metric.type = "${type}"`, 'interval.startTime': START, 'interval.endTime': END,
       'aggregation.alignmentPeriod': period, 'aggregation.perSeriesAligner': aligner, 'aggregation.crossSeriesReducer': 'REDUCE_SUM', pageSize: '100000' });
     if (tk) q.set('pageToken', tk);
     const x = await get(`https://monitoring.googleapis.com/v3/projects/${P}/timeSeries?` + q);
@@ -60,7 +66,7 @@ const R = await series('firestore.googleapis.com/document/read_count', 'ALIGN_SU
 if (R.err){ console.log('::warning::تعذّر سحبُ عدّادات جوجل: ' + R.err); process.exit(0); }
 const W = await series('firestore.googleapis.com/document/write_count', 'ALIGN_SUM', '3600s');
 const D = await series('firestore.googleapis.com/document/delete_count', 'ALIGN_SUM', '3600s');
-const S = await series('firestore.googleapis.com/storage/data_and_index_storage_bytes', 'ALIGN_MAX', '86400s');
+const S = await series('firestore.googleapis.com/storage/data_and_index_storage_bytes', 'ALIGN_MAX', '3600s');   /* the day's largest size, from clock hours */
 const g = {};
 [...new Set([...Object.keys(R.by), ...Object.keys(W.by), ...Object.keys(D.by)])].sort().forEach(k => {
   g[k] = [Math.round(R.by[k] || 0), Math.round(W.by[k] || 0), Math.round(D.by[k] || 0), Math.round(S.by[k] || 0)];

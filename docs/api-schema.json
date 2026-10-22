@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V38.80",
+  "app_version": "V38.81",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2242,7 +2242,8 @@
   "V38.77": "photoView/photoDownload عبر phSrc على السجل نفسه · provision.yml: دورة كل ٥ دقائق لـ٥٫٥ ساعة مع concurrency · سيناريو ٢٨",
   "V38.78": "locOnly · chalCats0 للممرات والجمرات من locChalKeys · obsLocTags بلا استنتاج لهما · recMove ورفع أثر التحريك إلى rec.moved · locList بلا «[object Object]» · قائمة locnone · سيناريو ٢٩",
   "V38.79": "svForm: locOnly يخفي شرائح التحديات ووصفها ويجعل loc مطلوبًا · svSave: chals [] للممرات والجمرات · svqKeys بلا chals لهما · خطوة في SOPS · سيناريو ٣٠",
-  "V38.80": "usage-cost.mjs + usage-cost.yml (كل ٣ ساعات) ← settings/cost من Cloud Monitoring · rdhTick/billDay: سجل الجهاز اليومي بيوم فوترة جوجل ويُرسَل في نبضة الحضور rdh_<جهاز> · costCalc/costDevices/costRange/costCard في صحة النظام ← الاستهلاك · قاعدة settings/cost للمكتب والإدارة · presenceFetch: القراءة كانت تُعَدّ مرتين · cost-guard.md: المشروع على الدفع بالاستهلاك · سيناريو ٣١"
+  "V38.80": "usage-cost.mjs + usage-cost.yml (كل ٣ ساعات) ← settings/cost من Cloud Monitoring · rdhTick/billDay: سجل الجهاز اليومي بيوم فوترة جوجل ويُرسَل في نبضة الحضور rdh_<جهاز> · costCalc/costDevices/costRange/costCard في صحة النظام ← الاستهلاك · قاعدة settings/cost للمكتب والإدارة · presenceFetch: القراءة كانت تُعَدّ مرتين · cost-guard.md: المشروع على الدفع بالاستهلاك · سيناريو ٣١",
+  "V38.81": "usage-cost.mjs: نهاية المدة على رأس آخر ساعة كاملة (END) فتصير كل ساعة ساعةً على الساعة، والتخزين من ساعات لا أيام · audit-usage: فحصان للمهمة"
   },
   "map_and_geolocation": {
     "tile_layers": {

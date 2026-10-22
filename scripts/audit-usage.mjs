@@ -67,6 +67,13 @@ T(/قراءاتُ القاعدة اليوم ≈ \*\*٤٢٬٠٠٠\*\*/.test(md) &
 const pl = readFileSync('scripts/pulse.mjs', 'utf8');
 T(/doc\('usage'\)\.set\(/.test(pl) && (pl.match(/doc\('usage'\)\.set\(/g) || []).length === 1 && /slice\(-45\)/.test(pl), 'وكتابةٌ واحدةٌ في اليوم لوثيقةٍ واحدة تُقصّ على ٤٥ يومًا');
 
+/* (V38.81) cost job: clock hours, so each billing day is exactly Google's */
+const uc = readFileSync('scripts/usage-cost.mjs', 'utf8');
+T(/const END = new Date\(Math\.floor\(Date\.now\(\) \/ 3600000\) \* 3600000\)/.test(uc) && /'interval\.endTime': END/.test(uc) && !/'86400s'/.test(uc),
+  'مهمّةُ التكلفة تقرأ ساعاتٍ على رأس الساعة — فكلُّ يومِ فوترةٍ هو يومُ جوجل بالضبط');
+T((uc.match(/doc\('cost'\)\.set\(/g) || []).length === 1 && /merge: false/.test(uc) && /trim\(120\)/.test(uc),
+  'وكتابةٌ واحدةٌ لوثيقة التكلفة في كلِّ تشغيل، وسجلُّ الأجهزة يُقصّ على ١٢٠ يومًا');
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ try { dom.window.close(); } catch {} process.exit(1); }
 console.log('جردُ الاستعمال نظيف \u2705'); try { dom.window.close(); } catch {} process.exit(0);
