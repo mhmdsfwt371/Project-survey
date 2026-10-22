@@ -280,6 +280,13 @@ document.addEventListener('change', function(e){
 });
 
 document.addEventListener('input', function(e){
+  /* (V38.74) the sites list searches as you type — a short pause after the last key, then the list follows (the field keeps
+     its text and focus through the redraw: renderKeepGrab) */
+  if (e.target && e.target.id === 'siteQ'){
+    clearTimeout(renderKeepGrab.sqT); var qv = e.target.value;
+    renderKeepGrab.sqT = setTimeout(function(){ if (SITE_Q === qv) return; SITE_Q = qv; LIST_SHOWN = LIST_PAGE; render(); }, 280);
+    return;
+  }
   if (e.target && e.target.closest && e.target.closest('input[data-rb]')){ rbOnChange(e.target.closest('input[data-rb]')); return; }   /* (V38.43) report builder boxes */
   if (e.target && e.target.closest && e.target.closest('[data-vcn],[data-vcw],[data-vcp],[data-vco]')) catDraftCatch(e);   /* (V37.4) مسوّدةُ محرّر التصنيفات */
   /* بحثُ الصفحة: يُصفّي المعروضَ في اللحظة — لا إعادةَ رسمٍ فلا تضيع البؤرة */

@@ -57,7 +57,7 @@ function insqSheet(){
     + '<div class="wp-sec">' + esc(t('القطع والسيريالات')) + '</div>' + rows
     + '<div class="actions" style="margin:8px 0 0">' + btn('\u2713 ' + t('احفظ التعديل'), 'btn-primary btn-sm', ' data-insqsave="1"') + btn(t('إغلاق'), 'btn-quiet btn-sm', ' data-insqx="1"')
     + (boss ? btn('\u2716 ' + t('إلغاء تركيبٍ سُجِّل خطأً'), 'btn-sm', ' data-insqvoid="' + esc(rec.id) + '" style="color:var(--danger);border-color:var(--danger)"') : '') + '</div>'   /* (V38.68) */
-    + insqPhotos(rec)
+    + insqPhotos(rec) + phDeletedHtml(rec.id, true)   /* (V38.74) */
     + (hist ? '<div class="wp-sec" style="margin-top:12px">' + esc(t('آخر التعديلات')) + '</div><ul class="hint" style="margin:0;padding-inline-start:18px">' + hist + '</ul>' : '')
     + '</div></div>';
 }

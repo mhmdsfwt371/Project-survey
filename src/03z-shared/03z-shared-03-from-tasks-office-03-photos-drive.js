@@ -153,7 +153,7 @@ function photoFlush(){
     /* المفتاحُ بالرقم لا بالنوع: كانت صورةٌ ثانيةٌ من النوع نفسِه تكتب فوق
        الأولى في السجل — فيبقى الملفان على الدرايف ولا يُعرَف إلا آخرُهما. */
     CORE.set('photos', it.site + '-' + seq, {
-      site:it.site, kind:it.kind, seq:seq, name:nm2,
+      del:null, site:it.site, kind:it.kind, seq:seq, name:nm2,
       driveId:r.id, link:r.webViewLink, at:it.at, q:it.q || null   /* (V30.6) */
     });
     logEvent('رفع صورة — ' + it.site + ' \u00b7 ' + it.kind + ' \u00b7 ' + nm2, it.site);
@@ -187,7 +187,7 @@ function photoFlushCloud(){
   /* (V37.18) الخامُ في مجموعةٍ لا يسحبها أيُّ جهاز (photoblobs)، ووثيقةُ الصورة بياناتٌ وحدَها — كانت الصورُ الخامُ تُسحَب إلى كلِّ موبايل (٣٤ صورة = ٨٫٧ م.ب) فتقتل الصفحةَ على آيفون */
   CORE.set('photoblobs', it.site + '-' + seq, { site:it.site, name:nm2, at:it.at, by:STATE.meta.name || '', data:data });
   CORE.set('photos', it.site + '-' + seq, {
-    site:it.site, kind:it.kind, seq:seq, name:nm2, at:it.at, by:STATE.meta.name || '',
+    del:null, site:it.site, kind:it.kind, seq:seq, name:nm2, at:it.at, by:STATE.meta.name || '',
     status:'pending', blob:true, q:it.q || null   /* (V30.6) مقاييسُ الجودة */
   });
   CORE.saveSoon();
@@ -378,4 +378,25 @@ function phSrc(id, p, sz){
   /* (V38.64) a thumbnail never breaks the screen that shows it */
   if (p.blob || p.status === 'pending'){ try { return phBlob(id); } catch (e){ LS_ERR = e; return ''; } }
   return '';
+}
+
+/* (V38.74) a deleted photo comes back — by the project's management (admin and above). The deletion stays in the record
+   («was»), del becomes null so every phone's merged copy loses it. Mina 0449's two visit photos were deleted on 21 Oct
+   together with old installation photos; this is how such a slip is undone without a developer. */
+function phRestore(id){
+  if (rankOf(effRole(ROLE)) < rankOf('admin')){ toast(t('استرجاعُ الصور لإدارة المشروع')); return false; }
+  var p = (STATE.photos || {})[id]; if (!p || !p.del) return false;
+  var np = Object.assign({}, p, { del:null, restored:{ by:STATE.meta.name || '', at:Date.now(), was:p.del } }); delete np.data;
+  STATE.photos[id] = np; CORE.set('photos', id, np); phTouch();
+  logEvent('استرجاع صورة — ' + id + ' · حذفها ' + ((p.del || {}).by || '') + ' ' + fmtDT((p.del || {}).at), p.site);
+  toast(t('استُرجعت الصورة')); return true;
+}
+/* the deleted photos of one kind on a point, for the restore list */
+function phDeletedHtml(site, ins){
+  if (rankOf(effRole(ROLE)) < rankOf('admin')) return '';
+  var L = (typeof photosOf === 'function' ? photosOf(site) : []).filter(function(x){ var p = x[1] || {}; return p.del && (/^ins/.test(String(p.kind || '')) === !!ins); });
+  if (!L.length) return '';
+  return '<details style="margin-top:8px"><summary class="hint" style="cursor:pointer">\u{1F5D1} ' + esc(t('صورٌ محذوفة')) + ' \u00b7 ' + nm(L.length) + '</summary>'
+    + L.map(function(x){ var p = x[1], d0 = p.del || {}; return '<div class="svq-row"><div class="svq-k" style="flex:1 1 60%"><b style="color:var(--ink)">' + esc(x[0]) + '</b><div class="hint" style="margin:0;font-size:11.5px">' + esc(t('حذفها')) + ' ' + esc(dispName(d0.by) || d0.by || '—') + ' \u00b7 ' + esc(fmtDT(d0.at)) + (d0.why ? ' \u00b7 ' + esc(d0.why) : '') + '</div></div>' + btn('\u21A9 ' + t('استرجع'), 'btn-quiet btn-sm', ' data-phrestore="' + esc(x[0]) + '"') + '</div>'; }).join('')
+    + '</details>';
 }

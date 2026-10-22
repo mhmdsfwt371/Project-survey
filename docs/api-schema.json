@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V38.73",
+  "app_version": "V38.74",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2235,7 +2235,8 @@
   "V38.70": "svqMove/svqVisitPhotos · data-svqmove · voided photos hidden in popPhotosHtml · سيناريو ٢٢",
   "V38.71": "insCanon/insCanonApply في statBump · markInstall يكتب الإملاء المشكول · سيناريو ٢٣",
   "V38.72": "maintSave → mvWrite · سيناريو ٢٤",
-  "V38.73": "popPhotosHtml: كل نوع يطلب نفسه · المختصرة تجلب صور الزيارة · سيناريو ٢٥"
+  "V38.73": "popPhotosHtml: كل نوع يطلب نفسه · المختصرة تجلب صور الزيارة · سيناريو ٢٥",
+  "V38.74": "renderKeepGrab/Put في render · siteQ يبحث عند الكتابة · phRestore/phDeletedHtml · svqCanDel وdata-pdel للإدارة بسبب · del:null عند الرفع · سيناريو ٢٦"
   },
   "map_and_geolocation": {
     "tile_layers": {

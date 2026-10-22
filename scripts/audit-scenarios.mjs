@@ -730,6 +730,28 @@ console.log('\n══ ٢٥ · صورُ الزيارة في شاشة المسح �
   delete w.STATE.inss[x.id]; delete w.STATE.recs[x.id];
 }
 
+/* ── ٢٦ · (V38.74) الكتابةُ في البحث لا تُمحى بإعادة الرسم، والبحثُ أثناء الكتابة؛ والصورةُ المحذوفةُ تُسترجَع؛
+   وصورةٌ جديدةٌ لا ترث حذفَ صورةٍ قديمةٍ بالرقم نفسِه؛ وصورُ زيارةٍ معتمدةٍ للإدارة وحدَها ── */
+console.log('\n══ ٢٦ · البحثُ والصور ══');
+{
+  const d = w.document; w.ROLE = 'admin'; w.STATE.meta.role = 'admin'; w.SITE_Q = ''; w.CUR = 'sites'; w.render(1);
+  const q = d.getElementById('siteQ'); q.focus(); q.value = '38/5'; q.dispatchEvent(new w.Event('input', { bubbles:true })); w.render(1);
+  const q2 = d.getElementById('siteQ'); const kept = q2.value === '38/5' && d.activeElement === q2;
+  q2.value = '38/56'; q2.dispatchEvent(new w.Event('input', { bubbles:true })); await new Promise(r => setTimeout(r, 450));
+  const q3 = d.getElementById('siteQ');
+  T(kept && w.SITE_Q === '38/56' && q3.value === '38/56' && d.activeElement === q3, 'ما يُكتَب في البحث يبقى مع إعادة الرسم، والقائمةُ تبحث أثناء الكتابة بلا ضغط «بحث»');
+  w.SITE_Q = ''; q3.blur();
+  const x = w.STATE.sites.filter(z => z && z.type === 'مخيم' && !w.STATE.recs[z.id])[20];
+  w.STATE.recs[x.id] = { id:x.id, access:'تم الوصول', review:'approved', by:'فني', at:Date.now() - 9e8 };
+  w.STATE.photos[x.id + '-1'] = { site:x.id, kind:'site', seq:1, status:'done', driveId:'R1', at:Date.now() - 9e8, del:{ by:'مهندس', at:Date.now() - 1e5, why:'' } }; w.PH_IDX = null;
+  const ok = w.phRestore(x.id + '-1');
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; const engDel = w.svqCanDel(w.STATE.photos[x.id + '-1'], w.STATE.recs[x.id]); w.ROLE = 'admin'; w.STATE.meta.role = 'admin'; const admDel = w.svqCanDel(w.STATE.photos[x.id + '-1'], w.STATE.recs[x.id]);
+  T(ok && w.STATE.photos[x.id + '-1'].del === null && w.STATE.photos[x.id + '-1'].restored && !engDel && admDel, 'والصورةُ المحذوفةُ تسترجعها الإدارةُ بأثرها، وصورُ الزيارة المعتمدة لا يحذفها إلا الإدارة');
+  const src = String(w.photoFlushCloud || '') + String(w.photoFlush || '');
+  T(/del:null, site:it\.site/.test(src), 'وصورةٌ جديدةٌ تُكتَب بلا حذفٍ موروثٍ من رقمٍ قديم');
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

@@ -26,7 +26,35 @@ function moreHtml(){
 }
 function render(force){   /* (V31.8) ذاكرةُ الرسمة: تُفتَح هنا وتُغلَق بعد الرسم مهما كان المخرج */
   DB.open();
-  try { return render0(force); } finally { DB.memoReset(); }
+  /* (V38.74) the owner: «لما أكتب في البحث بيمسح أوتوماتيك». A redraw while typing (a live update, a photo arriving, the
+     sync badge) rebuilt the field from the page's state and erased what was being typed and closed the keyboard. The field
+     being typed in survives every redraw: same value, focus and caret. */
+  var keep = renderKeepGrab();
+  try { return render0(force); } finally { DB.memoReset(); renderKeepPut(keep); }
+}
+function renderKeepGrab(){
+  try {
+    var ae = document.activeElement; if (!ae) return null;
+    var tg = ae.tagName; if (tg !== 'INPUT' && tg !== 'TEXTAREA') return null;
+    if (/^(file|checkbox|radio|button|submit|range|color)$/.test(String(ae.type || ''))) return null;
+    var sel = '';
+    if (ae.id) sel = /^[A-Za-z][\w-]*$/.test(ae.id) ? '#' + ae.id : '[id="' + String(ae.id).replace(/"/g, '\\"') + '"]';
+    else { for (var i = 0; i < ae.attributes.length; i++){ var a = ae.attributes[i]; if (/^data-/.test(a.name)){ sel = tg.toLowerCase() + '[' + a.name + '="' + String(a.value).replace(/"/g, '\\"') + '"]'; break; } } }
+    if (!sel && ae.name) sel = tg.toLowerCase() + '[name="' + String(ae.name).replace(/"/g, '\\"') + '"]';
+    if (!sel) return null;
+    var st = null, en = null; try { st = ae.selectionStart; en = ae.selectionEnd; } catch (e0){ LS_ERR = e0; }
+    return { el:ae, sel:sel, v:ae.value, s:st, e:en };
+  } catch (e){ LS_ERR = e; return null; }
+}
+function renderKeepPut(k){
+  if (!k) return;
+  try {
+    if (document.body.contains(k.el) && document.activeElement === k.el) return;   /* not rebuilt — nothing to do */
+    var el = document.querySelector(k.sel); if (!el || el === document.activeElement) return;
+    if (el.value !== k.v) el.value = k.v;
+    try { el.focus({ preventScroll:true }); } catch (e1){ el.focus(); }
+    if (k.s !== null && k.s !== undefined){ try { el.setSelectionRange(k.s, k.e); } catch (e2){ LS_ERR = e2; } }
+  } catch (e){ LS_ERR = e; }
 }
 function render0(force){
   if (PH_IDX && Object.keys(STATE.photos || {}).length !== phIdx.len) PH_IDX = null;   /* (V37.26) صورةٌ أُضيفت مباشرةً بين رسمتين تُرى — والكتابةُ والورودُ يُبطلانه أصلًا */

@@ -380,8 +380,12 @@ function onDocClickPart4(e){
   pd = e.target.closest('[data-pdel]');
   if (pd){
     var pid = pd.getAttribute('data-pdel');
-    var why = (typeof prompt === 'function') ? prompt(t('سببُ الحذف')) : '';
+    /* (V38.74) an approved visit's photo is the project management's to delete, and no photo goes without a reason */
+    var pp = (STATE.photos || {})[pid] || {}, prec = STATE.recs[pp.site] || {};
+    if (!/^ins|^dis/.test(String(pp.kind || '')) && prec.review === 'approved' && rankOf(effRole(ROLE)) < rankOf('admin')){ toast(t('صورُ زيارةٍ معتمدةٍ تحذفها إدارةُ المشروع وحدَها')); return; }
+    var why = (typeof prompt === 'function') ? prompt(t('سببُ الحذف (مطلوب)')) : '';
     if (why === null) return;                    /* أُلغي */
+    if (!String(why).trim()){ toast(t('اكتب سببَ الحذف — يبقى في السجل')); return; }
     photoDelete(pid, why);
     return;
   }

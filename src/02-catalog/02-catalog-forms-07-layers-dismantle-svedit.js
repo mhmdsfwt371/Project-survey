@@ -255,7 +255,7 @@ function svqSheet(){
     + '<button type="button" class="npop-x" data-svqx="1" aria-label="' + esc(t('إغلاق')) + '">\u2715</button></div>'
     + '<p class="hint" style="margin:6px 0 10px">' + esc(t(appr && !boss ? 'هذا المسحُ معتمد — تعديلُ أيِّ حقلٍ يعيده لانتظار اعتماد المهندس.' : 'اختر الحقلَ الذي تعدّله — يُحفَظ وحدَه، وتبقى الصورُ وبقيةُ المسح كما هي، ويُسجَّل التعديلُ باسمك.')) + '</p>'
     + (rows || '<p class="hint">' + esc(t('لا حقولَ مكتوبةً في هذه الزيارة — افتح نموذجَ المسح.')) + '</p>')
-    + svqPhotos(rec)
+    + svqPhotos(rec) + phDeletedHtml(rec.id, false)   /* (V38.74) */
     + (may('approve') ? '<div class="actions" style="margin-top:10px">' + btn('\u21AA ' + t('انقل هذه الزيارة إلى نقطتها الصحيحة'), 'btn-secondary btn-sm', ' data-svqmove="' + esc(rec.id) + '"') + '</div>' : '')   /* (V38.70) */
     + (hist ? '<div class="wp-sec" style="margin-top:10px">' + esc(t('آخر التعديلات')) + '</div><ul class="wp-steps">' + hist + '</ul>' : '')
     + '<div class="actions" style="margin:14px 0 0">' + btn('\u2715 ' + t('إغلاق'), 'btn-secondary', ' data-svqx="1" style="width:100%"') + '</div>'
@@ -269,7 +269,11 @@ function svqPhotoCount(id){
   return n;
 }
 function svqKindLabel(k){ if (k === 'extra') return 'صورة إضافية'; var q = SV_PHOTOS.filter(function(p){ return p[0] === k; })[0]; return q ? q[1] : (k || 'صورة'); }
-function svqCanDel(p, rec){ if (may('delete')) return true; return !!p && p.by === (STATE.meta.name || '') && (rec || {}).review !== 'approved'; }
+function svqCanDel(p, rec){
+  /* (V38.74) an approved visit's photos are evidence — the project's management deletes them, not the field or the engineer */
+  if ((rec || {}).review === 'approved') return rankOf(effRole(ROLE)) >= rankOf('admin');
+  if (may('delete')) return true; return !!p && p.by === (STATE.meta.name || '');
+}
 /* (V22.8) «مش عارف أمسح صور وأزوّد صور جديدة»: صورُ الزيارة نفسُها بمصغّراتها — كلُّ صورةٍ تُحذَف
    (المهندسُ أيَّ صورة، والرافعُ صورتَه ما لم تُعتمَد الزيارة) بتأكيدٍ ثانٍ، وما في طابور الجهاز يُلغى،
    وتُضاف صورٌ جديدةٌ (واحدةٌ أو أكثر) بنوعها أو «صورة إضافية» — والحذفُ علامةٌ مسجَّلةٌ لا محوٌ صامت */

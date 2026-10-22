@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.73</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.74</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1377,7 +1377,7 @@ function nskChunkReady(){
 
   try { if (typeof whatsNewMaybe === 'function' && whatsNewMaybe.pending){ whatsNewMaybe.pending = false; if (whatsNewMaybe() && typeof render === 'function') render(1); } } catch (e3){ LS_ERR = e3; }
 }
-var I18N_FILE = 'i18n/dict-56386328f2.js', I18N_STATE = 0, I18N_WAIT = [];
+var I18N_FILE = 'i18n/dict-74cd5421d7.js', I18N_STATE = 0, I18N_WAIT = [];
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }
@@ -6531,7 +6531,7 @@ function svqSheet(){
     + '<button type="button" class="npop-x" data-svqx="1" aria-label="' + esc(t('إغلاق')) + '">\u2715</button></div>'
     + '<p class="hint" style="margin:6px 0 10px">' + esc(t(appr && !boss ? 'هذا المسحُ معتمد — تعديلُ أيِّ حقلٍ يعيده لانتظار اعتماد المهندس.' : 'اختر الحقلَ الذي تعدّله — يُحفَظ وحدَه، وتبقى الصورُ وبقيةُ المسح كما هي، ويُسجَّل التعديلُ باسمك.')) + '</p>'
     + (rows || '<p class="hint">' + esc(t('لا حقولَ مكتوبةً في هذه الزيارة — افتح نموذجَ المسح.')) + '</p>')
-    + svqPhotos(rec)
+    + svqPhotos(rec) + phDeletedHtml(rec.id, false)
     + (may('approve') ? '<div class="actions" style="margin-top:10px">' + btn('\u21AA ' + t('انقل هذه الزيارة إلى نقطتها الصحيحة'), 'btn-secondary btn-sm', ' data-svqmove="' + esc(rec.id) + '"') + '</div>' : '')
     + (hist ? '<div class="wp-sec" style="margin-top:10px">' + esc(t('آخر التعديلات')) + '</div><ul class="wp-steps">' + hist + '</ul>' : '')
     + '<div class="actions" style="margin:14px 0 0">' + btn('\u2715 ' + t('إغلاق'), 'btn-secondary', ' data-svqx="1" style="width:100%"') + '</div>'
@@ -6544,7 +6544,11 @@ function svqPhotoCount(id){
   return n;
 }
 function svqKindLabel(k){ if (k === 'extra') return 'صورة إضافية'; var q = SV_PHOTOS.filter(function(p){ return p[0] === k; })[0]; return q ? q[1] : (k || 'صورة'); }
-function svqCanDel(p, rec){ if (may('delete')) return true; return !!p && p.by === (STATE.meta.name || '') && (rec || {}).review !== 'approved'; }
+function svqCanDel(p, rec){
+
+  if ((rec || {}).review === 'approved') return rankOf(effRole(ROLE)) >= rankOf('admin');
+  if (may('delete')) return true; return !!p && p.by === (STATE.meta.name || '');
+}
 
 function svqPhotos(rec){
 
@@ -7164,7 +7168,7 @@ function insqSheet(){
     + '<div class="wp-sec">' + esc(t('القطع والسيريالات')) + '</div>' + rows
     + '<div class="actions" style="margin:8px 0 0">' + btn('\u2713 ' + t('احفظ التعديل'), 'btn-primary btn-sm', ' data-insqsave="1"') + btn(t('إغلاق'), 'btn-quiet btn-sm', ' data-insqx="1"')
     + (boss ? btn('\u2716 ' + t('إلغاء تركيبٍ سُجِّل خطأً'), 'btn-sm', ' data-insqvoid="' + esc(rec.id) + '" style="color:var(--danger);border-color:var(--danger)"') : '') + '</div>'
-    + insqPhotos(rec)
+    + insqPhotos(rec) + phDeletedHtml(rec.id, true)
     + (hist ? '<div class="wp-sec" style="margin-top:12px">' + esc(t('آخر التعديلات')) + '</div><ul class="hint" style="margin:0;padding-inline-start:18px">' + hist + '</ul>' : '')
     + '</div></div>';
 }
@@ -12819,7 +12823,7 @@ function photoFlush(){
     PHOTO_Q.shift();
 
     CORE.set('photos', it.site + '-' + seq, {
-      site:it.site, kind:it.kind, seq:seq, name:nm2,
+      del:null, site:it.site, kind:it.kind, seq:seq, name:nm2,
       driveId:r.id, link:r.webViewLink, at:it.at, q:it.q || null
     });
     logEvent('رفع صورة — ' + it.site + ' \u00b7 ' + it.kind + ' \u00b7 ' + nm2, it.site);
@@ -12853,7 +12857,7 @@ function photoFlushCloud(){
 
   CORE.set('photoblobs', it.site + '-' + seq, { site:it.site, name:nm2, at:it.at, by:STATE.meta.name || '', data:data });
   CORE.set('photos', it.site + '-' + seq, {
-    site:it.site, kind:it.kind, seq:seq, name:nm2, at:it.at, by:STATE.meta.name || '',
+    del:null, site:it.site, kind:it.kind, seq:seq, name:nm2, at:it.at, by:STATE.meta.name || '',
     status:'pending', blob:true, q:it.q || null
   });
   CORE.saveSoon();
@@ -13028,6 +13032,24 @@ function phSrc(id, p, sz){
 
   if (p.blob || p.status === 'pending'){ try { return phBlob(id); } catch (e){ LS_ERR = e; return ''; } }
   return '';
+}
+
+function phRestore(id){
+  if (rankOf(effRole(ROLE)) < rankOf('admin')){ toast(t('استرجاعُ الصور لإدارة المشروع')); return false; }
+  var p = (STATE.photos || {})[id]; if (!p || !p.del) return false;
+  var np = Object.assign({}, p, { del:null, restored:{ by:STATE.meta.name || '', at:Date.now(), was:p.del } }); delete np.data;
+  STATE.photos[id] = np; CORE.set('photos', id, np); phTouch();
+  logEvent('استرجاع صورة — ' + id + ' · حذفها ' + ((p.del || {}).by || '') + ' ' + fmtDT((p.del || {}).at), p.site);
+  toast(t('استُرجعت الصورة')); return true;
+}
+
+function phDeletedHtml(site, ins){
+  if (rankOf(effRole(ROLE)) < rankOf('admin')) return '';
+  var L = (typeof photosOf === 'function' ? photosOf(site) : []).filter(function(x){ var p = x[1] || {}; return p.del && (/^ins/.test(String(p.kind || '')) === !!ins); });
+  if (!L.length) return '';
+  return '<details style="margin-top:8px"><summary class="hint" style="cursor:pointer">\u{1F5D1} ' + esc(t('صورٌ محذوفة')) + ' \u00b7 ' + nm(L.length) + '</summary>'
+    + L.map(function(x){ var p = x[1], d0 = p.del || {}; return '<div class="svq-row"><div class="svq-k" style="flex:1 1 60%"><b style="color:var(--ink)">' + esc(x[0]) + '</b><div class="hint" style="margin:0;font-size:11.5px">' + esc(t('حذفها')) + ' ' + esc(dispName(d0.by) || d0.by || '—') + ' \u00b7 ' + esc(fmtDT(d0.at)) + (d0.why ? ' \u00b7 ' + esc(d0.why) : '') + '</div></div>' + btn('\u21A9 ' + t('استرجع'), 'btn-quiet btn-sm', ' data-phrestore="' + esc(x[0]) + '"') + '</div>'; }).join('')
+    + '</details>';
 }
 
 var BASE = null;
@@ -26970,7 +26992,33 @@ function moreHtml(){
 }
 function render(force){
   DB.open();
-  try { return render0(force); } finally { DB.memoReset(); }
+
+  var keep = renderKeepGrab();
+  try { return render0(force); } finally { DB.memoReset(); renderKeepPut(keep); }
+}
+function renderKeepGrab(){
+  try {
+    var ae = document.activeElement; if (!ae) return null;
+    var tg = ae.tagName; if (tg !== 'INPUT' && tg !== 'TEXTAREA') return null;
+    if (/^(file|checkbox|radio|button|submit|range|color)$/.test(String(ae.type || ''))) return null;
+    var sel = '';
+    if (ae.id) sel = /^[A-Za-z][\w-]*$/.test(ae.id) ? '#' + ae.id : '[id="' + String(ae.id).replace(/"/g, '\\"') + '"]';
+    else { for (var i = 0; i < ae.attributes.length; i++){ var a = ae.attributes[i]; if (/^data-/.test(a.name)){ sel = tg.toLowerCase() + '[' + a.name + '="' + String(a.value).replace(/"/g, '\\"') + '"]'; break; } } }
+    if (!sel && ae.name) sel = tg.toLowerCase() + '[name="' + String(ae.name).replace(/"/g, '\\"') + '"]';
+    if (!sel) return null;
+    var st = null, en = null; try { st = ae.selectionStart; en = ae.selectionEnd; } catch (e0){ LS_ERR = e0; }
+    return { el:ae, sel:sel, v:ae.value, s:st, e:en };
+  } catch (e){ LS_ERR = e; return null; }
+}
+function renderKeepPut(k){
+  if (!k) return;
+  try {
+    if (document.body.contains(k.el) && document.activeElement === k.el) return;
+    var el = document.querySelector(k.sel); if (!el || el === document.activeElement) return;
+    if (el.value !== k.v) el.value = k.v;
+    try { el.focus({ preventScroll:true }); } catch (e1){ el.focus(); }
+    if (k.s !== null && k.s !== undefined){ try { el.setSelectionRange(k.s, k.e); } catch (e2){ LS_ERR = e2; } }
+  } catch (e){ LS_ERR = e; }
 }
 function render0(force){
   if (PH_IDX && Object.keys(STATE.photos || {}).length !== phIdx.len) PH_IDX = null;
@@ -27663,6 +27711,7 @@ function clickAPart3(e){
   if (e.target.closest('[data-insqx]')){ insqState().id = ''; insqState().st = ''; render(1); return true; }
   var iqs = e.target.closest('[data-insqst]'); if (iqs){ insqState().st = iqs.getAttribute('data-insqst'); render(1); return true; }
   if (e.target.closest('[data-insqsave]')){ if (insqSave()) render(1); return true; }
+  var phr = e.target.closest('[data-phrestore]'); if (phr){ if (phRestore(phr.getAttribute('data-phrestore'))) render(1); return true; }
   var svm = e.target.closest('[data-svqmove]'); if (svm){ if (svqMove(svm.getAttribute('data-svqmove'))) render(1); return true; }
   if (e.target.closest('[data-mvsettle]')){ insLedgerSettle(); render(1); return true; }
   var iqv = e.target.closest('[data-insqvoid]'); if (iqv){ if (insqVoid(iqv.getAttribute('data-insqvoid'))) render(1); return true; }
@@ -28944,8 +28993,12 @@ function onDocClickPart4(e){
   pd = e.target.closest('[data-pdel]');
   if (pd){
     var pid = pd.getAttribute('data-pdel');
-    var why = (typeof prompt === 'function') ? prompt(t('سببُ الحذف')) : '';
+
+    var pp = (STATE.photos || {})[pid] || {}, prec = STATE.recs[pp.site] || {};
+    if (!/^ins|^dis/.test(String(pp.kind || '')) && prec.review === 'approved' && rankOf(effRole(ROLE)) < rankOf('admin')){ toast(t('صورُ زيارةٍ معتمدةٍ تحذفها إدارةُ المشروع وحدَها')); return; }
+    var why = (typeof prompt === 'function') ? prompt(t('سببُ الحذف (مطلوب)')) : '';
     if (why === null) return;
+    if (!String(why).trim()){ toast(t('اكتب سببَ الحذف — يبقى في السجل')); return; }
     photoDelete(pid, why);
     return;
   }
@@ -29585,6 +29638,12 @@ document.addEventListener('change', function(e){
 });
 
 document.addEventListener('input', function(e){
+
+  if (e.target && e.target.id === 'siteQ'){
+    clearTimeout(renderKeepGrab.sqT); var qv = e.target.value;
+    renderKeepGrab.sqT = setTimeout(function(){ if (SITE_Q === qv) return; SITE_Q = qv; LIST_SHOWN = LIST_PAGE; render(); }, 280);
+    return;
+  }
   if (e.target && e.target.closest && e.target.closest('input[data-rb]')){ rbOnChange(e.target.closest('input[data-rb]')); return; }
   if (e.target && e.target.closest && e.target.closest('[data-vcn],[data-vcw],[data-vcp],[data-vco]')) catDraftCatch(e);
 
@@ -30046,6 +30105,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.73"></script>
+<script defer src="app-office.js?v=38.74"></script>
 </body>
 </html>
