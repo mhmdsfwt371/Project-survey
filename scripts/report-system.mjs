@@ -166,7 +166,7 @@ console.log(text);
 /* ═══ ٥ · النشرُ بلاغًا يُقرأ من الهاتف ═══ */
 /* نصُّ التقرير يُكتَب حيث يُقرأ (V17.65): البلاغُ مكانُه، والبريدُ نسخةٌ منه */
 if (process.env.REPORT_OUT){
-  try { writeFileSync(process.env.REPORT_OUT, title + '\n\n' + text); }
+  try { writeFileSync(process.env.REPORT_OUT, text); }   /* (V38.77) «title» belonged to the public issue removed in V17.94 — the write threw, so the report never reached the database */
   catch (e){ console.log('::warning::تعذّر كتابةُ نصِّ التقرير: ' + String(e.message).slice(0, 120)); }
 }
 /* (V17.94) لا يُنشَر بلاغًا عامًّا: يكتبه سيرُه في settings/sysreport (sysreport-write) ويقرؤه المكتبُ في التطبيق */

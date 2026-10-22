@@ -6,7 +6,8 @@
              '//' or '/*' are untouched; only comments and the blank lines they leave behind go.
    ========================================================================== */
 import { createRequire } from 'module';
-/* acorn ships with jsdom (always installed where the audits run) — no extra dependency */
+/* (V38.77) acorn is NOT part of jsdom — it came only through eslint. Every workflow that builds the app installs it explicitly
+   (package.json declares it; audit-workflow-deps guards it): the Ministry snapshot and the system report failed from V38.39 */
 const acorn = createRequire(import.meta.url)('acorn');
 export function stripJs(js){
   const cm = [];

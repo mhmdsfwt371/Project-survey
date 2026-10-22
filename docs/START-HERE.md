@@ -38,7 +38,7 @@
 ## في عشر دقائق: ابنِ وافحص
 
 ```bash
-npm i --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3 eslint@9 globals@15
+npm i --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3 eslint@9 globals@15 acorn@^8
 node scripts/build.mjs            # يجمع src/ في index.html
 node scripts/build.mjs --check    # يتأكد أن index.html = المصدر
 node --test scripts/unit-core.mjs # اختباراتُ الوحدة — ثوانٍ

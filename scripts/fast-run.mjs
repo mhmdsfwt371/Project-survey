@@ -8,6 +8,7 @@ const STEPS = [
   ['البناءُ مطابقٌ للمصدر', 'node scripts/build.mjs --check'],
   ['فاحصُ النحو', 'node scripts/audit-lint.mjs'],
   ['الأسرارُ والسجلّاتُ العامة', 'node scripts/audit-secrets.mjs'],
+  ['حزمُ السيور المجدولة', 'node scripts/audit-workflow-deps.mjs'],   /* (V38.77) */
   ['حزمةُ التسليم', 'node scripts/audit-runbooks.mjs'],
   ['المساعدُ والأدلة', 'node scripts/audit-manuals.mjs'],
   ['التعديلُ الموحّد', 'node scripts/audit-edit.mjs'],

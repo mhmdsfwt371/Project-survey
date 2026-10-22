@@ -23,7 +23,7 @@ jobs:
         # لا يصحُّ أن يُسقِط تقريرًا، والأحمرُ بلا عطلٍ يُعلِّم تجاهلَ الأحمر.
         run: |
           for i in 1 2 3; do
-            npm i --no-save --no-audit --no-fund firebase-admin@^12 && exit 0
+            npm i --no-save --no-audit --no-fund firebase-admin@^12 acorn@^8 && exit 0
             echo "::warning::محاولةُ التثبيت $i تعثّرت — إعادةٌ بعد $((i*15))ث"
             sleep $((i*15))
           done
