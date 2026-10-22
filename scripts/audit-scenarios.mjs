@@ -717,6 +717,19 @@ console.log('\n══ ٢٤ · قطعُ الصيانة في الدفتر ══')
   T(!all.length, 'ولا دالّةَ تدفع حركةَ مخزنٍ محليًّا بلا كتابتها في الدفتر' + (all.length ? ': ' + all.join('، ') : ''));
 }
 
+/* ── ٢٥ · (V38.73) صورُ الزيارة تُجلَب في شاشة المسح ولو كانت صورُ التركيب على الهاتف — كان الجلبُ حين لا صورةَ أصلًا ── */
+console.log('\n══ ٢٥ · صورُ الزيارة في شاشة المسح ══');
+{
+  const x = w.STATE.sites.filter(z => z && z.type === 'مخيم' && z.zone === 'منى' && !w.STATE.recs[z.id] && !w.STATE.inss[z.id])[14];
+  w.STATE.recs[x.id] = { id:x.id, access:'تم الوصول', review:'approved', by:'فني', at:Date.now() - 9e8, photos:['site','mount'] };
+  w.STATE.inss[x.id] = { id:x.id, status:'مُركّب', by:'منفِّذ', at:Date.now(), photos:['before'] };
+  w.STATE.photos[x.id + '-61'] = { site:x.id, kind:'ins_before', seq:61, status:'done', driveId:'I61', at:Date.now() }; w.PH_IDX = null;
+  let asked = 0; const keep = w.photosFetchSite; w.photosFetchSite = (id) => { if (id === x.id) asked++; };
+  w.POP_SITE = x.id; w.FIELD_MODE = 'survey'; const h = String(w.popHtml()); w.photosFetchSite = keep;
+  T(asked >= 1 && h.indexOf('I61') < 0 && /الصور/.test(h), 'شاشةُ المسح تطلب صورَ الزيارة الناقصة ولو كانت صورُ التركيب هنا، وتقول ما تعرف حتى تصل');
+  delete w.STATE.inss[x.id]; delete w.STATE.recs[x.id];
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

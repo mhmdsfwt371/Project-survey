@@ -29,8 +29,10 @@ function netRows(x, kvf){
 function popPhotosHtml(id){
   if (typeof photosOf !== 'function') return '';
   var L = photosOf(id).filter(function(x){ return x[1] && !x[1].del; });
-  if (!L.length && typeof photosFetchSite === 'function') photosFetchSite(id);
-  if (!L.length) return (typeof PH_FETCH === 'object' && PH_FETCH[id] === 'run') ? '<div class="hint" style="margin:6px 0 0">\u23F3 ' + esc(t('تُحمَّل صورُ الزيارة…')) + '</div>' : '';
+  /* (V38.73) the owner: «صور الزيارة مش بتظهر في شاشة المسح». The point's photos were fetched only when NONE were on this
+     phone — Mina 0449 had its installation photos here, so its visit photos were never fetched and the survey map showed
+     nothing. Each kind now asks for itself: a record that lists photos the phone does not have fetches the point's photos
+     and says what it knows meanwhile. */
   /* (V38.58) the installation's photos are their own row (they were counted among the visit's), and a photo the server has
      not yet moved to Drive (no data, no drive id) is shown as waiting instead of silently dropped */
   var group = function(list, label){
@@ -46,7 +48,16 @@ function popPhotosHtml(id){
   var isIns = function(x){ return /^ins/.test(String(x[1].kind || '')) && !(vAt && (+x[1].at || 0) <= vAt); };
   if (vAt) L = L.filter(function(x){ return !(/^ins/.test(String(x[1].kind || '')) && (+x[1].at || 0) <= vAt); });
   /* (V38.61) owner's rule: the survey map shows the visit's photos, the installation map the installation's, «brief» both */
-  var sv = group(L.filter(function(x){ return !isIns(x); }), 'صور الزيارة'), ins = group(L.filter(isIns), 'صور التركيب');
+  var svL = L.filter(function(x){ return !isIns(x); }), insL = L.filter(isIns), insR = (STATE.inss || {})[id];
+  var listed = function(r){ return r ? ((Array.isArray(r.photos) ? r.photos.length : 0) || +r.phN || 0) : 0; };
+  var missing = function(r){
+    if (!listed(r)) return '';
+    if (typeof photosFetchSite === 'function') photosFetchSite(id);
+    var line = typeof photosMissingLine === 'function' ? photosMissingLine(id, r) : '';
+    return line ? '<div class="hint" style="margin:8px 0 0">' + esc(line) + (typeof PH_FETCH === 'object' && PH_FETCH[id] === 'err' ? ' ' + btn('\u21BB ' + t('أعد الجلب'), 'btn-quiet btn-sm', ' data-phrefetch="' + esc(id) + '"') : '') + '</div>' : '';
+  };
+  var sv = svL.length ? group(svL, 'صور الزيارة') : (FIELD_MODE !== 'install' ? missing(STATE.recs[id]) : '');
+  var ins = insL.length ? group(insL, 'صور التركيب') : (FIELD_MODE !== 'survey' && insR && insR.status && !insR.voided ? missing(insR) : '');
   return FIELD_MODE === 'install' ? ins : (FIELD_MODE === 'survey' ? sv : sv + ins);
 }
 
@@ -175,6 +186,8 @@ function popHtml(){
             /* والصورُ تُفتَح من هنا — لا من شاشةٍ أخرى */
             + (function(){
                 var L = photosOf(s.id).filter(function(x){ return !x[1].del; });
+                /* (V38.73) the visit's photos are fetched even when the installation's are already here */
+                if (bR && ((bR.photos || []).length || +bR.phN) && !L.some(function(x){ return !/^ins/.test(String(x[1].kind || '')); })) photosFetchSite(s.id);
                 if (!L.length) return (bR.photos || []).length   /* (V37.7) تُجلَب من القاعدة حين تُفتَح النقطة، ويُقال الصدق */
                   ? '<div class="hint" style="margin:8px 0 0">' + esc(photosMissingLine(s.id, bR))
                     + (PH_FETCH[s.id] === 'err' ? ' ' + btn('\u21BB ' + t('أعد الجلب'), 'btn-quiet btn-sm', ' data-phrefetch="' + esc(s.id) + '"') : '') + '</div>'
