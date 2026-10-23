@@ -56,13 +56,7 @@ function onDocClickPart1(e){
   var kad = e.target.closest('[data-knownadd]');   /* (V37.74) سؤالٌ → كرتٌ جاهزُ الكلمات، والمؤشّرُ في الحل */ if (kad){ knEdAdd(kad.getAttribute('data-knownadd')); render(1); setTimeout(function(){ var a0 = document.getElementById('kn-a-0'); if (a0){ a0.focus(); a0.scrollIntoView({ block:'center' }); } }, 60); toast(t('اكتب الحل في الكرت الجديد ثم احفظ')); return; }
   if (e.target.closest('[data-aqref]')){ assistQFetch(true); toast(t('جارٍ التحديث…')); return; }
   if (e.target.closest('[data-knownsave]')){ if (knEdSave()) render(1); return; }   /* (V37.27 → V37.74 كروت) */
-  if (e.target.closest('[data-askeng]')){ try { assistLog(ASSIST_Q, false, true); } catch (eAL2){ LS_ERR = eAL2; }
-    /* (V39.4) a conversation with the engineer, the question and the device's state written in its box; no engineer on file:
-       the report, as before */
-    var aw = typeof askEngWho === 'function' ? askEngWho() : '';
-    if (aw && typeof chPageHtml === 'function'){ var ak = 'dm:' + aw; (chOpenHtml.draft = chOpenHtml.draft || {})[ak] = askEngText(ASSIST_Q);
-      chPageHtml.f = { open:ak }; ASSIST_OPEN = false; PTAB.chat = 'chat'; goPage('chat'); render(1); return; }
-    BUG_FROM_ASSIST = String(ASSIST_Q || ''); BUG_KIND = 'عطل'; BUG_OPEN = true; ASSIST_OPEN = false; render(1); return; }   /* (V37.4 → V37.13: أسماءٌ فريدة) */
+  if (e.target.closest('[data-askeng], [data-askengto]')){ askEngClick(e); return; }   /* (V39.4 → V39.7) the conversation with the engineer */   /* (V37.4 → V37.13: أسماءٌ فريدة) */
   var cad = e.target.closest('[data-vcadd]');
   if (cad){ var kd = cad.getAttribute('data-vcadd'), tb = document.getElementById('catBody-' + kd); if (!CAT_NEW[kd] || !tb) return;   /* صفٌّ يُضاف في مكانه — بلا إعادة رسمٍ تمسح ما كُتب */
     var nk = 'u' + Date.now().toString(36); CAT_NEW[kd].push(nk); tb.insertAdjacentHTML('beforeend', catRow(kd, { k:nk, n:'', who:'', photo:false })); var ni = tb.querySelector('[data-vcn="' + kd + '|' + nk + '"]'); if (ni) ni.focus(); return; }

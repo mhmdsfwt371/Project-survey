@@ -243,7 +243,11 @@ service cloud.firestore {
     match /msgs/{id} {
       allow read: if pm('msgs', 'r', ok());
       allow create: if pm('msgs', 'w', canW()) && request.resource.data.get('deleted', false) != true;
-      allow update, delete: if false;
+      // (V39.7) owner: «زرار مسح يكون مع المهندس والمدير» — the engineer and above mark a message deleted (who and when);
+      // its text and sender never change, and nobody erases it
+      allow update: if mgr() && request.resource.data.get('deleted', false) == true
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['deleted', 'delBy', 'delAt', '_by', '_at']);
+      allow delete: if false;
     }
     match /props/{id} { allow read: if pm('props', 'r', ok()); allow create, update: if pm('props', 'w', canW()); allow delete: if pm('props', 'd', mgr()); }
 

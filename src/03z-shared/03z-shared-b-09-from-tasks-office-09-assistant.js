@@ -233,7 +233,7 @@ function assistFixHtml(kind, d){
     else if (d.q) out += '<p>' + esc(t('الشبكةُ متصلة وما زالت كتاباتٌ تنتظر — اضغط «زامِن الآن».')) + '</p><div class="actions">' + btn('\u21BB ' + t('زامِن الآن'), 'btn-primary btn-sm', ' data-syncall="1"') + '</div>';
     else out += '<p>' + esc(t('لا شيءَ ينتظر الرفع — كلُّ ما سجّلته وصل.')) + '</p>';
   } else if (kind === 'update'){
-    out += row('نسختك', esc(d.ver), true) + '<p>' + esc(t('التطبيقُ يحدّث نفسه لوحده أوّلَ ما يفتح على الشبكة. لو ظلّ قديمًا: أغلقه تمامًا وافتحه، ولو لم يتغيّر فـ«إعادة ضبط التطبيق».')) + '</p><div class="actions">' + btn('\u{1F9F9} ' + t('إعادة ضبط التطبيق'), 'btn-secondary btn-sm', ' data-appreset="1"') + '</div>';
+    out += row('نسختك', esc(typeof verShow === 'function' ? verShow((typeof appVer === 'function' && appVer()) || d.ver) : d.ver), true)   /* (V39.7) in the user's digits */ + '<p>' + esc(t('التطبيقُ يحدّث نفسه لوحده أوّلَ ما يفتح على الشبكة. لو ظلّ قديمًا: أغلقه تمامًا وافتحه، ولو لم يتغيّر فـ«إعادة ضبط التطبيق».')) + '</p><div class="actions">' + btn('\u{1F9F9} ' + t('إعادة ضبط التطبيق'), 'btn-secondary btn-sm', ' data-appreset="1"') + '</div>';
   } else if (kind === 'login'){
     out += '<p>' + esc(t('تغييرُ كلمة المرور من زرّ «تغيير كلمة المرور» أسفلَ القائمة. ولو نسيتها فالمكتب يصدر لك كلمةً جديدةً من شاشة المستخدمين.')) + '</p><div class="actions">' + btn('\u{1F511} ' + t('تغيير كلمة المرور'), 'btn-secondary btn-sm', ' data-pwopen="1"') + '</div>';
   } else if (kind === 'gps'){
@@ -247,16 +247,52 @@ function assistFixHtml(kind, d){
 
 /* (V39.4) the engineer to talk to: up the reporting line from the user to the first engineer (or above); else the first
    active engineer — and '' when there is none, so the button falls back to the report it used to send */
-function askEngWho(){
+function askEngWho(){ return askEngList()[0] || ''; }
+/* (V39.7) owner: «لو أنا مشرف وعندي أكتر من مهندس أعمل إيه؟» — every engineer (and the one above the user first, then the
+   others by name): one opens the conversation at once; two or more, the user picks from a list under the button */
+function askEngList(){
+  var U = STATE.users || {}, me = STATE.meta.name || '', by = {}, out = [];
+  Object.keys(U).forEach(function(k){ var u = U[k]; if (u && u.name && u.active !== false) by[u.name] = u; });
+  var cur = by[me], seen = {};
+  while (cur && cur.sup && !seen[cur.sup]){ seen[cur.sup] = 1; var up = by[cur.sup]; if (!up) break; if (rankOf(up.role || '') >= rankOf('engineer')){ out.push(up.name); break; } cur = up; }
+  Object.keys(by).filter(function(n){ return n !== me && by[n].role === 'engineer' && out.indexOf(n) < 0; }).sort().forEach(function(n){ out.push(n); });
+  return out;
+}
+/* (V39.4) «كلّم المهندس»: a conversation with the engineer, the question and the device's state written in its box — one
+   engineer opens it at once, more than one shows the list (V39.7); no engineer on file: the report, as before */
+function askEngClick(e){
+  var to = e.target.closest('[data-askengto]');
+  if (to){ askEngOpen(to.getAttribute('data-askengto')); return; }
+  try { assistLog(ASSIST_Q, false, true); } catch (eAL2){ LS_ERR = eAL2; }
+  var al = askEngList();
+  if (al.length > 1){ askEngWho.pick = true; render(1); return; }
+  if (al.length){ askEngOpen(al[0]); return; }
+  BUG_FROM_ASSIST = String(ASSIST_Q || ''); BUG_KIND = 'عطل'; BUG_OPEN = true; ASSIST_OPEN = false; render(1);
+}
+/* the conversation with one engineer, the question and the device's state in its box */
+function askEngOpen(name){
+  var ak = 'dm:' + name; (chOpenHtml.draft = chOpenHtml.draft || {})[ak] = askEngText(ASSIST_Q);
+  askEngWho.pick = false; chPageHtml.f = { open:ak }; ASSIST_OPEN = false; PTAB.chat = 'chat'; goPage('chat'); render(1);
+}
+function askEngPickHtml(){
+  var L = askEngList();
+  return '<div class="card" style="margin:0 0 10px"><p style="margin:0 0 6px">' + esc(t('اختر المهندس')) + '</p><div class="actions" style="flex-direction:column;align-items:stretch">'
+    + L.map(function(n, i){ return btn('\u{1F4AC} ' + (dispName(n) || n) + (i === 0 && askEngUp() === n ? ' \u00b7 ' + t('فوقك مباشرةً') : ''), i ? 'btn-secondary btn-sm' : 'btn-primary btn-sm', ' data-askengto="' + esc(n) + '"'); }).join('')
+    + '</div></div>';
+}
+/* the engineer (or above) directly up the reporting line — '' when the chain has none */
+function askEngUp(){
   var U = STATE.users || {}, me = STATE.meta.name || '', by = {};
   Object.keys(U).forEach(function(k){ var u = U[k]; if (u && u.name && u.active !== false) by[u.name] = u; });
   var cur = by[me], seen = {};
-  while (cur && cur.sup && !seen[cur.sup]){ seen[cur.sup] = 1; var up = by[cur.sup]; if (!up) break; if (rankOf(up.role || '') >= rankOf('engineer')) return up.name; cur = up; }
-  return Object.keys(by).filter(function(n){ return n !== me && by[n].role === 'engineer'; }).sort()[0] || '';
+  while (cur && cur.sup && !seen[cur.sup]){ seen[cur.sup] = 1; var up = by[cur.sup]; if (!up) return ''; if (rankOf(up.role || '') >= rankOf('engineer')) return up.name; cur = up; }
+  return '';
 }
 /* the first message: the question, then the device's state in one line — in the user's language, digits included */
 function askEngText(q){
-  var d = assistDiag(), parts = [t('الإصدار') + ' ' + nm(String(d.ver || '').replace(/^V/i, '')), t(d.on ? 'متصل' : 'غير متصل')];
+  /* (V39.7) the version as each language writes it — nm() read «39.4» as a number and wrote «٠٠» */
+  var d = assistDiag(), vb = (typeof appVer === 'function' && appVer()) || d.ver;
+  var parts = [t('الإصدار') + ' ' + (typeof verShow === 'function' ? verShow(vb) : String(vb || '').replace(/^V/i, '')), t(d.on ? 'متصل' : 'غير متصل')];
   if (d.q) parts.push(nm(d.q) + ' ' + t('كتابة تنتظر الرفع'));
   if (d.pq) parts.push(nm(d.pq) + ' ' + t('صورة تنتظر الرفع'));
   if (d.pf) parts.push(nm(d.pf) + ' ' + t('صورة فشل رفعها'));
@@ -273,7 +309,7 @@ function assistDiagCard(q){
   }
   /* (V39.4) owner: «نخلي الحتة دي شات أفضل للمهندس — مش بلاغ». The button opens a conversation with the engineer, the
      question and the device's state already in the message box; the reply comes back in that conversation, live. */
-  var kh = knownHits(q), ask = '<div class="card" style="margin:0 0 10px"><p style="margin:0 0 6px">' + esc(t('لم يُحلّ؟ كلّم المهندس مباشرةً — تنفتح محادثةٌ معه فيها سؤالُك وحالةُ جهازك، وردُّه يصلك فيها.')) + '</p><div class="actions">' + btn('\u{1F4AC} ' + t('كلّم المهندس'), 'btn-primary btn-sm', ' data-askeng="1"') + '</div></div>';
+  var kh = knownHits(q), ask = askEngWho.pick ? askEngPickHtml() : '<div class="card" style="margin:0 0 10px"><p style="margin:0 0 6px">' + esc(t('لم يُحلّ؟ كلّم المهندس مباشرةً — تنفتح محادثةٌ معه فيها سؤالُك وحالةُ جهازك، وردُّه يصلك فيها.')) + '</p><div class="actions">' + btn('\u{1F4AC} ' + t('كلّم المهندس'), 'btn-primary btn-sm', ' data-askeng="1"') + '</div></div>';
   var known = kh.map(function(k){ return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid #2E7D32"><div class="pid">' + esc(t('مشكلة معروفة — حلّها')) + '</div><p style="margin:0">' + esc(k.a) + '</p></div>'; }).join('');
   if (!hits) return known + (q.length >= 6 ? ask : '');
   return known + hits.map(function(h){ return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid var(--acc, #1A5FA8)"><div class="pid">' + esc(t('تشخيص')) + '</div><h4 style="margin:2px 0 6px">' + esc(t(h.t)) + '</h4>' + assistFixHtml(h.k, d) + '</div>'; }).join('') + ask;

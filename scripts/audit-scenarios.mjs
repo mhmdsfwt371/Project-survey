@@ -1162,7 +1162,7 @@ console.log('\n══ ٤٠ · البحث على الخريطة ══');
 console.log('\n══ ٤١ · «كلّم المهندس» محادثةٌ لا بلاغ ══');
 {
   const D = w.document, U0 = w.STATE.users, me0 = w.STATE.meta.name, role0 = w.ROLE, cur0 = w.CUR;
-  w.STATE.users = { u1:{ name:'فني التجربة', role:'tech', sup:'مشرف التجربة' }, u2:{ name:'مشرف التجربة', role:'supervisor', sup:'مهندس التجربة' }, u3:{ name:'مهندس التجربة', role:'engineer', sup:'' }, u4:{ name:'مهندس آخر', role:'engineer', sup:'' } };
+  w.STATE.users = { u1:{ name:'فني التجربة', role:'tech', sup:'مشرف التجربة' }, u2:{ name:'مشرف التجربة', role:'supervisor', sup:'مهندس التجربة' }, u3:{ name:'مهندس التجربة', role:'engineer', sup:'' } };   /* one engineer: the button opens the conversation at once (two show the list — ٤٣) */
   w.STATE.meta.name = 'فني التجربة'; w.ROLE = 'tech'; w.STATE.meta.role = 'tech';
   T(w.askEngWho() === 'مهندس التجربة', 'المهندسُ هو أوّلُ مهندسٍ فوقه في سلسلة الإدارة: ' + w.askEngWho());
   w.ASSIST_Q = 'الصور مش بتترفع'; w.ASSIST_OPEN = true; w.BUG_OPEN = false;
@@ -1198,6 +1198,50 @@ console.log('\n══ ٤٢ · كلُّ لغةٍ بأرقامها وكلماته�
   const r = w.siteRow(['NSK-X-1', 'عرفات - مربع Null - شاخص ?', 0, 0, 0, 21, 39, 'Null', '', '', '', '', ''], false);
   T(!/Null/.test(r.name) && r.sq === '' && /مربع ؟/.test(r.name), 'و«Null» من خطة المصدر تُقرأ مجهولةً: «' + r.name + '»');
   w.LANG = L0; if (vt) vt.textContent = was;
+}
+
+/* ── ٤٣ · (V39.7) المحادثة: اختيارُ المهندس، والمسحُ للمهندس فما فوق، والتحويلُ لمن في مستواك أو تحتك ── */
+console.log('\n══ ٤٣ · المحادثة: اختيار المهندس والمسح والتحويل ══');
+{
+  const D = w.document, U0 = w.STATE.users, me0 = w.STATE.meta.name, role0 = w.ROLE, cur0 = w.CUR, cf0 = w.confirm;
+  const tap = el => el && el.dispatchEvent(new w.MouseEvent('click', { bubbles:true, cancelable:true }));
+  const tmp = a => { const b = D.createElement('button'); Object.entries(a).forEach(([k, v]) => b.setAttribute(k, v)); D.body.appendChild(b); return b; };
+  const as = (n, r) => { w.STATE.meta.name = n; w.ROLE = r; w.STATE.meta.role = r; };
+  w.confirm = () => true;
+  w.STATE.users = { a:{ name:'فني التجربة', role:'tech', sup:'مشرف التجربة' }, b:{ name:'مشرف التجربة', role:'supervisor', sup:'مهندس أ' },
+                    c:{ name:'مهندس أ', role:'engineer', sup:'مدير التجربة' }, d:{ name:'مهندس ب', role:'engineer', sup:'مدير التجربة' }, e:{ name:'مدير التجربة', role:'admin', sup:'' } };
+  as('مشرف التجربة', 'supervisor');
+  T(JSON.stringify(w.askEngList()) === JSON.stringify(['مهندس أ', 'مهندس ب']), 'مشرفٌ عنده مهندسان: مهندسُه أوّلًا ثم الآخر — ' + w.askEngList().join('، '));
+  w.ASSIST_Q = 'القارئ مش شغال'; w.askEngWho.pick = false;
+  const b1 = tmp({ 'data-askeng':'1' }); tap(b1); b1.remove();
+  const pick = w.askEngPickHtml();
+  T(w.askEngWho.pick === true && /data-askengto="مهندس أ"/.test(pick) && /data-askengto="مهندس ب"/.test(pick) && /فوقك مباشرةً/.test(pick), 'الزرُّ يعرض قائمةَ المهندسين ومهندسُه مُعلَّمٌ «فوقك مباشرةً»');
+  const b2 = tmp({ 'data-askengto':'مهندس ب' }); tap(b2); b2.remove();
+  const ta = D.querySelector('[data-chtext="dm:مهندس ب"]');
+  T(w.CUR === 'chat' && !!ta && ta.value.indexOf('القارئ مش شغال') === 0 && ta.value.indexOf(w.verShow(w.appVer())) > -1 && !/٠٠/.test(ta.value), 'والاختيارُ يفتح المحادثةَ معه، والإصدارُ في المسوّدة بأرقامه لا «٠٠»' + (ta ? '' : ' — لا مربّع') + ' · ' + w.CUR + ' · «' + (ta ? ta.value : '') + '» · ' + w.verShow(w.appVer()));
+  /* delete: the engineer and above only */
+  as('فني التجربة', 'tech');
+  const m1 = w.chSend('', 'مهندس أ', 'سؤال للتجربة', 'msg');
+  T(!/data-chdel=/.test(w.chLineHtml(m1)), 'الفنيُّ لا يرى زرَّ المسح');
+  as('مهندس أ', 'engineer');
+  T(/data-chdel="/.test(w.chLineHtml(m1)), 'والمهندسُ يراه');
+  const b3 = tmp({ 'data-chdel':m1.id }); tap(b3); b3.remove();
+  const g = w.STATE.msgs[m1.id];
+  T(g && g.deleted === true && g.delBy === 'مهندس أ' && g.text === 'سؤال للتجربة' && !w.chMsgs().some(v => v.id === m1.id), 'المسحُ علامةٌ (من ومتى) والنصُّ باقٍ — والرسالةُ تختفي عند الجميع');
+  /* hand over: at my rank or below, the question goes with a «reply to» button */
+  as('فني التجربة', 'tech'); w.chSend('', 'مهندس أ', 'أين أركّب القارئ؟', 'msg');
+  as('مهندس أ', 'engineer');
+  const P = w.chFwdPeople('فني التجربة').map(u => u.name);
+  T(P.indexOf('مهندس ب') > -1 && P.indexOf('مشرف التجربة') > -1 && P.indexOf('مدير التجربة') < 0 && P.indexOf('فني التجربة') < 0 && P.indexOf('مهندس أ') < 0, 'التحويلُ لمن في مستواي أو تحتي — لا للأعلى ولا لصاحب السؤال: ' + P.join('، '));
+  const b4 = tmp({ 'data-chfwd':'dm:فني التجربة' }); tap(b4); b4.remove();
+  const b5 = tmp({ 'data-chfwdto':'مشرف التجربة' }); tap(b5); b5.remove();
+  const F = Object.values(w.STATE.msgs).filter(v => !v.deleted && v.kind === 'fwd' && v.to === 'مشرف التجربة' && v.ref === 'فني التجربة');
+  const N = Object.values(w.STATE.msgs).filter(v => !v.deleted && v.to === 'فني التجربة' && /حوّلتُ سؤالك إلى/.test(v.text));
+  T(F.length === 1 && /أين أركّب القارئ؟/.test(F[0].text) && N.length === 1, 'يصل المشرفَ السؤالُ محوَّلًا، ويُقال لصاحبه من سيردّ');
+  as('مشرف التجربة', 'supervisor');
+  T(F.length === 1 && /data-chopen-t="dm:فني التجربة"/.test(w.chLineHtml(F[0])), 'وفي الرسالة المحوَّلة زرُّ «ردّ على» صاحبِ السؤال');
+  Object.values(w.STATE.msgs).filter(v => /التجربة|مهندس [أب]/.test((v.from || '') + (v.to || ''))).forEach(v => { delete w.STATE.msgs[v.id]; });
+  w.STATE.users = U0; as(me0, role0); w.CUR = cur0; w.chPageHtml.f = {}; w.chOpenHtml.fwd = ''; w.askEngWho.pick = false; w.ASSIST_OPEN = false; w.confirm = cf0;
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

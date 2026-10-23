@@ -97,6 +97,10 @@ await ok  ('الفنيُّ يكتب رسالةً في المحادثة',        
 await ok  ('والمهندسُ يقرؤها',                                 getDoc(doc(as('eng'), 'msgs/M1')));
 await deny('ولا يعدّلها أحد',                                   updateDoc(doc(as('eng'), 'msgs/M1'), { text:'x' }));
 await deny('ولا يحذفها أحد',                                    deleteDoc(doc(as('eng'), 'msgs/M1')));
+/* (V39.7) the engineer and above mark it deleted — and only that */
+await deny('والفنيُّ لا يمسحها',                                 updateDoc(doc(as('tec'), 'msgs/M1'), { deleted:true, delBy:'فني', delAt:2 }));
+await deny('ولا يُعدَّل نصُّها مع المسح',                          updateDoc(doc(as('eng'), 'msgs/M1'), { deleted:true, delBy:'مهندس', delAt:2, text:'x' }));
+await ok  ('والمهندسُ يمسحها بعلامةٍ: من ومتى',                    updateDoc(doc(as('eng'), 'msgs/M1'), { deleted:true, delBy:'مهندس', delAt:2, _by:'eng', _at:2 }));
 await ok  ('المهندسُ يحرّر محضرَ التسليم',          updateDoc(doc(as('eng'), 'inss/S1'), { hand:{ no:'HO-0001', at:1, by:'مهندس', to:'وزارة' } }));
 
 console.log('\n══ ٤ · الإعداداتُ والحسابات ══');

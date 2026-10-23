@@ -92,6 +92,27 @@ function clickTables(e){
   var rbf = e.target.closest('[data-rbfav]'); if (rbf){ var fv = rbFavs()[+rbf.getAttribute('data-rbfav')]; if (fv && fv.sel){ rbState().sel = Object.assign({}, fv.sel); rbState().open = true; var rsV = document.getElementById('assistRes'); if (rsV) rsV.innerHTML = assistResHtml(); else render(1); rbRun(fv.sel.pop); } return true; }
   var rbp = e.target.closest('[data-rbpin]'); if (rbp){ if (rbFavPin(rbp.getAttribute('data-rbpin'))){ var rsP = document.getElementById('assistRes'); if (rsP) rsP.innerHTML = assistResHtml(); else render(1); } return true; }
   /* (V38.60) the field chat */
+  /* (V39.7) the engineer and above delete a line or a conversation — marked deleted (who and when), gone for everyone */
+  var chd = e.target.closest('[data-chdel]'), chdt = e.target.closest('[data-chdelt]');
+  if ((chd || chdt) && chMayDel()){
+    var me0 = STATE.meta.name || '', ids = chd ? [chd.getAttribute('data-chdel')]
+      : chMsgs().filter(function(v){ return chVisible(v) && chKey(v) === chdt.getAttribute('data-chdelt'); }).map(function(v){ return v.id; });
+    if (!ids.length || !confirm(t(chd ? 'تُمسح الرسالة عند الجميع. متأكد؟' : 'تُمسح المحادثة كلُّها عند الجميع. متأكد؟'))) return true;
+    ids.forEach(function(id){ var v0 = (STATE.msgs || {})[id]; if (!v0) return; CORE.set('msgs', id, Object.assign({}, v0, { deleted:true, delBy:me0, delAt:Date.now() })); });
+    CORE.saveSoon(); if (chdt) chPageHtml.f = {}; toast('\u{1F5D1} ' + t(chd ? 'مُسحت الرسالة' : 'مُسحت المحادثة')); render(1); return true;
+  }
+  /* (V39.7) a conversation handed to someone at my rank or below: they get the question and a button to reply to its owner,
+     and the owner is told who will answer */
+  var chf2 = e.target.closest('[data-chfwd]');
+  if (chf2){ var fk = chf2.getAttribute('data-chfwd'); chOpenHtml.fwd = chOpenHtml.fwd === fk ? '' : fk; render(1); return true; }
+  var chft = e.target.closest('[data-chfwdto]');
+  if (chft && chOpenHtml.fwd){
+    var who2 = chft.getAttribute('data-chfwdto'), other = chOpenHtml.fwd.slice(3);
+    var last = chMsgs().filter(function(v){ return chVisible(v) && chKey(v) === 'dm:' + other && v.from === other; }).slice(-3).map(function(v){ return v.text; }).join('\n');
+    chSend('', who2, '\u21AA ' + t('محوّلة من') + ' ' + (dispName(other) || other) + (last ? ':\n' + last : ''), 'fwd', { ref:other });
+    chSend('', other, '\u21AA ' + t('حوّلتُ سؤالك إلى') + ' ' + (dispName(who2) || who2) + ' — ' + t('هيردّ عليك هنا'), 'msg');
+    chOpenHtml.fwd = ''; toast('\u21AA ' + t('حُوِّلت المحادثة إلى') + ' ' + (dispName(who2) || who2)); render(1); return true;
+  }
   var chs = e.target.closest('[data-chsend]');
   if (chs){
     var key = chs.getAttribute('data-chsend'), ta = null;

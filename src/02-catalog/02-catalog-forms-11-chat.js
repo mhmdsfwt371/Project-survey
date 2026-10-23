@@ -71,7 +71,21 @@ function chLineHtml(v){
   return '<div style="margin:4px 0;display:flex;flex-direction:column;align-items:' + (sys ? 'center' : (mine ? 'flex-start' : 'flex-end')) + '">'
     + '<div style="max-width:88%;padding:7px 11px;border-radius:12px;' + (sys ? 'background:transparent;border:1px dashed var(--line);font-size:12.5px' : (mine ? 'background:var(--brand);color:var(--brand-ink)' : 'background:var(--surface);border:1px solid var(--line)')) + '">'
     + (who ? '<div style="font-size:11.5px;opacity:.85;margin-bottom:2px">' + who + '</div>' : '') + '<div style="white-space:pre-wrap">' + (sys ? '\u2139 ' : '') + esc(v.text) + '</div>'
-    + '<div class="hint" style="margin:3px 0 0;font-size:11px;opacity:.8"><span class="num">' + esc(fmtTime(v.at, { hour:'2-digit', minute:'2-digit' })) + '</span> \u00b7 ' + esc(fmtDate(v.at)) + '</div></div></div>';
+    + (v.kind === 'fwd' && v.ref && v.ref !== me ? '<div style="margin-top:6px">' + btn('\u{1F4AC} ' + t('ردّ على') + ' ' + (dispName(v.ref) || v.ref), 'btn-quiet btn-sm', ' data-chopen-t="dm:' + esc(v.ref) + '"') + '</div>' : '')
+    + '<div class="hint" style="margin:3px 0 0;font-size:11px;opacity:.8"><span class="num">' + esc(fmtTime(v.at, { hour:'2-digit', minute:'2-digit' })) + '</span> \u00b7 ' + esc(fmtDate(v.at))
+    + (chMayDel() ? ' <button type="button" class="btn-quiet" data-chdel="' + esc(v.id) + '" aria-label="' + esc(t('امسح الرسالة')) + '" style="border:0;background:transparent;padding:0 4px;cursor:pointer">\u{1F5D1}</button>' : '') + '</div></div></div>';
+}
+/* (V39.7) owner: «زرار مسح يكون مع المهندس والمدير» — the engineer and above delete a line or a whole conversation; the
+   message is marked deleted (who and when), never erased, and disappears for everyone */
+function chMayDel(){ return rankOf(ROLE) >= rankOf('engineer'); }
+/* (V39.7) owner: «زرار تحويل الشات لحد تاني يكون معايا على نفس الليفل أو تحتي» — the people a conversation can be handed to:
+   active accounts at the user's rank or below, not the user and not the other side */
+function chFwdPeople(other){
+  var U = STATE.users || {}, me = STATE.meta.name || '', r = rankOf(ROLE), seen = {};
+  return Object.keys(U).map(function(k){ return U[k]; }).filter(function(u){
+    if (!u || !u.name || u.active === false || u.name === me || u.name === other || seen[u.name]) return false;
+    seen[u.name] = 1; return rankOf(u.role || 'tech') <= r;
+  }).sort(function(a, b){ return rankOf(b.role || 'tech') - rankOf(a.role || 'tech') || String(a.name).localeCompare(String(b.name), 'ar'); });
 }
 /* the thread of a site with its composer; `to` defaults to the site's assignee (office) or empty = the office (field) */
 function chThreadHtml(site, compact){
@@ -104,7 +118,10 @@ function chOpenHtml(key){
   var site = key.indexOf('site:') === 0 ? key.slice(5) : '', tk = site && typeof asnOf === 'function' ? asnOf(site) : null;
   var to = key.indexOf('dm:') === 0 ? key.slice(3) : (site && may('approve') ? ((tk && tk.to) || '') : '');
   var head = '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' + btn('\u2192 ' + t('المحادثات'), 'btn-quiet btn-sm', ' data-chf="all"') + '<b style="flex:1">' + esc(chTitle(key)) + '</b>'
-    + (site ? btn('\u{1F4C4} ' + t('صفحة النقطة'), 'btn-quiet btn-sm', ' data-site="' + esc(site) + '"') + btn('\u25C8', 'btn-quiet btn-sm', ' data-fly="' + esc(site) + '" title="' + esc(t('على الخريطة')) + '"') : '') + '</div>'
+    + (site ? btn('\u{1F4C4} ' + t('صفحة النقطة'), 'btn-quiet btn-sm', ' data-site="' + esc(site) + '"') + btn('\u25C8', 'btn-quiet btn-sm', ' data-fly="' + esc(site) + '" title="' + esc(t('على الخريطة')) + '"') : '')
+    + (key.indexOf('dm:') === 0 && rankOf(ROLE) >= rankOf('supervisor') ? btn('\u21AA ' + t('تحويل'), 'btn-quiet btn-sm', ' data-chfwd="' + esc(key) + '"') : '')
+    + (key !== 'sys' && chMayDel() && L.length ? btn('\u{1F5D1} ' + t('امسح المحادثة'), 'btn-quiet btn-sm', ' data-chdelt="' + esc(key) + '"') : '') + '</div>'
+    + (chOpenHtml.fwd === key ? chFwdHtml(key.slice(3)) : '')
     + (site && tk ? '<p class="hint" style="margin:4px 0 0">' + esc(t('مُسنَدة إلى')) + ': ' + esc(dispName(tk.to) || tk.to) + '</p>' : '');
   var lines = L.length ? L.map(chLineHtml).join('') : '<p class="hint" style="text-align:center;margin:0">' + esc(t('لا رسائلَ بعد — اكتب أوّلَ رسالة')) + '</p>';
   var sendKey = site || (key.indexOf('dm:') === 0 ? key : (key === 'team' ? 'team' : ''));
@@ -112,6 +129,13 @@ function chOpenHtml(key){
     + btn('\u27A4', 'btn-primary', ' data-chsend="' + esc(sendKey) + '" data-chto="' + esc(to) + '" aria-label="' + esc(t('أرسل')) + '"') + '</div>' + (to ? '<p class="hint" style="margin:4px 0 0">' + esc(t('إلى')) + ': ' + esc(dispName(to) || to) + '</p>' : '');
   setTimeout(function(){ var el = document.getElementById('chScroll'); if (el) el.scrollTop = el.scrollHeight; }, 0);
   return card('', head + '<div id="chScroll" style="max-height:60vh;overflow-y:auto;margin-top:8px;padding:4px 2px">' + lines + '</div>' + composer);
+}
+/* the hand-over list under the conversation's head: the people at my rank or below */
+function chFwdHtml(other){
+  var P = chFwdPeople(other);
+  return '<div class="card" style="margin:8px 0 0"><p style="margin:0 0 6px">' + esc(t('حوّل المحادثة إلى')) + '</p>'
+    + (P.length ? '<div style="display:flex;flex-wrap:wrap;gap:6px">' + P.map(function(u){ return btn((dispName(u.name) || u.name) + (ROLES[u.role] ? ' \u00b7 ' + t(ROLES[u.role].n) : ''), 'btn-secondary btn-sm', ' data-chfwdto="' + esc(u.name) + '"'); }).join('') + '</div>'
+                : '<p class="hint" style="margin:0">' + esc(t('لا أحدَ في مستواك أو تحتك')) + '</p>') + '</div>';
 }
 function chListHtml(){
   var me = STATE.meta.name || '', TH = chThreads(), S = chSeenT(), g = chSeen.at || +lsGet('nsk14.chSeen') || 0;

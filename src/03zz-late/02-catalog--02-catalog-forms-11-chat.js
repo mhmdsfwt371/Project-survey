@@ -5,10 +5,11 @@
    DEFINES : chSend, chSystem
    NOTE    : Edit these functions here. audit-core-alone.mjs fails if code the core runs alone starts calling one without checking typeof first.
    ============================================================================ */
-function chSend(site, to, text, kind){
+function chSend(site, to, text, kind, extra){
   var tx = String(text || '').trim(); if (!tx) return null;
   var id = 'M-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7);
   var v = { id:id, site:site || '', to:to || '', from:STATE.meta.name || '', role:ROLE || '', text:tx.slice(0, 1500), kind:kind || 'msg', at:Date.now() };
+  if (extra) Object.keys(extra).forEach(function(k){ if (!(k in v)) v[k] = extra[k]; });   /* (V39.7) a forwarded conversation names its owner (ref) */
   STATE.msgs = STATE.msgs || {}; CORE.set('msgs', id, v); CORE.saveSoon();
   chSeen.at = Date.now();
   return v;
