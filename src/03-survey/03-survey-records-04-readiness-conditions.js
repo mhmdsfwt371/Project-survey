@@ -144,7 +144,7 @@ function asnCommit(){
     if (gb){ blockedSol++; if (!firstBlock) firstBlock = gb; return; }
     var tid = 'TK-' + kind + '-' + id;
     CORE.set('tasks', tid, {
-      id:tid, no:reqNext(kind), site:id, kind:kind, to:to, assignedTo:to,
+      id:tid, no:reqNext(kind, 'tasks', tid), site:id, kind:kind, to:to, assignedTo:to,
       status:'مطلوب', when:when, by:STATE.meta.name || '', at:Date.now()
     });
     add++;

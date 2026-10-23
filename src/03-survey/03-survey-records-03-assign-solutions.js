@@ -73,15 +73,64 @@ function kindLabel(kind){
    والعدّاداتُ تُنقَل عند الإقلاع فلا يتكرّر رقمٌ بمعنيين. */
 var REQ_PREFIX = { visit:'SR', install:'IR', dis:'UR', prep:'CR', asm:'AR', maint:'MR', issue:'DR' };
 var REQSEQ = { SR:0, IR:0, UR:0, CR:0, AR:0, MR:0, DR:0 };
-function reqNext(kind){
+/* (V39.2) the number is claimed in the database, atomically. Every device kept its own counter since its login and wrote the
+   whole counter document back, so two devices creating requests could hand out the same number — and a stale device rolled
+   the other prefixes back. Now the request takes the next number at once (offline too), and its claim runs in a database
+   transaction as soon as the device is online: if another device took that number meanwhile, the request takes the next free
+   one, and the change is logged. col and id name the record, so a renumbering reaches it. */
+function reqNext(kind, col, id){
   var p = REQ_PREFIX[kind];
   if (!p) return '';
   REQSEQ[p] = (REQSEQ[p] || 0) + 1;
-  CORE.set('cfg', 'reqSeq', REQSEQ);
-  var n = String(REQSEQ[p]);
-  while (n.length < 4) n = '0' + n;
-  return p + '-' + n;
+  if (col && id) reqClaimAdd(p, REQSEQ[p], col, id);
+  return reqFmt(p, REQSEQ[p]);
 }
+function reqFmt(p, n){ var s = String(n); while (s.length < 4) s = '0' + s; return p + '-' + s; }
+function reqClaims(){ try { var L = JSON.parse(lsGet('nsk14.reqClaims') || '[]'); return Array.isArray(L) ? L : []; } catch (e){ LS_ERR = e; return []; } }
+function reqClaimsSave(L){ lsSet('nsk14.reqClaims', JSON.stringify(L.slice(-500))); }
+function reqClaimAdd(p, n, col, id){
+  var L = reqClaims(); L.push({ p:p, n:n, col:col, id:id, at:Date.now() }); reqClaimsSave(L);
+  setTimeout(reqClaimRun, 0);
+}
+/* one claim at a time, oldest first; a claim that cannot run (offline, not signed in) waits for the next try — on reconnect and
+   with every heartbeat. A refusal by the rules (a role that may not move the counter) keeps the number it was given. */
+function reqClaimRun(){
+  if (reqClaimRun.busy || !FB.ready || !FB.db || typeof FB.db.runTransaction !== 'function') return;
+  if (typeof navigator === 'object' && navigator.onLine === false) return;
+  var L = reqClaims(); if (!L.length) return;
+  var c = L[0], ref = DB.col('settings').doc('reqSeq');
+  reqClaimRun.busy = 1;
+  DB.tx(function(tx){
+    return tx.get(ref).then(function(doc){
+      var v = (doc && doc.exists && doc.data()) || {}, cur = +v[c.p] || 0, got = cur < c.n ? c.n : cur + 1, up = { _at:Date.now() };
+      up[c.p] = got; tx.set(ref, up, { merge:true });
+      return got;
+    });
+  }).then(function(got){
+    FB.readCount = (FB.readCount || 0) + 1;
+    if (got > (REQSEQ[c.p] || 0)) REQSEQ[c.p] = got;
+    if (got !== c.n) reqRenumber(c, got);
+    reqClaimsSave(reqClaims().filter(function(x){ return !(x.p === c.p && x.n === c.n && x.id === c.id); }));
+    reqClaimRun.busy = 0; setTimeout(reqClaimRun, 0);
+  }).catch(function(e){
+    reqClaimRun.busy = 0;
+    if (/permission/i.test(String((e && (e.code || e.message)) || e))){
+      reqClaimsSave(reqClaims().filter(function(x){ return !(x.p === c.p && x.n === c.n && x.id === c.id); }));
+      softErr('ترقيم الطلب', e, '');
+      return;
+    }
+    softErr('ترقيم الطلب', e, '');
+  });
+}
+function reqRenumber(c, got){
+  var key = { tasks:'tasks', workReqs:'workReqs' }[c.col], box = key && STATE[key], r = box && box[c.id];
+  var was = reqFmt(c.p, c.n), now = reqFmt(c.p, got);
+  if (!r || r.no !== was) return;
+  r.no = now; CORE.set(c.col, c.id, r);
+  logEvent('ترقيمُ الطلب: ' + was + ' صار ' + now + ' — جهازٌ آخر سبق إلى الرقم');
+  if (typeof toast === 'function') toast(was + ' \u2192 ' + now + ' \u00b7 ' + t('رقمُ الطلب تغيّر: سبق إليه جهازٌ آخر'));
+}
+if (typeof window === 'object' && window.addEventListener) window.addEventListener('online', function(){ setTimeout(reqClaimRun, 1500); });
 
 /* ═══ حلُّ التركيب: الأجهزةُ المقترحة لنقطةٍ قبل طلب تركيبها ═══
    يُقترَح بعد اعتماد زيارتها (SR)، ويعتمده المهندسُ وحده — ولا يُتاح طلبُ
@@ -368,7 +417,7 @@ function asnTeamCommit(){
     mine.forEach(function(id){
       var tid = 'TK-' + kind + '-' + id;
       CORE.set('tasks', tid, {
-        id:tid, no:reqNext(kind), site:id, kind:kind, to:m.name, assignedTo:m.name, team:tm.id,
+        id:tid, no:reqNext(kind, 'tasks', tid), site:id, kind:kind, to:m.name, assignedTo:m.name, team:tm.id,
         status:'مطلوب', when:when, by:STATE.meta.name || '', at:Date.now()
       });
       made++;

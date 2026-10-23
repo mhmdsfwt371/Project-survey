@@ -21,6 +21,7 @@ var DB = {
   col:   function(name){ return FB.db.collection(name); },
   doc:   function(name, id){ return FB.db.collection(name).doc(id); },
   batch: function(){ return FB.db.batch(); },
+  tx:    function(fn){ return FB.db.runTransaction(fn); },   /* (V39.2) a database transaction — the request-number claim */
   /* (V31.6، وضُيِّق في V31.8 بعد مراجعة الجودة) ذاكرةُ الرسمة الواحدة — وحدةُ البيانات، بندُ الأداء ١: الصفاتُ المشتقّةُ (حالةُ
      النقطة، قوائمُ المتابعة) تُحسَب مرةً داخل رسمِ الصفحة وحدَه — تُفتَح في أوّله وتُغلَق في آخره — ولا ذاكرةَ خارجه أبدًا.
      كانت تمتدّ إلى آخر المهمة المتزامنة، فمن كتب في الحالة مباشرةً (لا من CORE.set) ثم قرأ في المهمة نفسِها رأى حالةً قديمة. */

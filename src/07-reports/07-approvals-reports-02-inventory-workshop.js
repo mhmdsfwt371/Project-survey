@@ -60,7 +60,7 @@ function workReqAdd(kind, item, qty, to){
   if (!q){ toast(t('اكتب كميةً غير صفر')); return; }
   if (kind === 'issue' && !to){ toast(t('اختر من يُصرَف له')); return; }
   var id = 'wr' + Date.now().toString(36) + Math.random().toString(36).slice(2,5);
-  var rec = { id:id, no:reqNext(kind), kind:kind, item:item, qty:q, qtyDone:0,
+  var rec = { id:id, no:reqNext(kind, 'workReqs', id), kind:kind, item:item, qty:q, qtyDone:0,
               to:to || '', status:'مطلوب', by:STATE.meta.name || '', at:Date.now() };
   STATE.workReqs = STATE.workReqs || {};
   STATE.workReqs[id] = rec;

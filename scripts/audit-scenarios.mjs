@@ -1083,6 +1083,39 @@ console.log('\n══ ٣٨ · الوتيرةُ والموعد ══');
   w.CFG.dueSurvey = dS0; w.CFG.dueInstall = dI0; w.CFG.daysWeek = dw0; w.ROLE = role0; w.STATE.meta.role = role0; w.CUR = cur0; w.PTAB.over = tab0;
 }
 
+/* ── ٣٨ · (V39.2) رقمُ الطلب يُحجَز في القاعدة حجزًا لا يتكرّر ── */
+console.log('\n══ ٣٨ · رقمُ الطلب: حجزٌ ذرّيٌّ في القاعدة ══');
+{
+  const server = { SR:217 }, ready0 = w.FB.ready, db0 = w.FB.db, col0 = w.DB.col, seq0 = Object.assign({}, w.REQSEQ), cl0 = w.localStorage.getItem('nsk14.reqClaims');
+  const ref = { __ref:'reqSeq' };
+  w.DB.col = name => name === 'settings' ? { doc:() => ref } : col0(name);
+  w.FB.ready = true;
+  w.FB.db = { runTransaction: fn => fn({ get: () => Promise.resolve({ exists:true, data: () => Object.assign({}, server) }), set: (r, up) => { Object.assign(server, up); } }) };
+  w.localStorage.removeItem('nsk14.reqClaims'); w.reqClaimRun.busy = 0;
+  const tick = async () => { for (let i = 0; i < 8; i++) await new Promise(r => setTimeout(r, 0)); };
+  /* 1 — nobody took the next number: the request keeps it, and the database counter moves to it */
+  w.REQSEQ.SR = 217;
+  const no1 = w.reqNext('visit', 'tasks', 'TK-claim-1'); w.CORE.set('tasks', 'TK-claim-1', { id:'TK-claim-1', no:no1, kind:'visit', site:'X', status:'مطلوب' });
+  await tick();
+  T(no1 === 'SR-0218' && server.SR === 218 && w.STATE.tasks['TK-claim-1'].no === 'SR-0218' && !w.reqClaims().length, 'الرقمُ الأوّلُ يُحجَز كما هو والعدّادُ في القاعدة يصل إليه: ' + no1 + ' / ' + server.SR);
+  /* 2 — another device took 219 and 220 meanwhile: this request becomes 221, and the change is logged */
+  server.SR = 220; w.REQSEQ.SR = 218;
+  const ev0 = (w.STATE.events || []).length;
+  const no2 = w.reqNext('visit', 'tasks', 'TK-claim-2'); w.CORE.set('tasks', 'TK-claim-2', { id:'TK-claim-2', no:no2, kind:'visit', site:'Y', status:'مطلوب' });
+  await tick();
+  const ev = (w.STATE.events || []).slice(0, (w.STATE.events || []).length - ev0 + 1).map(e => e.msg || e.t || e.text || JSON.stringify(e)).join(' ');
+  T(no2 === 'SR-0219' && w.STATE.tasks['TK-claim-2'].no === 'SR-0221' && server.SR === 221 && w.REQSEQ.SR === 221 && /SR-0219 صار SR-0221/.test(ev),
+    'وإن سبق جهازٌ آخر إلى الرقم أخذ الطلبُ التاليَ الحرَّ وسُجِّل التغيير: ' + no2 + ' ← ' + w.STATE.tasks['TK-claim-2'].no);
+  /* 3 — offline: the claim waits, and runs when the device is back */
+  w.FB.ready = false; w.REQSEQ.SR = 221;
+  w.reqNext('visit', 'tasks', 'TK-claim-3'); await tick();
+  const waiting = w.reqClaims().length; w.FB.ready = true; w.reqClaimRun(); await tick();
+  T(waiting === 1 && !w.reqClaims().length && server.SR === 222, 'وبلا شبكةٍ ينتظر الحجزُ ثم يتمّ عند العودة');
+  delete w.STATE.tasks['TK-claim-1']; delete w.STATE.tasks['TK-claim-2']; delete w.STATE.tasks['TK-claim-3'];
+  w.DB.col = col0; w.FB.ready = ready0; w.FB.db = db0; Object.assign(w.REQSEQ, seq0);
+  if (cl0 == null) w.localStorage.removeItem('nsk14.reqClaims'); else w.localStorage.setItem('nsk14.reqClaims', cl0);
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

@@ -33,7 +33,7 @@ if (import.meta.url === 'file://' + process.argv[1]){
   if (m.lintErrors) fails.push('أخطاءُ النحو ' + m.lintErrors + ' (يجب صفر)');
   /* (V31.5) بوابةُ البيانات: لا حديثَ مع القاعدة إلا من DB — FB.db.collection/batch خارجها تراجعٌ معماريّ */
   { const srcAll = srcJs().map(f => readFileSync(f, 'utf8').split('\n').map((l, i) => [f.replace(/^src\//, ''), i + 1, l])).flat();
-    const raw = srcAll.filter(([f, n, l]) => /FB\.db\.(collection|batch|runTransaction|doc)\(/.test(l) && !/^\s*(col|doc|batch):\s+function/.test(l) && !/^\s*(\/\*|\*|\/\/)/.test(l.trim()) && !/—/.test(l.split('FB.db')[0].slice(-3)));
+    const raw = srcAll.filter(([f, n, l]) => /FB\.db\.(collection|batch|runTransaction|doc)\(/.test(l) && !/^\s*(col|doc|batch|tx):\s+function/.test(l) && !/^\s*(\/\*|\*|\/\/)/.test(l.trim()) && !/—/.test(l.split('FB.db')[0].slice(-3)));
     if (raw.length) fails.push('وصولٌ مباشرٌ للقاعدة خارج بوابة البيانات (DB): ' + raw.slice(0, 3).map(r => r[0] + ':' + r[1]).join(' · ')); }
   Object.keys(B.m).forEach(k => { if (k === 'lintErrors' || k === 'maxSrcKB') return;   /* (V31.6) حجمُ الملف يُحرَس بالسقف لا بالسقّاطة — الميزةُ الجديدةُ تكبّره طبيعيًّا */ if (m[k] > B.m[k]) fails.push(`${k}: ${m[k]} > خطّ الأساس ${B.m[k]}`); else if (m[k] < B.m[k]) better.push(`${k}: ${B.m[k]} ← ${m[k]}`); });
   if (m.maxSrcKB > (B.capSrcKB || 520)) fails.push(`أكبرُ ملفِّ مصدر ${m.maxSrcKB} ك.ب فوق السقف ${B.capSrcKB || 520}`);
