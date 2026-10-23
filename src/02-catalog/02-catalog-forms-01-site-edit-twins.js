@@ -18,13 +18,16 @@
 function siteZone(x){ return (x && x.type === 'مخيم') ? 'camp' : 'cor'; }
 
 
+/* (V39.5) a missing value in the source plan reached the screens as the English word «Null» («مربع Null») — read as
+   unknown: «مربع ؟» in the name, and no square */
 function siteRow(r, camp){
+  var nul = function(v){ return /^null$/i.test(String(v == null ? '' : v).trim()) ? '' : v; };
   return {
-    id:r[0], name:r[1],
+    id:r[0], name:String(r[1] == null ? '' : r[1]).replace(/\bNull\b/g, '\u061F'),
     zone:zoneOf(SITES_RAW.z[r[2]] || '', r[1] || ''), type:(SITES_RAW.t[r[3]] || ''),
     work:(SITES_RAW.w[r[4]] || ''),
     lat:r[5], lng:r[6],
-    sq:r[7] || '', sign:r[8] || '', co:r[9] || '',
+    sq:nul(r[7]) || '', sign:nul(r[8]) || '', co:nul(r[9]) || '',
     /* المصفوفتان تفترقان بعد العمود التاسع: المخيمُ يحمل بادئةَ شبكته
        في العاشر ثم المنطقةَ والتصنيف، والنقطةُ تحمل المنطقةَ ثم الحالة.
        وقراءتُهما بمسطرةٍ واحدةٍ جعلت حالةَ ألفٍ وثلاثمئةٍ واثنين وتسعين

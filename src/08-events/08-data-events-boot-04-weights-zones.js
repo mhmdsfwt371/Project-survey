@@ -147,7 +147,7 @@ function mxTable(path, label){
           '<div class="grid cols-3">'
           + '<div class="field"><label>' + esc(t('المشعر')) + '</label>'
           +   '<select id="mxdZ">'
-          +   Z.map(function(z){ return '<option value="' + esc(z) + '">' + esc(z) + '</option>'; }).join('')
+          +   Z.map(function(z){ return '<option value="' + esc(z) + '">' + esc(t(z)) + '</option>'; }).join('')
           +   '<option value="__new">' + esc(t('مشعرٌ جديد…')) + '</option>'
           +   '</select></div>'
           + '<div class="field" id="mxdZnWrap" style="display:none">'

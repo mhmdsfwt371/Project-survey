@@ -1181,6 +1181,25 @@ console.log('\n══ ٤١ · «كلّم المهندس» محادثةٌ لا ب
   w.STATE.users = U0; w.STATE.meta.name = me0; w.ROLE = role0; w.STATE.meta.role = role0; w.CUR = cur0; w.chPageHtml.f = {}; w.ASSIST_OPEN = false;
 }
 
+/* ── ٤٢ · (V39.5) كلُّ لغةٍ بأرقامها وكلماتها: الإصدار، والنسبة، والأسماء، و«Null» ── */
+console.log('\n══ ٤٢ · كلُّ لغةٍ بأرقامها وكلماتها ══');
+{
+  const L0 = w.LANG, D = w.document;
+  w.LANG = 'ar'; const a = w.verShow('V39.10'); w.LANG = 'ur'; const u = w.verShow('V39.10'); w.LANG = 'en'; const e = w.verShow('V39.10');
+  T(a === '٣٩٫١٠' && u === '۳۹٫۱۰' && e === '39.10', 'الإصدارُ بأرقام كلِّ لغة، حرفًا حرفًا (٣٩٫١٠ لا ٣٩٫١): ' + a + ' · ' + u + ' · ' + e);
+  const vt = D.querySelector('.ver-tag'), was = vt && vt.textContent;
+  w.LANG = 'ar'; w.verTagSync(); const shown = vt ? vt.textContent : '';
+  T(!!vt && !/[A-Za-z]/.test(shown) && /^V\d+\.\d+$/.test(w.appVer()), 'والوسمُ بالعربية بلا حرفٍ لاتينيّ، ورقمُ البناء محفوظٌ لمن يقرؤه: «' + shown + '» · ' + w.appVer());
+  w.LANG = 'en';
+  T(w.langFix('<td data-k="فريق ١">١٠٠٪</td><td>قارئ ٨ منافذ</td><td>٣٫٥٪</td>') === '<td data-k="فريق ١">100%</td><td>قارئ ٨ منافذ</td><td>3.5%</td>', 'وبالإنجليزية أرقامٌ ونِسَبٌ إنجليزية — لا داخل الخصائص، ولا في اسمٍ مكتوبٍ بالعربية');
+  T(w.dispName('فني ٣') === 'Technician 3' && w.dispName('مشرف الميدان').indexOf('Supervisor') === 0, 'و«فني ٣» تُقرأ Technician 3 لا حروفًا بلا معنى: ' + w.dispName('فني ٣'));
+  w.LANG = 'ur';
+  T(w.dispName('حسين عمار') === 'حسين عمار', 'وبالأردية يبقى الاسمُ بحرفه العربيّ');
+  const r = w.siteRow(['NSK-X-1', 'عرفات - مربع Null - شاخص ?', 0, 0, 0, 21, 39, 'Null', '', '', '', '', ''], false);
+  T(!/Null/.test(r.name) && r.sq === '' && /مربع ؟/.test(r.name), 'و«Null» من خطة المصدر تُقرأ مجهولةً: «' + r.name + '»');
+  w.LANG = L0; if (vt) vt.textContent = was;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

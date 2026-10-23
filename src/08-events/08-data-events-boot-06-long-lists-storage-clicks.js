@@ -251,11 +251,11 @@ function render0(force){
         /* السهمُ الصغير: إكسلُ هذه الصفحة كلِّها — كلُّ جداولها بكلِّ صفوفها لا ما يُعرَض */
         + btn('\u2B07','btn-secondary',' data-xlspage="1" title="' + esc(t('إكسل هذه الصفحة كاملةً — كل الجداول بكل الصفوف')) + '" aria-label="' + esc(t('إكسل هذه الصفحة كاملةً — كل الجداول بكل الصفوف')) + '"')
       : '');
-  c.innerHTML = (p.full ? p.body() : (head + p.body()))
+  c.innerHTML = langFix((p.full ? p.body() : (head + p.body()))
     + moreHtml()   /* (V26.2) */
     + (HELP_OPEN ? helpHtml() : '')
     + '' + gedHtml()   /* (V36.1) المساعدُ في حاويته الثابتة — assistSync؛ (V36.2) ونافذةُ التعديل الموحّد */
-    + (QUEUE_OPEN ? queueHtml() : '');
+    + (QUEUE_OPEN ? queueHtml() : ''));   /* (V39.5) langFix: the English percent sign in English */
 
   labelCells(c);
   if (EXP_OPEN) c.insertAdjacentHTML('beforeend', expHtml());

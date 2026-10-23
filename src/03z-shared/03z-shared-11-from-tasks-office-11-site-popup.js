@@ -222,7 +222,7 @@ function popHtml(){
     + '<div class="pop-body">'
 
     + '<div style="color:' + d.c + ';font-weight:800;font-size:12px;margin:6px 0 2px">'
-    +   d.i + ' ' + esc(t(d.l)) + ' — ' + esc(s.zone)
+    +   d.i + ' ' + esc(t(d.l)) + ' — ' + esc(t(s.zone))
     /* فرعُ كاميرا الوزارة — ويصحّحه المهندس (V19.1) */
     +   (camKind(s) ? ' \u00b7 ' + esc(camKindLabel(camKind(s))) + (s.type === 'كاميرا' && may('settings')
           ? ' <select data-camkind="' + esc(s.id) + '" aria-label="' + esc(t('نوع الكاميرا')) + '" style="min-height:30px;font-size:12px;width:auto">' + ['Bullet', 'PTZ'].map(function(k){ return '<option value="' + k + '"' + (camKind(s) === k ? ' selected' : '') + '>' + esc(camKindLabel(k)) + '</option>'; }).join('') + '</select>' : '') : '')

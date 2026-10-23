@@ -28,7 +28,7 @@ function verCheck(){
       if (there && mine && there !== mine){
         var b = document.querySelector('.ver-tag');
         if (b) b.classList.add('upd');
-        toast(there + ' ' + t('جاهزةٌ — أغلق التطبيق وافتحه'));
+        toast(t('نسخة') + ' ' + verShow(there) + ' ' + t('جاهزةٌ — أغلق التطبيق وافتحه'));
       } else if (SW_STATE.waiting){
         toast(t('نسخةٌ جديدةٌ جاهزة — أغلق التطبيق وافتحه'));
       } else {

@@ -76,7 +76,7 @@ function nskChunkReady(){
   /* (V38.51) the what's-new sheet waits for the release-notes log that ships in the chunk */
   try { if (typeof whatsNewMaybe === 'function' && whatsNewMaybe.pending){ whatsNewMaybe.pending = false; if (whatsNewMaybe() && typeof render === 'function') render(1); } } catch (e3){ LS_ERR = e3; }
 }
-var I18N_FILE = 'i18n/dict-af44ddc7f0.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-3307f58780.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -166,7 +166,33 @@ function shellLang(){
    وجد المنسدلةَ تقول العربية، ومن غيّر من المنسدلة وجد الحرفَ العلويَّ
    صحيحًا وعلامةَ الاختيار في قائمة اللغات على غيرها. فصارت كلُّ أداةٍ
    تُزامَن من موضعٍ واحد: من غيّر من أيِّهما وجد الأخرى تقول ما اختاره. */
+/* (V39.5) owner: «الإنجليزي كله إنجليزي، والعربي كله عربي، والأردو كله أردو». The version in each language's own
+   digits — «نسخة ٣٩٫٥», «Version 39.5», «ورژن ۳۹٫۵» — while the pill keeps the build's «V39.5» in data-v for every
+   reader (appVer). The string is mapped digit by digit: a version is not a number («39.10» is not 39.1). */
+function verShow(v){
+  var s = String(v || '').replace(/^V/i, '');
+  if (LANG === 'en') return s;
+  var dg = (I18N[LANG] || I18N.ar).dig || '٠١٢٣٤٥٦٧٨٩';
+  return s.replace(/\d/g, function(c){ return dg[+c]; }).replace(/\./g, '\u066B');
+}
+function verTagSync(){
+  var b = document.querySelector('.ver-tag'); if (!b) return;
+  if (!b.getAttribute('data-v')){ var m = /V\d+\.\d+/.exec(b.textContent || ''); if (m) b.setAttribute('data-v', m[0]); }
+  var v = b.getAttribute('data-v'); if (v) b.textContent = t('نسخة') + ' ' + verShow(v);
+}
+/* numbers written into the code in Arabic form (٪, «٠٪», «١٠٠٪», ٫) showed in English: each painted page gets English
+   digits and signs — in the text between tags only, never inside an attribute (a name with Arabic digits can be a key in
+   data-*), and only in a text with no Arabic letters (a name typed in Arabic stays whole). Arabic and Urdu are left as written. */
+function langFix(h){
+  if (LANG !== 'en' || !h || !/[\u0660-\u066C]/.test(h)) return h;
+  return h.replace(/>[^<]+</g, function(seg){
+    if (/[\u0621-\u064A]/.test(seg)) return seg;   /* a text with Arabic letters is data (an item's or a point's name) — as written */
+    return seg.replace(/[\u0660-\u0669]/g, function(c){ return String.fromCharCode(c.charCodeAt(0) - 0x0660 + 48); })
+              .replace(/\u066A/g, '%').replace(/\u066B/g, '.').replace(/\u066C/g, ',');
+  });
+}
 function langSync(){
+  try { verTagSync(); } catch (eV){ LS_ERR = eV; }
   var sel = document.getElementById('langSel');
   if (sel && sel.value !== LANG) sel.value = LANG;
   var lt = document.getElementById('langTop');

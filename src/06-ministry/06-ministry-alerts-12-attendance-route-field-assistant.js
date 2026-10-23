@@ -83,7 +83,7 @@ function routeLocate(){
 function waAsnText(to, kind, ids, when){
   var L = ids.map(function(id){
     var st = siteFind(id) || {};
-    return '\u2022 ' + id + (st.name ? ' \u2014 ' + String(st.name).slice(0, 30) : '') + (st.zone ? ' (' + st.zone + ')' : '');
+    return '\u2022 ' + id + (st.name ? ' \u2014 ' + String(st.name).slice(0, 30) : '') + (st.zone ? ' (' + t(st.zone) + ')' : '');
   });
   return t('السلام عليكم') + ' ' + to + '\n'
     + t('أُسند إليك') + ' ' + nm(ids.length) + ' ' + t('نقطة') + ' \u2014 ' + t(kindLabel(kind))

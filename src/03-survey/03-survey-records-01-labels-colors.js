@@ -189,14 +189,17 @@ function coName(c){
   if (fix) return fix;
   return c.split(/\s+/).map(translitWord).join(' ');
 }
+/* (V39.5) Urdu is written in the Arabic script: a name stays as written («Hussein» was shown for حسين). In English a
+   generic word inside an account name is a word, not a name: «فني ٣» is «Technician 3», not «Fny 3». */
 function dispName(s){
   if (!s || typeof s !== 'string') return s;
-  if (LANG === 'ar') return s;
+  if (LANG === 'ar' || LANG === 'ur') return s;
   if (!/[\u0600-\u06FF]/.test(s)) return s;
   var fix = (CFG.nameEn || {})[s];
   if (fix) return fix;
-  return s.split(/\s+/).map(translitWord).join(' ');
+  return s.split(/\s+/).map(function(wd){ return dispName.words[wd] || (/^[\u0660-\u0669]+$/.test(wd) ? nm(+wd.replace(/[\u0660-\u0669]/g, function(c){ return c.charCodeAt(0) - 0x0660; })) : translitWord(wd)); }).join(' ');
 }
+dispName.words = { 'فني':'Technician', 'مشرف':'Supervisor', 'مهندس':'Engineer', 'فريق':'Team', 'مساعد':'Assistant', 'سائق':'Driver', 'مندوب':'Representative' };
 
 function catLabel(x){
   var d = catDefOf(x);

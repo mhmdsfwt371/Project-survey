@@ -43,7 +43,7 @@ function bugCtx(){
   var nav = (typeof navigator === 'object' ? navigator : {});
   return {
     /* النسخةُ من الشارة نفسِها — مصدرٌ واحدٌ لا ثابتٌ يُنسى تحديثُه */
-    v: (function(){ var el = document.querySelector('.ver-tag'); return el ? String(el.textContent || '').replace(/[^V\d.]/g, '') : ''; })(),
+    v: appVer(),   /* (V39.5) the pill reads in the user's language — the build's version is kept in data-v */
     page: CUR, tab: (TABS[CUR] ? PTAB[CUR] : '') || '',
     role: effRole(ROLE), lang: LANG, online: !!nav.onLine,
     ua: String(nav.userAgent || '').slice(0, 180),
@@ -90,7 +90,7 @@ function bugSheet(){
     + '<div class="field"><label>' + esc(t('ما الذي كنتَ تتوقّعه؟')) + ' <span class="hint">(' + esc(t('اختياري')) + ')</span></label>'
     +   '<input id="bgWant" dir="auto"></div>'
     + '<div class="alert info" style="margin:8px 0 0"><span>' + esc(t('يُرفَق تلقائيًّا')) + ': '
-    +   '<span class="num">' + esc(c.v) + '</span> \u00b7 ' + esc(t(pageTitle(c.page) || c.page)) + ' \u00b7 '
+    +   '<span class="num">' + esc(verShow(c.v)) + '</span> \u00b7 ' + esc(t(pageTitle(c.page) || ((FIELD_PAGES[c.page] || {}).t) || '')) + ' \u00b7 '
     +   esc(t((ROLES[c.role] || {}).n || c.role)) + ' \u00b7 ' + esc(c.online ? t('متصل') : t('غير متصل'))
     +   (c.err ? ' \u00b7 ' + esc(t('آخرُ خطأٍ في جلستك')) : '') + '</span></div>'
     + '<div class="actions" style="margin:10px 0 0">'

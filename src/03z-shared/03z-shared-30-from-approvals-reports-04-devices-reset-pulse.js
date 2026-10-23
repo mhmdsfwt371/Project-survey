@@ -14,6 +14,7 @@
    الرأس نفسِه لا من ثابتٍ يشيخ. */
 function appVer(){
   var b = document.querySelector('.ver-tag');
+  if (b && b.getAttribute('data-v')) return b.getAttribute('data-v');   /* (V39.5) the pill shows it in the user's language */
   var m = /V\d+\.\d+/.exec((b && b.textContent) || document.title || '');
   return m ? m[0] : '';
 }

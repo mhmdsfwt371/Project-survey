@@ -865,7 +865,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
                 var r = STATE.diss[x.id] || {};
                 var d = catDefOf(x) || { l:x.type, i:'' };
                 return [siteIdHtml(siteOf(x)),
-                        esc(x.zone), d.i + ' ' + esc(t(d.l)),
+                        esc(t(x.zone)), d.i + ' ' + esc(t(d.l)),
                         N(ptsDis(x)),
                         pill(r.status || 'قابل للفك', r.status==='تم الفك'?'ok':(r.status?'warn':'')),
                         '<div class="actions">'

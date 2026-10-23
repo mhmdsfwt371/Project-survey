@@ -302,7 +302,7 @@ function assistWarnCount(){ try { var d = assistDiag(); return (d.on ? 0 : 0) + 
 
 function assistBadgeSync(){
   var b = document.getElementById('assistBtn'); if (!b) return;
-  if (!b.getAttribute('data-lbl')){ b.setAttribute('data-lbl', '1'); b.classList.add('tb-assist'); b.innerHTML = '\u{1F9ED}<span class="tb-assist-t">' + esc(t('المساعد')) + '</span><i class="tb-dot" hidden></i>'; }
+  if (b.getAttribute('data-lbl') !== LANG){ b.setAttribute('data-lbl', LANG);   /* (V39.5) drawn once, it stayed Arabic in English and Urdu */ b.classList.add('tb-assist'); b.innerHTML = '\u{1F9ED}<span class="tb-assist-t">' + esc(t('المساعد')) + '</span><i class="tb-dot" hidden></i>'; }
   var n = assistWarnCount(), dot = b.querySelector('.tb-dot'); if (dot) dot.hidden = !n;
   b.setAttribute('aria-label', t('المساعد') + (n ? ' — ' + t('في جهازك ما يحتاج حلًّا') : ''));
   /* تعريفٌ بالمساعد مرةً لكلِّ جهاز بعد التحديث — فقاعةٌ صغيرةٌ تختفي بلمسةٍ أو بعد ثماني ثوانٍ */

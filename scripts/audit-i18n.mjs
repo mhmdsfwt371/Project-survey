@@ -182,7 +182,8 @@ shellHits.slice(0, 6).forEach(h => console.log(`  · [الهيكل] ${h}`));
 /* السقفُ يهبط ولا يصعد: ٤١ نصًّا قبل V17.60 ثم ٣١ بعد أن صارت حقولُ شاشة الأنواع
    تُوسَم باسم النوع المترجَم — والهامشُ نصّان كما كان */
 /* V23.0: ٢٠ بعد أن صار مفتاحُ النوع يُعرَض مترجَمًا في غير العربية — والهامشُ نصّان */
-const CAP_PAGES = 12, CAP_TEXTS = 22, CAP_SHELL = 2;
+/* V39.5: the header in each language (version and assistant) and English digits and signs in English — 11 · 20 · 0 */
+const CAP_PAGES = 11, CAP_TEXTS = 20, CAP_SHELL = 0;
 let bad = 0;
 const line = (c, m) => { console.log((c ? '  ✓ ' : '  ✗ ') + m); if (!c) bad++; };
 console.log('');
