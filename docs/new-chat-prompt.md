@@ -155,7 +155,7 @@ browser-test.mjs     كروميوم حقيقيٌّ بظروف منى (الملف
 
 ```bash
 git clone https://x-access-token:$TOKEN@github.com/mhmdsfwt371/Project-survey.git /home/claude/app
-cd /home/claude/app && npm i --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3 eslint@9 globals@15 acorn@^8
+cd /home/claude/app && npm i --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3 eslint@9 globals@15 acorn@^8 terser@5.51.2
 node scripts/build.mjs --check && NUSUK_SKIP_AUDITS=1 node scripts/check-version.mjs
 ```
 

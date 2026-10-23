@@ -7,10 +7,11 @@
 import { readFileSync, existsSync } from 'fs';
 
 export function regFromHtml(html){
-  const k = html.indexOf('var SITES_RAW = '); if (k < 0) return null;
-  const at = html.indexOf('{', k);
-  const nl = html.indexOf('\n', k);
-  if (at < 0 || (nl > -1 && at > nl)) return null;   /* «= null;» أو ما يشبهه: غيرُ مضمَّن */
+  /* (V38.89) the shipped page is minified: «var SITES_RAW={» — and with no line breaks, the next «{» could belong to
+     another statement, so the object must start right after the «=» */
+  const m = /var SITES_RAW\s*=\s*/.exec(html); if (!m) return null;
+  const at = m.index + m[0].length;
+  if (html[at] !== '{') return null;   /* «= null;» أو ما يشبهه: غيرُ مضمَّن */
   /* نهايةُ الكائن بعدِّ الأقواس لا بنمطٍ نصّي (درسُ photos-sync) */
   let depth = 0, str = false, esc = false, end = -1;
   for (let i = at; i < html.length; i++){

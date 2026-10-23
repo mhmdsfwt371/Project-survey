@@ -11,7 +11,7 @@ const FILES = srcFiles();
 /* (V38.39) core + chunks: index.html (core, deferred tag) + app-office.js (office · ministry · reports). Deterministic,
    so `--check` rebuilds both and compares. The comment stripping of V38.33 applies to both parts. */
 const { buildParts, CHUNK_FILE } = await import('./lib/src.mjs');
-const parts = await buildParts();
+const parts = await buildParts('src', { ship: true });   /* (V38.89) the shipped files minified — see lib/src.mjs */
 const out = parts.index;
 if (process.argv.includes('--check')){
   const cur = readFileSync('index.html', 'utf8'), curChunk = (() => { try { return readFileSync(CHUNK_FILE, 'utf8'); } catch (e){ return ''; } })();
