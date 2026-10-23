@@ -47,7 +47,10 @@ const LIVE = new RegExp([
   'trialRows\\(', 'trialsDoc\\(',
   'workReqList', 'bonusList', 'rollupBy', 'evRows', 'asnOf', 'solutionOf',
   'stockBalance', 'custodyByWho', 'scoreOf', 'stageList', 'vehList', 'vehOfWho', 'chainRows\\(',
-  'CHANGES', 'NCRS', 'IPCS', 'HSE\\.', 'BASE', 'REQSEQ', 'POLY', 'S47'
+  'CHANGES', 'NCRS', 'IPCS', 'HSE\\.', 'BASE', 'REQSEQ', 'POLY', 'S47',
+  /* (V38.97) the drawn Tafweej routes: settings/tfwdraw, read through tfdDrawn() — the screen read STATE.meta only in a
+     variable it never used, and that unused read was the one thing this list recognised */
+  'tfdDrawn\\('
 ].join('|'));
 
 /* استخراجُ جسم كلِّ صفحة — من مصدرَي الصفحات معًا: PAGE وFIELD_PAGES.
