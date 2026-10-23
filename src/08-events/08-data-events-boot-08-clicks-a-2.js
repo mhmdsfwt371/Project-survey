@@ -127,8 +127,8 @@ function clickAPart3(e){
   if (e.target.closest('[data-idbretry]')){ toast(t('يُعاد فتحُ المخزن…')); idbRetryNow().then(function(){ toast(t(IDB_BAD ? 'ما زال لا يعمل — العملُ يُرفَع تلقائيًّا، فلا تغلق التطبيق' : 'عاد الحفظُ المحلي')); }); return true; }
   if (e.target.closest('[data-simapply]')){
     if (!may('settings')) { toast(t('الضبطُ للمدير')); return true; }
-    var M = simState(), zs = zonesLive(), n0 = 0;
-    Object.keys(M.w).forEach(function(k){ zs.forEach(function(z){ cfgSet('w', z + '|' + k, +M.w[k] || 0); n0++; }); });
+    var M = simState(), zs = zonesLive();
+    Object.keys(M.w).forEach(function(k){ zs.forEach(function(z){ cfgSet('w', z + '|' + k, +M.w[k] || 0); }); });
     if (+M.target > 0) cfgSet('tgtSurvey', null, +M.target);
     logEvent('اعتُمدت الأوزانُ من المحاكي — ' + Object.keys(M.w).map(function(k){ return k + ' ' + M.w[k]; }).join(' · ') + ' · التارجت ' + nm(+M.target));
     toast(t('اعتُمدت الأوزانُ والتارجت — يُعاد حسابُ المستحقّ')); render(1); return true;
@@ -240,7 +240,6 @@ function clickAPart4(e){
     if (stuckAccept(sid2, nEl2 ? nEl2.value : '')){ toast(t('قُبل التعذّرُ وسُجِّلت الحُجّة')); render(1); }
     return true;
   }
-  var skr = e.target.closest('[data-stkreopen]');
   return CLICK_NEXT;
 }
 /* clickA — الجزء 5 من 7 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).

@@ -109,7 +109,7 @@ function layerBar(){
 /* ── لوحُ الطبقة: يُظهر ما ينقص قبل أن يُجدوَل ── */
 PAGE.tfwdraw = { m:'الميدان', t:'رسم المسارات من وإلى الجمرات', l:'ارسم بيدك على الخريطة مسارَ كلِّ دورٍ ذهابًا وعودة — يلتصق بالشوارع ويُعرَض على الأجهزة كلِّها بدل المولَّد.',
   body:function(){
-    var D = tfdDrawn(), rows = [], drawnBy = (CFG.tfwdraw && CFG.tfwdraw.by) || '', meta = STATE.meta || {};
+    var D = tfdDrawn(), rows = [], drawnBy = (CFG.tfwdraw && CFG.tfwdraw.by) || '';
     TFW_FL.forEach(function(n, f){ ['go', 'back'].forEach(function(d){ var pls = (D[f] && D[f][d]) || [], m = Math.round(tfdLen(pls));
       rows.push([esc(t(floorName(f))), esc(t(d === 'go' ? 'الذهاب' : 'العودة')), pls.length ? pill(nm(pls.length) + ' ' + t('خط') + ' \u00b7 ' + nm(m) + ' ' + t('م'), 'ok') : pill(t('المولَّد من المخطّط'), 'wrn'),
         (tfdMay() ? btn('\u270F ' + t('ارسم على الخريطة'), 'btn-secondary btn-sm', ' data-tfdgo="' + f + '|' + d + '"') + (pls.length ? ' ' + btn('\u2715 ' + t('احذف المرسوم'), 'btn-quiet btn-sm', ' data-tfdclear="' + f + '|' + d + '"') : '') : '')]); }); });

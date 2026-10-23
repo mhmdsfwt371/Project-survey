@@ -37,7 +37,7 @@ function riskAdd(){
 
 /* مؤشراتٌ حيّةٌ — من الأرقام لا من الذاكرة */
 function riskSignals(){
-  var out = [], S = siteStats(), v = (typeof evm === 'function') ? evm() : null;
+  var out = [], v = (typeof evm === 'function') ? evm() : null;
   if (v && v.SPIx && v.SPIx < 0.9)  out.push(['bad', t('الجدولُ متأخّر') + ' — SPI ' + nm(v.SPI), 'plan']);
   if (v && v.CPIx && v.CPIx < 0.9)  out.push(['bad', t('الكلفةُ تتجاوز') + ' — CPI ' + nm(v.CPI), 'evm']);
   var rev = 0, blocked = 0;

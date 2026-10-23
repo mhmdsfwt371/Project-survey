@@ -206,7 +206,7 @@ function ccCard(c){
 }
 
 function mfuHeroHtml(){
-  var all = STATE.sites || [], n = all.length, sv = 0, ins = 0, hd = 0, ds = 0, now = Date.now(), today = dayKey(now);
+  var all = STATE.sites || [], sv = 0, ins = 0, hd = 0, ds = 0, now = Date.now(), today = dayKey(now);
   var SC = stageCounts();
   all.forEach(function(x){ if (svVisited(STATE.recs[x.id])) sv++; if (insDone(x.id)) ins++; if (handDone(x.id)) hd++; if (disDone(x.id)) ds++; });
   /* نبضُ ١٤ يومًا من السجلات مباشرةً — مرورٌ واحد */
@@ -227,7 +227,6 @@ function mfuHeroHtml(){
   Object.keys(STATE.inss || {}).forEach(function(k){ var h = STATE.inss[k] && STATE.inss[k].hand; if (h && dayKey(h.at || h.ts || 0) === today) dd.hand++; });
   /* أبرزُ ثلاثة تحديات */
   var byCh = {}; (STATE.sites || []).forEach(function(x){ var r0 = STATE.recs[x.id]; if (!svDone(r0)) return; chalCats(r0).forEach(function(k){ if (k === 'review' || !ccOf(k)) return; var nn = ccOf(k).n; byCh[nn] = (byCh[nn] || 0) + 1; }); });   /* (V37.3) الفئاتُ الثماني */
-  var top = Object.keys(byCh).sort(function(a, b){ return byCh[b] - byCh[a]; }).slice(0, 3);
   return '<div class="mfu-hero">'
     + '<div class="mfu-hero-band"><div><div class="mfu-hero-t">' + esc(t('موجز الموسم')) + '</div><div class="hint" style="margin:0">' + esc(hijriToday()) + ' \u00b7 ' + esc(today) + '</div></div>'
     +   '<div class="mfu-hero-today"><span>' + esc(t('اليوم')) + '</span> <b>' + nm(dd.sv) + '</b> ' + esc(t('مسح')) + ' \u00b7 <b>' + nm(dd.ins) + '</b> ' + esc(t('تركيب')) + ' \u00b7 <b>' + nm(dd.hand) + '</b> ' + esc(t('تسليم')) + ' \u00b7 <b>' + nm(dd.dis) + '</b> ' + esc(t('فك'))   /* (V34.3) الأربعةُ يومًا بيوم */

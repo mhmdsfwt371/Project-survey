@@ -83,7 +83,7 @@ function execSheetXml(xml, rows){
   xml = xml.replace(/<row r="(\d+)"([^>]*)\/>/g, function(m0, rr, attrs){ var r = +rr; if (!data[r]) return m0; var nc = COLS.map(function(c){ return cell(c, r, data[r][c]); }).join(''); delete data[r]; return '<row r="' + r + '"' + attrs + '>' + nc + '</row>'; });
   var extra = Object.keys(data).map(Number).sort(function(a, b){ return a - b; }).map(function(r){ return '<row r="' + r + '" spans="1:12">' + COLS.map(function(c){ return cell(c, r, data[r][c]); }).join('') + '</row>'; }).join('');
   if (extra){   /* صفوفٌ جديدةٌ تُدرَج في موضعها بالترتيب */
-    var rowsArr = []; xml = xml.replace(/<sheetData>([\s\S]*?)<\/sheetData>/, function(m0, body){ return '<sheetData>' + body + extra + '</sheetData>'; });
+    xml = xml.replace(/<sheetData>([\s\S]*?)<\/sheetData>/, function(m0, body){ return '<sheetData>' + body + extra + '</sheetData>'; });
     xml = xml.replace(/<sheetData>([\s\S]*?)<\/sheetData>/, function(m0, body){ var L = body.match(/<row r="\d+"[\s\S]*?<\/row>|<row r="\d+"[^>]*\/>/g) || []; L.sort(function(a, b){ return +/r="(\d+)"/.exec(a)[1] - +/r="(\d+)"/.exec(b)[1]; }); return '<sheetData>' + L.join('') + '</sheetData>'; });
   }
   /* (V37.48) القوائمُ المنسدلة: الخلايا التي فيها قيمٌ خارج قوائم Sheet2 (كاميرات مزودين الخدمة، ممرات القطار) تُستثنى كما استثناها المالك — والصفوفُ تتحرّك مع البيانات */

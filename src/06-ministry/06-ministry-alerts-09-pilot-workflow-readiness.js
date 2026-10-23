@@ -55,7 +55,6 @@ PAGE.dis = { m:'المتابعة', t:'الفك والمراحل',
           table(['المرحلة','أساسُها','عددُ الأساس','منجَز','المتبقّي','النسبة'],
             R.map(function(x){
               var left = Math.max(0, (x.baseN || 0) - x.done);
-              var pc = x.baseN ? Math.round(x.done * 100 / x.baseN) : 0;
               return ['<strong>' + esc(t(x.n)) + '</strong>',
                       esc(t(x.base)),
                       x.baseN ? N(x.baseN) : '<span class="hint" style="margin:0">'

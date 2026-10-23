@@ -54,7 +54,9 @@ const rules = (() => { try { return readFileSync('firestore.rules','utf8'); } ca
      والمطلوبُ أن تكون مشروطةً صراحةً لا أن تقع افتراضًا — فالفرقُ بينهما
      أن الأولى تقع مرةً والثانيةَ ثماني مراتٍ في اليوم لكلِّ جهاز. */
   /* V16.6+: الباردةُ حين لا مؤشِّر (since ≤ 0) وبسقفٍ يسع النطاق — لا افتراضًا كلَّ مرة */
-  check(/q\.limit\(since > 0 \? 2000 : 6000\)/.test(seg) && /var since = \(at\[c\] \|\| 0\) - 120000/.test(seg),
+  /* (V38.96) the same rule written as «cold = no cursor» — the events log's cold pull is a 14-day window inside it */
+  check((/q\.limit\(since > 0 \? 2000 : 6000\)/.test(seg) || (/var cold = !\(since > 0\)/.test(seg) && /q\.limit\(cold \? 6000 : 2000\)/.test(seg)))
+      && /var since = \(at\[c\] \|\| 0\) - 120000/.test(seg),
     'السحبُ الكاملُ مشروطٌ بغياب المؤشِّر — والفارقيُّ ما بعده وحدَه');
   check(/FB\.readCount/.test(seg), 'القراءةُ تُعَدُّ فتُرى الحصةُ لا تُظَنّ');
 }

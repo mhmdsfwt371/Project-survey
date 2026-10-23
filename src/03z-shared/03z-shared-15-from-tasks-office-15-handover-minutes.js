@@ -59,7 +59,6 @@ function hoSigners(){
 
 function hoLocOf(x){
   if (!x) return '';
-  var T = hoTpl(x);
   var bits = [];
   if (x.sq)   bits.push(x.sq);
   if (x.sign) bits.push(x.sign);

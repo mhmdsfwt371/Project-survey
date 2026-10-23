@@ -314,7 +314,7 @@ function wtTracks(){
 }
 function wtStats(){
   var R = wtRows().filter(function(r){ return !WT_TRACK || String(r.track || '').trim() === WT_TRACK; });
-  var today = dayKey(Date.now()), c = { all:R.length, done:0, run:0, wait:0, stop:0, late:0, d0:0, d1:0, week:0, next:0, month:0, none:0 };
+  var c = { all:R.length, done:0, run:0, wait:0, stop:0, late:0, d0:0, d1:0, week:0, next:0, month:0, none:0 };
   R.forEach(function(r){
     if (r.st === 'مكتمل'){ c.done++; return; }
     if (r.st === 'جاري العمل') c.run++; else if (r.st === 'متوقف') c.stop++; else c.wait++;

@@ -21,6 +21,7 @@ function actList(){
     /* (V33.0) المعالجان صارا أجزاءً: نصُّ الأجزاء يُقرأ كذلك — وإلا ظنَّ الحارسُ كلَّ زرٍّ غيرَ مربوطٍ وابتلعه */
     for (var pi = 1; pi <= 30; pi++){
       if (typeof window['onDocClickPart' + pi] === 'function') src += String(window['onDocClickPart' + pi]);
+      if (typeof window['onDocClickPart' + pi + 'b'] === 'function') src += String(window['onDocClickPart' + pi + 'b']);   /* (V38.97) a part cut in two */
       if (typeof window['clickAPart' + pi] === 'function') src += String(window['clickAPart' + pi]);
     }
   } catch (e){ LS_ERR = e; }

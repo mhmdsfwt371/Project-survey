@@ -2,7 +2,7 @@
    FILE    : src/08-events/08-data-events-boot-11-clicks-doc-2.js
    DOMAIN  : Data & events — settings, users, click handlers, boot
    PURPOSE : Document-level click handlers part 2 (parts 4–7).
-   DEFINES : onDocClickPart4, onDocClickPart5, onDocClickPart6, onDocClickPart7
+   DEFINES : onDocClickPart4, onDocClickPart5, onDocClickPart6, onDocClickPart7, onDocClickPart4b
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
    ============================================================================ */
@@ -197,6 +197,11 @@ function onDocClickPart4(e){
     SOFT_ERRS = []; SOFT_SAID = {}; toast(t('مُسح سجلُّ الأعطال')); render(1); return;
   }
   if (e.target.closest('[data-verchk]')){ verCheck(); return; }
+  return CLICK_NEXT;
+}
+/* onDocClickPart4b — the second half of part 4 (V38.97: 385 lines cut in two at a point where neither half uses a variable
+   the other declares; the order of the checks is unchanged) */
+function onDocClickPart4b(e){
   var depa = e.target.closest('[data-depadd]');
   if (depa){ depTechAdd(depa.getAttribute('data-depadd')); return; }
   var bna = e.target.closest('[data-bnadd]');
@@ -377,7 +382,7 @@ function onDocClickPart4(e){
   if (srm){ selToggle(srm.getAttribute('data-selrm')); render(1); return; }
   var pv = e.target.closest('[data-pview]');
   if (pv){ photoSeen(pv.getAttribute('data-pview')); return; }   /* الرابطُ يفتح، ونحن نسجّل */
-  pd = e.target.closest('[data-pdel]');
+  var pd = e.target.closest('[data-pdel]');   /* (V38.97) declared here: its «var» lived in the first half */
   if (pd){
     var pid = pd.getAttribute('data-pdel');
     /* (V38.74) an approved visit's photo is the project management's to delete, and no photo goes without a reason */
@@ -410,7 +415,6 @@ function onDocClickPart5(e){
     ch.classList.toggle('on');
     return;
   }
-  var fs = e.target.closest('[data-fst]');
   return CLICK_NEXT;
 }
 /* onDocClick — الجزء 6 من 9 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).
@@ -428,7 +432,6 @@ function onDocClickPart6(e){
   if (e.target.closest('[data-svnext]')){ svSave(1); return; }
   if (e.target.closest('[data-inssave]')){ insSave(0); return; }
   if (e.target.closest('[data-insdraft]')){ insSave(1); return; }
-  var fxb = e.target.closest('[data-fix]');
   return CLICK_NEXT;
 }
 /* onDocClick — الجزء 7 من 9 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).

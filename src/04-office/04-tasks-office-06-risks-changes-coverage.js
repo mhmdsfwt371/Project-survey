@@ -101,7 +101,6 @@ PAGE.org = { m:'التخطيط', t:'التنظيم والسلامة',
   })();
     if (cur === 'esc') return head + (function(){
     var L = escList(), due = escDue();
-    var today = due.filter(function(x){ return x.days === (byDays(x)); });
     function byDays(x){ return x.days; }
     var late = due.filter(function(x){ return x.days > 7; });
     var oldest = due.length ? due[0].days : null;

@@ -60,6 +60,7 @@ function fakeDb(w, docsByCol, log){
   return { collection(col){
     const q = { col, wheres:[], lim:0,
       where(f, op, v){ this.wheres.push([f, op, v]); return this; },
+      orderBy(f, d){ this.order = [f, d || 'asc']; return this; },   /* (V38.96) the events log is pulled newest-first */
       limit(n){ this.lim = n; return this; },
       get(){ log.push({ col, wheres:this.wheres.slice(), lim:this.lim });
         const docs = (docsByCol[col] || []).map(x => ({ id:x.id, data:() => x }));

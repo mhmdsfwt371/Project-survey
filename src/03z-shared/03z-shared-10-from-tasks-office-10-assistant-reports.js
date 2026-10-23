@@ -146,7 +146,7 @@ function aqRepGroup(D){
   var g = D.P.group; if (!g) return null;
   aqRepPrep();
   var key = function(x){
-    var r = STATE.recs[x.id], i = STATE.inss[x.id];
+    var r = STATE.recs[x.id];
     if (g.k === 'zone') return x.zone || '\u2014';
     if (g.k === 'type') return x.type || '\u2014';
     if (g.k === 'co') return x.co || t('بلا شركة');

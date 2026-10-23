@@ -150,7 +150,6 @@ function mtCamps(){
 
   if (EXT.err) h += alertBox('warn', t('خطأ في تحميل البيانات') + ': ' + EXT.err);
 
-  var matched = EXT_MATCH_STATE.matched;
   var unmatched = EXT_MATCH_STATE.unmatched;
 
   /* (V38.12) حالةُ النقاط أوّلًا (V38.13)، ثم الربطُ الجماعيّ، ثم شريطُ الإعداد */
@@ -530,7 +529,6 @@ function extStatusCard(){
                ['ov', '📊 لها أرقام', n(flt.ov)], ['noov', 'بلا أرقام', n(flt.noov)], ['chk', '⚠ تحتاج مراجعة', n(flt.chk)]];
   var rows = R.filter(flt[F] || flt.all), N = EXT.stN || 30;
   var by = { name:'الاسم', sign:'الشاخص', serial:'السيريال', '1447':'قارئ ١٤٤٧' };
-  var sigTxt = function(r){ return r.sig === 'on' ? '\u{1F7E2} ' + t('ترسل') : r.sig === 'off' ? '\u{1F534} ' + t('لا ترسل') + (r.ts ? ' \u00b7 ' + pilotAgo(r.ts) : '') : '\u26AA ' + t('بلا قارئ ظاهر'); };
   var chkTxt = function(r){ return r.chk === 'warn' ? '\u26A0 ' + t('القارئ على موقعٍ آخر') : r.chk === 'ser' ? '\u26A0 ' + t('سيريالٌ مختلف') : r.chk === 'miss' ? '\u26A0 ' + t('الاسم غير موجود') : '\u2713'; };
   /* (V38.13) سطران لكلِّ نقطة بدل جدولٍ بسبعة أعمدة — يتّسع للجوال */
   var tb = '<div class="st-list">' + rows.slice(0, N).map(function(r){

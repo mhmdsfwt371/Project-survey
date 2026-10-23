@@ -264,7 +264,6 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
   body:function(){
     var head = tabHead('users'), cur = tabCur('users');
     if (cur === 'users') return head + pwFlowHtml() + (may('users') ? phonesCard() : '') + bulkCard() + provCard() + (may('users') ? pendCard() : '') + (function(){
-    var L = usersList();
     /* الشريحةُ تعدُّ ما أراه لا ما في القاعدة: كانت تقول «وزارة ٥» ثم تقول
        القائمةُ «لا مستخدمَ يطابق» — رقمٌ يَعِدُ بصفوفٍ لا تُعرَض (V17.6). */
     var byRole = {}, total = 0;

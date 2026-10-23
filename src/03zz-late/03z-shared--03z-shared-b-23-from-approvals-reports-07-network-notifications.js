@@ -65,7 +65,6 @@ function bellToggle(open){
   BELL_OPEN = (open === undefined) ? !BELL_OPEN : !!open;
   var old = document.getElementById('bellPop'); if (old) old.remove();
   if (!BELL_OPEN) return;
-  var host = document.getElementById('syncMeta') || document.body;
   var d = document.createElement('div'); d.innerHTML = bellHtml();
   document.body.appendChild(d.firstChild);
 }

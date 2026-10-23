@@ -16,6 +16,7 @@ function onDocClick(e){
   if (onDocClickPart2(e) !== CLICK_NEXT) return;
   if (onDocClickPart3(e) !== CLICK_NEXT) return;
   if (onDocClickPart4(e) !== CLICK_NEXT) return;
+  if (onDocClickPart4b(e) !== CLICK_NEXT) return;   /* (V38.97) part 4 cut in two */
   if (onDocClickPart5(e) !== CLICK_NEXT) return;
   if (onDocClickPart6(e) !== CLICK_NEXT) return;
   if (onDocClickPart7(e) !== CLICK_NEXT) return;

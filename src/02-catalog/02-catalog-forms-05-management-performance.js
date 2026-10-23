@@ -285,7 +285,6 @@ PAGE.perf = { m:'الفرق', t:'الفرق والأداء',
         + cardFlush('أعضاء ' + esc(tm.n),
             table(['العضو','الدور','النسبة ٪','نصيبه','مستحقّه',''],
               tm.members.map(function(m, i){
-                var R = TEAM_ROLE[m.role] || TEAM_ROLE.tech;
                 var sh = cfgN(m.share);
                 var mine = tot ? (pts * sh / tot) : 0;
                 return ['<strong>' + esc(m.name) + '</strong>',

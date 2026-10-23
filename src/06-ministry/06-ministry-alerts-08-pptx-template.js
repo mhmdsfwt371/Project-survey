@@ -111,7 +111,6 @@ function mfuSlides(R){
   S.push(['منشأة الجمرات — تأكيد النقاط بالمسح', pxCards([['نسبة التأكيد', (jt.n ? Math.round(jt.ok / jt.n * 100) : 0) + '٪', jt.ok + ' من ' + jt.n, '1E8449'], ['مؤكَّدة بالمسح', String(jt.ok), 'وصلها المسح', '163E35'], ['لم تُزر', String(jt.no), 'تحتاج زيارة', '8A6D0B'], ['تحتاج زيارة أخرى', String(jt.un), 'تحتاج زيارة أخرى', 'A93226'], ['فيها تحديات', String(jt.ch), 'من المؤكَّدة', 'A93226']], PX.Y0, 1900000)
     + (JM.rows.length ? pxTable(PX.X0, PX.Y0 + 2350000, PX.W, ['الدور', 'النقاط', 'مؤكَّدة بالمسح', 'تحتاج زيارة أخرى', 'لم تُزر', 'فيها تحديات', 'نسبة التأكيد'], JM.rows.map(function(r, i){ var last = i === JM.rows.length - 1; return [{ t:r[0], b:1 }, r[1], { t:String(r[2]), c:'1E8449', b:1 }, r[3] ? { t:String(r[3]), c:'A93226', b:1 } : '0', r[4] ? { t:String(r[4]), c:'8A6D0B', b:1 } : '0', r[5] ? { t:String(r[5]), c:'A93226' } : '0', last ? { t:r[6], b:1 } : pcv(r[6])]; }), { cols:[1.8, 1, 1.3, 1.2, 1, 1.2, 1.2], rh:560000, sz:1400, hsz:1400 })
        : pxBox(PX.X0, PX.Y0 + 2400000, PX.W, 700000, pxP('لا نقاطَ لمنشأة الجمرات في النطاق', { sz:1400, c:'7F8C8D' }), { geom:'rect' }))]);
-  var stc = function(v){ return v === 'مكتمل' ? { t:v, c:'1E8449', b:1 } : v === 'متأخر' ? { t:v, c:'A93226', b:1 } : v === 'جارٍ' ? { t:v, c:'8A6D0B', b:1 } : v; };
   var stc2 = function(v){ v = String(v || ''); return /مكتمل/.test(v) ? { t:v, c:'1E8449', b:1 } : /متوقف|متأخر/.test(v) ? { t:v, c:'A93226', b:1 } : /جاري|جارٍ/.test(v) ? { t:v, c:'8A6D0B', b:1 } : v; };
   S.push(['حالة أبرز مهام مسار القارئات', pxTable(PX.X0, PX.Y0, PX.W, ['المهمة', 'المسار', 'المسؤول', 'الحالة', 'الاستحقاق', 'التحديث', 'مرتبطة بـ'], R.tasks.slice(0, 11).map(function(r){ return [r[0], r[1] || '—', r[2] || '—', stc2(r[3]), r[4] || '—', r[5] || '—', r[6] ? (/^✓/.test(r[6]) ? { t:r[6], c:'1E8449', b:1 } : { t:r[6], c:'A93226' }) : '—']; }), { cols:[3, 1.2, 1.3, 1.3, 1.2, 2.6, 1.8], sz:1100, rh:560000 })]);
   var B4 = R.blocks, col4 = function(k, color, i){ var L = B4.filter(function(r){ return r[0] === k; }).slice(0, 7), gap = 180000, w = (PX.W - 3 * gap) / 4, x = PX.X0 + PX.W - (i + 1) * w - i * gap, y = PX.Y0 + 1750000;
@@ -215,7 +214,7 @@ function overDailyBody(){ return '<details class="mfu-add"><summary>' + esc(t('�
        تُحفَظ بعدُ حُسب اليومُ من السجلات وقيل ذلك صراحةً. */
     var H = (typeof statsHistory === 'function') ? statsHistory(14) : [];
     if (!H.length){
-      var S = siteStats(), day = dayKey(Date.now());
+      var day = dayKey(Date.now());
       var sv = 0, ins = 0;
       Object.keys(STATE.recs).forEach(function(k){
         if (dayKey(STATE.recs[k].at || STATE.recs[k]._at) === day && svVisited(STATE.recs[k])) sv++; });
@@ -251,11 +250,10 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
     var today = dayKey(now), yday = dayKey(now - DAY), tmr = dayKey(now + DAY);
     var Y = dayDone(yday), T0 = dayDone(today);
     /* المهامُّ المفتوحة: بمشرفها، وما تمّ منها اليوم، وما جُدول لغد */
-    var bySup = {}, open = 0, tmrN = 0, bySupTmr = {}, byZoneTmr = {}, lateN = 0;
+    var bySup = {}, tmrN = 0, bySupTmr = {}, byZoneTmr = {}, lateN = 0;
     Object.keys(STATE.tasks).forEach(function(k){
       var x = STATE.tasks[k];
       if (!x || x.status === 'معتمد') return;
-      open++;
       var who = x.to || '\u2014', st = siteFind(x.site), r = STATE.recs[x.site];
       var g = bySup[who] = bySup[who] || { n:0, doneToday:0, wait:0, rev:0 };
       g.n++;

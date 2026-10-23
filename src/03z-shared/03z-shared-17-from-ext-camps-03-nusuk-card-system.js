@@ -126,7 +126,7 @@ function extMatchLoad(forceRefresh){
     return Promise.resolve(EXT_MATCH_STATE);
   EXT.busy = true; EXT.err = '';   /* (V37.80) لا رسمَ من داخل الرسم — الشاشةُ تعرض «جارٍ التحميل» بنفسها */
   return Promise.all([extReadersLoad(), extTentsLoad()]).then(function(res){
-    var readers = res[0] || {}, tents = res[1] || {};
+    var readers = res[0] || {};
     /* (V37.85) كلُّ نقطةٍ مركَّبة تُربَط بمفتاحين: المخيمُ بشاخصه وقربِه، والقارئُ بسيريالِه —
        وما يختلف فيه المفتاحان يُعلَّم تحذيرًا */
     var matched = [], unmatched = [];
@@ -271,14 +271,13 @@ function pilotAgo(at){
 function extSnapMaybe(){
   if (!may('settings') || !(EXT.tok || EXT.bridge) || !EXT_MATCH_STATE) return;
   if (EXT._snapAt && Date.now() - EXT._snapAt < 5 * 60000) return;
-  var sites = {}, camps = {}, nOv = 0;
+  var sites = {}, camps = {};
   EXT_MATCH_STATE.matched.forEach(function(m){
     sites[m.point.id] = { ser:m.serial || '', code:m.tentCode || '', ts:(m.reader && m.reader.timestamp) || '', by:m.by || '', warn:m.warn || '' };
     var o = m.tentId && EXT.ov[m.tentId]; if (!o || !o.data) return;
     var c = o.data.occupancyStatus || {}, a = o.data.averageTime || {};
     camps[m.tentCode] = { cap:+c.totalCapacity || 0, w:+c.currentlyOccupied || 0, wo:+c.withoutBracelet || 0, ot:+c.fromOtherCamps || 0,
                           inT:String(a.insideCamp || ''), trT:String(a.transitTime || ''), at:o.at, grp:(m.tentMeta && m.tentMeta.tentGroup) || '' };
-    nOv++;
   });
   if (!Object.keys(sites).length) return;
   EXT._snapAt = Date.now();

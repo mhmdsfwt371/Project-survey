@@ -109,7 +109,6 @@ function bugsPageHtml(){
     return '<button type="button" class="chip' + (BUG_F === k ? ' on' : '') + (cls ? ' ' + cls : '') + '" data-bugf="' + esc(k) + '">'
       + esc(t(txt)) + ' <span class="num">' + nm(n) + '</span></button>';
   };
-  var open = ALL.filter(function(b){ return b.status !== 'مغلق'; }).length;
   return '<p class="lede" style="margin:0 0 16px">' + esc(t('كلُّ ما أُبلغ عنه واقتُرح وطُلب — بتاريخه. ما تقبله يدخل قائمةَ العمل، وما تردُّه يُقفَل بسببه ولا يُعمَل به.')) + '</p>'
     + stats([['الكل', N(ALL.length)], ['بانتظار قرارك', N(nNew), nNew ? 'wrn' : 'ok'],
              ['مقبولٌ — يُعمَل به', N(nOk), 'acc'], ['مردود', N(nNo)], ['مغلق', N(nDone), 'ok']])

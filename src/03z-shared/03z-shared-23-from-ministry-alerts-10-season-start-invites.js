@@ -28,7 +28,7 @@ function seedPlan(){
     var cat = k.split('|')[1];
     return { k:k, n:byType[k], w:W[cat] || 1.5 };
   }).sort(function(a, b){ return b.n - a.n; });
-  var day = 86400000, today = dayKey(Date.now());
+  var day = 86400000;
   var dueS = Date.now() + 45 * day, dueI = Date.now() + 100 * day;
   var left = n - (siteStats().surveyed || 0);
   var wd = Math.max(1, Math.round(45 * 26 / 30));   /* أيامُ عملٍ في خمسةٍ وأربعين يومًا */

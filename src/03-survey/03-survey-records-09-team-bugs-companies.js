@@ -144,7 +144,6 @@ function briefingRows(){
 
 function briefingHtml(){
   var R = briefingRows(), noPh = R.filter(function(x){ return !x.ph; }).length;
-  var t0 = dayStart();
   var idle = R.filter(function(x){ return x.open && !x.done; }).length;
   return card(t('بلاغ اليوم عبر واتساب') + ' — ' + nm(R.length),
       '<p class="hint" style="margin:0 0 8px">' + esc(t('لكلِّ شخصٍ رسالةٌ جاهزةٌ بما عليه اليومَ ورابطِ التطبيق — ضغطةٌ تفتح واتساب على رقمه، وأنت تضغط إرسال.')) + '</p>'

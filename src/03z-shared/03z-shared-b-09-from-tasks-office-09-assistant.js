@@ -176,7 +176,7 @@ function helpSearch(q, minScore){   /* (V37.37) minScore: المساعدُ لا 
 }
 
 function assistHtml(){
-  var results = ASSIST_Q ? helpSearch(ASSIST_Q) : [], gl = ASSIST_Q ? glossaryHits(ASSIST_Q) : [];   /* (V33.2) المصطلحُ أوّلًا */
+  var results = ASSIST_Q ? helpSearch(ASSIST_Q) : [];   /* (V33.2) المصطلحُ أوّلًا */
   return '<div class="pop" id="assistPop" style="width:min(560px,94vw);max-height:min(88vh, calc(var(--vh,1vh) * 100 - 16px));overflow:auto">'
     + '<div class="pop-head">'
     +   '<div><h3 style="color:var(--ink)">\u{1F9ED} ' + esc(t('المساعد')) + '</h3>'
