@@ -343,13 +343,17 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
     var y = doneOn(dayKey(now - DAY)), w = { sv:0, ins:0 };
     for (var d = 1; d <= 7; d++){ var o = doneOn(dayKey(now - d * DAY)); w.sv += o.sv; w.ins += o.ins; }
     function daysTo(due){ return due ? Math.ceil((due - now) / DAY) : 0; }
+    var dw = +cfgGet('daysWeek') || 0;
     function stage(name, left, due, avg7, yday){
       var days = daysTo(due), avg = avg7 / 7;
       var need = !due ? 0 : (days > 0 ? Math.ceil(left / days) : left);
       var finish = avg > 0 && left > 0 ? now + Math.ceil(left / avg) * DAY : (left > 0 ? 0 : now);
       var late = due && finish && finish > due;
+      /* (V38.96) a due date that passed with work left said «تتأخّر عن موعدها» — as if it were still ahead; it says it
+         passed, and where to set a new one */
       var verdict = !left ? ['اكتملت', 'ok']
         : !due ? ['لا موعدَ مضبوطًا', 'wrn']
+        : days <= 0 ? [t('موعدُها مرّ') + ' (' + dayKey(due) + ') ' + t('وبقي') + ' ' + nm(left) + ' \u2014 ' + t('حدّث الموعدَ من «التخطيط ← المواعيد والأزمنة»'), 'bad']
         : !avg ? ['لا إنجازَ في آخر سبعة أيام — لا يُحسَب موعدٌ متوقّع', 'bad']
         : late ? ['على هذا المعدل تتأخّر عن موعدها', 'bad'] : ['على هذا المعدل تلحق موعدَها', 'ok'];
       return card(name,
@@ -357,6 +361,8 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
                  ['الموعد', due ? '<span class="num">' + esc(dayKey(due)) + '</span>' : '—', due ? '' : 'wrn'],
                  ['أيامٌ للموعد', due ? N(Math.max(0, days)) : '—', due && days <= 0 && left ? 'bad' : ''],
                  ['المطلوب يوميًّا', due ? N(need) : '—'],
+                 /* (V38.96) with the working week set (ثوابت النظام ← أيام العمل في الأسبوع), the need per working day too */
+                 ['المطلوب في يوم العمل', due && days > 0 && dw > 0 && dw < 7 ? N(Math.ceil(left / Math.max(1, Math.floor(days * dw / 7)))) : '—'],
                  ['معدل آخر ٧ أيام', nm(Math.round(avg * 10) / 10)],
                  ['المنجز أمس', N(yday)],
                  ['الانتهاء المتوقع', finish ? '<span class="num">' + esc(dayKey(finish)) + '</span>' : '—', late ? 'bad' : (finish ? 'ok' : '')]])

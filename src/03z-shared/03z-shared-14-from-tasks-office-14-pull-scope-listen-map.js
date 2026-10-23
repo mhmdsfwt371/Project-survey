@@ -94,7 +94,7 @@ function pullDelta(opt){
       if (!cold) q = q.where('_at', '>', since);
       /* (V38.95) the events log on an office device: the last 14 days, newest first. A cold pull took 6,000 events with no
          order — whichever came first by document id out of 35 thousand — so the activity on a fresh device was a random
-         slice, not the latest. Older events come on demand: the events screen pages back (evFetch «older»), and a point's
+         slice, not the latest. Older events come on demand: the events screen pages back («الأقدم»), and a point's
          history is fetched whole from its window. Nothing is deleted: what a device already holds stays. */
       else if (c === 'events') q = q.where('_at', '>', Date.now() - 14 * 864e5).orderBy('_at', 'desc');
       return q.limit(cold ? 6000 : 2000).get().then(function(snap){

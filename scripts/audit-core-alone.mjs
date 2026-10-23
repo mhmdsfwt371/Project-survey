@@ -61,7 +61,10 @@ const tour = roles => JSON.parse(w.eval(`(function(){
     ROLE = role; STATE.meta.role = role; STATE.meta.name = 'جرد ' + role;
     Object.keys(PAGE).forEach(function(pid){ if (!seesPage(pid)) return;
       var tabs = (TABS[pid] || []).filter(function(tb){ var f = tb[4] && TAB_SEE[tb[4]]; return f ? f(pid) : seesRaw(tb[0]); }).map(function(tb){ return tb[0]; });
-      (tabs.length ? tabs : ['']).forEach(function(tb){ n++; try { CUR = pid; if (tb) PTAB[pid] = tb; render(1); } catch (e){ thrown.push(role + ' · ' + pid + (tb ? ':' + tb : '') + ' → ' + e.message); } }); });
+      /* (V38.96) a page switch resets its tab to the first one: land on the page, then pick each tab — before this, every
+         page's first pick drew its default tab instead */
+      try { CUR = pid; render(1); } catch (e){ thrown.push(role + ' · ' + pid + ' → ' + e.message); }
+      (tabs.length ? tabs : ['']).forEach(function(tb){ n++; try { if (tb) PTAB[pid] = tb; render(1); } catch (e){ thrown.push(role + ' · ' + pid + (tb ? ':' + tb : '') + ' → ' + e.message); } }); });
   });
   return JSON.stringify({ n:n, thrown:thrown });
 })()`));

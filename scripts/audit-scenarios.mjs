@@ -1070,6 +1070,19 @@ console.log('\n══ ٣٧ · سحبُ سجلّ الأحداث البارد ═�
   w.DB.col = col0; w.FB.ready = ready0; w.FB.db = db0; w.ROLE = role0; w.STATE.meta.pullAt = at0;
 }
 
+/* ── ٣٨ · (V38.96) الوتيرة: الموعدُ الذي مرّ يُقال، والمطلوبُ في يوم العمل ── */
+console.log('\n══ ٣٨ · الوتيرةُ والموعد ══');
+{
+  const role0 = w.ROLE, cur0 = w.CUR, tab0 = w.PTAB.over, dS0 = w.CFG.dueSurvey, dI0 = w.CFG.dueInstall, dw0 = w.CFG.daysWeek;
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.CUR = 'over'; w.render(1); w.PTAB.over = 'pace';   /* a page switch resets its tab: land first, then pick the tab */
+  w.CFG.dueSurvey = Date.now() - 2 * 864e5; w.CFG.dueInstall = Date.now() + 60 * 864e5; w.CFG.daysWeek = 6;
+  w.render(1);
+  const txt = w.document.body.textContent;
+  T(/موعدُها مرّ/.test(txt) && /المواعيد والأزمنة/.test(txt), 'موعدُ المسح الذي مرّ يُقال صراحةً، ومعه أين يُحدَّث — كان يُقال «تتأخّر عن موعدها» كأنه أمام');
+  T(/المطلوب في يوم العمل/.test(txt), 'والمطلوبُ في يوم العمل يظهر حين تُضبَط أيامُ العمل في الأسبوع');
+  w.CFG.dueSurvey = dS0; w.CFG.dueInstall = dI0; w.CFG.daysWeek = dw0; w.ROLE = role0; w.STATE.meta.role = role0; w.CUR = cur0; w.PTAB.over = tab0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);
