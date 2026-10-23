@@ -52,6 +52,13 @@ const oc = ch.textContent, oi = oc.indexOf('ما كُتب تحت «أخرى»');
 T(oi > -1 && /المخيم مقفول بالحديد/.test(oc.slice(oi, oi + 400)) && /٢٠/.test(oc.slice(oi, oi + 400)), 'وبطاقةُ «أخرى» تعدُّ النصَّ الحرَّ مطبَّعًا: المسافاتُ الزائدةُ لا تفرّقه (٢٠)' + (oi > -1 ? ' — ' + JSON.stringify(oc.slice(oi, oi + 200)) : ' — لا بطاقة'));
 w.ROLE = 'supervisor'; w.STATE.meta.role = 'supervisor'; const ch2 = await open('survey', 'chalm');
 T(/التحدي/.test(ch2.textContent) && !/ما كُتب تحت «أخرى»/.test(ch2.textContent), 'وهي للمهندس فمن فوقه وحدَهم');
+{ /* (V38.98) owner: the field's challenges tab is the Ministry follow-up's own tab — same view, same numbers */
+  const tmp = d.createElement('div'); tmp.innerHTML = w.mtObs();
+  const norm = x => String(x || '').replace(/\s+/g, ' ').trim();
+  const mo = norm(tmp.textContent), cf = norm(ch2.textContent);
+  T(mo.length > 40 && cf.indexOf(mo) > -1, 'وتحدياتُ الميدان هي لوحةُ «التحديات والمعوقات» في متابعة الوزارة نفسُها — بالأرقام نفسِها');
+  T(!/أدوات المهندس/.test(ch2.textContent) && /أدوات المهندس/.test(oc), 'وأدواتُ المهندس (الإسناد والتحديثات و«أخرى») تحتها للمهندس وحدَه');
+}
 T(w.STATE.recs[camps[0].id].chals[0] === A, 'والمخزونُ في الوثائق لم يُمَسّ');
 const rep = readFileSync('scripts/ministry-report.mjs', 'utf8');
 T(/w\.svdRows\(\)\.forEach\(o => o\.ch\.forEach/.test(rep), 'ولقطةُ الوزارة تعدُّ من المصدر نفسِه (svdRows) فتتّحد معه');

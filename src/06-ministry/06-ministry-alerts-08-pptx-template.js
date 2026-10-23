@@ -969,27 +969,28 @@ if (cur === 'stuck' || cur === 'idle') return head + (function(){
         : alertBox('success','لا عناصرَ في هذه الخانة الآن.'))
       + '<p class="hint">' + esc(t('المتعذّر: وصل المشرفُ ولم يستطع المسح — يُراجَع بصوره وسببه ويُقرَّر فيه: يعود لزيارةٍ أخرى، أو يُقبَل التعذّرُ بحُجّةٍ مكتوبة. والراكد: زيارةٌ تمّت ولم تُركَّب نقطتُه بعد.')) + '</p>';
   })();
-    return head + (function(){
-    /* (V26.9) قرارُ المالك: للميدان أيضًا صفحةٌ واحدة «التحديات والمعوقات» بأرقام متابعة الوزارة نفسِها (mfuObstaclesF) وفلترها،
-       واضغط التحدي تنفتح نافذةٌ بنقاطه: المخيمُ بشاخصه أو الممرُّ باسمه، ومشعرُه ونوعُه، ووصفُ العائق، وزرُّ الخريطة. */
-    var O = mfuObstaclesF(), byCat = {}, ed = rankOf(ROLE) >= rankOf('engineer');
-    O.forEach(function(o){ o.cats.forEach(function(c){ byCat[c] = (byCat[c] || 0) + 1; }); });
-    var cats = Object.keys(byCat).sort(function(a, b){ return byCat[b] - byCat[a]; });
-    var nr = O.filter(function(o){ return o.cats.indexOf('تعذّر الوصول') > -1; }).length;
-    return mfuFilterRow()
-      + stats([['نقاطٌ فيها معوقات', N(O.length), O.length ? 'wrn' : 'ok'],
-               ['أنواع التحديات', N(cats.length)],
-               ['متعذّر الوصول', N(nr), nr ? 'wrn' : 'ok']])
-      + (cats.length
-        ? cardFlush(t('التحديات') + ' \u2014 ' + esc(t('اضغط التحدي ترى نقاطه')),
-            table(['التحدي', 'كم نقطة', 'الجهة', ''],
-              cats.map(function(c){ return ['<button type="button" class="btn btn-quiet btn-sm" data-chalpop="' + esc(c) + '" style="white-space:normal;text-align:start">' + esc(t(c)) + '</button>' + chalAssignBox(c) + chalUpdBox(c), N(byCat[c]), esc(t(mfuPartyLabel(mfuOwnerOf(c)))), btn('\u25B8 ' + t('النقاط'), 'btn-secondary btn-sm', ' data-chalpop="' + esc(c) + '"')]; }))   /* (V27.0) التكليفُ والتحديثات */
-            + '<div style="padding:8px 12px">' + btn(t('كل النقاط') + ' (' + nm(O.length) + ')', 'btn-quiet btn-sm', ' data-chalpop="*"') + '</div>')
-        : alertBox('success', 'لا معوقاتٍ في هذا الفلتر.'))
-      + (ed ? chalOtherCard() : '')
-      + '<p class="hint">' + esc(t('المعوقات تُقرأ من المسح الميداني للنقاط غير المركَّبة وتُغلَق تلقائيًّا عند التركيب — والأرقامُ هنا هي نفسُها في متابعة الوزارة.')) + '</p>';
-  })();
+    /* (V38.98) owner: «خد المتابعة اللي في الوزارة، اعمل زيها بالظبط في التحديات في الميدان — متابعة الوزارة كويسة، عايزها زي ما هي».
+       The field's «التحديات والمعوقات» is the Ministry follow-up's own tab (mtObs): the same tiles, the same window (a board, then
+       the list with its details, photos and export), so the same numbers — one piece of code for both. The engineer's own tools
+       from the old board (assigning a challenge, its updates, the free texts under «أخرى») stay below it, folded, for engineers. */
+    var ed = rankOf(ROLE) >= rankOf('engineer');
+    return svListPop() + supPopHtml() + head + mtObs() + (ed ? chalEngTools() : '');
   }};
+
+/* (V38.98) the engineer's tools of the field's old challenges board — kept, folded under the Ministry follow-up's tab: per
+   challenge its owner, assignment and updates (and its points), and what was written under «أخرى» */
+function chalEngTools(){
+  var O = mfuObstaclesF(), byCat = {};
+  O.forEach(function(o){ o.cats.forEach(function(c){ byCat[c] = (byCat[c] || 0) + 1; }); });
+  var cats = Object.keys(byCat).sort(function(a, b){ return byCat[b] - byCat[a]; });
+  return '<details class="card" style="margin-top:14px"><summary style="padding:12px 16px;cursor:pointer;font-weight:700">'
+    + esc(t('أدوات المهندس — إسناد التحديات وتحديثاتها')) + '</summary><div style="padding:0 0 8px">'
+    + (cats.length
+      ? table(['التحدي', 'كم نقطة', 'الجهة', ''],
+          cats.map(function(c){ return ['<button type="button" class="btn btn-quiet btn-sm" data-chalpop="' + esc(c) + '" style="white-space:normal;text-align:start">' + esc(t(c)) + '</button>' + chalAssignBox(c) + chalUpdBox(c), N(byCat[c]), esc(t(mfuPartyLabel(mfuOwnerOf(c)))), btn('\u25B8 ' + t('النقاط'), 'btn-secondary btn-sm', ' data-chalpop="' + esc(c) + '"')]; }))
+      : '')
+    + chalOtherCard() + '</div></details>';
+}
 
 /* (V38.93) the visit lists of the approvals screen, shared by the screen and its selection buttons */
 function svaLists(){

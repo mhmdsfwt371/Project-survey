@@ -225,9 +225,8 @@ function pulseWatch(){
   if (!FB.ready || !FB.db || PULSE_UNSUB) return;
   try {
     PULSE_UNSUB = DB.col('settings').doc('pulse').onSnapshot(function(doc){
-      snapReads(doc);
+      snapReads(doc);   /* (V38.98) the one count of this read — it was also added just below, so each change notice counted twice */
       if (!doc.exists || (doc.metadata && doc.metadata.fromCache)) return;
-      FB.readCount = (FB.readCount || 0) + 1;
       var p = doc.data() || {}, at = STATE.meta.pullAt || {}, mine = pullScope().cols || [];
       var stale = mine.filter(function(col){ return (+p[col] || 0) > (+at[col] || 0); });
       if (!stale.length) return;
