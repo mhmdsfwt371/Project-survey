@@ -67,8 +67,8 @@ function bdiText(s){
   s.replace(BDI_TOK, function(m, off){ out += esc(s.slice(last, off)) + (bdiNeed(m) ? '<bdi>' + esc(m) + '</bdi>' : esc(m)); last = off + m.length; return m; });
   return out + esc(s.slice(last));
 }
-function fsi(s){ return '\u2068' + String(s == null ? '' : s) + '\u2069'; }
-function fsiText(s){ return String(s == null ? '' : s).replace(BDI_TOK, function(m){ return bdiNeed(m) ? '\u2068' + m + '\u2069' : m; }); }
+
+
 function esc(s){ var x = String(s==null?'':s); if (LANG === 'ar' && noTashkeel()) x = x.replace(TASHKEEL_RE, '');   /* (V34.4) */
   return x
   .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')

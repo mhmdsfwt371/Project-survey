@@ -147,16 +147,7 @@ var FIELD_PAGES = {
    ولم يكن في التطبيق سجلٌّ أصلًا: من دخل تفاصيلَ نقطةٍ من الخريطة لم يجد
    طريقًا يعود به إلا القائمةَ الجانبية، فيفتحها ويبحث عن اسم ما جاء منه. */
 var NAV_HIST = [];
-function navPush(from){
-  if (!from) return;
-  if (NAV_HIST[NAV_HIST.length - 1] === from) return;
-  NAV_HIST.push(from);
-  if (NAV_HIST.length > 20) NAV_HIST.shift();
-}
-function navBack(){
-  CUR = NAV_HIST.length ? NAV_HIST.pop() : 'over';
-  render();
-}
+
 
 /* ═══ الموضعُ لا يضيع مع كلِّ ضغطة ═══
    كلُّ زرٍّ يُعيد الرسمَ، وإعادةُ الرسم كانت تقذف القارئَ إلى رأس الصفحة:

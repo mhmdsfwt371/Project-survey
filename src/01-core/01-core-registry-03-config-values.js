@@ -122,11 +122,6 @@ function cfgPush(){
   CORE.dirty('cfg', 'points', doc);
 }
 
-/* حقلُ تاريخٍ موصولٌ بالمصدر — يُخزَّن رقمًا (مللي ثانية) لأن CFG رقميّة */
-function cfgDate(path){
-  var v = cfgGet(path);
-  return '<input type="date" value="' + (v ? dayKey(v) : '') + '" data-cfgdate="' + path + '">';
-}
 
 /* الأسبوعي يُشتقّ من الشهري بأيام العمل — وصفرٌ في الأيام يعني صفرًا لا قسمةً على صفر */
 function cfgWk(monthly){

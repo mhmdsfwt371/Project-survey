@@ -34,12 +34,7 @@ function zoneOptions(){
   return out;
 }
 var ZONE_CODE = { 'منى':'MIN', 'عرفات':'ARF', 'مزدلفة':'MUZ', 'مكة':'MAK', 'المدينة':'MAD', 'مواقع التفويج':'TFW', 'النوارية':'NWR' };
-function zoneCode(zone){
-  if (ZONE_CODE[zone]) return ZONE_CODE[zone];
-  var en = (D.en && D.en[zone]) || '';
-  var a = String(en).replace(/[^A-Za-z]/g, '').toUpperCase();
-  return a ? a.slice(0, 3) : 'NEW';
-}
+
 function zoneRename(oldName, newName){
   if (!may('settings')){ toast(t('المشاعرُ للمهندس وحده')); return; }
   newName = String(newName || '').trim();
@@ -85,17 +80,7 @@ function mxTypeMove(zone, label, newType){
   toast(nm(n) + ' ' + t('موقعًا نُقل إلى') + ' ' + ((T[newType] || {}).l || newType));
   render(1);
 }
-/* حذفُ صفٍّ = حذفُ مواقعه. لا يقع إلا بلا مواقع — والصفُّ لا يكون بلا مواقع
-   أصلًا لأنه مشتقٌّ منها. فيُقال ذلك بدل زرٍّ لا يعمل. */
-function mxDeclareGo(){
-  if (!may('settings')){ toast(t('المشاعرُ للمهندس وحده')); return; }
-  var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };
-  var zSel = g('mxdZ'), zone = zSel === '__new' ? g('mxdZn') : zSel;
-  var tk = g('mxdT'), T = typesList();
-  if (!zone){ toast(t('اكتب اسم المشعر')); return; }
-  if (!T[tk]){ toast(t('اختر نوعًا')); return; }
-  mxDeclare(zone, T[tk].l);
-}
+
 
 function mxRowInfo(zone, label){
   var T = typesList(), tk = '';
@@ -340,8 +325,6 @@ function prepAsm(pg){
 }
 
 
-
-
 PAGE.items = { m:'الإعدادات', t:'الكتالوج والقوائم',
   l:'ما نشتريه وممّن — والثوابتُ وأسماءُ العرض وأنواعُ السيارات.',
   body:function(){
@@ -584,12 +567,9 @@ PAGE.items = { m:'الإعدادات', t:'الكتالوج والقوائم',
   }};
 
 
-
-
 /* ═══ أسماءُ العرض — تصحيحُ ما تُخطئ فيه النقحرة ═══
    النقحرةُ حسابٌ حرفيٌّ لا يعرف النطق، والعربيةُ لا تكتب الحركات — فـ«فريق»
    تصير Fryq. والصوابُ يُكتَب هنا مرةً فيثبت لكلِّ من يقرأ بالإنجليزية،
    ولا يُمَسُّ الاسمُ المخزَّنُ في القاعدة. */
-
 
 

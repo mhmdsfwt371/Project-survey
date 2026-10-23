@@ -5,4 +5,4 @@
    DEFINES : bkAgeDays
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
-function bkAgeDays(o){ return o && o.at ? Math.floor((Date.now() - new Date(o.at).getTime()) / 86400000) : null; }
+

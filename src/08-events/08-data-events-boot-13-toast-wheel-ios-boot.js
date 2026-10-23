@@ -528,6 +528,7 @@ document.addEventListener('change', function(e){
   }
   /* (V38.80) the database-cost period: editing either date keeps the other end of the period shown */
   if (el && el.hasAttribute && (el.hasAttribute('data-ucf') || el.hasAttribute('data-uct'))){
+    if (typeof costRange !== 'function') return;   /* (V38.90) the cost card ships with the office chunk */
     var urg = USAGE.costF.r === 'custom' ? [USAGE.costF.from, USAGE.costF.to] : costRange(USAGE.costF.r);
     USAGE.costF.r = 'custom'; USAGE.costF.from = urg[0]; USAGE.costF.to = urg[1];
     if (el.hasAttribute('data-ucf')) USAGE.costF.from = el.value || ''; else USAGE.costF.to = el.value || '';
@@ -615,9 +616,8 @@ document.addEventListener('keydown', function(e){
    وتُزال عند الإغلاق، ولا يمسّها رسمٌ آخر؛ والكتابةُ تستبدل النتائجَ وحدَها. */
 /* (V37.8) اقتراحُ المالك: على جهاز الفنيّ — صورٌ معلّقةٌ أكثرَ من ساعة تُقال بشريطٍ ثابتٍ أعلى الشاشة في كلِّ صفحة (والخريطةُ معها)،
    بزرِّ «ارفع الآن». الصورُ التي ضاعت (١١٢ في عرفات) كانت على جهازين ولم تُرفع — والشريطُ يقولها قبل أن تضيع. */
-/* (V37.14) نوافذُ القوائم وصورُها تُزال من مكانها — بلا رسم الصفحة */
-function supRemove(){ ['supVeil', 'supBox'].forEach(function(i0){ var el0 = document.getElementById(i0); if (el0) el0.remove(); }); }
-function svPopRemove(){ ['.svpop-veil', '.svpop', '#svPhoVeil', '#svPhoBox'].forEach(function(q){ document.querySelectorAll(q).forEach(function(el){ el.remove(); }); }); }
+
+
 function liteSync(){
   var old = document.getElementById('liteBar'); if (!LITE){ if (old) old.remove(); return; }
   if (old) return;

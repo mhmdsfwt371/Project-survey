@@ -77,10 +77,6 @@ function mileDateOf(m){
   return dayKey(s0 + (end - s0) * (cum / tot));
 }
 
-function mileLate(m){
-  var d = mileDateOf(m);
-  return !!(d && d < dayKey(Date.now()) && mileDone(m) < 0.999);
-}
 
 function mileDone(m){
   /* إنجازٌ يدويٌّ كُتب من المكتب يغلب الاشتقاق — وللمعالم الجديدة لا مصدرَ غيرُه */

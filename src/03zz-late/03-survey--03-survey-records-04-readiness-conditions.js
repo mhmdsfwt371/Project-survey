@@ -1,0 +1,26 @@
+/* (V38.90) moved by scripts/split-late.mjs from src/03-survey/03-survey-records-04-readiness-conditions.js — reached only by clicks or by the office chunk,
+   so it ships with app-office.js after the login screen. Edit it here. */
+function asnQuick(kind){
+  if (!may('approve')){ toast(t('إنشاءُ الطلب للمهندس وحده')); return; }
+  var L = asnReadyList(kind);
+  if (!L.length){
+    toast(t('لا نقطةَ جاهزةً لهذا النوع') + ' — ' + t(ASN_READY[kind].why));
+    return;
+  }
+  selClear();
+  var n = 0;
+  L.forEach(function(x){ if (n < ASN_QCAP){ SEL[x.id] = 1; SEL_N++; n++; } });
+  ASN_KIND = kind;
+  FIELD_MODE = ASN_READY[kind].layer;
+  ASN_MODE = (ASN_KIND_DEST[kind] === 'team') ? 'team' : 'tech';
+  ASN_OPEN = true;
+  goPage('map');
+  render(1);
+  /* إعادةُ الطلاء تفشل إن لم تُنشَأ الخريطةُ بعدُ — والرسمُ التالي يتولّاها */
+  if (typeof mapPaint === 'function'){
+    try { mapPaint(); }
+    catch (e){ if (typeof softErr === 'function') softErr('طلاء الخريطة', e, ''); }
+  }
+  toast(nm(n) + ' ' + t('نقطةً جاهزةً حُدِّدت')
+        + (L.length > n ? ' \u00b7 ' + nm(L.length - n) + ' ' + t('بقيت — أسندها بعدها') : ''));
+}

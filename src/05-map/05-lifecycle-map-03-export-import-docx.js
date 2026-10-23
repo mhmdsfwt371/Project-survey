@@ -32,14 +32,7 @@ function xlsxLoad(){
    المدةَ والحالةَ والموقفَ الزمنيَّ من تاريخ اليوم، وآباءٌ يجمعون أبناءهم،
    ومستوياتُ طيٍّ، وألوانٌ شرطية. فتُحمَّل مكتبةٌ ثانيةٌ لهذا الملفِّ وحدَه. */
 var EXLJS_READY = false, EXLJS_LOADING = null;
-function exlLoad(){
-  if (EXLJS_READY || (typeof window !== 'undefined' && window.ExcelJS)){ EXLJS_READY = true; return Promise.resolve(true); }
-  if (EXLJS_LOADING){ if (typeof toast === 'function') toast('\u23F3 ' + t('يُجهَّز محرّكُ الإكسل…')); return EXLJS_LOADING; }   /* (V38.86) every press hears it */
-  if (typeof toast === 'function') toast('\u23F3 ' + t('يُجهَّز محرّكُ الإكسل…'));   /* (V38.55) */
-  EXLJS_LOADING = libLoad('vendor/exceljs/4.4.0/exceljs.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js', 15000)   /* (V38.54) */
-    .then(function(ok){ ok = !!(ok && window.ExcelJS); EXLJS_READY = ok; if (!ok) setTimeout(function(){ EXLJS_LOADING = null; }, 60000); return ok; });
-  return EXLJS_LOADING;
-}
+
 /* ═══ (V33.7) بلاغُ المالك: «لما بعمل إكسبورت وورد بيطلّعني برّه السيستم ويدخّلني تاني» ═══
    على الآيفون والتطبيقُ مثبّتٌ على الشاشة الرئيسية، رابطُ التنزيل يفتح الملفَّ في معاينةٍ تحلّ محلَّ التطبيق نفسِه — فإذا رجع
    المستخدمُ أُعيد تحميلُ التطبيق ودخل بالجلسة المحفوظة. صار الآيفونُ يسلّم الملفَّ بقائمة المشاركة («حفظ في الملفات»، البريد،

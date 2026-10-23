@@ -68,11 +68,4 @@ function egCard(x){
   return card('\u{1F6AA} ' + t('البوابات الإلكترونية') + ' \u2014 ' + nm(L.length) + ' \u00b7 ' + nm(done) + ' ' + t('مطابَقة على الرسمة'),
     head + rows + '<div class="actions">' + btn('\u2B07 ' + t('إكسل بوابات المحطة'), 'btn-secondary btn-sm', ' data-assistq="' + esc(xq) + '"') + '</div><p class="hint" style="margin:8px 0 0">' + esc(t('المصدر')) + ': ' + esc(egSeed().drawing) + ' \u00b7 ' + esc(t('مراجعة')) + ' ' + esc(egSeed().rev) + ' \u00b7 ' + esc(t('بوابةٌ لم تكن في الجرد تُضاف كنقطةٍ غيرِ مسجّلةٍ من الميدان')) + '</p>');
 }
-function egSave(gateId){
-  if (!(typeof maySiteEditBasic === 'function' && maySiteEditBasic())){ toast(t('تحقيقُ البوابات للمشرف فما فوق')); return false; }
-  var x = siteFind(gateId); if (!x || !egIsGate(x)){ toast(t('لا بوابةَ بهذا المعرِّف')); return false; }
-  var g = function(n){ var el = document.getElementById(n); return el ? String(el.value || '').trim() : ''; };
-  siteOvSet(gateId, { gateNo:g('egNo'), drawRef:g('egDraw'), readers:g('egReaders'), opStatus:g('egOp'), gateNote:g('egNote'), gateAt:Date.now(), gateBy:STATE.meta.name || '' });
-  logEvent('تحقيقُ بوابة ' + (x.sign || gateId) + (g('egNo') ? ' — رقمُ الرسمة ' + g('egNo') : ''), gateId);
-  egCard.open = ''; toast('\u2713 ' + t('حُفظ تحقيقُ البوابة')); return true;
-}
+

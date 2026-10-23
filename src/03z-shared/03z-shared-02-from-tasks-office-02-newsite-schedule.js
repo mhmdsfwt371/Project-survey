@@ -88,8 +88,4 @@ function nsOffice(){ return rankOf(effRole(ROLE)) >= rankOf('engineer'); }
 var TYPE_CODE = { 'مخيم':'CMP', 'ممر':'RDR', 'كاميرا':'CAM', 'محطة':'STN', 'جسر':'JMR', 'بوابة':'GTE', 'مبنى':'BLD',
                   'LPR':'LPR', 'جيت واي':'GTW', 'حساس حرارة ورطوبة':'THS' };
 
-function typeCode(ty){
-  if (TYPE_CODE[ty]) return TYPE_CODE[ty];
-  var a = String(ty || '').replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-  return a ? a.slice(0, 4) : 'NEW';
-}
+

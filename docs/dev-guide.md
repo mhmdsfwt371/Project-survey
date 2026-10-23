@@ -31,6 +31,7 @@ src/
   02-catalog/    definitions, classification, permissions, site editing, survey edit-without-redo
   03-survey/     survey and installation forms, installation points, assignment, plan (WBS)
   03z-shared/    definitions the core needs before the office/ministry/reports domains (moved verbatim, V38.38 — stage A of core + chunks; put NEW shared helpers in 01-core or 02-catalog, not here)
+  03zz-late/     (V38.90) functions the core alone never reaches — only the delegated click handlers or the chunk call them — cut out of their core files by scripts/split-late.mjs and shipped with app-office.js (one file per origin, `01-core--…js`). Edit a moved function here. audit-core-alone.mjs guards the line: nothing the core runs alone may call a chunk function unless it first checks `typeof NAME === 'function'`, and the core alone must render every field screen
   04-office/     photos, governance, the assistant and word-driven reports, drawing on the map
   05-map/        map painting, export/import, login, service worker, ministry screen
   06-ministry/   alerts, follow-up tabs, Nusuk card system, PowerPoint, what's new (release notes)
@@ -49,6 +50,8 @@ firestore.rules  database security rules (frozen by owner decision — do not ed
 **Every `.js` file begins with an English header** (`FILE / DOMAIN / PURPOSE / DEFINES / GLOBALS`). Read the header before reading the code. The gate fails if a file has no header.
 
 ## 4. Runtime model — the six things to know
+
+**Lighter field file (V38.90).** `scripts/split-late.mjs` moved 448 functions (411 KB) that only clicks or the chunk reach into `src/03zz-late/`: the field core went from 551 to 451 KB on the wire (−18%), the chunk from 221 to 325. Run it again (`--dry` first) after large changes; `audit-core-alone.mjs` fails if the core starts needing chunk code.
 
 **Core + chunk (V38.39).** The browser runs the inline core first and paints; `app-office.js` is a deferred script that lands a few seconds later and calls `nskChunkReady()`. Until it lands, a request for one of its screens shows a loading card (`nskChunkState().waiting`) and a click whose handler is still missing is remembered and replayed on arrival (`nskClick`). A definition that must stay in the chunk by decision (e.g. the release-notes log) is marked `/* CHUNK-ONLY */` next to it and the core guards its use with `typeof`; `split-shared.mjs` never moves a marked definition. Rules that keep this safe: nothing in `01–03z/05/08` may reference a name defined in `04/06/07` at boot or outside a click handler — `scripts/split-shared.mjs --dry` reports any such name and moves it into `03z-shared/` when run without `--dry`. The audits load the whole app in production order through `appHtml()` (see `scripts/lib/src.mjs`); only the real-browser test and the post-deploy smoke use the shipped files.
 

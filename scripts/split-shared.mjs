@@ -12,7 +12,7 @@
 import fs from 'fs'; import path from 'path'; import { createRequire } from 'module';
 const acorn = createRequire(import.meta.url)('acorn');
 const DRY = process.argv.includes('--dry');
-const SRC = 'src', CHUNK = ['04-office', '06-ministry', '07-reports'], DEST = '03z-shared';
+const SRC = 'src', CHUNK = ['03zz-late', '04-office', '06-ministry', '07-reports'], DEST = '03z-shared';   /* (V38.90) + 03zz-late */
 const files = []; (function walk(d){ for (const f of fs.readdirSync(d).sort()){ const p = path.join(d, f); if (fs.statSync(p).isDirectory()) walk(p); else if (f.endsWith('.js')) files.push(path.relative(SRC, p).split(path.sep).join('/')); } })(SRC);
 files.sort();
 const text = {}, defs = {}, stmts = {};   // defs: name -> {file, idx}; stmts: file -> [{start,end,names,kind}]

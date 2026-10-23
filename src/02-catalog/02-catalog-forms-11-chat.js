@@ -50,16 +50,8 @@ function chVisible(v){
 function chKey(v){ var me = STATE.meta.name || ''; if (v.site) return 'site:' + v.site; if (!v.to) return 'team'; return 'dm:' + (v.from === me ? v.to : v.from); }
 function chSeenT(){ try { return JSON.parse(lsGet('nsk14.chSeenT') || '{}'); } catch (e){ return {}; } }
 function chMarkSeen(key){ var S = chSeenT(); S[key] = Date.now(); try { lsSet('nsk14.chSeenT', JSON.stringify(S)); } catch (e){ LS_ERR = e; } }
-function chSend(site, to, text, kind){
-  var tx = String(text || '').trim(); if (!tx) return null;
-  var id = 'M-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7);
-  var v = { id:id, site:site || '', to:to || '', from:STATE.meta.name || '', role:ROLE || '', text:tx.slice(0, 1500), kind:kind || 'msg', at:Date.now() };
-  STATE.msgs = STATE.msgs || {}; CORE.set('msgs', id, v); CORE.saveSoon();
-  chSeen.at = Date.now();
-  return v;
-}
-/* a line the system writes into the site's thread (installation saved, approved, returned) — with the addressee of the event */
-function chSystem(site, text, to){ try { return chSend(site, to, text, 'sys'); } catch (e){ LS_ERR = e; return null; } }
+
+
 /* a message that arrived from another device */
 function chIncoming(v){
   if (!v || v.from === (STATE.meta.name || '') || !chVisible(v)) return;

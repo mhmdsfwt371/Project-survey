@@ -225,50 +225,16 @@ function scanBtn(key){
   if (!SCAN.ok) return '';
   return btn('\u{1F4F7}', 'btn-quiet btn-sm', ' data-scan="' + esc(key) + '" aria-label="' + esc(t('امسح الرقمَ بالكاميرا')) + '" title="' + esc(t('امسح الرقمَ بالكاميرا')) + '"');
 }
-function scanOpen(key){
-  if (!SCAN.ok) return;
-  SCAN.key = key; SCAN.on = true; render(1);
-  var video = document.getElementById('scanVideo'); if (!video) return;
-  navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:'environment' } }, audio:false }).then(function(st){
-    SCAN.stream = st; video.srcObject = st; try { video.play(); } catch (e){ LS_ERR = e; }
-    var det = new window.BarcodeDetector({ formats: SCAN.formats });
-    var tick = function(){
-      if (!SCAN.on) return;
-      det.detect(video).then(function(codes){
-        var c = codes && codes[0];
-        if (c && c.rawValue){ scanFill(String(c.rawValue).trim()); return; }
-        SCAN.timer = setTimeout(tick, 250);
-      }).catch(function(){ SCAN.timer = setTimeout(tick, 400); });
-    };
-    SCAN.timer = setTimeout(tick, 300);
-  }).catch(function(){ toast(t('تعذّر فتحُ الكاميرا — اكتب الرقمَ يدًا')); scanClose(); });
-}
-function scanClose(){
-  SCAN.on = false;
-  if (SCAN.timer){ clearTimeout(SCAN.timer); SCAN.timer = 0; }
-  if (SCAN.stream){ try { SCAN.stream.getTracks().forEach(function(tr){ tr.stop(); }); } catch (e){ LS_ERR = e; } SCAN.stream = null; }
-  render(1);
-}
+
+
 function serialOwner(sn, exceptId){
   var v = String(sn || '').trim(); if (!v) return '';
   var I = STATE.inss || {}, hit = '';
   Object.keys(I).forEach(function(id){ if (hit || id === exceptId) return; var r = I[id]; Object.keys((r && r.serials) || {}).forEach(function(k){ if (String(r.serials[k] || '').trim() === v) hit = id; }); });
   return hit;
 }
-function serialFormatOk(key, sn){
-  var it = itemsList().filter(function(i){ return i.code === key; })[0];
-  if (!it || !it.sn) return true;
-  try { return new RegExp(it.sn).test(String(sn || '').trim()); } catch (e){ return true; }
-}
-function scanFill(sn){
-  var key = SCAN.key; scanClose();
-  FORM.serials[key] = sn;
-  var el = document.querySelector('[data-serial="' + CSS.escape(key) + '"]'); if (el) el.value = sn;
-  if (!serialFormatOk(key, sn)) toast(t('الرقمُ لا يطابق صيغةَ هذا الصنف — راجعه'));
-  var other = serialOwner(sn, FORM.site);
-  if (other) toast(t('هذا الرقمُ مسجَّلٌ على نقطةٍ أخرى') + ': ' + other);
-  else toast(t('قُرئ الرقم') + ': ' + sn);
-}
+
+
 function scanSheet(){
   if (!SCAN.on) return '';
   return '<div class="pop-wrap" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.7);z-index:96">'

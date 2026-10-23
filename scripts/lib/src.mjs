@@ -18,7 +18,7 @@ export function srcFind(re, root = 'src'){ return srcPaths(root).find(f => re.te
    The shipped page is index.html (shell + core script + a deferred <script> tag) plus app-office.js (the office,
    ministry and reports domains). The audits run the same code in the same order through appHtml(): the chunk is
    appended after the core script, exactly where the browser executes the deferred file. */
-export const CHUNK_DIRS = ['04-office', '06-ministry', '07-reports'];
+export const CHUNK_DIRS = ['03zz-late', '04-office', '06-ministry', '07-reports'];   /* (V38.90) 03zz-late: what the core alone never reaches (split-late.mjs) */
 export const CHUNK_FILE = 'app-office.js';
 export function isChunkFile(rel){ return CHUNK_DIRS.some(d => rel.startsWith(d + '/')); }
 export function coreFiles(root = 'src'){ return srcFiles(root).filter(f => !isChunkFile(f)); }

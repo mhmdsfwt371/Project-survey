@@ -220,26 +220,6 @@ var STEP_KINDS = {
   newsite: { n:'موقعٌ جديد',   i:'\u{1F4CD}', code:'NS' }
 };
 
-function stepDone(kind, siteId, detail, pts){
-  var K = STEP_KINDS[kind] || { n:kind, i:'', code:'' };
-  var who = STATE.meta.name || '';
-  var rec = { at:Date.now(), kind:kind, site:siteId || '', by:who,
-              detail:String(detail || ''), pts:cfgN(pts) || 0 };
-  STATE.steps = STATE.steps || [];
-  rec.id = uid36();
-  STATE.steps.unshift(rec);
-  if (STATE.steps.length > 300) STATE.steps.length = 300;
-  /* تُرفَع: لوحةُ الوزارة على جهازها لا ترى ما بقي في جهاز الفنيّ */
-  CORE.set('steps', rec.id, rec);
-  CORE.saveSoon();
-  /* بلا وجهةٍ: يراه المكتبُ كلُّه — ومن يدير الناسَ يرى كلَّ شيءٍ أصلًا */
-  notifPush('تمّ', K.i + ' ' + t(K.n) + (siteId ? ' \u00b7 ' + siteId : '')
-            + (detail ? ' \u00b7 ' + detail : '')
-            + (rec.pts ? ' \u00b7 ' + nm(rec.pts) + ' ' + t('نقطة') : ''),
-            /* فاعلُ الخطوة صاحبُ الجهاز نفسُه — هو من نفّذها الآن */
-            { site:siteId || '', lv:'عادي' });
-  return rec;
-}
 
 /* «منذ كم» بلا مكتبة: دقائقُ ثم ساعاتٌ ثم تاريخ */
 function stepAgo(at){
@@ -271,13 +251,6 @@ function clashPill(id){
   return '<span class="pill bad" title="' + esc(t('عدّلها غيرُك بينما تعديلُك لم يُرفَع')) + '">\u26A0 ' + esc(t('تعديلٌ متزامن')) + ' \u00b7 ' + esc(c.by) + '</span>';
 }
 
-/* هل سبقني غيري على النقطة بعد فتحي للنموذج؟ */
-function svClashAhead(id){
-  var cur = STATE.recs[id];
-  if (!cur || !cur._by || cur._by === STATE.meta.uid) return null;
-  if (!FORM.openedAt || !(+cur._at > FORM.openedAt)) return null;
-  return { by:(typeof dispName === 'function' && dispName(cur._byName || cur._by)) || cur._by, at:+cur._at };
-}
 
 function notifPush(kind, text, opt){
   opt = opt || {};
