@@ -69,11 +69,30 @@ function routePanelHtml(){
     + '</div></div>';
 }
 
+/* (V39.4) the map search's results: the Sites search, the first eight, each a link to its point on the map */
+function mapQResHtml(q){
+  q = String(q || '').trim(); if (!q) return '';
+  var L = siteSearch(q, 8);
+  if (!L.length) return '<div style="padding:10px 14px;border-radius:12px;background:rgba(10,16,30,.85);color:#fff;font-size:14px">' + esc(t('لا نتائج')) + '</div>';
+  return '<div style="max-height:42vh;overflow-y:auto;border-radius:12px;background:rgba(10,16,30,.9)">' + L.map(function(x){
+    return '<button type="button" data-fly="' + esc(x.id) + '" style="display:block;width:100%;text-align:start;min-height:48px;padding:8px 14px;border:0;border-bottom:1px solid rgba(255,255,255,.1);background:transparent;color:#fff;font:inherit;font-size:14px">'
+      + '<b>' + esc(siteKey(x)) + '</b> \u00b7 ' + esc((x.name || '').slice(0, 40)) + (x.zone ? ' <span style="opacity:.75">\u00b7 ' + esc(t(x.zone)) + '</span>' : '') + '</button>';
+  }).join('') + '</div>';
+}
 function mapUIHtml(){
   var busy = (typeof MAP_SELECT !== 'undefined' && MAP_SELECT)
           || (typeof MOVE_ID !== 'undefined' && MOVE_ID);
+  /* (V39.4) owner: «عاوز بحث هنا ع الخريطة زي البحث اللي في المواقع» — the Sites search itself (siteSearch: the identifier, the
+     sign, the name), a box over the chips; a result flies to its point and opens it (data-fly, the Sites list's own link).
+     The box and its query live on this function — no new global. */
+  var mq = mapUIHtml.s || (mapUIHtml.s = { open:false, q:'' });
   return '<div class="' + (busy ? 'map-busy-on' : '') + '"></div>'
     + '<div class="map-top">'
+    +   (mq.open ? '<div style="flex:1 1 100%;display:flex;flex-direction:column;gap:6px;margin-bottom:2px">'
+    +     '<input id="mapQ" type="search" value="' + esc(mq.q) + '" placeholder="' + esc(t('ابحث بالمعرّف أو الشاخص')) + '" aria-label="' + esc(t('ابحث بالمعرّف أو الشاخص')) + '" dir="auto" autocomplete="off"'
+    +     ' style="min-height:44px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(10,16,30,.85);color:#fff;padding:0 14px;font:inherit;font-size:15px">'
+    +     '<div id="mapQRes">' + mapQResHtml(mq.q) + '</div></div>' : '')
+    +   '<button type="button" class="map-chip' + (mq.open ? ' on' : '') + '" data-mapq="' + (mq.open ? '0' : '1') + '">\u{1F50D} ' + esc(t('بحث')) + '</button>'
     +   Object.keys(LAYERS).map(function(k){
           return '<button type="button" class="map-chip '+(FIELD_MODE===k?'on':'')+'" data-mode="'+k+'">'
             + LAYERS[k].i + ' ' + esc(t(LAYERS[k].n)) + '</button>';

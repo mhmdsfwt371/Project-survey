@@ -150,8 +150,11 @@ function clickAPart7(e){
   var svd = e.target.closest('[data-svd]');
   if (svd){ sk = svd.getAttribute('data-svd'); SVD_PICK = (SVD_PICK === sk ? '' : sk); render(1); return true; }
   if (e.target.closest('[data-svdxls]')){ svdXls(); return true; }
+  var mqb = e.target.closest('[data-mapq]');   /* (V39.4) the map search box opens and closes */
+  if (mqb){ var mqs = mapUIHtml.s || (mapUIHtml.s = { open:false, q:'' }); mqs.open = mqb.getAttribute('data-mapq') === '1'; render();
+    if (mqs.open) setTimeout(function(){ var mi = document.getElementById('mapQ'); if (mi) mi.focus(); }, 0); return true; }
   var fl = e.target.closest('[data-fly]');
-  if (fl){ POP_SITE = fl.getAttribute('data-fly'); POP_OPEN = true; if (typeof SV_POP !== 'undefined'){ SV_POP = ''; SV_PHO = ''; } CUR = 'map'; render();   /* (V38.75) the list window closes — it would cover the map */
+  if (fl){ if (mapUIHtml.s) mapUIHtml.s.open = false; POP_SITE = fl.getAttribute('data-fly'); POP_OPEN = true; if (typeof SV_POP !== 'undefined'){ SV_POP = ''; SV_PHO = ''; } CUR = 'map'; render();   /* (V38.75) the list window closes — it would cover the map */
            if (typeof MAP === 'undefined' || !MAP) toast('\u23F3 ' + t('تُفتَح الخريطةُ على النقطة…'));   /* (V38.21) يرى أن الضغطة وصلت */
            mapFlySoon(POP_SITE); return true; }   /* (V38.20) ينتظر الخريطة */
   var fm = e.target.closest('[data-form]');

@@ -108,7 +108,7 @@ function chOpenHtml(key){
     + (site && tk ? '<p class="hint" style="margin:4px 0 0">' + esc(t('مُسنَدة إلى')) + ': ' + esc(dispName(tk.to) || tk.to) + '</p>' : '');
   var lines = L.length ? L.map(chLineHtml).join('') : '<p class="hint" style="text-align:center;margin:0">' + esc(t('لا رسائلَ بعد — اكتب أوّلَ رسالة')) + '</p>';
   var sendKey = site || (key.indexOf('dm:') === 0 ? key : (key === 'team' ? 'team' : ''));
-  var composer = key === 'sys' ? '' : '<div style="display:flex;gap:6px;align-items:flex-end;margin-top:8px"><textarea class="in" data-chtext="' + esc(sendKey) + '" rows="2" aria-label="' + esc(t('رسالة…')) + '" placeholder="' + esc(t('رسالة…')) + '" style="flex:1"></textarea>'
+  var composer = key === 'sys' ? '' : '<div style="display:flex;gap:6px;align-items:flex-end;margin-top:8px"><textarea class="in" data-chtext="' + esc(sendKey) + '" rows="2" aria-label="' + esc(t('رسالة…')) + '" placeholder="' + esc(t('رسالة…')) + '" style="flex:1">' + esc((chOpenHtml.draft || {})[sendKey] || '') + '</textarea>'   /* (V39.4) a draft written for this thread (the assistant's «كلّم المهندس») */
     + btn('\u27A4', 'btn-primary', ' data-chsend="' + esc(sendKey) + '" data-chto="' + esc(to) + '" aria-label="' + esc(t('أرسل')) + '"') + '</div>' + (to ? '<p class="hint" style="margin:4px 0 0">' + esc(t('إلى')) + ': ' + esc(dispName(to) || to) + '</p>' : '');
   setTimeout(function(){ var el = document.getElementById('chScroll'); if (el) el.scrollTop = el.scrollHeight; }, 0);
   return card('', head + '<div id="chScroll" style="max-height:60vh;overflow-y:auto;margin-top:8px;padding:4px 2px">' + lines + '</div>' + composer);

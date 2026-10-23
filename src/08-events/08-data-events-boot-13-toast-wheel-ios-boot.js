@@ -320,6 +320,11 @@ document.addEventListener('input', function(e){
     assistResHtml.t = setTimeout(function(){ var rs = document.getElementById('assistRes'); if (rs) rs.innerHTML = assistResHtml(); }, 150);
     return;
   }
+  if (e.target && e.target.id === 'mapQ'){   /* (V39.4) the map search: the results only, never the map itself */
+    var ms = mapUIHtml.s || (mapUIHtml.s = { open:true, q:'' }); ms.q = e.target.value || '';
+    var mr = document.getElementById('mapQRes'); if (mr) mr.innerHTML = mapQResHtml(ms.q);
+    return;
+  }
   if (e.target && e.target.id === 'navQ'){
     NAV_Q = e.target.value;
     var nv = document.getElementById('nav');

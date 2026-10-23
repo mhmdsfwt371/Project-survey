@@ -103,6 +103,7 @@ function clickTables(e){
     if (site && !siteFind(site)){ toast(t('النقطةُ غيرُ موجودة') + ': ' + site); return true; }
     if (site && !chScheduled(site)){ toast(t('هذه النقطةُ غيرُ مجدولةٍ للتركيب — لا محادثةَ عليها')); return true; }   /* (V38.67) */
     var sent = chSend(site, to, txt); if (ta) ta.value = ''; toast('\u{1F4AC} ' + t('أُرسلت'));
+    if (sent && chOpenHtml.draft) delete chOpenHtml.draft[key];   /* (V39.4) the assistant's draft is sent — gone */
     if (key === '*' && sent && CUR === 'chat') chPageHtml.f = { open:chKey(sent) };   /* (V38.65) the conversation it started opens */
     render(1); return true;
   }

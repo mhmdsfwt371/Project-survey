@@ -245,6 +245,23 @@ function assistFixHtml(kind, d){
   return out;
 }
 
+/* (V39.4) the engineer to talk to: up the reporting line from the user to the first engineer (or above); else the first
+   active engineer — and '' when there is none, so the button falls back to the report it used to send */
+function askEngWho(){
+  var U = STATE.users || {}, me = STATE.meta.name || '', by = {};
+  Object.keys(U).forEach(function(k){ var u = U[k]; if (u && u.name && u.active !== false) by[u.name] = u; });
+  var cur = by[me], seen = {};
+  while (cur && cur.sup && !seen[cur.sup]){ seen[cur.sup] = 1; var up = by[cur.sup]; if (!up) break; if (rankOf(up.role || '') >= rankOf('engineer')) return up.name; cur = up; }
+  return Object.keys(by).filter(function(n){ return n !== me && by[n].role === 'engineer'; }).sort()[0] || '';
+}
+/* the first message: the question, then the device's state in one line — in the user's language, digits included */
+function askEngText(q){
+  var d = assistDiag(), parts = [t('الإصدار') + ' ' + nm(String(d.ver || '').replace(/^V/i, '')), t(d.on ? 'متصل' : 'غير متصل')];
+  if (d.q) parts.push(nm(d.q) + ' ' + t('كتابة تنتظر الرفع'));
+  if (d.pq) parts.push(nm(d.pq) + ' ' + t('صورة تنتظر الرفع'));
+  if (d.pf) parts.push(nm(d.pf) + ' ' + t('صورة فشل رفعها'));
+  return String(q || '').trim() + '\n\u2014 ' + t('حالة جهازي') + ': ' + parts.join(' \u00b7 ');
+}
 function assistDiagCard(q){
   var d = assistDiag(), hits = assistIntent(q);
   if (!q){   /* بلا سؤال: حالةُ الجهاز في سطر، والعالقُ وحدَه يُفتَح */
@@ -254,7 +271,9 @@ function assistDiagCard(q){
       + '<p style="margin:0">' + (warn.length ? esc(warn.map(function(w){ return t(w); }).join(' \u00b7 ')) : esc(t('كلُّ شيءٍ سليم: متصل، ولا شيءَ ينتظر الرفع.'))) + '</p>'
       + (warn.length ? assistFixHtml(d.pq || d.pf ? 'photos' : d.q || d.pz ? 'sync' : 'slow', d) : '') + '</div>';
   }
-  var kh = knownHits(q), ask = '<div class="card" style="margin:0 0 10px"><p style="margin:0 0 6px">' + esc(t('لم يُحلّ؟ أرسلها للمهندس — تصله بحالة جهازك، وترى ردَّه في «البلاغات».')) + '</p><div class="actions">' + btn('\u{1F64B} ' + t('اسأل المهندس'), 'btn-primary btn-sm', ' data-askeng="1"') + '</div></div>';
+  /* (V39.4) owner: «نخلي الحتة دي شات أفضل للمهندس — مش بلاغ». The button opens a conversation with the engineer, the
+     question and the device's state already in the message box; the reply comes back in that conversation, live. */
+  var kh = knownHits(q), ask = '<div class="card" style="margin:0 0 10px"><p style="margin:0 0 6px">' + esc(t('لم يُحلّ؟ كلّم المهندس مباشرةً — تنفتح محادثةٌ معه فيها سؤالُك وحالةُ جهازك، وردُّه يصلك فيها.')) + '</p><div class="actions">' + btn('\u{1F4AC} ' + t('كلّم المهندس'), 'btn-primary btn-sm', ' data-askeng="1"') + '</div></div>';
   var known = kh.map(function(k){ return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid #2E7D32"><div class="pid">' + esc(t('مشكلة معروفة — حلّها')) + '</div><p style="margin:0">' + esc(k.a) + '</p></div>'; }).join('');
   if (!hits) return known + (q.length >= 6 ? ask : '');
   return known + hits.map(function(h){ return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid var(--acc, #1A5FA8)"><div class="pid">' + esc(t('تشخيص')) + '</div><h4 style="margin:2px 0 6px">' + esc(t(h.t)) + '</h4>' + assistFixHtml(h.k, d) + '</div>'; }).join('') + ask;

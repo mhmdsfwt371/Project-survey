@@ -1137,6 +1137,50 @@ console.log('\n══ ٣٩ · القائمة: «المزيد» ولا شاشةَ
   w.ROLE = role0; w.STATE.meta.role = role0; w.NAV_Q = q0;
 }
 
+/* ── ٤٠ · (V39.4) البحث على الخريطة — بحثُ المواقع نفسُه، والنتيجةُ تفتح نقطتَها ── */
+console.log('\n══ ٤٠ · البحث على الخريطة ══');
+{
+  const D = w.document, cur0 = w.CUR, pop0 = w.POP_SITE;
+  const tap = el => el.dispatchEvent(new w.MouseEvent('click', { bubbles:true, cancelable:true }));
+  const tmp = attrs => { const b = D.createElement('button'); Object.entries(attrs).forEach(([k, v]) => b.setAttribute(k, v)); D.body.appendChild(b); return b; };
+  w.CUR = 'map'; w.POP_OPEN = false; w.ASSIST_OPEN = false; w.BUG_OPEN = false; w.MAP_FILT_OPEN = false; w.CO_OPEN = false; w.render(1);
+  const st0 = JSON.stringify({ pop:w.POP_OPEN, sel:w.MAP_SELECT, mv:w.MOVE_ID, nav:w.document.body.className });
+  const x = w.STATE.sites[3], key = w.siteKey(x);
+  const ob = tmp({ 'data-mapq':'1' }); tap(ob); ob.remove();
+  const html = w.mapUIHtml();
+  T(w.mapUIHtml.s.open && /id="mapQ"/.test(html), 'زرُّ «بحث» يفتح مربّعَ البحث فوق أزرار الخريطة' + (w.mapUIHtml.s.open ? '' : ' — ' + st0));
+  const res = w.mapQResHtml(key), box = D.createElement('div'); box.innerHTML = res;
+  const hits = [...box.querySelectorAll('[data-fly]')].map(b => b.getAttribute('data-fly'));
+  T(hits.length >= 1 && hits.length <= 8 && hits.indexOf(x.id) > -1, 'والبحثُ بالشاخص يجد النقطةَ ببحث المواقع نفسِه: ' + key + ' (' + hits.length + ')');
+  T(/لا نتائج/.test(w.mapQResHtml('zzqqxx-لا-يوجد')) && w.mapQResHtml('') === '', 'وما لا يُوجد يُقال «لا نتائج»، والفارغُ لا يعرض شيئًا');
+  const fb = tmp({ 'data-fly':x.id }); tap(fb); fb.remove();
+  T(w.POP_SITE === x.id && w.mapUIHtml.s.open === false, 'والضغطُ على النتيجة يفتح النقطةَ على الخريطة ويُغلق البحث');
+  w.CUR = cur0; w.POP_SITE = pop0; w.POP_OPEN = false;
+}
+
+/* ── ٤١ · (V39.4) «كلّم المهندس» محادثةٌ لا بلاغ — والسؤالُ وحالةُ الجهاز في المربّع ── */
+console.log('\n══ ٤١ · «كلّم المهندس» محادثةٌ لا بلاغ ══');
+{
+  const D = w.document, U0 = w.STATE.users, me0 = w.STATE.meta.name, role0 = w.ROLE, cur0 = w.CUR;
+  w.STATE.users = { u1:{ name:'فني التجربة', role:'tech', sup:'مشرف التجربة' }, u2:{ name:'مشرف التجربة', role:'supervisor', sup:'مهندس التجربة' }, u3:{ name:'مهندس التجربة', role:'engineer', sup:'' }, u4:{ name:'مهندس آخر', role:'engineer', sup:'' } };
+  w.STATE.meta.name = 'فني التجربة'; w.ROLE = 'tech'; w.STATE.meta.role = 'tech';
+  T(w.askEngWho() === 'مهندس التجربة', 'المهندسُ هو أوّلُ مهندسٍ فوقه في سلسلة الإدارة: ' + w.askEngWho());
+  w.ASSIST_Q = 'الصور مش بتترفع'; w.ASSIST_OPEN = true; w.BUG_OPEN = false;
+  const b = D.createElement('button'); b.setAttribute('data-askeng', '1'); D.body.appendChild(b);
+  b.dispatchEvent(new w.MouseEvent('click', { bubbles:true, cancelable:true })); b.remove();
+  const ta = D.querySelector('[data-chtext="dm:مهندس التجربة"]');
+  T(w.CUR === 'chat' && !w.BUG_OPEN && !w.ASSIST_OPEN && w.chPageHtml.f.open === 'dm:مهندس التجربة', 'الزرُّ يفتح محادثةً مع المهندس لا نموذجَ بلاغ');
+  T(!!ta && ta.value.indexOf('الصور مش بتترفع') === 0 && /حالة جهازي/.test(ta.value) && !/V\d/.test(ta.value), 'وفي مربّع الرسالة سؤالُه وحالةُ جهازه — بلغته، بلا حرفٍ لاتينيّ');
+  const n0 = Object.keys(w.STATE.msgs || {}).length;
+  const sb = D.querySelector('[data-chsend="dm:مهندس التجربة"]'); if (sb) sb.dispatchEvent(new w.MouseEvent('click', { bubbles:true, cancelable:true }));
+  const sent = Object.values(w.STATE.msgs || {}).filter(v => v.to === 'مهندس التجربة' && v.from === 'فني التجربة');
+  T(Object.keys(w.STATE.msgs || {}).length === n0 + 1 && sent.length === 1 && !(w.chOpenHtml.draft || {})['dm:مهندس التجربة'], 'والإرسالُ رسالةٌ إلى المهندس، والمسوّدةُ تُمحى');
+  sent.forEach(v => { delete w.STATE.msgs[v.id]; });
+  w.STATE.users = { u9:{ name:'وحيد', role:'admin', sup:'' } }; w.STATE.meta.name = 'وحيد';
+  T(w.askEngWho() === '', 'ومن لا مهندسَ له في الملفّ يبقى له البلاغُ كما كان');
+  w.STATE.users = U0; w.STATE.meta.name = me0; w.ROLE = role0; w.STATE.meta.role = role0; w.CUR = cur0; w.chPageHtml.f = {}; w.ASSIST_OPEN = false;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);
