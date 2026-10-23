@@ -1116,6 +1116,27 @@ console.log('\n══ ٣٨ · رقمُ الطلب: حجزٌ ذرّيٌّ في ا
   if (cl0 == null) w.localStorage.removeItem('nsk14.reqClaims'); else w.localStorage.setItem('nsk14.reqClaims', cl0);
 }
 
+/* ── ٣٩ · (V39.3) القائمة: المستعمَلُ في مجموعاته، والباقي تحت «المزيد» — ولا شاشةَ تُشال ── */
+console.log('\n══ ٣٩ · القائمة: «المزيد» ولا شاشةَ تُشال ══');
+{
+  const role0 = w.ROLE, q0 = w.NAV_Q;
+  const ids = html => { const b = w.document.createElement('div'); b.innerHTML = html; const sec = {}; b.querySelectorAll('.nav-section').forEach(x => { sec[x.getAttribute('data-g')] = [...x.querySelectorAll('a[data-p]')].map(a => a.getAttribute('data-p')); });
+    const solo = [...b.querySelectorAll(':scope > a[data-p]')].map(a => a.getAttribute('data-p')); return { sec, all: new Set(solo.concat(Object.values(sec).flat())) }; };
+  for (const role of ['admin', 'tech']){
+    w.ROLE = role; w.STATE.meta.role = role; w.NAV_Q = '';
+    const A = ids(w.navHtml());
+    const want = new Set(); w.NAV.forEach(s => { if (s.solo){ if (w.seesPage(s.id)) want.add(s.id); } else s.items.forEach(i => { if (w.seesPage(i[0])) want.add(i[0]); }); });
+    const more = A.sec['المزيد'] || [];
+    T([...want].every(x => A.all.has(x)) && A.all.size === want.size, role + ': كلُّ شاشةٍ يراها الدورُ ما زالت في القائمة (' + want.size + ')');
+    T(more.length > 0 && more.every(x => w.navHtml.main.indexOf(x) < 0) && Object.entries(A.sec).filter(([g]) => g !== 'المزيد').every(([g, L]) => L.every(x => w.navHtml.main.indexOf(x) > -1)),
+      role + ': والمستعمَلُ في مجموعاته والباقي (' + more.length + ') تحت «المزيد»');
+  }
+  w.ROLE = 'admin'; w.STATE.meta.role = 'admin'; w.NAV_Q = 'التجارب';
+  const S = ids(w.navHtml()).sec;
+  T(!S['المزيد'] && Object.entries(S).some(([g, L]) => g !== 'المزيد' && L.indexOf('trials') > -1), 'والبحثُ في القائمة يجد الشاشةَ في مجموعتها كما كانت');
+  w.ROLE = role0; w.STATE.meta.role = role0; w.NAV_Q = q0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

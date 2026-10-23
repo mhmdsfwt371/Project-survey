@@ -110,6 +110,11 @@ function navHtml(){
     + 'style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14);'
     + 'color:var(--sidebar-ink);min-height:38px;font-size:13px" aria-label="'
     + esc(t('ابحث في القائمة')) + '"></div>';
+  /* (V39.3) owner: «كل دور يشوف الشاشات اللي بيستخدمها فعلًا، والباقي تحت المزيد — ولا شاشة تتشال». Measured on production
+     (five weeks of screen opens): eight screens took 80% of the opens and about ninety of 123 were never opened. Each group
+     keeps its screens in navHtml.main (opened five times or more, plus help); the others move to one last group, «المزيد»,
+     folded and kept in their groups' order — a search of the menu still finds every screen where it always was. */
+  var main = navHtml.main || [], more = [];
   return box + NAV.map(function(s){
     if (s.solo){
       if (!seesPage(s.id)) return '';
@@ -118,6 +123,10 @@ function navHtml(){
         + '<span class="item-icon" aria-hidden="true">'+navIco(s)+'</span><span class="nav-t">'+esc(t(s.label))+'</span></a>' + navTabLinks(s.id);
     }
     var items = s.items.filter(function(i){ return seesPage(i[0]) && (navMatch(i[1], i[0]) || navTabHits(i[0]).length); });
+    if (!NAV_Q && main.length){
+      items.forEach(function(i){ if (main.indexOf(i[0]) < 0) more.push(i); });
+      items = items.filter(function(i){ return main.indexOf(i[0]) > -1; });
+    }
     if (!items.length) return '';
     var open = NAV_Q ? true : (items.some(function(i){ return i[0] === CUR; }) || OPEN[s.g]);
     var hc = items.some(function(i){ return i[0] === CUR; });   /* (V24.0) وحدةُ الصفحة الحالية تُضاء في شريط الأيقونات */
@@ -131,7 +140,20 @@ function navHtml(){
           return '<a href="#" class="sub'+(CUR===i[0]?' active':'')+'" data-p="'+i[0]+'">'+esc(t(i[1])) + bdg + '</a>' + navTabLinks(i[0]);
         }).join('')
       + '</div></div>';
-  }).join('');
+  }).join('') + navMoreHtml(more);
+}
+navHtml.main = ['map', 'sites', 'mywork', 'chat', 'survey', 'req', 'sel', 'fleet', 'forms',
+                'mfu', 'over', 'wtask', 'exec', 'co', 'pts', 'perf', 'users', 'ev', 'guide', 'acct'];
+/* (V39.3) the folded last group: the screens opened less than five times in five weeks — never removed, one tap away */
+function navMoreHtml(more){
+  if (!more.length) return '';
+  var g = 'المزيد', hc = more.some(function(i){ return i[0] === CUR; }), open = hc || OPEN[g];
+  return '<div class="nav-section'+(hc?' has-cur':'')+'" data-open="'+(open?'true':'false')+'" data-g="'+esc(g)+'">'
+    + '<button type="button" class="group-toggle" data-gt aria-expanded="'+(open?'true':'false')+'" aria-label="'+esc(t(g))+'">'
+    + '<span class="group-label"><span class="item-icon" aria-hidden="true">\u22EF</span><span class="nav-t">'+esc(t(g))+'</span></span>'
+    + '<span class="chevron" aria-hidden="true"></span></button><div class="group-panel"><div class="gp-head" aria-hidden="true">'+esc(t(g))+'</div>'
+    + more.map(function(i){ return '<a href="#" class="sub'+(CUR===i[0]?' active':'')+'" data-p="'+i[0]+'">'+esc(t(i[1]))+'</a>' + navTabLinks(i[0]); }).join('')
+    + '</div></div>';
 }
 
 var FIELD_PAGES = {
