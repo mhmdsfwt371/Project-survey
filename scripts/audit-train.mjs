@@ -73,6 +73,11 @@ T(/select\(startswith\("backups\/latest\/"\) \| not\)/.test(gate) && /git diff -
 const rn = readFileSync('scripts/release-now.mjs', 'utf8');
 T(/القائمةُ الكاملةُ انطلقت من البوابة على الخادم/.test(rn) && /رقّاه الخادم/.test(rn), 'وأداةُ النشر تتابع ما يفعله الخادمُ ولا تكرّره — وتبقى احتياطًا');
 
+/* (V38.99) a list cancelled by a newer commit's list does not run the chain — it raised «الإصدار وقف» for V38.98 */
+{ const ch9 = gate.slice(gate.indexOf('\n  chain:'), gate.indexOf('\n  chain:') + 600);
+  T(/if: \$\{\{ !cancelled\(\) && github\.ref == 'refs\/heads\/staging'/.test(ch9) && !/if: \$\{\{ always\(\) && github\.ref == 'refs\/heads\/staging' && github\.event_name == 'workflow_dispatch'/.test(ch9),
+    'السلسلةُ لا تعمل في قائمةٍ ألغتها قائمةُ التزامٍ أحدث — فلا بلاغَ «وقف» كاذب'); }
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length) process.exit(1);
 console.log('جردُ القطار نظيف \u2705');

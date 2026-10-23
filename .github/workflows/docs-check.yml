@@ -631,7 +631,9 @@ jobs:
   # بالدفعة إلى الأصل كما كانا. وإن وقف شيءٌ في الطريق: بلاغٌ للمالك بالمرحلة والسبب.
   chain:
     needs: [shards]
-    if: ${{ always() && github.ref == 'refs/heads/staging' && github.event_name == 'workflow_dispatch' }}
+    # (V38.99) not when the run was cancelled: a newer commit's list took its place (the queue cancels the older one), and
+    # always() ran the chain anyway — it found the cancelled shard's result missing and told the owner the release stopped
+    if: ${{ !cancelled() && github.ref == 'refs/heads/staging' && github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-24.04
     permissions:
       contents: write
