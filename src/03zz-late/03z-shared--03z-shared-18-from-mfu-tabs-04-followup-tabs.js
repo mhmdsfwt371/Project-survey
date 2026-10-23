@@ -1,5 +1,10 @@
-/* (V38.90) moved by scripts/split-late.mjs from src/03z-shared/03z-shared-18-from-mfu-tabs-04-followup-tabs.js — reached only by clicks or by the office chunk,
-   so it ships with app-office.js after the login screen. Edit it here. */
+/* ============================================================================
+   FILE    : src/03zz-late/03z-shared--03z-shared-18-from-mfu-tabs-04-followup-tabs.js
+   DOMAIN  : Late core — functions the core alone never reaches, shipped with app-office.js
+   PURPOSE : Moved verbatim from src/03z-shared/03z-shared-18-from-mfu-tabs-04-followup-tabs.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk call them, so they arrive a few seconds after the login screen instead of in the field's first payload. A click that needs one before the chunk lands is replayed when it does.
+   DEFINES : mtDot, mtGrid, mtOpen, mtXlsx, mtSites, mtStepSite, mtCoStats, mtWCard, mtWSt, mtWWho, mtSupNeeded, mtWRows, mtWPopHtml, mtNewWeek, mtAlertsHtml
+   NOTE    : Edit these functions here. audit-core-alone.mjs fails if code the core runs alone starts calling one without checking typeof first.
+   ============================================================================ */
 /* مربعٌ بنقطة لون (للحالات) — attrs يحمل ما يفتحه */
 function mtDot(n, label, icon, color, attrs){
   return '<div role="button" tabindex="0"' + attrs + ' title="' + esc(t('اضغط للتفاصيل والإكسل')) + '" style="' + MT_TILE + ';display:flex;align-items:center;gap:10px;cursor:pointer"><span style="width:14px;height:14px;border-radius:50%;background:' + color + ';flex:0 0 auto"></span><div><div class="num" style="font-size:22px;font-weight:800">' + nm(n) + '</div><div style="font-size:13px">' + icon + ' ' + esc(t(label)) + ' \u203A</div></div></div>';

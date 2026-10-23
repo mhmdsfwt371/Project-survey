@@ -75,7 +75,12 @@ if (process.argv[1] && process.argv[1].endsWith('split-late.mjs')){
       fs.writeFileSync(path.join(SRC, f), rest.replace(/\n{4,}/g, '\n\n\n'));
       /* the late file, named after the origin */
       const dest = path.join(SRC, DEST, f.replace(/\//g, '--'));
-      const head = '/* (V38.90) moved by scripts/split-late.mjs from src/' + f + ' — reached only by clicks or by the office chunk,\n   so it ships with app-office.js after the login screen. Edit it here. */\n';
+      const head = '/* ============================================================================\n   FILE    : src/' + DEST + '/' + path.basename(dest) + '\n'
+        + '   DOMAIN  : Late core — functions the core alone never reaches, shipped with app-office.js\n'
+        + '   PURPOSE : Moved verbatim from src/' + f + ' by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk call them, so they arrive a few seconds after the login screen instead of in the field\'s first payload. A click that needs one before the chunk lands is replayed when it does.\n'
+        + '   DEFINES : ' + cut.map(st => st.name).join(', ') + '\n'
+        + '   NOTE    : Edit these functions here. audit-core-alone.mjs fails if code the core runs alone starts calling one without checking typeof first.\n'
+        + '   ============================================================================ */\n';
       const body = cut.map(st => s.slice(st.start, st.end)).join('\n\n') + '\n';
       fs.writeFileSync(dest, (fs.existsSync(dest) ? fs.readFileSync(dest, 'utf8') + '\n' : head) + body);
       console.log('  ' + f + ' → ' + DEST + '/' + path.basename(dest) + ' (' + cut.length + ')');

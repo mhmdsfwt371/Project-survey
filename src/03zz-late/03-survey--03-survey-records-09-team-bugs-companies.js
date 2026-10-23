@@ -1,5 +1,10 @@
-/* (V38.90) moved by scripts/split-late.mjs from src/03-survey/03-survey-records-09-team-bugs-companies.js — reached only by clicks or by the office chunk,
-   so it ships with app-office.js after the login screen. Edit it here. */
+/* ============================================================================
+   FILE    : src/03zz-late/03-survey--03-survey-records-09-team-bugs-companies.js
+   DOMAIN  : Late core — functions the core alone never reaches, shipped with app-office.js
+   PURPOSE : Moved verbatim from src/03-survey/03-survey-records-09-team-bugs-companies.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk call them, so they arrive a few seconds after the login screen instead of in the field's first payload. A click that needs one before the chunk lands is replayed when it does.
+   DEFINES : phoneClean, phonesBulk, bugSend, bugMayDecide, bugClose, bugDecide, bugsPageHtml, briefingText, briefingSend, briefingCopyAll, waLink, coRename, coEmailOf, mailOfficial, mailGo, coLiaisonOf, coStat, waText, waGo
+   NOTE    : Edit these functions here. audit-core-alone.mjs fails if code the core runs alone starts calling one without checking typeof first.
+   ============================================================================ */
 /* ═══ أرقامُ الفريق دفعةً واحدة (V16.99) ═══
    الرقمُ حقلٌ في الحساب، وإدخالُه واحدًا واحدًا لخمسةَ عشرَ حسابًا يُؤجَّل
    فلا يُعمَل — و«بلاغُ اليوم» بلا أرقامٍ نصفُ شاشة. فصار يُلصَق الجدولُ كما

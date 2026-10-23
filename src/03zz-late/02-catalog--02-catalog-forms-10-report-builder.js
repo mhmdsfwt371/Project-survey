@@ -1,5 +1,10 @@
-/* (V38.90) moved by scripts/split-late.mjs from src/02-catalog/02-catalog-forms-10-report-builder.js — reached only by clicks or by the office chunk,
-   so it ships with app-office.js after the login screen. Edit it here. */
+/* ============================================================================
+   FILE    : src/03zz-late/02-catalog--02-catalog-forms-10-report-builder.js
+   DOMAIN  : Late core — functions the core alone never reaches, shipped with app-office.js
+   PURPOSE : Moved verbatim from src/02-catalog/02-catalog-forms-10-report-builder.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk call them, so they arrive a few seconds after the login screen instead of in the field's first payload. A click that needs one before the chunk lands is replayed when it does.
+   DEFINES : rbFavSave, rbFavPin, rbPresetsAdd, rbFavDel, rbPopKey, rbPopCols, rbPopRow, rbPopCard, rbPopName, rbRun, rbXls
+   NOTE    : Edit these functions here. audit-core-alone.mjs fails if code the core runs alone starts calling one without checking typeof first.
+   ============================================================================ */
 function rbFavSave(name, shared){
   var q = rbSentence(); name = String(name || '').trim(); if (!name) return false;
   var f = { name:name, q:q, sel:Object.assign({}, rbState().sel), at:Date.now(), by:STATE.meta.name || '' };

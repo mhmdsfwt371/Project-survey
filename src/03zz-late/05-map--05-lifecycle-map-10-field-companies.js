@@ -1,5 +1,10 @@
-/* (V38.90) moved by scripts/split-late.mjs from src/05-map/05-lifecycle-map-10-field-companies.js — reached only by clicks or by the office chunk,
-   so it ships with app-office.js after the login screen. Edit it here. */
+/* ============================================================================
+   FILE    : src/03zz-late/05-map--05-lifecycle-map-10-field-companies.js
+   DOMAIN  : Late core — functions the core alone never reaches, shipped with app-office.js
+   PURPOSE : Moved verbatim from src/05-map/05-lifecycle-map-10-field-companies.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk call them, so they arrive a few seconds after the login screen instead of in the field's first payload. A click that needs one before the chunk lands is replayed when it does.
+   DEFINES : coDash, coBucketsAll, coBuckets, coPopRows, coPopHtml, coPopXls, coDashCard, siteCos, coPick
+   NOTE    : Edit these functions here. audit-core-alone.mjs fails if code the core runs alone starts calling one without checking typeof first.
+   ============================================================================ */
 /* ═══ لوحةُ الشركات ═══
    القائمةُ وحدَها لا تُجيب: كم شركةً عندنا؟ وكم منها يخدم أكثرَ من مخيّم؟
    وكم في القائمة ولا مخيّمَ له؟ وكم بقي من الأسماء المركَّبة؟ فتُقرأ الأرقامُ

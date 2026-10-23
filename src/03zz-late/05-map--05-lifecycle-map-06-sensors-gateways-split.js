@@ -1,5 +1,10 @@
-/* (V38.90) moved by scripts/split-late.mjs from src/05-map/05-lifecycle-map-06-sensors-gateways-split.js — reached only by clicks or by the office chunk,
-   so it ships with app-office.js after the login screen. Edit it here. */
+/* ============================================================================
+   FILE    : src/03zz-late/05-map--05-lifecycle-map-06-sensors-gateways-split.js
+   DOMAIN  : Late core — functions the core alone never reaches, shipped with app-office.js
+   PURPOSE : Moved verbatim from src/05-map/05-lifecycle-map-06-sensors-gateways-split.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk call them, so they arrive a few seconds after the login screen instead of in the field's first payload. A click that needs one before the chunk lands is replayed when it does.
+   DEFINES : iotGrid, iotCentroid, iotMakePlan, iotGen, iotRedistribute, iotSplit, iotEditStart, iotDel, iotMetaSet, iotSave, iotXlsx, bedStart, bedDel, bedCommit, bedSave, bedReset, splitParts, splitStart, splitN, splitSuffix, splitSave
+   NOTE    : Edit these functions here. audit-core-alone.mjs fails if code the core runs alone starts calling one without checking typeof first.
+   ============================================================================ */
 function iotGrid(R, n, avoid){   /* n نقاطٍ متباعدةٍ داخل المضلّع */
   var la = R.map(function(p){ return p[0]; }), lo = R.map(function(p){ return p[1]; }), a0 = Math.min.apply(null, la), a1 = Math.max.apply(null, la), b0 = Math.min.apply(null, lo), b1 = Math.max.apply(null, lo);
   avoid = avoid || []; var pts = [];

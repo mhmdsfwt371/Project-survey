@@ -1,5 +1,10 @@
-/* (V38.90) moved by scripts/split-late.mjs from src/08-events/08-data-events-boot-03-settings-types-users.js — reached only by clicks or by the office chunk,
-   so it ships with app-office.js after the login screen. Edit it here. */
+/* ============================================================================
+   FILE    : src/03zz-late/08-events--08-data-events-boot-03-settings-types-users.js
+   DOMAIN  : Late core — functions the core alone never reaches, shipped with app-office.js
+   PURPOSE : Moved verbatim from src/08-events/08-data-events-boot-03-settings-types-users.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk call them, so they arrive a few seconds after the login screen instead of in the field's first payload. A click that needs one before the chunk lands is replayed when it does.
+   DEFINES : typeAdd, siteSetType, selSetType, selRename, typeMoveDel, mxDeclare, mxUndeclare, usrDel, usrSet, usrMerge, genPass, provKick, pwFlowStart, pwFlowSet, pwFlowWatch, usrRename, usrPwReset, pendDel, pendRetry, provLocal, usrAdd
+   NOTE    : Edit these functions here. audit-core-alone.mjs fails if code the core runs alone starts calling one without checking typeof first.
+   ============================================================================ */
 function typeAdd(){
   if (!may('settings')){ toast(t('الأنواعُ للمهندس وحده')); return; }
   var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };

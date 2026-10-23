@@ -122,75 +122,75 @@
 | `03z-shared-b-26-from-approvals-reports-10-point-actions-export-pdf.js` | 52 | 2 | Definitions moved verbatim from src/07-reports/07-approvals-reports-10-point-actions-export-pdf.js (V38.38–V38.39, stage A of core + chunks, pass b): the core ( |
 | `03z-shared-b-27-from-approvals-reports-11-import-roles-perms.js` | 29 | 0 | Definitions moved verbatim from src/07-reports/07-approvals-reports-11-import-roles-perms.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, |
 
-## `03zz-late/` —   (65 ملفات · 6417 سطر · 437 دالة)
+## `03zz-late/` —   (65 ملفات · 6742 سطر · 437 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
-| `01-core--01-core-registry-01-boot-i18n.js` | 44 | 4 | (V38.90) moved by scripts/split-late.mjs from src/01-core/01-core-registry-01-boot-i18n.js — reached only by clicks or by the office chunk, |
-| `01-core--01-core-registry-02-data-display-search.js` | 6 | 2 | (V38.90) moved by scripts/split-late.mjs from src/01-core/01-core-registry-02-data-display-search.js — reached only by clicks or by the office chunk, |
-| `01-core--01-core-registry-03-config-values.js` | 8 | 1 | (V38.90) moved by scripts/split-late.mjs from src/01-core/01-core-registry-03-config-values.js — reached only by clicks or by the office chunk, |
-| `01-core--01-core-registry-07-blackbox-registry.js` | 76 | 6 | (V38.90) moved by scripts/split-late.mjs from src/01-core/01-core-registry-07-blackbox-registry.js — reached only by clicks or by the office chunk, |
-| `01-core--01-core-registry-08-egates-seed.js` | 11 | 1 | (V38.90) moved by scripts/split-late.mjs from src/01-core/01-core-registry-08-egates-seed.js — reached only by clicks or by the office chunk, |
-| `02-catalog--02-catalog-forms-01-site-edit-twins.js` | 179 | 11 | (V38.90) moved by scripts/split-late.mjs from src/02-catalog/02-catalog-forms-01-site-edit-twins.js — reached only by clicks or by the office chunk, |
-| `02-catalog--02-catalog-forms-02-types-shapes-filters.js` | 91 | 10 | (V38.90) moved by scripts/split-late.mjs from src/02-catalog/02-catalog-forms-02-types-shapes-filters.js — reached only by clicks or by the office chunk, |
-| `02-catalog--02-catalog-forms-03-site-details-points.js` | 33 | 2 | (V38.90) moved by scripts/split-late.mjs from src/02-catalog/02-catalog-forms-03-site-details-points.js — reached only by clicks or by the office chunk, |
-| `02-catalog--02-catalog-forms-04-mywork-diary.js` | 29 | 1 | (V38.90) moved by scripts/split-late.mjs from src/02-catalog/02-catalog-forms-04-mywork-diary.js — reached only by clicks or by the office chunk, |
-| `02-catalog--02-catalog-forms-05-management-performance.js` | 106 | 11 | (V38.90) moved by scripts/split-late.mjs from src/02-catalog/02-catalog-forms-05-management-performance.js — reached only by clicks or by the office chunk, |
-| `02-catalog--02-catalog-forms-06-teams-accounts-perms.js` | 31 | 2 | (V38.90) moved by scripts/split-late.mjs from src/02-catalog/02-catalog-forms-06-teams-accounts-perms.js — reached only by clicks or by the office chunk, |
-| `02-catalog--02-catalog-forms-07-layers-dismantle-svedit.js` | 179 | 8 | (V38.90) moved by scripts/split-late.mjs from src/02-catalog/02-catalog-forms-07-layers-dismantle-svedit.js — reached only by clicks or by the office chunk, |
-| `02-catalog--02-catalog-forms-10-report-builder.js` | 89 | 11 | (V38.90) moved by scripts/split-late.mjs from src/02-catalog/02-catalog-forms-10-report-builder.js — reached only by clicks or by the office chunk, |
-| `02-catalog--02-catalog-forms-11-chat.js` | 14 | 2 | (V38.90) moved by scripts/split-late.mjs from src/02-catalog/02-catalog-forms-11-chat.js — reached only by clicks or by the office chunk, |
-| `02-catalog--02-catalog-forms-12-install-edit.js` | 76 | 3 | (V38.90) moved by scripts/split-late.mjs from src/02-catalog/02-catalog-forms-12-install-edit.js — reached only by clicks or by the office chunk, |
-| `02-catalog--02-edit-09-edit-requests.js` | 54 | 4 | (V38.90) moved by scripts/split-late.mjs from src/02-catalog/02-edit-09-edit-requests.js — reached only by clicks or by the office chunk, |
-| `03-survey--03-survey-records-01-labels-colors.js` | 16 | 1 | (V38.90) moved by scripts/split-late.mjs from src/03-survey/03-survey-records-01-labels-colors.js — reached only by clicks or by the office chunk, |
-| `03-survey--03-survey-records-02-install-points.js` | 61 | 4 | (V37.77) نقاطُ تركيبٍ بعينه تُقرأ من مكانٍ واحد ═══ |
-| `03-survey--03-survey-records-03-assign-solutions.js` | 80 | 5 | (V38.90) moved by scripts/split-late.mjs from src/03-survey/03-survey-records-03-assign-solutions.js — reached only by clicks or by the office chunk, |
-| `03-survey--03-survey-records-04-readiness-conditions.js` | 27 | 1 | (V38.90) moved by scripts/split-late.mjs from src/03-survey/03-survey-records-04-readiness-conditions.js — reached only by clicks or by the office chunk, |
-| `03-survey--03-survey-records-05-forms-approvals.js` | 97 | 7 | (V38.90) moved by scripts/split-late.mjs from src/03-survey/03-survey-records-05-forms-approvals.js — reached only by clicks or by the office chunk, |
-| `03-survey--03-survey-records-06-survey-form.js` | 144 | 2 | (V38.90) moved by scripts/split-late.mjs from src/03-survey/03-survey-records-06-survey-form.js — reached only by clicks or by the office chunk, |
-| `03-survey--03-survey-records-07-demo-single-errors.js` | 165 | 9 | نموذجٌ لنقطةٍ واحدة (V17.22) ═══ |
-| `03-survey--03-survey-records-08-parts-history-onboarding.js` | 228 | 14 | (V38.90) moved by scripts/split-late.mjs from src/03-survey/03-survey-records-08-parts-history-onboarding.js — reached only by clicks or by the office chunk, |
-| `03-survey--03-survey-records-09-team-bugs-companies.js` | 321 | 19 | أرقامُ الفريق دفعةً واحدة (V16.99) ═══ |
-| `03-survey--03-survey-records-10-wbs-plan-trials.js` | 233 | 15 | تصديرُ الخطة كما تُدار: بصيغِها وطيِّها وألوانها ═══ |
-| `03-survey--03-survey-records-11-weekly-tasks-paths.js` | 54 | 6 | (V38.90) moved by scripts/split-late.mjs from src/03-survey/03-survey-records-11-weekly-tasks-paths.js — reached only by clicks or by the office chunk, |
-| `03z-shared--03z-shared-02-from-tasks-office-02-newsite-schedule.js` | 8 | 1 | (V38.90) moved by scripts/split-late.mjs from src/03z-shared/03z-shared-02-from-tasks-office-02-newsite-schedule.js — reached only by clicks or by the office ch |
-| `03z-shared--03z-shared-03-from-tasks-office-03-photos-drive.js` | 103 | 4 | (V38.90) moved by scripts/split-late.mjs from src/03z-shared/03z-shared-03-from-tasks-office-03-photos-drive.js — reached only by clicks or by the office chunk, |
-| `03z-shared--03z-shared-07-from-tasks-office-07-incidents-milestones.js` | 7 | 1 | (V38.90) moved by scripts/split-late.mjs from src/03z-shared/03z-shared-07-from-tasks-office-07-incidents-milestones.js — reached only by clicks or by the offic |
-| `03z-shared--03z-shared-17-from-ext-camps-03-nusuk-card-system.js` | 23 | 2 | (V37.80) كارتُ «التجارب والديمو» في متابعة الوزارة ═══ |
-| `03z-shared--03z-shared-18-from-mfu-tabs-04-followup-tabs.js` | 68 | 15 | (V37.65) «تنبيهات الأسبوع» فوق متابعة الوزارة — قرارُ المالك على المقترح: |
-| `03z-shared--03z-shared-19-from-ministry-alerts-05-alerts-dashboard.js` | 227 | 27 | (V38.90) moved by scripts/split-late.mjs from src/03z-shared/03z-shared-19-from-ministry-alerts-05-alerts-dashboard.js — reached only by clicks or by the office |
-| `03z-shared--03z-shared-20-from-ministry-alerts-06-followup-sources-daily.js` | 92 | 12 | المهامُّ الأسبوعيةُ تُسمَع في متابعة الوزارة (V20.7) ═══ |
-| `03z-shared--03z-shared-21-from-ministry-alerts-07-weekly-export-scope.js` | 81 | 5 | تصديرُ التحديث الأسبوعي (V20.2) ═══ |
-| `03z-shared--03z-shared-30-from-approvals-reports-04-devices-reset-pulse.js` | 15 | 1 | (V38.90) moved by scripts/split-late.mjs from src/03z-shared/03z-shared-30-from-approvals-reports-04-devices-reset-pulse.js — reached only by clicks or by the o |
-| `03z-shared--03z-shared-31-from-approvals-reports-06-people-functions.js` | 59 | 2 | (V38.90) moved by scripts/split-late.mjs from src/03z-shared/03z-shared-31-from-approvals-reports-06-people-functions.js — reached only by clicks or by the offi |
-| `03z-shared--03z-shared-32-from-approvals-reports-07-network-notifications.js` | 31 | 2 | (V38.90) moved by scripts/split-late.mjs from src/03z-shared/03z-shared-32-from-approvals-reports-07-network-notifications.js — reached only by clicks or by the |
-| `03z-shared--03z-shared-35-from-approvals-reports-10-point-actions-export-pdf.js` | 119 | 6 | صفحةُ الغلاف: البطاقاتُ والأشرطةُ التي تُقرأ قبل الجداول ═══ |
-| `03z-shared--03z-shared-b-03-from-tasks-office-03-photos-drive.js` | 55 | 3 | الصورةُ تُفتَح وتُنزَّل داخل التطبيق ═══ |
-| `03z-shared--03z-shared-b-05-from-tasks-office-05-account-backup-continuity.js` | 4 | 1 | (V38.90) moved by scripts/split-late.mjs from src/03z-shared/03z-shared-b-05-from-tasks-office-05-account-backup-continuity.js — reached only by clicks or by th |
-| `03z-shared--03z-shared-b-06-from-tasks-office-06-risks-changes-coverage.js` | 160 | 7 | التغييرُ المعتمَدُ يُطبَّق على خط الأساس آليًّا ═══ |
-| `03z-shared--03z-shared-b-07-from-tasks-office-07-incidents-milestones.js` | 89 | 8 | (V38.90) moved by scripts/split-late.mjs from src/03z-shared/03z-shared-b-07-from-tasks-office-07-incidents-milestones.js — reached only by clicks or by the off |
-| `03z-shared--03z-shared-b-17-from-ministry-alerts-10-season-start-invites.js` | 33 | 1 | (V38.90) moved by scripts/split-late.mjs from src/03z-shared/03z-shared-b-17-from-ministry-alerts-10-season-start-invites.js — reached only by clicks or by the  |
-| `03z-shared--03z-shared-b-23-from-approvals-reports-07-network-notifications.js` | 79 | 6 | (V38.90) moved by scripts/split-late.mjs from src/03z-shared/03z-shared-b-23-from-approvals-reports-07-network-notifications.js — reached only by clicks or by t |
-| `05-map--05-lifecycle-map-01-lifecycle-task-index.js` | 5 | 1 | (V38.90) moved by scripts/split-late.mjs from src/05-map/05-lifecycle-map-01-lifecycle-task-index.js — reached only by clicks or by the office chunk, |
-| `05-map--05-lifecycle-map-02-map-incremental.js` | 33 | 1 | (V38.90) moved by scripts/split-late.mjs from src/05-map/05-lifecycle-map-02-map-incremental.js — reached only by clicks or by the office chunk, |
-| `05-map--05-lifecycle-map-03-export-import-docx.js` | 11 | 1 | (V38.90) moved by scripts/split-late.mjs from src/05-map/05-lifecycle-map-03-export-import-docx.js — reached only by clicks or by the office chunk, |
-| `05-map--05-lifecycle-map-04-excel-templates-kmz.js` | 355 | 12 | (V38.90) moved by scripts/split-late.mjs from src/05-map/05-lifecycle-map-04-excel-templates-kmz.js — reached only by clicks or by the office chunk, |
-| `05-map--05-lifecycle-map-05-geojson-basemap-layers.js` | 54 | 4 | التصديرُ القياسي GeoJSON (V18.0) ═══ |
-| `05-map--05-lifecycle-map-06-sensors-gateways-split.js` | 180 | 21 | (V38.90) moved by scripts/split-late.mjs from src/05-map/05-lifecycle-map-06-sensors-gateways-split.js — reached only by clicks or by the office chunk, |
-| `05-map--05-lifecycle-map-07-report-lines-hybrid-google.js` | 72 | 6 | (V38.90) moved by scripts/split-late.mjs from src/05-map/05-lifecycle-map-07-report-lines-hybrid-google.js — reached only by clicks or by the office chunk, |
-| `05-map--05-lifecycle-map-08-cameras-report-sw-update.js` | 86 | 2 | (V38.90) moved by scripts/split-late.mjs from src/05-map/05-lifecycle-map-08-cameras-report-sw-update.js — reached only by clicks or by the office chunk, |
-| `05-map--05-lifecycle-map-09-role-switch-login-install.js` | 71 | 5 | (V38.90) moved by scripts/split-late.mjs from src/05-map/05-lifecycle-map-09-role-switch-login-install.js — reached only by clicks or by the office chunk, |
-| `05-map--05-lifecycle-map-10-field-companies.js` | 139 | 9 | لوحةُ الشركات ═══ |
-| `05-map--05-lifecycle-map-11-drawing-board-modules.js` | 179 | 15 | الغرفُ — لكلِّ غرفةٍ حساسُ حرارةٍ ورطوبة (V17.70) ═══ |
-| `05-map--05-lifecycle-map-12-ministry-screen-progress.js` | 298 | 17 | «متى نخلّص؟» — التوقّعُ من وتيرة آخر أسبوعين (V17.83) ═══ |
-| `05-map--05-lifecycle-map-13-ministry-followup.js` | 341 | 34 | (V29.9) متابعةٌ ديناميكيةٌ بالتفكير من جهة الوزارة ═══ |
-| `08-events--08-data-events-boot-01-data-sources-role-guide.js` | 61 | 2 | (V38.90) moved by scripts/split-late.mjs from src/08-events/08-data-events-boot-01-data-sources-role-guide.js — reached only by clicks or by the office chunk, |
-| `08-events--08-data-events-boot-02-approvals-governance.js` | 201 | 12 | سلسلةُ المراحل: كلُّ عددٍ من الذي قبله ═════════════════════════════════ |
-| `08-events--08-data-events-boot-03-settings-types-users.js` | 433 | 21 | نقلُ النقاط إلى تصنيف (V23.0) ═══ |
-| `08-events--08-data-events-boot-04-weights-zones.js` | 21 | 2 | (V38.90) moved by scripts/split-late.mjs from src/08-events/08-data-events-boot-04-weights-zones.js — reached only by clicks or by the office chunk, |
-| `08-events--08-data-events-boot-05-menu-shell-perf.js` | 14 | 2 | (V38.90) moved by scripts/split-late.mjs from src/08-events/08-data-events-boot-05-menu-shell-perf.js — reached only by clicks or by the office chunk, |
-| `08-events--08-data-events-boot-06-long-lists-storage-clicks.js` | 151 | 2 | نقراتُ الجداول والنوافذ ═══ |
-| `08-events--08-data-events-boot-13-toast-wheel-ios-boot.js` | 7 | 2 | (V38.90) moved by scripts/split-late.mjs from src/08-events/08-data-events-boot-13-toast-wheel-ios-boot.js — reached only by clicks or by the office chunk, |
+| `01-core--01-core-registry-01-boot-i18n.js` | 49 | 4 | Moved verbatim from src/01-core/01-core-registry-01-boot-i18n.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk call  |
+| `01-core--01-core-registry-02-data-display-search.js` | 11 | 2 | Moved verbatim from src/01-core/01-core-registry-02-data-display-search.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office c |
+| `01-core--01-core-registry-03-config-values.js` | 13 | 1 | Moved verbatim from src/01-core/01-core-registry-03-config-values.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk c |
+| `01-core--01-core-registry-07-blackbox-registry.js` | 81 | 6 | Moved verbatim from src/01-core/01-core-registry-07-blackbox-registry.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chu |
+| `01-core--01-core-registry-08-egates-seed.js` | 16 | 1 | Moved verbatim from src/01-core/01-core-registry-08-egates-seed.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk cal |
+| `02-catalog--02-catalog-forms-01-site-edit-twins.js` | 184 | 11 | Moved verbatim from src/02-catalog/02-catalog-forms-01-site-edit-twins.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office ch |
+| `02-catalog--02-catalog-forms-02-types-shapes-filters.js` | 96 | 10 | Moved verbatim from src/02-catalog/02-catalog-forms-02-types-shapes-filters.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the offi |
+| `02-catalog--02-catalog-forms-03-site-details-points.js` | 38 | 2 | Moved verbatim from src/02-catalog/02-catalog-forms-03-site-details-points.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the offic |
+| `02-catalog--02-catalog-forms-04-mywork-diary.js` | 34 | 1 | Moved verbatim from src/02-catalog/02-catalog-forms-04-mywork-diary.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk |
+| `02-catalog--02-catalog-forms-05-management-performance.js` | 111 | 11 | Moved verbatim from src/02-catalog/02-catalog-forms-05-management-performance.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the of |
+| `02-catalog--02-catalog-forms-06-teams-accounts-perms.js` | 36 | 2 | Moved verbatim from src/02-catalog/02-catalog-forms-06-teams-accounts-perms.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the offi |
+| `02-catalog--02-catalog-forms-07-layers-dismantle-svedit.js` | 184 | 8 | Moved verbatim from src/02-catalog/02-catalog-forms-07-layers-dismantle-svedit.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the o |
+| `02-catalog--02-catalog-forms-10-report-builder.js` | 94 | 11 | Moved verbatim from src/02-catalog/02-catalog-forms-10-report-builder.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chu |
+| `02-catalog--02-catalog-forms-11-chat.js` | 19 | 2 | Moved verbatim from src/02-catalog/02-catalog-forms-11-chat.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk call th |
+| `02-catalog--02-catalog-forms-12-install-edit.js` | 81 | 3 | Moved verbatim from src/02-catalog/02-catalog-forms-12-install-edit.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk |
+| `02-catalog--02-edit-09-edit-requests.js` | 59 | 4 | Moved verbatim from src/02-catalog/02-edit-09-edit-requests.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk call th |
+| `03-survey--03-survey-records-01-labels-colors.js` | 21 | 1 | Moved verbatim from src/03-survey/03-survey-records-01-labels-colors.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chun |
+| `03-survey--03-survey-records-02-install-points.js` | 66 | 4 | Moved verbatim from src/03-survey/03-survey-records-02-install-points.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chu |
+| `03-survey--03-survey-records-03-assign-solutions.js` | 85 | 5 | Moved verbatim from src/03-survey/03-survey-records-03-assign-solutions.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office c |
+| `03-survey--03-survey-records-04-readiness-conditions.js` | 32 | 1 | Moved verbatim from src/03-survey/03-survey-records-04-readiness-conditions.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the offi |
+| `03-survey--03-survey-records-05-forms-approvals.js` | 102 | 7 | Moved verbatim from src/03-survey/03-survey-records-05-forms-approvals.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office ch |
+| `03-survey--03-survey-records-06-survey-form.js` | 149 | 2 | Moved verbatim from src/03-survey/03-survey-records-06-survey-form.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk  |
+| `03-survey--03-survey-records-07-demo-single-errors.js` | 170 | 9 | Moved verbatim from src/03-survey/03-survey-records-07-demo-single-errors.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office |
+| `03-survey--03-survey-records-08-parts-history-onboarding.js` | 233 | 14 | Moved verbatim from src/03-survey/03-survey-records-08-parts-history-onboarding.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the  |
+| `03-survey--03-survey-records-09-team-bugs-companies.js` | 326 | 19 | Moved verbatim from src/03-survey/03-survey-records-09-team-bugs-companies.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the offic |
+| `03-survey--03-survey-records-10-wbs-plan-trials.js` | 238 | 15 | Moved verbatim from src/03-survey/03-survey-records-10-wbs-plan-trials.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office ch |
+| `03-survey--03-survey-records-11-weekly-tasks-paths.js` | 59 | 6 | Moved verbatim from src/03-survey/03-survey-records-11-weekly-tasks-paths.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office |
+| `03z-shared--03z-shared-02-from-tasks-office-02-newsite-schedule.js` | 13 | 1 | Moved verbatim from src/03z-shared/03z-shared-02-from-tasks-office-02-newsite-schedule.js by scripts/split-late.mjs (V38.90): only the delegated click handlers  |
+| `03z-shared--03z-shared-03-from-tasks-office-03-photos-drive.js` | 108 | 4 | Moved verbatim from src/03z-shared/03z-shared-03-from-tasks-office-03-photos-drive.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or t |
+| `03z-shared--03z-shared-07-from-tasks-office-07-incidents-milestones.js` | 12 | 1 | Moved verbatim from src/03z-shared/03z-shared-07-from-tasks-office-07-incidents-milestones.js by scripts/split-late.mjs (V38.90): only the delegated click handl |
+| `03z-shared--03z-shared-17-from-ext-camps-03-nusuk-card-system.js` | 28 | 2 | Moved verbatim from src/03z-shared/03z-shared-17-from-ext-camps-03-nusuk-card-system.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or |
+| `03z-shared--03z-shared-18-from-mfu-tabs-04-followup-tabs.js` | 73 | 15 | Moved verbatim from src/03z-shared/03z-shared-18-from-mfu-tabs-04-followup-tabs.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the  |
+| `03z-shared--03z-shared-19-from-ministry-alerts-05-alerts-dashboard.js` | 232 | 27 | Moved verbatim from src/03z-shared/03z-shared-19-from-ministry-alerts-05-alerts-dashboard.js by scripts/split-late.mjs (V38.90): only the delegated click handle |
+| `03z-shared--03z-shared-20-from-ministry-alerts-06-followup-sources-daily.js` | 97 | 12 | Moved verbatim from src/03z-shared/03z-shared-20-from-ministry-alerts-06-followup-sources-daily.js by scripts/split-late.mjs (V38.90): only the delegated click  |
+| `03z-shared--03z-shared-21-from-ministry-alerts-07-weekly-export-scope.js` | 86 | 5 | Moved verbatim from src/03z-shared/03z-shared-21-from-ministry-alerts-07-weekly-export-scope.js by scripts/split-late.mjs (V38.90): only the delegated click han |
+| `03z-shared--03z-shared-30-from-approvals-reports-04-devices-reset-pulse.js` | 20 | 1 | Moved verbatim from src/03z-shared/03z-shared-30-from-approvals-reports-04-devices-reset-pulse.js by scripts/split-late.mjs (V38.90): only the delegated click h |
+| `03z-shared--03z-shared-31-from-approvals-reports-06-people-functions.js` | 64 | 2 | Moved verbatim from src/03z-shared/03z-shared-31-from-approvals-reports-06-people-functions.js by scripts/split-late.mjs (V38.90): only the delegated click hand |
+| `03z-shared--03z-shared-32-from-approvals-reports-07-network-notifications.js` | 36 | 2 | Moved verbatim from src/03z-shared/03z-shared-32-from-approvals-reports-07-network-notifications.js by scripts/split-late.mjs (V38.90): only the delegated click |
+| `03z-shared--03z-shared-35-from-approvals-reports-10-point-actions-export-pdf.js` | 124 | 6 | Moved verbatim from src/03z-shared/03z-shared-35-from-approvals-reports-10-point-actions-export-pdf.js by scripts/split-late.mjs (V38.90): only the delegated cl |
+| `03z-shared--03z-shared-b-03-from-tasks-office-03-photos-drive.js` | 60 | 3 | Moved verbatim from src/03z-shared/03z-shared-b-03-from-tasks-office-03-photos-drive.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or |
+| `03z-shared--03z-shared-b-05-from-tasks-office-05-account-backup-continuity.js` | 9 | 1 | Moved verbatim from src/03z-shared/03z-shared-b-05-from-tasks-office-05-account-backup-continuity.js by scripts/split-late.mjs (V38.90): only the delegated clic |
+| `03z-shared--03z-shared-b-06-from-tasks-office-06-risks-changes-coverage.js` | 165 | 7 | Moved verbatim from src/03z-shared/03z-shared-b-06-from-tasks-office-06-risks-changes-coverage.js by scripts/split-late.mjs (V38.90): only the delegated click h |
+| `03z-shared--03z-shared-b-07-from-tasks-office-07-incidents-milestones.js` | 94 | 8 | Moved verbatim from src/03z-shared/03z-shared-b-07-from-tasks-office-07-incidents-milestones.js by scripts/split-late.mjs (V38.90): only the delegated click han |
+| `03z-shared--03z-shared-b-17-from-ministry-alerts-10-season-start-invites.js` | 38 | 1 | Moved verbatim from src/03z-shared/03z-shared-b-17-from-ministry-alerts-10-season-start-invites.js by scripts/split-late.mjs (V38.90): only the delegated click  |
+| `03z-shared--03z-shared-b-23-from-approvals-reports-07-network-notifications.js` | 84 | 6 | Moved verbatim from src/03z-shared/03z-shared-b-23-from-approvals-reports-07-network-notifications.js by scripts/split-late.mjs (V38.90): only the delegated cli |
+| `05-map--05-lifecycle-map-01-lifecycle-task-index.js` | 10 | 1 | Moved verbatim from src/05-map/05-lifecycle-map-01-lifecycle-task-index.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office c |
+| `05-map--05-lifecycle-map-02-map-incremental.js` | 38 | 1 | Moved verbatim from src/05-map/05-lifecycle-map-02-map-incremental.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk  |
+| `05-map--05-lifecycle-map-03-export-import-docx.js` | 16 | 1 | Moved verbatim from src/05-map/05-lifecycle-map-03-export-import-docx.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chu |
+| `05-map--05-lifecycle-map-04-excel-templates-kmz.js` | 360 | 12 | Moved verbatim from src/05-map/05-lifecycle-map-04-excel-templates-kmz.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office ch |
+| `05-map--05-lifecycle-map-05-geojson-basemap-layers.js` | 59 | 4 | Moved verbatim from src/05-map/05-lifecycle-map-05-geojson-basemap-layers.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office |
+| `05-map--05-lifecycle-map-06-sensors-gateways-split.js` | 185 | 21 | Moved verbatim from src/05-map/05-lifecycle-map-06-sensors-gateways-split.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office |
+| `05-map--05-lifecycle-map-07-report-lines-hybrid-google.js` | 77 | 6 | Moved verbatim from src/05-map/05-lifecycle-map-07-report-lines-hybrid-google.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the of |
+| `05-map--05-lifecycle-map-08-cameras-report-sw-update.js` | 91 | 2 | Moved verbatim from src/05-map/05-lifecycle-map-08-cameras-report-sw-update.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the offi |
+| `05-map--05-lifecycle-map-09-role-switch-login-install.js` | 76 | 5 | Moved verbatim from src/05-map/05-lifecycle-map-09-role-switch-login-install.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the off |
+| `05-map--05-lifecycle-map-10-field-companies.js` | 144 | 9 | Moved verbatim from src/05-map/05-lifecycle-map-10-field-companies.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk  |
+| `05-map--05-lifecycle-map-11-drawing-board-modules.js` | 184 | 15 | Moved verbatim from src/05-map/05-lifecycle-map-11-drawing-board-modules.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office  |
+| `05-map--05-lifecycle-map-12-ministry-screen-progress.js` | 303 | 17 | Moved verbatim from src/05-map/05-lifecycle-map-12-ministry-screen-progress.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the offi |
+| `05-map--05-lifecycle-map-13-ministry-followup.js` | 346 | 34 | Moved verbatim from src/05-map/05-lifecycle-map-13-ministry-followup.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chun |
+| `08-events--08-data-events-boot-01-data-sources-role-guide.js` | 66 | 2 | Moved verbatim from src/08-events/08-data-events-boot-01-data-sources-role-guide.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the |
+| `08-events--08-data-events-boot-02-approvals-governance.js` | 206 | 12 | Moved verbatim from src/08-events/08-data-events-boot-02-approvals-governance.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the of |
+| `08-events--08-data-events-boot-03-settings-types-users.js` | 438 | 21 | Moved verbatim from src/08-events/08-data-events-boot-03-settings-types-users.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the of |
+| `08-events--08-data-events-boot-04-weights-zones.js` | 26 | 2 | Moved verbatim from src/08-events/08-data-events-boot-04-weights-zones.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office ch |
+| `08-events--08-data-events-boot-05-menu-shell-perf.js` | 19 | 2 | Moved verbatim from src/08-events/08-data-events-boot-05-menu-shell-perf.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office  |
+| `08-events--08-data-events-boot-06-long-lists-storage-clicks.js` | 156 | 2 | Moved verbatim from src/08-events/08-data-events-boot-06-long-lists-storage-clicks.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or t |
+| `08-events--08-data-events-boot-13-toast-wheel-ios-boot.js` | 12 | 2 | Moved verbatim from src/08-events/08-data-events-boot-13-toast-wheel-ios-boot.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the of |
 
 ## `04-office/` — المكتب — الصور والحوكمة والمساعد والتقارير بالكلام والرسم على الخريطة  (15 ملفات · 2254 سطر · 67 دالة)
 
@@ -288,4 +288,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 226 ملفًّا · 45078 سطر · 2013 دالة.
+**الإجمالي:** 226 ملفًّا · 45403 سطر · 2013 دالة.
