@@ -1,9 +1,9 @@
 /* Nusuk Survey — offline shell cache */
-const CACHE = 'nusuk-survey-v39.7';
+const CACHE = 'nusuk-survey-v39.8';
 const SHELL = [
   './',
   './index.html',
-  './app-office.js?v=39.7',   /* (V38.39) المجالاتُ المؤجَّلة — تُثبَّت مع الهيكل فتعمل بلا شبكة؛ الرقمُ يُحدَّث مع كلِّ نسخة */
+  './app-office.js?v=39.8',   /* (V38.39) المجالاتُ المؤجَّلة — تُثبَّت مع الهيكل فتعمل بلا شبكة؛ الرقمُ يُحدَّث مع كلِّ نسخة */
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png',
@@ -92,6 +92,16 @@ self.addEventListener('message', function (e) {
   e.waitUntil(caches.open(LIB_CACHE).then(function (c) {
     return libMissing(c, LIB_ALL).then(function (miss) { return Promise.all(miss.map(function (u) { return c.add(u).catch(function () {}); })).then(function () { return miss.length; }); });
   }).then(function (n) { if (e.source && e.source.postMessage) e.source.postMessage({ type:'nsk-libs-warm', fetched:n }); }));
+});
+
+/* (V39.8) a tap on a chat notice: the open app comes forward and opens the conversation; a closed one opens */
+self.addEventListener('notificationclick', function (e) {
+  var key = (e.notification && e.notification.data && e.notification.data.key) || '';
+  if (e.notification) e.notification.close();
+  e.waitUntil(self.clients.matchAll({ type:'window', includeUncontrolled:true }).then(function (L) {
+    for (var i = 0; i < L.length; i++){ if ('focus' in L[i]){ L[i].postMessage({ type:'nsk-chat-open', key:key }); return L[i].focus(); } }
+    if (self.clients.openWindow) return self.clients.openWindow('./');
+  }));
 });
 
 self.addEventListener('fetch', function (e) {

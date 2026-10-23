@@ -172,6 +172,7 @@ function render0(force){
      الحيّة التي تكتبها الشارة — فيقرأ الرأسُ وقتًا مخترعًا حتى تعود الشارةُ
      بعد نصف دقيقة. الشارةُ وحدَها تكتب هذا السطر. */
   syncBadge();
+  try { if (typeof chTopSync === 'function') chTopSync(); } catch (eCT){ LS_ERR = eCT; }   /* (V39.8) the unread count on the top bar */
 
   var c  = document.getElementById('content');
   var mw = document.getElementById('mapWrap');

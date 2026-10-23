@@ -113,6 +113,12 @@ function clickTables(e){
     chSend('', other, '\u21AA ' + t('حوّلتُ سؤالك إلى') + ' ' + (dispName(who2) || who2) + ' — ' + t('هيردّ عليك هنا'), 'msg');
     chOpenHtml.fwd = ''; toast('\u21AA ' + t('حُوِّلت المحادثة إلى') + ' ' + (dispName(who2) || who2)); render(1); return true;
   }
+  /* (V39.8) the beep on or off, and the system's notices asked for with a tap (a phone only asks after one) */
+  if (e.target.closest('[data-chmute]')){ lsSet('nsk14.chMute', lsGet('nsk14.chMute') === '1' ? '0' : '1'); render(1); return true; }
+  if (e.target.closest('[data-chnotif]')){
+    try { Notification.requestPermission().then(function(p){ toast(p === 'granted' ? '\u{1F4E3} ' + t('تنبيهات الرسائل مفعّلة') : t('تنبيهات الرسائل مقفولة من إعدادات الجهاز')); render(1); }); } catch (eN){ LS_ERR = eN; }
+    return true;
+  }
   var chs = e.target.closest('[data-chsend]');
   if (chs){
     var key = chs.getAttribute('data-chsend'), ta = null;

@@ -1244,6 +1244,27 @@ console.log('\n══ ٤٣ · المحادثة: اختيار المهندس وا
   w.STATE.users = U0; as(me0, role0); w.CUR = cur0; w.chPageHtml.f = {}; w.chOpenHtml.fwd = ''; w.askEngWho.pick = false; w.ASSIST_OPEN = false; w.confirm = cf0;
 }
 
+/* ── ٤٤ · (V39.8) رسالةٌ لي: شريطٌ فوق يفتح المحادثة، والعددُ على الشريط العلويّ، والصوتُ يُكتَم ── */
+console.log('\n══ ٤٤ · تنبيهُ الرسالة: الشريط والعدد والصوت ══');
+{
+  const D = w.document, me0 = w.STATE.meta.name, role0 = w.ROLE, cur0 = w.CUR;
+  w.STATE.meta.name = 'مهندس التنبيه'; w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.CUR = 'map'; w.render(1);
+  const v = { id:'M-alert-1', site:'', to:'مهندس التنبيه', from:'فني التنبيه', role:'tech', text:'وصلت المخيم والبوابة مقفولة', kind:'msg', at:Date.now() + 5000 };
+  w.STATE.msgs = w.STATE.msgs || {}; w.STATE.msgs[v.id] = v;
+  w.chIncoming(v);
+  const bn = D.getElementById('chBanner'), top = D.getElementById('chatTop'), n = D.getElementById('chatTopN');
+  T(!!bn && /فني التنبيه/.test(bn.textContent) && /البوابة مقفولة/.test(bn.textContent), 'رسالةٌ لي تُظهر شريطًا فوق باسم المرسل وأوّل كلامه');
+  T(!!top && !top.hidden && !!n && !n.hidden && n.textContent.trim() !== '', 'وعلى الشريط العلويّ زرُّ المحادثات بعدد غير المقروء: ' + (n ? n.textContent : ''));
+  bn.dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
+  T(w.CUR === 'chat' && w.chPageHtml.f.open === 'dm:فني التنبيه' && !D.getElementById('chBanner'), 'والضغطُ على الشريط يفتح المحادثةَ نفسَها');
+  const m0 = w.localStorage.getItem('nsk14.chMute');
+  w.chPageHtml.f = {}; w.render(1);
+  const mb = D.querySelector('[data-chmute]'); if (mb) mb.dispatchEvent(new w.MouseEvent('click', { bubbles:true, cancelable:true }));
+  T(!!mb && w.localStorage.getItem('nsk14.chMute') === '1' && /مكتوم/.test(w.chAlertChips()), 'وصوتُ الرسائل يُكتَم من صفحة المحادثات ويُفتَح');
+  if (m0 == null) w.localStorage.removeItem('nsk14.chMute'); else w.localStorage.setItem('nsk14.chMute', m0);
+  delete w.STATE.msgs[v.id]; w.STATE.meta.name = me0; w.ROLE = role0; w.STATE.meta.role = role0; w.CUR = cur0; w.chPageHtml.f = {};
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

@@ -56,10 +56,70 @@ function chMarkSeen(key){ var S = chSeenT(); S[key] = Date.now(); try { lsSet('n
 function chIncoming(v){
   if (!v || v.from === (STATE.meta.name || '') || !chVisible(v)) return;
   if ((+v.at || 0) <= (chIncoming.at || 0)) return; chIncoming.at = +v.at || 0;
+  try { chAlert(v); } catch (eA){ LS_ERR = eA; }   /* (V39.8) the banner, the beep, the count and the system notice */
   var big = v.kind !== 'sys' || /^(بدأ التركيب|اكتمل التركيب|تعذّر التركيب|فُكَّت)/.test(String(v.text));   /* (V38.65) */
   if (typeof notifPush === 'function') notifPush((v.kind === 'sys' ? '\u{1F527} ' : '\u{1F4AC} ') + t(v.kind === 'sys' ? 'التركيب' : 'رسالة'), (v.kind === 'sys' ? (v.site ? v.site + ' — ' : '') : v.from + ': ') + String(v.text).slice(0, 90), { to:v.to || '', site:v.site || '', lv:big ? 'مهم' : 'عادي', actor:v.from, at:v.at });
   if (CUR === 'chat' || (CUR === 'site' && DETAIL_ID === v.site) || (POP_OPEN && POP_SITE === v.site)) { try { if (!document.querySelector('#content textarea:focus')) render(1); } catch (e){ LS_ERR = e; } }
 }
+/* (V39.8) owner: «أي رسالة تظهر نوتيفيكيشن للشخص اللي رايحة له عشان يعرف إن في رسالة جت، ورقم يبين عدد الرسايل وصوت صغير».
+   A message to me: a banner on top (a tap opens its conversation) unless that conversation is open in front of me, a short
+   double beep (muted from the chat page), the unread count on the top bar and on the app icon, and — when the app is in the
+   background and the phone allows it — a notice from the system. System lines (installation started, approved) keep their
+   own notification and stay silent. */
+function chAlert(v){
+  if (!v || v.kind === 'sys') return;
+  chTopSync();
+  if (lsGet('nsk14.chMute') !== '1') chBeep();
+  var key = chKey(v), hidden = typeof document === 'object' && document.hidden;
+  if (!(CUR === 'chat' && (chPageHtml.f || {}).open === key && !hidden)) chBanner(v, key);
+  if (hidden) chSysNote(v, key);
+}
+/* the count on the top bar's chat button and on the app's icon */
+function chTopSync(){
+  var b = document.getElementById('chatTop'); if (!b) return;
+  var can = !!ROLE && typeof seesPage === 'function' && seesPage('chat'); b.hidden = !can;
+  var n = 0; if (can){ try { n = chUnread(); } catch (e){ LS_ERR = e; } }
+  var bd = document.getElementById('chatTopN'); if (bd){ bd.hidden = !n; bd.textContent = n ? (n > 99 ? nm(99) + '+' : nm(n)) : ''; }
+  try { if (typeof navigator === 'object' && navigator.setAppBadge){ if (n) navigator.setAppBadge(n); else if (navigator.clearAppBadge) navigator.clearAppBadge(); } } catch (e2){ LS_ERR = e2; }
+}
+/* two short soft tones — phones only play sound after the first touch, so the first touch opens the sound */
+function chBeep(){
+  try {
+    var AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    var C = chBeep.ctx || (chBeep.ctx = new AC()); if (C.state === 'suspended' && C.resume) C.resume();
+    [0, 0.17].forEach(function(t0){
+      var o = C.createOscillator(), g = C.createGain(), at = C.currentTime + t0;
+      o.type = 'sine'; o.frequency.value = 880; g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(0.2, at + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, at + 0.12);
+      o.connect(g); g.connect(C.destination); o.start(at); o.stop(at + 0.13);
+    });
+  } catch (e){ LS_ERR = e; }
+}
+if (typeof document === 'object' && document.addEventListener) document.addEventListener('touchend', function chSoundOpen(){
+  try { var AC = window.AudioContext || window.webkitAudioContext; if (AC && !chBeep.ctx) chBeep.ctx = new AC(); if (chBeep.ctx && chBeep.ctx.resume) chBeep.ctx.resume(); } catch (e){ LS_ERR = e; }
+  document.removeEventListener('touchend', chSoundOpen);
+}, { passive:true });
+/* the banner: who and the first words; a tap opens the conversation, and it leaves by itself after seven seconds */
+function chBanner(v, key){
+  var old = document.getElementById('chBanner'); if (old) old.remove();
+  var el = document.createElement('div'); el.id = 'chBanner'; el.setAttribute('role', 'status');
+  el.innerHTML = '<b>\u{1F4AC} ' + esc(dispName(v.from) || v.from) + '</b><div style="margin-top:2px;opacity:.9">' + esc(String(v.text).slice(0, 120)) + '</div>';
+  el.style.cssText = 'position:fixed;top:calc(env(safe-area-inset-top, 0px) + 8px);inset-inline:10px;z-index:130;background:var(--surface, #13203a);color:var(--ink, #fff);border:1px solid var(--brand, #4dd0e1);border-radius:14px;padding:10px 14px;box-shadow:0 8px 24px rgba(0,0,0,.35);cursor:pointer;font-size:14px';
+  el.addEventListener('click', function(){ el.remove(); chPageHtml.f = { open:key }; PTAB.chat = 'chat'; goPage('chat'); render(1); });
+  document.body.appendChild(el);
+  setTimeout(function(){ if (el.parentNode) el.remove(); }, 7000);
+}
+/* the system's notice while the app is in the background — only when the user allowed notifications */
+function chSysNote(v, key){
+  try {
+    if (typeof Notification === 'undefined' || Notification.permission !== 'granted' || !navigator.serviceWorker) return;
+    navigator.serviceWorker.ready.then(function(r){ return r.showNotification('\u{1F4AC} ' + (dispName(v.from) || v.from), { body:String(v.text).slice(0, 140), tag:'chat-' + key, renotify:true, data:{ key:key } }); }).catch(function(e){ LS_ERR = e; });
+  } catch (e){ LS_ERR = e; }
+}
+/* a tap on the system's notice opens its conversation */
+if (typeof navigator === 'object' && navigator.serviceWorker && navigator.serviceWorker.addEventListener) navigator.serviceWorker.addEventListener('message', function(e){
+  if (!e.data || e.data.type !== 'nsk-chat-open' || !e.data.key) return;
+  try { chPageHtml.f = { open:String(e.data.key) }; PTAB.chat = 'chat'; goPage('chat'); render(1); } catch (er){ LS_ERR = er; }
+});
 function chSeen(){ chSeen.at = Date.now(); try { lsSet('nsk14.chSeen', String(chSeen.at)); } catch (e){ LS_ERR = e; } }
 function chUnread(key){
   var seen = chSeen.at || +lsGet('nsk14.chSeen') || 0, S = chSeenT(), me = STATE.meta.name || '';
@@ -151,6 +211,14 @@ function chListHtml(){
   }).join('');
   return (sysN ? row('sys', chTitle('sys') + ' \u00b7 ' + nm(sysN), esc(t('كلُّ تركيبٍ بدأ أو اكتمل أو عُدِّل أو اعتُمد أو رُدّ — لايف')), 0, 0) : '') + rows;
 }
+/* (V39.8) the alerts' switches on the chat page: the system's notices (asked once, with a tap) and the beep */
+function chAlertChips(){
+  var muted = lsGet('nsk14.chMute') === '1', out = btn((muted ? '\u{1F507} ' + t('صوت الرسائل مكتوم') : '\u{1F514} ' + t('صوت الرسائل')), 'chip' + (muted ? '' : ' on'), ' data-chmute="1"');
+  var P = typeof Notification === 'undefined' ? 'na' : Notification.permission;
+  if (P === 'default') out += btn('\u{1F4E3} ' + t('فعّل تنبيهات الرسائل'), 'chip', ' data-chnotif="1"');
+  else if (P === 'denied') out += '<span class="hint" style="margin:0 6px">' + esc(t('تنبيهات الرسائل مقفولة من إعدادات الجهاز')) + '</span>';
+  return out;
+}
 function chPageHtml(){
   var all = chMsgs().filter(chVisible), me = STATE.meta.name || '', f = chPageHtml.f || {};
   /* an open thread (from the list, the point's page or a notification) */
@@ -166,10 +234,10 @@ function chPageHtml(){
     + '<div style="display:flex;gap:6px;align-items:flex-end"><textarea class="in" data-chtext="*" rows="2" aria-label="' + esc(t('رسالة…')) + '" placeholder="' + esc(t('رسالة…')) + '" style="flex:1"></textarea>' + btn('\u27A4 ' + t('أرسل'), 'btn-primary', ' data-chsend="*"') + '</div>';
   var sysN = all.filter(function(v){ return v.kind === 'sys'; }).length;
   return stats([['الرسائل', N(all.length)], ['نقاط عليها محادثة', N(Object.keys(sites).length)], ['غير مقروء', N(chUnread())]])
-    + '<div class="chips" style="margin:0 0 8px">' + btn('\u{1F527} ' + t('سجل التركيب') + ' \u00b7 ' + nm(sysN), 'chip', ' data-chf="sys"') + '</div>'
+    + '<div class="chips" style="margin:0 0 8px">' + btn('\u{1F527} ' + t('سجل التركيب') + ' \u00b7 ' + nm(sysN), 'chip', ' data-chf="sys"') + chAlertChips() + '</div>'
     + card('\u270F ' + t('رسالة جديدة'), compose)
     + cardFlush(t('المحادثات'), chListHtml() || '<p class="hint" style="text-align:center;padding:12px">' + esc(t('لا رسائلَ بعد — اكتب أوّلَ رسالة')) + '</p>')
-    + '<p class="hint">' + esc(t('كلُّ رسالةٍ سطرٌ لا يُمحى ولا يُعدَّل — وحفظُ التركيب واعتمادُه وردُّه يكتبون سطورَهم هنا وحدَهم.')) + '</p>';
+    + '<p class="hint">' + esc(t('كلُّ رسالةٍ سطرٌ لا يُعدَّل، والمهندسُ فما فوق يمسحه — وحفظُ التركيب واعتمادُه وردُّه يكتبون سطورَهم هنا وحدَهم.')) + '</p>';
 }
 
 /* (V38.67) «سجل المحادثات» — the project's management finds any line: by point, person, date range, kind and text; each
