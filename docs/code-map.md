@@ -230,7 +230,7 @@
 | `05-lifecycle-map-12-ministry-screen-progress.js` | 119 | 5 | Ministry hall screen, completion forecast, progress map, far points, satellite in the ministry screen, week sentence and the hall view. |
 | `05-lifecycle-map-13-ministry-followup.js` | 184 | 15 | Ministry follow-up page: dynamic follow-up, season brief header, 'whose turn' groups, two modes, and the no-challenge camps card. |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4269 سطر · 158 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4271 سطر · 158 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -244,18 +244,18 @@
 | `06-ministry-alerts-08-pptx-template.js` | 1043 | 23 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 284 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 1089 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 1091 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
 
-## `07-reports/` — الاعتمادُ والتقارير — المخزن والورشة والأجهزة والإشعارات والأدوار  (11 ملفات · 3441 سطر · 114 دالة)
+## `07-reports/` — الاعتمادُ والتقارير — المخزن والورشة والأجهزة والإشعارات والأدوار  (11 ملفات · 3444 سطر · 114 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
 | `07-approvals-reports-01-approvals-review.js` | 193 | 11 | Visit approvals by the engineer, challenge/notification search, review of unreachable and stalled points. |
 | `07-approvals-reports-02-inventory-workshop.js` | 254 | 13 | Inventory, purchases and catalogue from movements, workshop requests (CR/AR/IR), request log and the single item key. |
 | `07-approvals-reports-03-trials-invoices.js` | 508 | 15 | Trials with cost and hours, trial kits from the catalogue, trial points on camps, and invoice photos. |
-| `07-approvals-reports-04-devices-reset-pulse.js` | 335 | 19 | Live crew list, device versions, season reset, pulse and in-app report, page usage card, cost guard, field performance card and devices needing action. |
+| `07-approvals-reports-04-devices-reset-pulse.js` | 338 | 19 | Live crew list, device versions, season reset, pulse and in-app report, page usage card, cost guard, field performance card and devices needing action. |
 | `07-approvals-reports-05-speed-board.js` | 577 | 5 | Speed board per device and per page (presence heartbeat: version, pending queue, photos). |
 | `07-approvals-reports-06-people-functions.js` | 202 | 15 | People and functions: who gets field work, unified department page, functions from which roles derive. |
 | `07-approvals-reports-07-network-notifications.js` | 72 | 5 | Network addresses, notifications (four channels, one message), generated where read, collision detection, bell window and per-device controls. |
@@ -288,4 +288,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 226 ملفًّا · 45749 سطر · 2037 دالة.
+**الإجمالي:** 226 ملفًّا · 45754 سطر · 2037 دالة.

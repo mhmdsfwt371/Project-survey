@@ -567,7 +567,7 @@ if (cur === 'vers') return head + (function(){
       + (may('delete')
         ? card('التأكيد',
             '<div class="field"><label>' + esc(t('اكتب «مسح نهائي» للتأكيد')) + '</label>'
-            + '<input id="wipeOk" dir="auto" placeholder="مسح نهائي"></div>'
+            + '<input id="wipeOk" dir="auto" placeholder="' + esc(t('مسح نهائي')) + '"></div>'   /* (V39.6) the phrase in the screen's language */
             + '<div class="actions">' + btn('صفّر الآن','btn-danger',' data-wipego="1"') + '</div>'
             + '<p class="hint">' + esc(t('لا رجعةَ بعدها — ولكلِّ سجلٍّ له مجموعةٌ أمرُ حذفٍ يُنفَّذ على السحابة فلا يعود مع المزامنة، وما هو من الجهاز فقط يُفرَغ هنا.')) + '</p>')
         : alertBox('info','التصفيرُ للمهندس وحده.'));

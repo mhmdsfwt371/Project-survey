@@ -146,7 +146,7 @@ check(gapUr.length === 0 && gapEn.length === 0,
 
 /* أرديةٌ هي العربيةُ حرفيًّا: بعضُها حقٌّ (٪ · م · مربع) وبعضُها سهوٌ */
 const copied = Object.keys(urD).filter(k => urD[k] === k);
-const CAP_COPIED = 11;
+const CAP_COPIED = 12;   /* (V39.6) +1: the Urdu comma is the Arabic comma «،» — it was an English «,» in the Urdu side */
 console.log(`  \u00b7 أرديةٌ تطابق العربيةَ حرفيًّا: ${copied.length} (السقف ${CAP_COPIED})`);
 check(copied.length <= CAP_COPIED,
   copied.length <= CAP_COPIED

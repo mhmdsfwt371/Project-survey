@@ -26,7 +26,10 @@ function wipeCounts(){
 function wipeGo(){
   if (!may('delete')){ toast(t('التصفيرُ للمهندس وحده')); return; }
   var el = document.getElementById('wipeOk');
-  if (!el || String(el.value || '').trim() !== 'مسح نهائي'){
+  /* (V39.6) the confirmation is typed in the screen's language — an English or Urdu screen asked for an Arabic phrase;
+     the Arabic phrase is accepted on every screen */
+  var wv = String((el && el.value) || '').trim();
+  if (!el || (wv !== 'مسح نهائي' && wv.toLowerCase() !== String(t('مسح نهائي')).toLowerCase())){
     toast(t('اكتب «مسح نهائي» حرفًا بحرف للتأكيد')); return;
   }
   /* كان يُفرِغ الذاكرةَ المحليةَ وحدَها ثم يعد بأن «السحابةَ تُصفَّر مع أول
