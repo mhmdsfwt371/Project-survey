@@ -122,7 +122,7 @@
 | `03z-shared-b-26-from-approvals-reports-10-point-actions-export-pdf.js` | 52 | 2 | Definitions moved verbatim from src/07-reports/07-approvals-reports-10-point-actions-export-pdf.js (V38.38–V38.39, stage A of core + chunks, pass b): the core ( |
 | `03z-shared-b-27-from-approvals-reports-11-import-roles-perms.js` | 29 | 0 | Definitions moved verbatim from src/07-reports/07-approvals-reports-11-import-roles-perms.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, |
 
-## `03zz-late/` —   (65 ملفات · 6742 سطر · 437 دالة)
+## `03zz-late/` —   (65 ملفات · 6789 سطر · 439 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -146,7 +146,7 @@
 | `03-survey--03-survey-records-02-install-points.js` | 66 | 4 | Moved verbatim from src/03-survey/03-survey-records-02-install-points.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chu |
 | `03-survey--03-survey-records-03-assign-solutions.js` | 85 | 5 | Moved verbatim from src/03-survey/03-survey-records-03-assign-solutions.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office c |
 | `03-survey--03-survey-records-04-readiness-conditions.js` | 32 | 1 | Moved verbatim from src/03-survey/03-survey-records-04-readiness-conditions.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the offi |
-| `03-survey--03-survey-records-05-forms-approvals.js` | 102 | 7 | Moved verbatim from src/03-survey/03-survey-records-05-forms-approvals.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office ch |
+| `03-survey--03-survey-records-05-forms-approvals.js` | 149 | 9 | Moved verbatim from src/03-survey/03-survey-records-05-forms-approvals.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office ch |
 | `03-survey--03-survey-records-06-survey-form.js` | 149 | 2 | Moved verbatim from src/03-survey/03-survey-records-06-survey-form.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk  |
 | `03-survey--03-survey-records-07-demo-single-errors.js` | 170 | 9 | Moved verbatim from src/03-survey/03-survey-records-07-demo-single-errors.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office |
 | `03-survey--03-survey-records-08-parts-history-onboarding.js` | 233 | 14 | Moved verbatim from src/03-survey/03-survey-records-08-parts-history-onboarding.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the  |
@@ -230,7 +230,7 @@
 | `05-lifecycle-map-12-ministry-screen-progress.js` | 119 | 5 | Ministry hall screen, completion forecast, progress map, far points, satellite in the ministry screen, week sentence and the hall view. |
 | `05-lifecycle-map-13-ministry-followup.js` | 184 | 15 | Ministry follow-up page: dynamic follow-up, season brief header, 'whose turn' groups, two modes, and the no-challenge camps card. |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4168 سطر · 151 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4221 سطر · 157 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -241,10 +241,10 @@
 | `06-ministry-alerts-05-alerts-dashboard.js` | 178 | 11 | Alert rules configured from Settings, card popups from the ministry page, and the readable dashboard. |
 | `06-ministry-alerts-06-followup-sources-daily.js` | 195 | 16 | Challenges from three sources, everything linked and heard in the report, weekly tasks in follow-up, follow-up maturity and the daily work summary. |
 | `06-ministry-alerts-07-weekly-export-scope.js` | 217 | 16 | Weekly update export, scope selection of points for the file, and the pre-download file check. |
-| `06-ministry-alerts-08-pptx-template.js` | 980 | 16 | PowerPoint built from the original ministry template. |
+| `06-ministry-alerts-08-pptx-template.js` | 1031 | 22 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 285 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 1063 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 1065 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
 
@@ -264,7 +264,7 @@
 | `07-approvals-reports-10-point-actions-export-pdf.js` | 69 | 0 | Point window actions, click identity, export centre by section, export by role, PDF cover page. |
 | `07-approvals-reports-11-import-roles-perms.js` | 322 | 10 | Import via downloaded template, roles (who sees and does what), the owner is never locked out, database permissions matrix, custom roles, ranks, org tree and me |
 
-## `08-events/` — البياناتُ والأحداث — الإعدادات والمستخدمون والنقرات والإقلاع  (13 ملفات · 4984 سطر · 117 دالة)
+## `08-events/` — البياناتُ والأحداث — الإعدادات والمستخدمون والنقرات والإقلاع  (13 ملفات · 4993 سطر · 117 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -277,7 +277,7 @@
 | `08-data-events-boot-07-clicks-a-1.js` | 268 | 3 | Delegated click handlers, group A part 1 (return true when the event is consumed). |
 | `08-data-events-boot-08-clicks-a-2.js` | 379 | 3 | Delegated click handlers, group A part 2. |
 | `08-data-events-boot-09-clicks-a-3.js` | 255 | 2 | Delegated click handlers, group A part 3. |
-| `08-data-events-boot-10-clicks-doc-1.js` | 346 | 4 | Document-level click handlers part 1 (onDocClick and parts 1–3): settings, constants, survey edit, pending file, E-GATE verification. |
+| `08-data-events-boot-10-clicks-doc-1.js` | 355 | 4 | Document-level click handlers part 1 (onDocClick and parts 1–3): settings, constants, survey edit, pending file, E-GATE verification. |
 | `08-data-events-boot-11-clicks-doc-2.js` | 526 | 4 | Document-level click handlers part 2 (parts 4–7). |
 | `08-data-events-boot-12-clicks-doc-3.js` | 262 | 3 | Document-level click handlers part 3 (parts 8–9). |
 | `08-data-events-boot-13-toast-wheel-ios-boot.js` | 791 | 9 | Toast, label cells, mouse wheel never types numbers, iOS viewport stability, assistant scroll fix, file-input change handlers and the boot sequence. |
@@ -288,4 +288,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 226 ملفًّا · 45425 سطر · 2014 دالة.
+**الإجمالي:** 226 ملفًّا · 45534 سطر · 2022 دالة.

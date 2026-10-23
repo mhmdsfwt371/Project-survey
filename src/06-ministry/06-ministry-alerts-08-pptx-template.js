@@ -768,12 +768,8 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
   })();
     if (cur === 'svappr') return head + '<div class="actions" style="margin:0 0 10px">' + btn('\u2B07 ' + t('إكسل') + ' \u2014 ' + t('الزيارات'),'btn-secondary btn-sm',' data-xls="visits"') + '</div>' + (function(){
     var S = siteStats();
-    var all = surveyList().filter(function(x){ return x.rec && (x.rec.review || x.done); });
-    var lists = { pending:[], approved:[], revisit:[] };
-    all.forEach(function(x){ var rv = svReview(x.rec); if (lists[rv]) lists[rv].push(x); });
-    var rows = lists[SVA_ST] || [];
-    if (SVA_Q) rows = rows.filter(function(x){
-      return (x.id + ' ' + (x.site.name || '') + ' ' + (x.rec.by || '')).indexOf(SVA_Q) > -1; });
+    var lists = svaLists();
+    var rows = svaFilter(lists[SVA_ST] || []);
 
     var views = [['pending','بانتظار اعتمادك', lists.pending.length],
                  ['approved','معتمدة', lists.approved.length],
@@ -794,11 +790,25 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
         + esc(t(SVA_ST === 'pending' ? 'لا زياراتٍ تنتظر اعتمادك — كلُّ ما زاره المشرفون رُوجع.'
               : (SVA_ST === 'approved' ? 'لا زياراتٍ معتمدةً بعد.' : 'لا زياراتٍ مردودةً — كلُّ ما رُوجع اعتُمد.'))) + '</p>');
     }
+    /* (V38.93) the owner's decision: no approval by elapsed time — the engineer ticks what he wants and approves it at once */
+    var selMode = SVA_ST === 'pending' && may('approve');
+    if (selMode){
+      var selN = svaSelIds().length;
+      html += cardRaw(t('اعتمادٌ بالتحديد'), '<div class="actions" style="margin:0">'
+          + btn('\u2611 ' + t('حدّد المعروض') + ' (' + nm(Math.min(rows.length, 60)) + ')', 'btn-secondary btn-sm', ' data-svaselall="shown"')
+          + (rows.length > 60 ? btn('\u2611 ' + t('حدّد كلَّ النتائج') + ' (' + nm(rows.length) + ')', 'btn-secondary btn-sm', ' data-svaselall="all"') : '')
+          + btn(t('ألغِ التحديد'), 'btn-quiet btn-sm', ' data-svaselnone="1"' + (selN ? '' : ' hidden'))
+          + btn('\u2705 ' + t('اعتمد المحدَّد') + ' (' + nm(selN) + ')', 'btn-primary btn-sm', ' data-svaselgo="1"' + (selN ? '' : ' disabled'))
+          + '</div><p class="hint" style="margin:6px 0 0">' + esc(t('كلُّ زيارةٍ تمرّ بشروط الاعتماد نفسِها، وما لا يمرّ يُقال سببُه. والبحثُ أعلاه يضيّق ما يُحدَّد.')) + '</p>'
+          + (svApproveMany.last && svApproveMany.last.items.length
+              ? '<div class="actions" style="margin:8px 0 0">' + btn('\u21B6 ' + t('تراجع عن آخر دفعة') + ' (' + nm(svApproveMany.last.items.length) + ')', 'btn-quiet btn-sm', ' data-svaundo="1"') + '</div>' : ''));
+    }
     html += rows.slice(0, 60).map(function(x){
       var r = x.rec, rv = svReview(r);
       var facts = svFacts(r);
       var so = solutionOf(x.id);
-      var head0 = siteIdHtml(siteOf(x)) + ' \u2014 ' + esc((x.site.name || '').slice(0, 40))
+      var head0 = (selMode && rv === 'pending' ? '<input type="checkbox" class="svasel" data-svasel="' + esc(x.id) + '"' + (svaSel()[x.id] ? ' checked' : '') + ' aria-label="' + esc(t('حدّد') + ' ' + x.id) + '" style="margin-inline-end:6px;width:18px;height:18px;vertical-align:middle"> ' : '')
+        + siteIdHtml(siteOf(x)) + ' \u2014 ' + esc((x.site.name || '').slice(0, 40))
         + ' <span class="hint" style="margin:0;display:inline">\u00b7 ' + esc(dispName(r.by) || '\u2014')
         + ' \u00b7 <span class="num">' + esc(fmtDate(r.at || 0)) + '</span>'
         + (r.round > 1 ? ' \u00b7 ' + esc(t('الجولة')) + ' <span class="num">' + nm(r.round) + '</span>' : '') + '</span>';
@@ -977,3 +987,44 @@ if (cur === 'stuck' || cur === 'idle') return head + (function(){
   })();
   }};
 
+/* (V38.93) the visit lists of the approvals screen, shared by the screen and its selection buttons */
+function svaLists(){
+  var lists = { pending:[], approved:[], revisit:[] };
+  surveyList().filter(function(x){ return x.rec && (x.rec.review || x.done); })
+    .forEach(function(x){ var rv = svReview(x.rec); if (lists[rv]) lists[rv].push(x); });
+  return lists;
+}
+function svaFilter(rows){
+  return SVA_Q ? rows.filter(function(x){ return (x.id + ' ' + (x.site.name || '') + ' ' + (x.rec.by || '')).indexOf(SVA_Q) > -1; }) : rows;
+}
+/* the ticked visits (kept on the function, not a new global) — and those that still wait: one approved elsewhere in the
+   meantime drops out */
+function svaSel(){ return svaSel.m || (svaSel.m = {}); }
+function svaSelIds(){
+  var pend = {}; svaLists().pending.forEach(function(x){ pend[x.id] = 1; });
+  return Object.keys(svaSel()).filter(function(id){ return pend[id]; });
+}
+/* (V38.93) a tick repaints the count, not the screen: re-drawing sixty visit cards per tick took half a second each */
+function svaSelPaint(){
+  var n = svaSelIds().length;
+  var go = document.querySelector('[data-svaselgo]');
+  if (go){ go.textContent = '\u2705 ' + t('اعتمد المحدَّد') + ' (' + nm(n) + ')'; go.disabled = !n; }
+  var none = document.querySelector('[data-svaselnone]');
+  if (none) none.hidden = !n;
+}
+function svaSelGo(){
+  if (!may('approve')){ toast(t('الاعتمادُ للمهندس وحده')); return; }
+  var all = svaSelIds();
+  if (!all.length){ toast(t('حدِّد زيارةً واحدةً على الأقل')); return; }
+  /* a batch is at most 200 visits: each approval writes the visit, its task and a log line, so a thousand at once froze a
+     phone for minutes before the first write left; the rest stay ticked for the next press */
+  var BATCH = 200, ids = all.slice(0, BATCH), rest = all.length - ids.length;
+  if (!confirm(t('اعتمادُ') + ' ' + nm(ids.length) + ' ' + t('زيارة؟ تُرفع كلُّها للوزارة — ويمكن التراجعُ عن هذه الدفعة بزرٍّ يظهر بعدها.')
+      + (rest ? '\n' + t('وتبقى') + ' ' + nm(rest) + ' ' + t('محدَّدةً للدفعة التالية.') : ''))) return;
+  var res = svApproveMany(ids);
+  ids.forEach(function(id){ delete svaSel()[id]; });
+  toast(t('اعتُمدت') + ' ' + nm(res.ok.length) + ' ' + t('زيارة')
+    + (res.fail.length ? ' \u00b7 ' + t('لم تُعتمَد') + ' ' + nm(res.fail.length) + ' \u2014 ' + res.fail[0][0] + ': ' + res.fail[0][1] : '')
+    + (rest ? ' \u00b7 ' + t('وتبقى') + ' ' + nm(rest) + ' ' + t('محدَّدةً للدفعة التالية.') : ''));
+  render(1);
+}

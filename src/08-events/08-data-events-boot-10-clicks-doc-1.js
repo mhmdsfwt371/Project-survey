@@ -142,6 +142,15 @@ function onDocClickPart1(e){
   }
   var sva = e.target.closest('[data-svast]');
   if (sva){ SVA_ST = sva.getAttribute('data-svast'); SVA_REV = ''; SVA_SOL = ''; render(1); return; }
+  /* (V38.93) tick visits and approve them at once */
+  var ssel = e.target.closest('[data-svasel]');
+  if (ssel){ var idT = ssel.getAttribute('data-svasel'); var selM = svaSel(); if (selM[idT]) delete selM[idT]; else selM[idT] = 1; ssel.checked = !!selM[idT]; svaSelPaint(); return; }
+  var sall = e.target.closest('[data-svaselall]');
+  if (sall){ var rowsT = svaFilter(svaLists().pending); if (sall.getAttribute('data-svaselall') === 'shown') rowsT = rowsT.slice(0, 60);
+    var selA = svaSel(); rowsT.forEach(function(x){ selA[x.id] = 1; }); toast(t('حُدِّدت') + ' ' + nm(rowsT.length) + ' ' + t('زيارة')); render(1); return; }
+  if (e.target.closest('[data-svaselnone]')){ svaSel.m = {}; toast(t('أُلغي التحديد')); render(1); return; }
+  if (e.target.closest('[data-svaselgo]')){ svaSelGo(); return; }
+  if (e.target.closest('[data-svaundo]')){ svUndoLast(); render(1); return; }
   var svap = e.target.closest('[data-svappr]');
   if (svap){ var idA = svap.getAttribute('data-svappr');
     if (svApprove(idA)){ toast(idA + ' \u00b7 ' + t('اعتُمدت الزيارة — اقترح حلَّها الآن'));

@@ -1015,6 +1015,41 @@ console.log('\n══ ٣٥ · الإنصاتُ الحيُّ في عدّاد ال
   w.FB.readCount = r0;
 }
 
+/* ── ٣٦ · (V38.93) قرارُ صاحب المشروع: المهندسُ يحدّد ما يشاء من الزيارات ويعتمده دفعةً واحدة ── */
+console.log('\n══ ٣٦ · الاعتمادُ بالتحديد — والتراجعُ عن الدفعة ══');
+{
+  const role0 = w.ROLE, conf0 = w.confirm, push0 = w.notifPush, set0 = w.CORE.set;
+  const sent = []; w.notifPush = (ti, body, o) => sent.push([ti, body, (o || {}).to || '']);
+  w.CORE.set = function(k, id, v){ return set0.apply(this, arguments); };
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.confirm = () => true;
+  const ids = w.STATE.sites.slice(40, 43).map(x => x.id), keep = ids.map(id => w.STATE.recs[id]);
+  ids.forEach((id, i) => { w.STATE.recs[id] = { id, by:'مشرف التجربة', at:Date.now() - 86400000, access: i === 2 ? 'لم يتم الوصول' : 'تم الوصول', review:'' }; });
+  T(ids.slice(0, 2).every(id => w.svReview(w.STATE.recs[id]) === 'pending'), 'زيارتان بانتظار الاعتماد، وثالثةٌ لم يصل فيها الميدان');
+  w.svaSel.m = {}; ids.forEach(id => { w.svaSel()[id] = 1; });
+  const before = sent.length;
+  const res = w.svApproveMany(ids);
+  T(res.ok.length === 2 && res.fail.length === 1 && res.fail[0][0] === ids[2] && /لم يصل/.test(res.fail[0][1]),
+    'تُعتمَد المحدَّدةُ بشروط الاعتماد نفسِها، وما لا يمرّ يُقال سببُه ولا يُعتمَد — ' + res.ok.length + ' · ' + res.fail.length);
+  T(ids.slice(0, 2).every(id => w.STATE.recs[id].review === 'approved' && w.STATE.recs[id].minReview === 'pending'),
+    'والمعتمدةُ تُرفع للوزارة كما في الاعتماد الفرديّ');
+  const notes = sent.slice(before).filter(x => x[0] === 'اعتماد تقني');
+  T(notes.length === 1 && notes[0][2] === 'مشرف التجربة' && /2|٢/.test(notes[0][1]), 'وصاحبُ الزيارات يصله إشعارٌ واحدٌ بعددها لا إشعارٌ لكلِّ زيارة');
+  const n = w.svUndoLast();
+  T(n === 2 && ids.slice(0, 2).every(id => w.svReview(w.STATE.recs[id]) === 'pending' && w.STATE.recs[id].review === ''),
+    'والتراجعُ عن الدفعة يعيدها «بانتظار اعتمادك» بقيمها السابقة — الحفظُ يدمج فلا يُحذَف حقلٌ بل يُعاد');
+  /* a visit the Ministry approved after the batch stays approved */
+  w.svApproveMany(ids.slice(0, 2)); w.STATE.recs[ids[0]].minReview = 'approved';
+  const n2 = w.svUndoLast();
+  T(n2 === 1 && w.STATE.recs[ids[0]].review === 'approved', 'وما اعتمدته الوزارةُ بعد الدفعة يبقى على حاله ولا يُتراجَع عنه');
+  /* the rule the owner set: the technician or the supervisor records the installation, the engineer approves */
+  const R = w.ROLES;
+  T(R.tech.nav.includes('insForm') && R.supervisor.nav.includes('insForm') && !R.tech.can.approve && !R.supervisor.can.approve && R.engineer.can.approve,
+    'والتركيبُ يسجّله الفنيُّ أو المشرف، ويعتمده المهندس — قرارُ صاحب المشروع');
+  ids.forEach((id, i) => { if (keep[i]) w.STATE.recs[id] = keep[i]; else delete w.STATE.recs[id]; });
+  w.svaSel.m = {}; w.svApproveMany.last = null;
+  w.ROLE = role0; w.STATE.meta.role = role0; w.confirm = conf0; w.notifPush = push0; w.CORE.set = set0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);
