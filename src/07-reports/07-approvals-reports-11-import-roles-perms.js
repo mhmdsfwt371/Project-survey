@@ -150,7 +150,7 @@ function repcenterBody(){ return (function(){
             + '</div>',
             '<div class="actions">'
             + (may('exportAll') ? btn('⬇ ولّد التقرير','btn-primary btn-sm',' data-repgo="' + esc(r.id) + '"') : '')
-            + btn('🖨 PDF','btn-secondary btn-sm',' data-print="1"')
+            + btn('🖨 ' + t('ملف للطباعة'),'btn-secondary btn-sm',' data-print="1"')
             + '</div>');
         }).join('')
 

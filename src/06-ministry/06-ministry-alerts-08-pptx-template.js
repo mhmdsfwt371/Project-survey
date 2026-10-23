@@ -178,7 +178,8 @@ function mfuExportBar(){
   return '<div class="card" style="margin:0 0 12px"><div class="actions" style="align-items:center">'
     + '<b style="color:#C8943E">\u2B07 ' + esc(t('تصدير التحديث الأسبوعي')) + '</b>'
     + btn('\u{1F4CB} ' + t('التقرير التنفيذي'), 'btn-primary btn-sm', ' data-execxls="1" title="' + esc(t('قالب الوزارة — التحديات بستّ مجموعات والإجراء والجهة — بأرقام اللحظة')) + '"')   /* (V37.46) زرُّه وحدَه */
-    + btn('PowerPoint', 'btn-primary btn-sm', ' data-mfuexp="pptx"') + btn('Word', 'btn-secondary btn-sm', ' data-mfuexp="docx"') + btn('Excel', 'btn-secondary btn-sm', ' data-mfuexp="xlsx"') + btn('PDF', 'btn-secondary btn-sm', ' data-mfuexp="pdf"')
+    /* (V39.9) the owner's glossary: Arabic names for the file kinds on Arabic screens (the English screen keeps PowerPoint, Word, Excel, PDF) */
+    + btn('عرض تقديمي', 'btn-primary btn-sm', ' data-mfuexp="pptx"') + btn('وورد', 'btn-secondary btn-sm', ' data-mfuexp="docx"') + btn('إكسل', 'btn-secondary btn-sm', ' data-mfuexp="xlsx"') + btn('ملف للطباعة', 'btn-secondary btn-sm', ' data-mfuexp="pdf"')
     + (mfuFltLabel() ? '<span class="pill wrn">' + esc(t('بفلتر')) + ': ' + esc(mfuFltLabel()) + ' \u2014 ' + esc(t('أزل الفلتر لتصدير الكلّ')) + '</span>' : '')   /* (V27.3) */
     + '<span class="hint" style="margin:0">' + esc(t('من الجهاز نفسِه — لحظي، بالأرقام الحالية')) + '</span></div>'
     + expScopeRow()   /* (V29.0) */

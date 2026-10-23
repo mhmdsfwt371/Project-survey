@@ -288,7 +288,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
             return card('', handDocSite(HO_DOC)
               + '<div class="actions" style="margin-top:12px">'
               + btn('\u2B07 ' + t('إكسل — المحضر'),'btn-secondary btn-sm',' data-xls="hodoc"')
-              + btn('\u{1F5A8} PDF','btn-secondary btn-sm',' data-print="1"')
+              + btn('\u{1F5A8} ' + t('ملف للطباعة'),'btn-secondary btn-sm',' data-print="1"')
               + (co && coTelOf(co)
                   ? btn('\u{1F4AC} ' + t('أبلغ') + ' ' + esc(co.length > 22 ? co.slice(0, 21) + '\u2026' : co),
                         'btn-quiet btn-sm',' data-wasend="hand|' + esc(co) + '"')

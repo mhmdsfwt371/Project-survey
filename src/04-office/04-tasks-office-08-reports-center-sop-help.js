@@ -70,7 +70,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
     + card('دليلُك — ملف Word',
           '<div class="actions">'
           + '<a class="btn btn-primary btn-sm" href="docs/manuals/nusuk-manual-' + esc(cur) + '.docx" download>'
-          +   '⬇ ' + esc(t('دليل') + ' ' + t(ROLES[cur].n) + ' — Word') + '</a>'
+          +   '⬇ ' + esc(t('دليل') + ' ' + t(ROLES[cur].n) + ' — ' + t('وورد')) + '</a>'
           + (may('settings')
               ? '<a class="btn btn-secondary btn-sm" href="docs/nusuk-user-manual.docx" download>'
                 + '⬇ ' + esc(t('الدليل الكامل — Word')) + '</a>'

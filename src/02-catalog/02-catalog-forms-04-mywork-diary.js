@@ -389,7 +389,7 @@ function perfRankTable(){
              cfgGet('ph') ? N(Math.round(money)) : '—']),
           '<div class="actions">'
           + btn('⬇ إكسل — التقرير','btn-secondary btn-sm',' data-xls="score"')
-          + btn('🖨 PDF','btn-secondary btn-sm',' data-print="1"')
+          + btn('🖨 ' + t('ملف للطباعة'),'btn-secondary btn-sm',' data-print="1"')
           + '</div>')
       : card('', alertBox('info','لا أعمال مسجّلةً بعد — تظهر هنا فورَ أول مسحٍ أو تركيب.')))
 
