@@ -68,7 +68,8 @@ for (const role of ['engineer','supervisor','tech','viewer','admin','store','buy
     });
   }
 }
-const PASSIVE = new Set(['data-i18n','data-i18n-aria','data-i18n-title','data-open','data-g','data-lang','data-theme','data-c','data-k','data-v','data-id','data-site']);
+const PASSIVE = new Set(['data-i18n','data-i18n-aria','data-i18n-title','data-open','data-g','data-lang','data-theme','data-c','data-k','data-v','data-id','data-site',
+  'data-mtdet']);   /* (V39.1) a fold that draws when opened — its «toggle» is listened to, not a click */
 const dead = [...seen.keys()].filter(a => !bound.has(a) && !PASSIVE.has(a));
 let bad=0; const T=(c,n)=>{console.log((c?'  ✓ ':'  ✗ ')+n); if(!c)bad++;};
 T(bound.size >= 150, 'الخصائصُ المربوطةُ في المعالجات: '+bound.size);

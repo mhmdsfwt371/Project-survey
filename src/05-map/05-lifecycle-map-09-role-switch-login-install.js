@@ -158,6 +158,7 @@ function pwaWatch(){
   });
   window.addEventListener('appinstalled', function(){
     INSTALL_EVT = null;
+    try { if (typeof storagePersistMaybe === 'function') storagePersistMaybe(true); } catch (eP){ LS_ERR = eP; }   /* (V39.1) installed: ask for lasting storage now */
     var b = document.getElementById('pwaBtn');
     if (b) b.hidden = true;
     toast(t('ثُبِّت التطبيق'));

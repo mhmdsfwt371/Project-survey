@@ -197,6 +197,8 @@ function onDocClickPart4(e){
     SOFT_ERRS = []; SOFT_SAID = {}; toast(t('مُسح سجلُّ الأعطال')); render(1); return;
   }
   if (e.target.closest('[data-verchk]')){ verCheck(); return; }
+  var mwm = e.target.closest('[data-mywmore]');   /* (V39.1) a supervisor's list in «شغلي» grows fifty at a time */
+  if (mwm){ var mk = 'myw|' + mwm.getAttribute('data-mywmore'); MORE_SHOWN[mk] = (MORE_SHOWN[mk] || 0) + 50; render(1); return; }
   return CLICK_NEXT;
 }
 /* onDocClickPart4b — the second half of part 4 (V38.97: 385 lines cut in two at a point where neither half uses a variable

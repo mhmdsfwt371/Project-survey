@@ -63,6 +63,8 @@ S.forEach((x, k) => {
   if (x.co){ truth.co[x.co] = (truth.co[x.co] || 0) + 1; truth.coAll++; }
 });
 w.SITE_IX = null; w.SITE_TOK = null; w.TK_IX = null; w.statBump(); w.render(1); await wait(50);
+/* (V39.1) the follow-up tabs' «full details» folds draw only once opened — the audit reads them opened */
+['التفاصيل الكاملة', 'التفاصيل الكاملة وجهات المعالجة', 'تفاصيل ساعة بساعة والشهور'].forEach(k => { (w.mtDetails.open = w.mtDetails.open || {})[k] = 1; });
 console.log('بذرة:', JSON.stringify({ recs:truth.recs, obst:truth.obst, ins:truth.ins, openTasks:truth.openTasks }));
 
 /* ── every number card on every screen, by its label ── */

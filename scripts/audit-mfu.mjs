@@ -24,6 +24,8 @@ w.localStorage.setItem('nsk14.tour.x', '1'); await wait(900);
 w.FB.signIn = () => Promise.resolve({ ok:true, role:'engineer', name:'مهندس' }); w.FB.legacyDone = () => true; w.pullDelta = () => Promise.resolve(0); w.liveWatch = () => {}; w.liveSmall = () => {}; w.tourMaybe = () => {};
 d.getElementById('lgU').value = 'x'; d.getElementById('lgP').value = 'TestPass1234'; d.getElementById('lgGo').dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
 await wait(1500); w.toast = () => {}; const wrote = []; w.CORE.set = (k, id, v) => { wrote.push([k, id, v]); };
+/* (V39.1) the tabs' «full details» folds draw only once opened — this audit reads them opened */
+['التفاصيل الكاملة', 'التفاصيل الكاملة وجهات المعالجة', 'تفاصيل ساعة بساعة والشهور'].forEach(k => { (w.mtDetails.open = w.mtDetails.open || {})[k] = 1; });
 const open = async tab => { w.goPage('mfu'); w.render(1); await wait(40); const b = d.querySelector('[data-ptab="mfu:' + tab + '"]'); if (b){ b.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(120); } return d.getElementById('content'); };
 
 console.log('\n══ ١ · الصفحةُ وعناوينُها ══');

@@ -19,7 +19,22 @@ function mtIcon(v, label, icon, attrs){
   return '<div role="button" tabindex="0"' + attrs + ' title="' + esc(t('اضغط للتفاصيل والإكسل')) + '" style="' + MT_TILE + ';text-align:center;padding:10px 6px;cursor:pointer"><div style="font-size:24px">' + icon + '</div><div class="num" style="font-size:18px;font-weight:800;margin-top:2px">' + v + '</div><div style="font-size:12px">' + esc(t(label)) + ' \u203A</div></div>';
 }
 
-function mtDetails(title, html, icon){ return '<details class="mt-more" style="margin-top:14px"><summary>' + (icon ? icon + ' ' : '') + esc(t(title)) + '</summary>' + html + '</details>'; }   
+/* (V39.1) a fold whose content is given as a function draws it only once opened: «التفاصيل الكاملة» of the obstacles,
+   installs, daily and companies tabs drew whole tables on every paint for a fold most never open (the challenges tab took
+   218 ms of drawing on a season of data). The fold remembers it was opened (on the function: no new global), so a repaint
+   keeps it open and drawn. */
+function mtDetails(title, html, icon){
+  var O = mtDetails.open || (mtDetails.open = {}), lazy = typeof html === 'function', open = lazy && !!O[title];
+  return '<details class="mt-more" style="margin-top:14px"' + (lazy ? ' data-mtdet="' + esc(title) + '"' : '') + (open ? ' open' : '') + '><summary>' + (icon ? icon + ' ' : '') + esc(t(title)) + '</summary>'
+    + (lazy ? (open ? html() : '') : html) + '</details>';
+}
+/* the fold's toggle does not bubble: listened to once, in the capture phase — opening draws it, closing forgets it */
+if (typeof document === 'object' && document.addEventListener) document.addEventListener('toggle', function(e){
+  var d = e.target; if (!d || !d.getAttribute || !d.hasAttribute('data-mtdet')) return;
+  var O = mtDetails.open || (mtDetails.open = {}), k = d.getAttribute('data-mtdet'), was = !!O[k];
+  O[k] = d.open ? 1 : 0;
+  if (d.open && !was) render(1);
+}, true);   
 function mtAllBtn(kind){ return '<button type="button" class="btn btn-secondary" data-mtx="' + kind + '" style="display:block;width:100%;margin-top:14px">\u2B07 ' + esc(t('نزّل كل تفاصيل التبويب (إكسل)')) + '</button>'; }
 
 function mtTabXlsx(kind){   /* (V37.63) كلُّ تفاصيل التبويب في ملفٍّ واحد */
@@ -48,7 +63,7 @@ function mtInst(){
     return '<div role="button" tabindex="0"' + mtOpen('sv', '', z) + ' style="' + MT_TILE + ';text-align:center;cursor:pointer"><div style="display:flex;justify-content:center;margin-bottom:6px">' + svRing(p, 54, '#3AD6A0', nm(p) + '\u066A') + '</div><div style="font-size:13px">' + esc(t(z)) + ' \u203A</div><div class="hint num" style="margin:0;font-size:12px">' + nm(o.i) + ' / ' + nm(o.n) + '</div></div>'; });
   return mtHero(pct, nm(ins) + ' <span style="font-size:18px">' + esc(t('من')) + ' ' + nm(N) + '</span>', esc(t('نقطة اتركّبت')), '#3AD6A0')
     + mtSec('حالها الآن') + mtGrid(stTiles) + mtSec('حسب النوع') + mtGrid(types, 96) + mtSec('المشاعر') + mtGrid(zones, 96)
-    + mtAllBtn('inst') + mtDetails('التفاصيل الكاملة', mfuInst());
+    + mtAllBtn('inst') + mtDetails('التفاصيل الكاملة', mfuInst);
 }
 
 /* ── ٤ · التحديات والمعوقات ── */
@@ -126,7 +141,7 @@ function mtObs(){
     + mtObsLoc()   /* (V38.22) حسب الموقع في كلِّ منطقة */
     + mtSec('مين يعالجها؟') + mtGrid(grp) + mtSec('التحدي', ' <span class="num">(' + nm(chal) + ')</span>') + mtGrid(why, 96)
     + '<p class="hint" style="margin:-6px 0 12px;font-size:12px">' + esc(t('كلُّ نقطةٍ محسوبةٌ مرةً بأهمِّ تحدٍّ فيها')) + '</p>'
-    + mtSec('المشاعر') + mtGrid(zones, 96) + mtAllBtn('obs') + mtDetails('التفاصيل الكاملة وجهات المعالجة', mfuObs());
+    + mtSec('المشاعر') + mtGrid(zones, 96) + mtAllBtn('obs') + mtDetails('التفاصيل الكاملة وجهات المعالجة', mfuObs);
 }
 
 function mtDaily(){
@@ -141,7 +156,7 @@ function mtDaily(){
   var bars = '<div style="display:flex;align-items:flex-end;gap:6px;height:110px;' + MT_TILE + ';padding:10px 8px 26px;margin-bottom:12px">' + days.map(function(o){ var wd = WD[new Date(o.d + 'T12:00:00').getDay()];
       return '<div role="button" tabindex="0"' + mtOpen('sv', 'day:' + o.d) + ' title="' + esc(t(wd)) + ' \u00b7 ' + nm(o.n) + '" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;cursor:pointer"><span class="num" style="font-size:11px">' + (o.n ? nm(o.n) : '') + '</span><i style="display:block;width:100%;height:' + Math.max(3, Math.round(o.n / mx * 70)) + 'px;background:var(--acc,#2E86DE);border-radius:4px 4px 0 0"></i><span style="font-size:10px;margin-top:4px;white-space:nowrap" class="hint">' + esc(t(wd)) + '</span></div>'; }).join('') + '</div>';
   return mtHero(tot ? 100 : 0, nm(tot), esc(t('خطوة اتعملت النهارده')) + (tech ? '<br>' + esc(t('من')) + ' ' + nm(tech) + ' ' + esc(t('فنيين')) : ''), 'var(--acc,#2E86DE)', esc(t('اليوم')))
-    + mtGrid(kt, 96) + mtSec('آخر ٧ أيام — اضغط أي يوم') + bars + mtAllBtn('daily') + mtDetails('تفاصيل ساعة بساعة والشهور', mfuDaily());
+    + mtGrid(kt, 96) + mtSec('آخر ٧ أيام — اضغط أي يوم') + bars + mtAllBtn('daily') + mtDetails('تفاصيل ساعة بساعة والشهور', mfuDaily);
 }
 
 var MT_CO_ALL = false;
@@ -158,7 +173,7 @@ function mtCos(){
   return mtHero(pct, nm(bc.ready || 0) + ' <span style="font-size:18px">' + esc(t('من')) + ' ' + nm(C.length) + '</span>', esc(t('شركة مخيماتها جاهزة')), '#22C55E')
     + mtGrid(tiles) + mtSec('الشركات — الأقل جاهزية أولًا') + cards
     + (rows.length > 8 ? '<div class="actions" style="justify-content:center">' + btn(MT_CO_ALL ? t('اعرض الأقل جاهزية فقط') : (t('اعرض الكل') + ' (' + nm(rows.length) + ')'), 'btn-secondary btn-sm', ' data-mtcoall="1"') + '</div>' : '')
-    + mtAllBtn('cos') + mtDetails('التفاصيل الكاملة', mfuCos());
+    + mtAllBtn('cos') + mtDetails('التفاصيل الكاملة', mfuCos);
 }
 
    

@@ -361,13 +361,15 @@ window.addEventListener('beforeunload', function(e){
    التخزينُ الدائمُ مرةً واحدةً بعد الدخول إن كانت الواجهةُ موجودةً ولم يُمنَح،
    وتُسجَّل النتيجةُ فتُرى في صحة النظام وتُحمَل في نبضة الحضور. */
 var PERSIST = { st:'', at:0 };
-function storagePersistMaybe(){
+function storagePersistMaybe(force){
   var ns = (typeof navigator === 'object') && navigator.storage;
   if (!ns || typeof ns.persist !== 'function' || typeof ns.persisted !== 'function'){ PERSIST.st = 'na'; return Promise.resolve('na'); }
   return ns.persisted().then(function(ok){
     if (ok){ PERSIST.st = 'yes'; PERSIST.at = Date.now(); return 'yes'; }
-    var asked = lsGet('nsk14.persistAsk') || '';
-    if (asked){ PERSIST.st = 'no'; return 'no'; }          /* سُئل من قبل — لا يُكرَّر */
+    /* (V39.1) asked again after a week, and at once when the app is installed to the home screen — browsers grant it more
+       readily then. It was asked once ever, so 6 of 16 devices (both supervisors' among them) stayed without it. */
+    var asked = +(lsGet('nsk14.persistAsk') || 0);
+    if (!force && asked && Date.now() - asked < 7 * 864e5){ PERSIST.st = 'no'; return 'no'; }
     lsSet('nsk14.persistAsk', String(Date.now()));
     return ns.persist().then(function(g){ PERSIST.st = g ? 'yes' : 'no'; PERSIST.at = Date.now(); return PERSIST.st; });
   }).catch(function(){ PERSIST.st = 'no'; return 'no'; });

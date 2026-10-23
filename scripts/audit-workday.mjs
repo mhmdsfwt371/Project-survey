@@ -57,6 +57,8 @@ const R0 = w.diaryRows();
 T(JSON.stringify(R0) === JSON.stringify(w.diaryRows(undefined)) && JSON.stringify(R0) === JSON.stringify(w.diaryRows(null)), 'diaryRows بلا مرشِّحٍ كما كانت تمامًا');
 T(R0.length === 25 && R0[0].day === dayKey(d0) && R0[24].day === dayKey(today0), 'كلُّ يومٍ من أوّل يوم عملٍ إلى اليوم بلا فجوة: ' + R0.length);
 
+/* (V39.1) the daily tab's «full details» fold draws only once opened — the audit reads it opened */
+['التفاصيل الكاملة', 'التفاصيل الكاملة وجهات المعالجة', 'تفاصيل ساعة بساعة والشهور'].forEach(k => { (w.mtDetails.open = w.mtDetails.open || {})[k] = 1; });
 console.log('\n══ ٢ · الصفحة ══');
 c = await open();
 T(/ملخص العمل اليومي/.test(c.textContent), 'العنوانُ «ملخص العمل اليومي»');

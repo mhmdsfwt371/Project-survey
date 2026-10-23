@@ -283,16 +283,20 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
         + (sups.length
           ? sups.map(function(sp){
               var L = by[sp];
+              /* (V39.1) thirty per supervisor first, and «اعرض المزيد» fifty at a time — the office's view drew up to eighty rows
+                 for each supervisor on every paint (310 ms on a season of data) and silently dropped the rest */
+              var lim = 30 + (MORE_SHOWN['myw|' + sp] || 0), rest = L.length - lim;
               return cardFlush(esc(dispName(sp)) + ' — ' + nm(L.length) + ' ' + t('نقطة'),
                 table(['النقطة','النوع','الموعد','الحالة'],
-                  L.slice(0, 80).map(function(x){
+                  L.slice(0, lim).map(function(x){
                     var st = siteFind(x.site), k = WO_KINDS[x.kind] || { i:'', n:x.kind };
                     return ['<strong>' + esc(x.site) + '</strong><br><span class="hint" style="margin:0">'
                               + esc(((st && st.name) || '').slice(0, 28)) + '</span>',
                             k.i + ' ' + esc(t(k.n)),
                             x.when ? '<span class="num">' + esc(x.when) + '</span>' : '—',
                             taskPill(x)];
-                  })));
+                  }))
+                + (rest > 0 ? '<div style="padding:8px 12px;text-align:center">' + btn('\u2B07 ' + t('اعرض المزيد') + ' (' + nm(Math.min(50, rest)) + ' ' + t('من') + ' ' + nm(rest) + ')', 'btn-quiet btn-sm', ' data-mywmore="' + esc(sp) + '"') + '</div>' : ''));
             }).join('')
           : card('لا إسناداتٍ مفتوحة', '<p class="hint" style="text-align:center;margin:0">'
               + esc(t('أسند نقاطًا للمشرفين من الخريطة أو «توزيع الفرق» فتظهر هنا بمشرفها وحالتها.')) + '</p>'))
