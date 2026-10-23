@@ -966,6 +966,12 @@ console.log('\n══ ٣٣ · شاشاتُ العرض تتحدّث وحدَها 
   w.SW_RELOADED = false;
   T((await w.dispTick()) === 'current', 'وعلى أحدث نسخةٍ لا تفعل شيئًا');
   w.ROLE = role0; w.fetch = fetch0; w.swNow = now0; w.SW_RELOADED = rel0; w.SW_STATE.waiting = wait0; w.SW_STATE.disp = null;
+  /* (V38.87) a press during the Excel engine's load is answered, not lost */
+  const said = [], toast0 = w.toast, xl0 = w.XLSX_LOADING, ready0 = w.XLSX_READY, X0 = w.XLSX;
+  w.toast = m => said.push(String(m)); w.XLSX_READY = false; w.XLSX = undefined; w.XLSX_LOADING = new Promise(() => {});
+  w.xlsxLoad();
+  T(said.some(m => /يُجهَّز محرّكُ الإكسل/.test(m)), 'وضغطةُ تصديرٍ أثناء تحميل محرّك الإكسل تُقال فورًا لا تضيع — كانت توقف السلسلةَ بزرٍّ مختلفٍ كلَّ مرة');
+  w.toast = toast0; w.XLSX_LOADING = xl0; w.XLSX_READY = ready0; w.XLSX = X0;
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

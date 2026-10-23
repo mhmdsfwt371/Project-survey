@@ -15,7 +15,9 @@ var XLSX_READY = false, XLSX_LOADING = null;
 
 function xlsxLoad(){
   if (XLSX_READY || (typeof window !== 'undefined' && window.XLSX)){ XLSX_READY = true; return Promise.resolve(true); }
-  if (XLSX_LOADING) return XLSX_LOADING;
+  /* (V38.86) a second press while the engine is still loading said nothing — the press looked lost (and the click audit
+     caught a different export button each run: whichever it pressed during the load). Every press now hears it. */
+  if (XLSX_LOADING){ if (typeof toast === 'function') toast('\u23F3 ' + t('يُجهَّز محرّكُ الإكسل…')); return XLSX_LOADING; }
   /* (V38.54) own copy first (works offline once cached), the SheetJS CDN only as a fallback;
      (V38.55) the user sees at once that the press arrived — the first load can take seconds on the field network */
   if (typeof toast === 'function') toast('\u23F3 ' + t('يُجهَّز محرّكُ الإكسل…'));
@@ -32,7 +34,7 @@ function xlsxLoad(){
 var EXLJS_READY = false, EXLJS_LOADING = null;
 function exlLoad(){
   if (EXLJS_READY || (typeof window !== 'undefined' && window.ExcelJS)){ EXLJS_READY = true; return Promise.resolve(true); }
-  if (EXLJS_LOADING) return EXLJS_LOADING;
+  if (EXLJS_LOADING){ if (typeof toast === 'function') toast('\u23F3 ' + t('يُجهَّز محرّكُ الإكسل…')); return EXLJS_LOADING; }   /* (V38.86) every press hears it */
   if (typeof toast === 'function') toast('\u23F3 ' + t('يُجهَّز محرّكُ الإكسل…'));   /* (V38.55) */
   EXLJS_LOADING = libLoad('vendor/exceljs/4.4.0/exceljs.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js', 15000)   /* (V38.54) */
     .then(function(ok){ ok = !!(ok && window.ExcelJS); EXLJS_READY = ok; if (!ok) setTimeout(function(){ EXLJS_LOADING = null; }, 60000); return ok; });

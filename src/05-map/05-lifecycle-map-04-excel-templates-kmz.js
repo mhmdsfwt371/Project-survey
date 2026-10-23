@@ -78,10 +78,6 @@ function xlsPage(){
 }
 /* ورقةٌ مبنيّةٌ في اللحظة لا من SHEETS — لنوافذِ التفاصيل */
 function xlsSheets(pairs, fname){
-  /* (V38.86) the Excel engine loads on first use — on a slow line that took seconds with nothing on screen, so the
-     button looked dead (and «تصدير القائمة» in the survey dashboard failed the click audit twice in a day, stopping the
-     release chain). A line says at once that the file is being prepared. */
-  if (typeof XLSX === 'undefined') toast(t('يُجهَّز ملفُّ إكسل…'));
   return xlsxLoad().then(function(ok){
     if (!ok){ toast(t('تعذّر تحميلُ مكتبة إكسل')); return false; }
     var wb = XLSX.utils.book_new(), n = 0;
@@ -114,6 +110,7 @@ function xlsSheets(pairs, fname){
 var JSZIP_LOADING = null;
 function jszipLoad(){
   if (typeof JSZip !== 'undefined') return Promise.resolve(true);
+  if (typeof toast === 'function') toast('\u23F3 ' + t('يُجهَّز الملف…'));   /* (V38.86) the first load and every press during it say so */
   if (JSZIP_LOADING) return JSZIP_LOADING;
   JSZIP_LOADING = libLoad('vendor/jszip/3.10.1/jszip.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js', 15000)   /* (V38.54) */
     .then(function(ok){ ok = !!(ok && typeof JSZip !== 'undefined'); if (!ok) setTimeout(function(){ JSZIP_LOADING = null; }, 60000); return ok; });
