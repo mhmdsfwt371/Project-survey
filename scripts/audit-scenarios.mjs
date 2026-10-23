@@ -1050,6 +1050,26 @@ console.log('\n══ ٣٦ · الاعتمادُ بالتحديد — والتر
   w.ROLE = role0; w.STATE.meta.role = role0; w.confirm = conf0; w.notifPush = push0; w.CORE.set = set0;
 }
 
+/* ── ٣٧ · (V38.95) سجلُّ الأحداث على جهاز المكتب: آخرُ أسبوعين، الأحدثُ أوّلًا ── */
+console.log('\n══ ٣٧ · سحبُ سجلّ الأحداث البارد ══');
+{
+  const col0 = w.DB.col, ready0 = w.FB.ready, db0 = w.FB.db, role0 = w.ROLE, at0 = w.STATE.meta.pullAt;
+  const seen = {};
+  const rec = name => { const ops = []; seen[name] = ops; const q = {
+      where:(f, o, v) => { ops.push(['where', f, o, v]); return q; },
+      orderBy:(f, d) => { ops.push(['orderBy', f, d || 'asc']); return q; },
+      limit:n => { ops.push(['limit', n]); return q; },
+      get:() => Promise.resolve({ size:0, forEach(){} }) }; return q; };
+  w.DB.col = name => rec(name); w.FB.ready = true; w.FB.db = w.FB.db || {}; w.ROLE = 'engineer'; w.STATE.meta.pullAt = {};
+  await w.pullDelta({ only:['events', 'recs'] });
+  const E = seen.events || [], R = seen.recs || [];
+  const wh = E.find(x => x[0] === 'where' && x[1] === '_at'), od = E.find(x => x[0] === 'orderBy'), lm = E.find(x => x[0] === 'limit');
+  T(wh && wh[2] === '>' && Math.abs(wh[3] - (Date.now() - 14 * 864e5)) < 60000 && od && od[1] === '_at' && od[2] === 'desc' && lm && lm[1] === 6000,
+    'السحبةُ الباردةُ لسجلّ الأحداث: آخرُ ١٤ يومًا، الأحدثُ أوّلًا — كانت ٦٠٠٠ حدثٍ بلا ترتيبٍ من ٣٥ ألفًا');
+  T(!R.some(x => x[0] === 'where' && x[1] === '_at') && R.some(x => x[0] === 'limit' && x[1] === 6000), 'والزياراتُ تُسحَب كاملةً كما كانت — النافذةُ للأحداث وحدَها');
+  w.DB.col = col0; w.FB.ready = ready0; w.FB.db = db0; w.ROLE = role0; w.STATE.meta.pullAt = at0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);
