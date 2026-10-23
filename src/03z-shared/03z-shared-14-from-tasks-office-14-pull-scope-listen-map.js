@@ -136,6 +136,16 @@ function readBudget(){
 }
 
 function readSlowFactor(){ readBudget(); return 1; }
+/* (V38.92) a live listener's reads: Google bills the documents a snapshot brings from the server (all of them the first
+   time, the changed ones after) — and the counter only knew the pulls. On 22 October Google counted ~1.1 million reads,
+   99% queries, in Saudi working hours, while the phones' counters summed 28 thousand: the listeners were invisible. */
+function snapReads(sn){
+  try {
+    if (!sn || (sn.metadata && sn.metadata.fromCache)) return;
+    var n = typeof sn.docChanges === 'function' ? sn.docChanges().length : 1;
+    FB.readCount = (FB.readCount || 0) + Math.max(1, n);
+  } catch (e){ LS_ERR = e; }
+}
 
 /* ═══ (V38.80) Each device's reads, day by day ═══
    readBudget counted today's reads for this session only, and the presence beat sent that one number — overwritten
@@ -209,6 +219,7 @@ function pulseWatch(){
   if (!FB.ready || !FB.db || PULSE_UNSUB) return;
   try {
     PULSE_UNSUB = DB.col('settings').doc('pulse').onSnapshot(function(doc){
+      snapReads(doc);
       if (!doc.exists || (doc.metadata && doc.metadata.fromCache)) return;
       FB.readCount = (FB.readCount || 0) + 1;
       var p = doc.data() || {}, at = STATE.meta.pullAt || {}, mine = pullScope().cols || [];
@@ -236,6 +247,7 @@ function bridgeWatch(){
   if (!FB.ready || !FB.db || BRIDGE_UNSUB) return;
   try {
     BRIDGE_UNSUB = DB.col('settings').doc('bridge').onSnapshot(function(doc){
+      snapReads(doc);
       if (!doc.exists || (doc.metadata && doc.metadata.fromCache)) return;
       FB.readCount = (FB.readCount || 0) + 1;
       STATE.bridge = doc.data() || {};
@@ -256,6 +268,7 @@ function liveWatch(){
     var me = STATE.meta.name || '\u0000';
     LIVE.push(DB.col('tasks').where('assignedTo', '==', me).limit(200)
       .onSnapshot(function(snap){
+        snapReads(snap);
         snap.docChanges().forEach(function(ch){
           if (ch.type === 'removed'){ delete STATE.tasks[ch.doc.id]; if (typeof TK_IX !== 'undefined') TK_IX = null; }
           else CORE.applyDoc('tasks', ch.doc.id, ch.doc.data());

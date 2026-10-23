@@ -1002,6 +1002,19 @@ console.log('\n══ ٣٤ · سجلُّ النقاط: النشرُ نصًّا �
   w.DB.col = col0; w.FB.ready = ready0; w.FB.db = db0; if (reg0 == null) w.localStorage.removeItem('nsk.reg'); else w.localStorage.setItem('nsk.reg', reg0);
 }
 
+/* ── ٣٥ · (V38.92) قراءاتُ الإنصات الحيّ تُعَدّ على الجهاز ── */
+console.log('\n══ ٣٥ · الإنصاتُ الحيُّ في عدّاد الجهاز ══');
+{
+  const r0 = w.FB.readCount;
+  w.FB.readCount = 0;
+  w.snapReads({ metadata:{ fromCache:false }, docChanges:() => new Array(40) });
+  w.snapReads({ metadata:{ fromCache:false }, docChanges:() => [] });
+  w.snapReads({ metadata:{ fromCache:true }, docChanges:() => new Array(500) });
+  w.snapReads({ exists:true, metadata:{ fromCache:false } });
+  T(w.FB.readCount === 40 + 1 + 0 + 1, 'لقطةُ الإنصات من الخادم تُعَدّ بوثائقها (٤٠)، والفارغةُ قراءةً، ومن الكاش لا شيء، والوثيقةُ الواحدةُ قراءة — ' + w.FB.readCount);
+  w.FB.readCount = r0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

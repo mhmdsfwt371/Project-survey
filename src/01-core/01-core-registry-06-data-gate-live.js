@@ -156,6 +156,7 @@ function liveSmall(){
       if (filt2) q = q.where(filt2[0], filt2[1], filt2[2]);
       if (cap) q = q.limit(cap);
       LIVE_SMALL.push(q.onSnapshot(function(sn){
+        snapReads(sn);   /* (V38.92) */
         var n = 0;
         sn.docChanges().forEach(function(ch){
           apply(ch.doc.id, ch.type === 'removed' ? null : ch.doc.data()); n++;
@@ -179,6 +180,7 @@ function liveSmall(){
   var scope = pullScope(), sig0 = scope.tree ? treeKeys().sig : '';
   try {
     LIVE_SMALL.push(DB.col('settings').doc('app').onSnapshot(function(doc){
+      snapReads(doc);
       var dv = doc && doc.exists ? (doc.data() || {}) : {};
       if (dv.epoch && epochApply(dv.epoch)){ SYNC.pullAsk = true; FB._staticAt = 0; syncCycle(); }
       if (dv.syncAll) syncAllApply(dv.syncAll);
@@ -189,6 +191,7 @@ function liveSmall(){
   /* جدولُ المتابعة: وثيقةٌ واحدةٌ يُنصِت إليها الجميع — فتحديثُ المكتب يصل الوزارةَ في ثوانٍ */
   try {
     LIVE_SMALL.push(DB.col('settings').doc('wtask').onSnapshot(function(doc){
+      snapReads(doc);
       if (!doc || !doc.exists) return;
       var k = doc.data() || {}; if (!Array.isArray(k.rows)) return;
       STATE.wtask = { rows:k.rows, at:k.at, by:k.by, meetAt:k.meetAt || 0, meetBy:k.meetBy || '' }; CORE.saveSoon();
@@ -196,6 +199,7 @@ function liveSmall(){
       if (CUR === 'wtask' && !document.querySelector('#content input:focus')) render(1);
     }, function(e){ softErr('إنصات المهام', e, ''); }));
     LIVE_SMALL.push(DB.col('settings').doc('wbs').onSnapshot(function(doc){
+      snapReads(doc);
       if (!doc || !doc.exists) return;
       var w = doc.data() || {}; if (!Array.isArray(w.rows)) return;
       STATE.wbs = { rows:w.rows, keys:w.keys || [], at:w.at, by:w.by };
@@ -210,6 +214,7 @@ function liveSmall(){
   if (STATE.meta.uid && rankOf(ROLE) <= 30){
     try {
       LIVE_SMALL.push(DB.col('users').doc(STATE.meta.uid).onSnapshot(function(doc){
+        snapReads(doc);
         if (!doc || !doc.exists) return;
         var mv = doc.data() || {};
         STATE.users = STATE.users || {}; STATE.users[STATE.meta.uid] = mv;
