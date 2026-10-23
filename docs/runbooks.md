@@ -176,7 +176,7 @@
 
 **ماذا يفعل:** عند الدفع إلى الأصل: بياناتُ الموسم المؤكَّدةُ من الملف إلى القاعدة.
 
-**ماذا يشغّل:** `scripts/reads-flush.mjs`، `scripts/season-seed.mjs`
+**ماذا يشغّل:** `scripts/reads-flush.mjs`، `scripts/reg-publish.mjs`، `scripts/season-seed.mjs`
 
 **إن سقط:** البياناتُ تبقى على آخر تغذية.
 

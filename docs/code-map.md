@@ -8,7 +8,7 @@
 |---|---:|---:|---|
 | `00-head.html` | 1323 | 0 |  |
 
-## `01-core/` — النواة — اللغة والمحرك والمزامنة والسجل  (8 ملفات · 2857 سطر · 136 دالة)
+## `01-core/` — النواة — اللغة والمحرك والمزامنة والسجل  (8 ملفات · 2869 سطر · 137 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -18,7 +18,7 @@
 | `01-core-registry-04-engine-storage.js` | 223 | 14 | Local-first storage engine: IndexedDB/localStorage persistence, resilience when the local store fails, and the save banner when data is at risk. |
 | `01-core-registry-05-sync-scale.js` | 1137 | 3 | CORE: the write queue, deduplication, upload with backoff and poison isolation, pending-upload limit and pending-file export/import, pull scheduling and scale-o |
 | `01-core-registry-06-data-gate-live.js` | 414 | 13 | DB gate (the only path to Firestore), silent-failure capture, live listeners that mirror other devices' writes, sync counters and pull accounting. |
-| `01-core-registry-07-blackbox-registry.js` | 242 | 17 | Black box (crash forensics) and the embedded site registry SITES_RAW with its publish/cache cycle to the database. |
+| `01-core-registry-07-blackbox-registry.js` | 254 | 18 | Black box (crash forensics) and the embedded site registry SITES_RAW with its publish/cache cycle to the database. |
 | `01-core-registry-08-egates-seed.js` | 79 | 8 | Al Mashaaer train: the nine stations and their 62 E-GATE points (registry points at the station reference, owner decision Q-023), the station card listing its g |
 
 ## `02-catalog/` — الكتالوج والنقطة — التعريفات والتصنيف والصلاحيات وتعديل المسح  (12 ملفات · 4780 سطر · 296 دالة)
@@ -54,7 +54,7 @@
 | `03-survey-records-10-wbs-plan-trials.js` | 680 | 44 | Work breakdown structure, plan versus actual, plan export with formulas, item file and the trials page. |
 | `03-survey-records-11-weekly-tasks-paths.js` | 517 | 37 | Weekly tasks as sentence cards, meeting mode, the one filter for screen and paper, and path filtering with each path's status. |
 
-## `03z-shared/` — المشتركُ — تعريفاتٌ تحتاجها النواةُ قبل مجالات المكتب والوزارة والتقارير (نُقلت حرفيًّا، لا كودَ جديدًا هنا)  (63 ملفات · 9046 سطر · 539 دالة)
+## `03z-shared/` — المشتركُ — تعريفاتٌ تحتاجها النواةُ قبل مجالات المكتب والوزارة والتقارير (نُقلت حرفيًّا، لا كودَ جديدًا هنا)  (63 ملفات · 9047 سطر · 539 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -87,7 +87,7 @@
 | `03z-shared-27-from-approvals-reports-01-approvals-review.js` | 27 | 0 | Definitions moved verbatim from src/07-reports/07-approvals-reports-01-approvals-review.js (V38.38, stage A of core + chunks): the core (01–05, 08) references t |
 | `03z-shared-28-from-approvals-reports-02-inventory-workshop.js` | 141 | 12 | Definitions moved verbatim from src/07-reports/07-approvals-reports-02-inventory-workshop.js (V38.38, stage A of core + chunks): the core (01–05, 08) references |
 | `03z-shared-29-from-approvals-reports-03-trials-invoices.js` | 141 | 24 | Definitions moved verbatim from src/07-reports/07-approvals-reports-03-trials-invoices.js (V38.38, stage A of core + chunks): the core (01–05, 08) references th |
-| `03z-shared-30-from-approvals-reports-04-devices-reset-pulse.js` | 120 | 6 | Definitions moved verbatim from src/07-reports/07-approvals-reports-04-devices-reset-pulse.js (V38.38, stage A of core + chunks): the core (01–05, 08) reference |
+| `03z-shared-30-from-approvals-reports-04-devices-reset-pulse.js` | 121 | 6 | Definitions moved verbatim from src/07-reports/07-approvals-reports-04-devices-reset-pulse.js (V38.38, stage A of core + chunks): the core (01–05, 08) reference |
 | `03z-shared-31-from-approvals-reports-06-people-functions.js` | 209 | 17 | Definitions moved verbatim from src/07-reports/07-approvals-reports-06-people-functions.js (V38.38, stage A of core + chunks): the core (01–05, 08) references t |
 | `03z-shared-32-from-approvals-reports-07-network-notifications.js` | 418 | 27 | Definitions moved verbatim from src/07-reports/07-approvals-reports-07-network-notifications.js (V38.38, stage A of core + chunks): the core (01–05, 08) referen |
 | `03z-shared-33-from-approvals-reports-08-shipments-vehicles.js` | 130 | 15 | Definitions moved verbatim from src/07-reports/07-approvals-reports-08-shipments-vehicles.js (V38.38, stage A of core + chunks): the core (01–05, 08) references |
@@ -160,7 +160,7 @@
 | `05-lifecycle-map-12-ministry-screen-progress.js` | 384 | 22 | Ministry hall screen, completion forecast, progress map, far points, satellite in the ministry screen, week sentence and the hall view. |
 | `05-lifecycle-map-13-ministry-followup.js` | 473 | 49 | Ministry follow-up page: dynamic follow-up, season brief header, 'whose turn' groups, two modes, and the no-challenge camps card. |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4158 سطر · 151 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4160 سطر · 151 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -174,7 +174,7 @@
 | `06-ministry-alerts-08-pptx-template.js` | 980 | 16 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 285 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 1053 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 1055 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
 
@@ -218,4 +218,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 161 ملفًّا · 44379 سطر · 2012 دالة.
+**الإجمالي:** 161 ملفًّا · 44394 سطر · 2013 دالة.

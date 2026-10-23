@@ -71,14 +71,29 @@ jobs:
     permissions:
       contents: read
       issues: write
+      pages: read
     steps:
       - uses: actions/checkout@v5
         with:
           ref: ${{ github.event.deployment.sha }}
+          fetch-depth: 0
+      # (V38.88) نشرٌ تخطّاه نشرٌ أحدثُ يحمله (التزامُ نسخةٍ احتياطيةٍ بعده بثوانٍ) ليس عطلًا: البلاغُ عن ٣٨٫٨٧ كان كاذبًا
+      - name: هل تخطّاه نشرٌ أحدثُ يحمله؟
+        id: sup
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sleep 150
+          b=$(gh api "repos/${{ github.repository }}/pages/builds/latest" --jq '.status + " " + .commit' 2>/dev/null || echo "")
+          st=${b%% *}; c=${b##* }
+          if [ "$st" = "built" ] && [ -n "$c" ] && git fetch -q origin "$c" 2>/dev/null && git merge-base --is-ancestor "${{ github.event.deployment.sha }}" "$c"; then
+            echo "::notice title=لا عطل::نشرٌ أحدثُ (${c:0:8}) يحمل هذا الالتزام ونجح"; echo "skip=1" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/setup-node@v5
         with:
           node-version: 20
       - name: النشرُ فشل — بلاغٌ للمالك
+        if: steps.sup.outputs.skip != '1'
         env:
           GH_TOKEN: ${{ github.token }}
           CHAIN_SHA: ${{ github.event.deployment.sha }}

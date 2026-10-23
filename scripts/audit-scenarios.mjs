@@ -974,6 +974,34 @@ console.log('\n══ ٣٣ · شاشاتُ العرض تتحدّث وحدَها 
   w.toast = toast0; w.XLSX_LOADING = xl0; w.XLSX_READY = ready0; w.XLSX = X0;
 }
 
+/* ── ٣٤ · (V38.88) سجلُّ النقاط منشورًا في القاعدة نصًّا واحدًا، ومخزَّنًا على الجهاز قبل أن يخرج من الملف ── */
+console.log('\n══ ٣٤ · سجلُّ النقاط: النشرُ نصًّا واحدًا والتخزينُ على كلِّ جهاز ══');
+{
+  const mini = { z:['منى'], t:['مخيم'], w:[], co:[], dm:[], g:[['A1', 'نقطة']], p:[] };
+  const R = w.regDecode({ json:JSON.stringify(mini), ver:'v9', at:5, by:'الخادم' });
+  T(R && R.g[0][0] === 'A1' && R.ver === 'v9', 'المنشورُ نصٌّ واحدٌ يُفَكّ إلى السجلّ — القاعدةُ ترفض المصفوفاتِ المتداخلة');
+  const { regVer: srvVer } = await import('./lib/registry.mjs');
+  T(srvVer(mini) === w.regVer(mini), 'وبصمةُ الخادم (reg-publish) هي بصمةُ التطبيق نفسُها — فلا يُعاد النشرُ بلا تغيير');
+  /* the device caches the published copy after login, and remembers its fingerprint for the beat */
+  const col0 = w.DB.col, ready0 = w.FB.ready, db0 = w.FB.db, reg0 = w.localStorage.getItem('nsk.reg');
+  w.DB.col = name => name === 'settings' ? { doc:() => ({ get:() => Promise.resolve({ exists:true, data:() => ({ json:JSON.stringify(mini), ver:'v9', at:5, by:'الخادم' }) }) }) } : col0(name);
+  w.FB.ready = true; w.FB.db = w.FB.db || {}; w.localStorage.removeItem('nsk.reg'); w.regEnsure.busy = 0;
+  w.regEnsure(); await new Promise(r => setTimeout(r, 0)); await new Promise(r => setTimeout(r, 0));
+  const cached = JSON.parse(w.localStorage.getItem('nsk.reg') || 'null');
+  T(cached && cached.ver === 'v9' && cached.g[0][0] === 'A1' && w.lsGet('nsk14.regver') === 'v9', 'وكلُّ جهازٍ يخزّنه بعد الدخول للعمل بلا شبكة، ويحفظ بصمتَه');
+  const uid0 = w.STATE.meta.uid; w.STATE.meta.uid = 'u-reg'; w.presenceBeat(true);
+  T((w.STATE.presence['u-reg'] || {}).reg === 'v9', 'ونبضةُ الحضور تقولها — فيُعرَف قبل إخراجه من الملف أنّ كلَّ جهازٍ نشطٍ يحمله');
+  delete w.STATE.presence['u-reg']; w.STATE.meta.uid = uid0;
+  /* the publish button writes one JSON string, never the nested arrays the database refuses */
+  const set0 = w.CORE.set, soon0 = w.CORE.saveSoon, conf0 = w.confirm, role0 = w.ROLE; let wrote = null;
+  w.CORE.set = (k, id, v) => { if (id === 'registry') wrote = v; }; w.CORE.saveSoon = () => {}; w.confirm = () => true; w.ROLE = 'admin';
+  w.regPublish();
+  T(wrote && typeof wrote.json === 'string' && !('g' in wrote) && JSON.parse(wrote.json).g.length > 0 && wrote.ver === w.regVer(JSON.parse(wrote.json)),
+    'وزرُّ النشر يكتب نصًّا واحدًا ببصمته — كان يكتب مصفوفاتٍ متداخلةً فلا يُنشَر شيء');
+  w.CORE.set = set0; w.CORE.saveSoon = soon0; w.confirm = conf0; w.ROLE = role0;
+  w.DB.col = col0; w.FB.ready = ready0; w.FB.db = db0; if (reg0 == null) w.localStorage.removeItem('nsk.reg'); else w.localStorage.setItem('nsk.reg', reg0);
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

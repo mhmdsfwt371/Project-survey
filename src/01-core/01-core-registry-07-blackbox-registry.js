@@ -174,6 +174,17 @@ function regLocal(){
   catch (e){ LS_ERR = e; return null; }
 }
 if (regEmpty(SITES_RAW)) SITES_RAW = regLocal() || { z:[], t:[], w:[], co:[], dm:[], g:[], p:[] };
+/* (V38.88) the database refuses arrays inside arrays — and every point of the registry is one — so the published copy is
+   one JSON string (json) beside its fingerprint. The publish button never succeeded before this, and no device ever
+   cached a copy: removing the registry from the app file would have left every phone without its points. Documents
+   with plain g/p arrays (none exist) are still read. */
+function regDecode(d){
+  if (!d) return null;
+  if (typeof d.json === 'string'){
+    try { var R = JSON.parse(d.json); R.ver = d.ver || ''; R.at = +d.at || 0; R.by = d.by || ''; return R; } catch (e){ LS_ERR = e; return null; }
+  }
+  return d;
+}
 function regVer(R){
   var s = JSON.stringify({ z:R.z, t:R.t, w:R.w, co:R.co, dm:R.dm, g:R.g, p:R.p }), h = 5381;
   for (var i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
@@ -184,13 +195,13 @@ function regEnsure(){
   if (!FB.ready || !FB.db || regEnsure.busy) return;
   regEnsure.busy = 1;
   DB.col('settings').doc('registry').get().then(function(doc){
-    var d = (doc && doc.exists) ? doc.data() : null;
+    var d = (doc && doc.exists) ? regDecode(doc.data()) : null;
     STATE.regInfo = d ? { ver:d.ver || '', at:+d.at || 0, by:d.by || '', n:((d.g || []).length + (d.p || []).length) } : { none:true };
     if (!d || regEmpty(d)) return;
     var cur = regLocal();
     if (!cur || cur.ver !== d.ver){
-      try { localStorage.setItem('nsk.reg', JSON.stringify(d)); } catch (e){ LS_ERR = e; softErr('تخزين سجل النقاط', e, ''); }
-    }
+      try { localStorage.setItem('nsk.reg', JSON.stringify(d)); lsSet('nsk14.regver', d.ver || ''); } catch (e){ LS_ERR = e; softErr('تخزين سجل النقاط', e, ''); }
+    } else if (cur && cur.ver && lsGet('nsk14.regver') !== cur.ver){ lsSet('nsk14.regver', cur.ver); }   /* (V38.88) the beat reports it */
     if (regEmpty(SITES_RAW) && typeof location !== 'undefined') location.reload();
   }).catch(function(e){ softErr('سجل النقاط', e, ''); }).then(function(){ regEnsure.busy = 0; if (CUR === 'exp') render(1); });
 }
@@ -201,9 +212,10 @@ function regPublish(){
   if (!confirm(t('يُنشَر سجلُّ النقاط في القاعدة لحسابات الفريق المسجَّلة') + ' (' + n + '). ' + t('متابعة؟'))){ toast(t('لم يُنشَر — أُلغي')); return; }
   var doc = { z:SITES_RAW.z, t:SITES_RAW.t, w:SITES_RAW.w, co:SITES_RAW.co || [], dm:SITES_RAW.dm || [], g:SITES_RAW.g, p:SITES_RAW.p };
   doc.ver = regVer(doc); doc.at = Date.now(); doc.by = STATE.meta.name || '';
-  CORE.set('cfg', 'registry', doc); CORE.saveSoon();
+  /* (V38.88) one JSON string: the database refuses the nested arrays */
+  CORE.set('cfg', 'registry', { json:JSON.stringify({ z:doc.z, t:doc.t, w:doc.w, co:doc.co, dm:doc.dm, g:doc.g, p:doc.p }), ver:doc.ver, at:doc.at, by:doc.by, n:n }); CORE.saveSoon();
   STATE.regInfo = { ver:doc.ver, at:doc.at, by:doc.by, n:n };
-  try { localStorage.setItem('nsk.reg', JSON.stringify(doc)); } catch (e){ LS_ERR = e; }
+  try { localStorage.setItem('nsk.reg', JSON.stringify(doc)); lsSet('nsk14.regver', doc.ver); } catch (e){ LS_ERR = e; }
   logEvent('نشرُ سجلِّ النقاط في القاعدة — ' + n + ' نقطة · ' + doc.ver);
   toast(t('نُشر السجلُّ في القاعدة')); render(1);
 }

@@ -35,8 +35,19 @@ export function regMust(){
   if (!R) throw new Error('سجلُّ النقاط غيرُ متاح: لا data/registry.json ولا سجلَّ مضمَّنًا — شغّل scripts/reg-fetch.mjs بمفتاح الخدمة');
   return R;
 }
+/* (V38.88) the published copy is one JSON string (json) — the database refuses arrays inside arrays */
+export function regDecodeDoc(v){
+  if (v && typeof v.json === 'string'){ try { return Object.assign(JSON.parse(v.json), { ver: v.ver || '', at: v.at || 0, by: v.by || '' }); } catch { return null; } }
+  return v || null;
+}
+/* the fingerprint the app computes (regVer) — the same key order, the same hash */
+export function regVer(R){
+  const s = JSON.stringify({ z: R.z, t: R.t, w: R.w, co: R.co, dm: R.dm, g: R.g, p: R.p });
+  let h = 5381; for (let i = 0; i < s.length; i++) h = (Math.imul(h, 33) ^ s.charCodeAt(i)) >>> 0;
+  return h.toString(36) + '.' + s.length.toString(36);
+}
 export async function regFromDb(db){
   const d = await db.collection('settings').doc('registry').get();
-  const v = d.exists ? d.data() : null;
+  const v = regDecodeDoc(d.exists ? d.data() : null);
   return ok(v) ? v : null;
 }

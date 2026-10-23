@@ -101,6 +101,14 @@ T((uc.match(/doc\('cost'\)\.set\(/g) || []).length === 1 && /merge: false/.test(
   T(/o\[pg\] = Math\.max\(\+cur\[pg\] \|\| 0, \+usage\.days\[day\]\[pg\] \|\| 0\)/.test(pl), 'والنبضُ الصباحيُّ يدمج اليومَ بالأكبر — لا يستبدله بمجموعٍ أصغر');
 }
 
+/* (V38.88) the registry published as one string, the previous copy kept, after every promotion */
+{
+  const rp = readFileSync('scripts/reg-publish.mjs', 'utf8'), se = readFileSync('.github/workflows/season.yml', 'utf8');
+  T(/doc\('registryPrev'\)\.set\(/.test(rp) && rp.indexOf("doc('registryPrev')") < rp.indexOf('await ref.set(') && /json: JSON\.stringify\(rec\)/.test(rp) && /cur\.data\(\)\.ver === ver/.test(rp),
+    'نشرُ سجلِّ النقاط نصٌّ واحدٌ ببصمته، ولا يُكتَب إلا إن تغيّر، والنسخةُ السابقةُ تُحفَظ قبله — لا يُمحى شيء');
+  T(/node scripts\/reg-publish\.mjs/.test(se), 'ويجري بعد كلِّ ترقيةٍ في سير التغذية');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ try { dom.window.close(); } catch {} process.exit(1); }
 console.log('جردُ الاستعمال نظيف \u2705'); try { dom.window.close(); } catch {} process.exit(0);

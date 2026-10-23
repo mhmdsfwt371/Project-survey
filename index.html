@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.87</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.88</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -3540,6 +3540,14 @@ function regLocal(){
   catch (e){ LS_ERR = e; return null; }
 }
 if (regEmpty(SITES_RAW)) SITES_RAW = regLocal() || { z:[], t:[], w:[], co:[], dm:[], g:[], p:[] };
+
+function regDecode(d){
+  if (!d) return null;
+  if (typeof d.json === 'string'){
+    try { var R = JSON.parse(d.json); R.ver = d.ver || ''; R.at = +d.at || 0; R.by = d.by || ''; return R; } catch (e){ LS_ERR = e; return null; }
+  }
+  return d;
+}
 function regVer(R){
   var s = JSON.stringify({ z:R.z, t:R.t, w:R.w, co:R.co, dm:R.dm, g:R.g, p:R.p }), h = 5381;
   for (var i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
@@ -3550,13 +3558,13 @@ function regEnsure(){
   if (!FB.ready || !FB.db || regEnsure.busy) return;
   regEnsure.busy = 1;
   DB.col('settings').doc('registry').get().then(function(doc){
-    var d = (doc && doc.exists) ? doc.data() : null;
+    var d = (doc && doc.exists) ? regDecode(doc.data()) : null;
     STATE.regInfo = d ? { ver:d.ver || '', at:+d.at || 0, by:d.by || '', n:((d.g || []).length + (d.p || []).length) } : { none:true };
     if (!d || regEmpty(d)) return;
     var cur = regLocal();
     if (!cur || cur.ver !== d.ver){
-      try { localStorage.setItem('nsk.reg', JSON.stringify(d)); } catch (e){ LS_ERR = e; softErr('تخزين سجل النقاط', e, ''); }
-    }
+      try { localStorage.setItem('nsk.reg', JSON.stringify(d)); lsSet('nsk14.regver', d.ver || ''); } catch (e){ LS_ERR = e; softErr('تخزين سجل النقاط', e, ''); }
+    } else if (cur && cur.ver && lsGet('nsk14.regver') !== cur.ver){ lsSet('nsk14.regver', cur.ver); }
     if (regEmpty(SITES_RAW) && typeof location !== 'undefined') location.reload();
   }).catch(function(e){ softErr('سجل النقاط', e, ''); }).then(function(){ regEnsure.busy = 0; if (CUR === 'exp') render(1); });
 }
@@ -3567,9 +3575,10 @@ function regPublish(){
   if (!confirm(t('يُنشَر سجلُّ النقاط في القاعدة لحسابات الفريق المسجَّلة') + ' (' + n + '). ' + t('متابعة؟'))){ toast(t('لم يُنشَر — أُلغي')); return; }
   var doc = { z:SITES_RAW.z, t:SITES_RAW.t, w:SITES_RAW.w, co:SITES_RAW.co || [], dm:SITES_RAW.dm || [], g:SITES_RAW.g, p:SITES_RAW.p };
   doc.ver = regVer(doc); doc.at = Date.now(); doc.by = STATE.meta.name || '';
-  CORE.set('cfg', 'registry', doc); CORE.saveSoon();
+
+  CORE.set('cfg', 'registry', { json:JSON.stringify({ z:doc.z, t:doc.t, w:doc.w, co:doc.co, dm:doc.dm, g:doc.g, p:doc.p }), ver:doc.ver, at:doc.at, by:doc.by, n:n }); CORE.saveSoon();
   STATE.regInfo = { ver:doc.ver, at:doc.at, by:doc.by, n:n };
-  try { localStorage.setItem('nsk.reg', JSON.stringify(doc)); } catch (e){ LS_ERR = e; }
+  try { localStorage.setItem('nsk.reg', JSON.stringify(doc)); lsSet('nsk14.regver', doc.ver); } catch (e){ LS_ERR = e; }
   logEvent('نشرُ سجلِّ النقاط في القاعدة — ' + n + ' نقطة · ' + doc.ver);
   toast(t('نُشر السجلُّ في القاعدة')); render(1);
 }
@@ -17131,6 +17140,7 @@ function presenceBeat(force){
               on:(typeof navigator === 'object' && navigator.onLine !== false) };
   if (typeof rdhLast === 'function') doc[rdhKey()] = rdhLast(7);
   if (typeof pghLast === 'function' && typeof rdhKey === 'function') doc['pgh_' + rdhKey().slice(4)] = pghLast(7);
+  doc.reg = lsGet('nsk14.regver') || '';
   STATE.presence = STATE.presence || {};
   STATE.presence[u] = doc;
   CORE.dirty('presence', u, doc);
@@ -30225,6 +30235,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.87"></script>
+<script defer src="app-office.js?v=38.88"></script>
 </body>
 </html>

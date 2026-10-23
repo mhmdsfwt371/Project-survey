@@ -29,6 +29,12 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: node scripts/season-seed.mjs | tee /tmp/seed.txt | tee -a $GITHUB_STEP_SUMMARY
+      # (V38.88) سجلُّ النقاط منشورًا في القاعدة كما في الملف — تخزّنه الأجهزةُ بعد الدخول قبل أن يخرج من الملف
+      - name: سجلُّ النقاط في القاعدة
+        if: always()
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/reg-publish.mjs | tee -a /tmp/seed.txt
       # النتيجةُ تعليقًا على الالتزام: تُقرأ من الواجهة بلا فتح السجلّ (V17.89)
       - name: النتيجةُ على الالتزام
         if: always()

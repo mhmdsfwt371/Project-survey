@@ -55,6 +55,7 @@ function presenceBeat(force){
               on:(typeof navigator === 'object' && navigator.onLine !== false) };
   if (typeof rdhLast === 'function') doc[rdhKey()] = rdhLast(7);   /* (V38.80) this device's reads per billing day — one string field per device */
   if (typeof pghLast === 'function' && typeof rdhKey === 'function') doc['pgh_' + rdhKey().slice(4)] = pghLast(7);   /* (V38.84) its page opens per day, the same way */
+  doc.reg = lsGet('nsk14.regver') || '';   /* (V38.88) the points registry this device holds for offline work — checked on every active device before it leaves the app file */
   STATE.presence = STATE.presence || {};
   STATE.presence[u] = doc;
   CORE.dirty('presence', u, doc);
