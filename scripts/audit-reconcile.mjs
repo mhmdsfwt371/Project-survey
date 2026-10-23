@@ -76,8 +76,9 @@ T(kpi(over, 'إجمالي المواقع') === TOTAL && after(sv, 'الكل') ==
 T(kpi(over, 'تمت الزيارة') === VISITED && ch('sv') === VISITED && after(svd, 'نقاطٌ تمت زيارتها') === VISITED,
   'زيرت (بأيِّ نتيجة) رقمٌ واحدٌ في الملخّص والسلسلة وتفاصيل المسح: ' + VISITED);
 T(after(sv, 'تمت الزيارة') === VISITED && after(sv, 'تم الوصول') === SURVEYED && SURVEYED + N_STUCK + N_REV === VISITED, 'وشاشةُ المسح تقسّمها: مُسح ' + SURVEYED + ' + متعذّر ' + N_STUCK + ' + تحتاج زيارة ' + N_REV + ' = ' + VISITED);
-T(kpi(over, 'متعذّر') === N_STUCK && after(sv, 'متعذّر') === N_STUCK, 'والمتعذّرُ رقمٌ واحدٌ في الملخّص وشاشة المسح: ' + N_STUCK);
-T(after(sv, 'تحتاج زيارة أخرى') === N_REV, 'والمردودُ يُعَدُّ وحدَه في شاشة المسح: ' + N_REV);
+/* (V39.0) the Ministry follow-up's names: who did not reach is «تحتاج زيارة أخرى», who was returned «أعادها المهندس» */
+T(kpi(over, 'تحتاج زيارة أخرى') === N_STUCK && after(sv, 'تحتاج زيارة أخرى') === N_STUCK, 'و«تحتاج زيارة أخرى» (من لم يصل) رقمٌ واحدٌ في الملخّص وشاشة المسح — باسم متابعة الوزارة: ' + N_STUCK);
+T(after(sv, 'أعادها المهندس') === N_REV, 'و«أعادها المهندس» يُعَدُّ وحدَه في شاشة المسح: ' + N_REV);
 T(kpi(over, 'مُركّب') === N_INS && ch('ins') === N_INS, 'والمُركَّبُ رقمٌ واحدٌ في الملخّص والسلسلة: ' + N_INS);
 T(kpi(over, 'لم يُزر') === NOT_VISITED && after(sv, 'لم يُزر') === NOT_VISITED, 'و«لم يُزر» = المواقعُ − السجلات: ' + NOT_VISITED);
 T(ch('ok') === N_QA, 'والاعتمادُ بعد التدقيق = ما دُقِّق: ' + N_QA);

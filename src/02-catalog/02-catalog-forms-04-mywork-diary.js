@@ -277,7 +277,7 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
         + inboxCard()
         + stats([['إسناداتٌ مفتوحة', N(open), 'acc'], ['مشرفون', N(sups.length)],
                     ['تمّت — تنتظر اعتمادك', N(pend), pend ? 'wrn' : ''],
-                    ['تحتاج زيارة أخرى', N(rev), rev ? 'bad' : '']])
+                    ['أعادها المهندس', N(rev), rev ? 'bad' : '']])   /* (V39.0) the Ministry follow-up's name */
         + (pend ? alertBox('info', nm(pend) + ' ' + t('زيارةً تنتظر اعتمادك — من «اعتماد الزيارات».'))
                   + '<div class="actions" style="margin:-4px 0 12px">' + btn('✅ ' + t('اعتماد الزيارات'),'btn-primary btn-sm',' data-p="svappr"') + '</div>' : '')
         + (sups.length

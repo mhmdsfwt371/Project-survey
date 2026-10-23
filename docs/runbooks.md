@@ -66,7 +66,7 @@
 
 **ماذا يفعل:** يفحص كلَّ دفعةٍ إلى فرع التجربة (staging) بالطبقة السريعة ثم المتصفّح الحقيقيّ ومحاكي القواعد، ويرقّي إلى الأصل (main) إن اخضرّت؛ والجردُ الكاملُ (١٥٠ خطوة على أربع شرائح) ليلًا ٢:٣٠ بمكة ببريدٍ إن سقط. ومنذ V38.82 **تكمل سلسلةُ النشر وحدَها على الخادم**: البوابةُ الخضراءُ تُطلق القائمةَ الكاملةَ على الالتزام نفسِه، والقائمةُ الخضراءُ (مهمّة `chain`) ترقّي ذلك الالتزامَ بعينه إلى الأصل ثم يعمل النشرُ وفحصُ ما بعده — بلا انتظار أداة النشر.
 
-**ماذا يشغّل:** `scripts/audit-accounts.mjs`، `scripts/audit-adr.mjs`، `scripts/audit-agents.mjs`، `scripts/audit-asnq.mjs`، `scripts/audit-att.mjs`، `scripts/audit-backup.mjs`، `scripts/audit-basemap.mjs`، `scripts/audit-bidi.mjs`، `scripts/audit-boot.mjs`، `scripts/audit-box.mjs`، `scripts/audit-bridge.mjs`، `scripts/audit-brief.mjs`، `scripts/audit-core-alone.mjs`، `scripts/chain-alert.mjs`، `scripts/train-promote.mjs`
+**ماذا يشغّل:** `scripts/audit-accounts.mjs`، `scripts/audit-adr.mjs`، `scripts/audit-agents.mjs`، `scripts/audit-asnq.mjs`، `scripts/audit-att.mjs`، `scripts/audit-backup.mjs`، `scripts/audit-basemap.mjs`، `scripts/audit-bidi.mjs`، `scripts/audit-boot.mjs`، `scripts/audit-box.mjs`، `scripts/audit-bridge.mjs`، `scripts/audit-brief.mjs`، `scripts/audit-core-alone.mjs`، `scripts/audit-same-label.mjs`، `scripts/chain-alert.mjs`، `scripts/train-promote.mjs`
 
 **إن سقط:** لا يُرقّى شيء، ويُفتح بلاغٌ في المستودع يذكر المالكَ باسمه (يصله بالبريد من جيت هب، وبالبريد العاديّ أيضًا متى ضُبطت أسرارُه) بالمرحلة والسبب — `scripts/chain-alert.mjs`. اقرأ تعليقَ البوابة على الالتزام وسطرَ «✗»، أصلِح محليًّا بـ`node scripts/fast-run.mjs` ثم ادفع. وإن لم تنطلق حلقةٌ من السلسلة فـ`release-now.mjs` يكملها يدويًّا.
 

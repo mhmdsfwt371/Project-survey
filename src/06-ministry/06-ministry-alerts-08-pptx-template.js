@@ -425,7 +425,7 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
           '<p class="hint" style="margin-top:0">' + esc(t('اختر مشعرًا لتقرأ أرقامَه وحدَه — وبلا اختيارٍ الأرقامُ للكلِّ نسبًا من الكلّ.')) + '</p>'
           + overZoneCards(K))
       + stats([['إجمالي المواقع', N(S.n)], ['تمت الزيارة', N(S.sv), 'acc'], ['متبقٍّ', N(S.n - S.sv), S.n - S.sv ? 'wrn' : 'ok'],
-               ['مُركّب', N(S.ins), 'ok'], ['لم يُزر', N(S.noRec)], ['متعذّر', N(S.stuck), S.stuck ? 'wrn' : '']])
+               ['مُركّب', N(S.ins), 'ok'], ['لم يُزر', N(S.noRec)], ['تحتاج زيارة أخرى', N(S.stuck), S.stuck ? 'wrn' : '']])   /* (V39.0) */
       + card(t('تقدّم المشروع') + ' \u2014 ' + zl, meter('تقدّم المسح من إجمالي المواقع', S.sv, S.n)
                             + meter('نسبة التركيب من إجمالي المشروع', S.ins, S.n)
                             + '<p class="hint">' + esc(t('أُنجز')) + ' <b class="num">' + nm(pc) + '٪</b> \u00b7 ' + esc(t('وبقي')) + ' <b class="num">' + nm(100 - pc) + '٪</b>'
@@ -653,8 +653,11 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
 
     var views = [['','الكل', all.length],
                  ['done','تم الوصول', all.length - blocked.length - revisit.length],   /* (V32.6/V32.7) «تمت الزيارة» الكلُّ بأيِّ نتيجة — و«تم الوصول» تقسيمٌ داخله بمصطلح نموذج الزيارة */
-                 ['revisit','تحتاج زيارة أخرى', revisit.length],
-                 ['block','متعذّر', blocked.length]];
+                 /* (V39.0) owner: «متابعة الوزارة كويسة — عايزها زي ما هي» and the same numbers on every page: the Ministry
+                    follow-up calls a visit that could not reach its point «تحتاج زيارة أخرى», and one the engineer returned
+                    «أعادها المهندس» — the field said «متعذّر» and «تحتاج زيارة أخرى» for the same two sets */
+                 ['block','تحتاج زيارة أخرى', blocked.length],
+                 ['revisit','أعادها المهندس', revisit.length]];
     var html = '<div class="chips">' + views.map(function(v){
         return '<button type="button" class="chip' + (SURV_ST===v[0]?' on':'')
           + '" data-survst="' + v[0] + '">' + esc(t(v[1]))
@@ -663,8 +666,8 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
       + stats([['تمت الزيارة', N(S.surveyed), 'acc'],   /* (V32.6) بأيِّ نتيجة */
                        ['لم يُزر', N(siteKeyStats().total.noRec)],
                        ['اليوم', N(todayN)], ['هذا الأسبوع', N(weekN)],
-                       ['متعذّر', N(blocked.length), blocked.length ? 'wrn' : 'ok'],
-                      ['تحتاج زيارة أخرى', N(revisit.length), revisit.length ? 'wrn' : '']])
+                       ['تحتاج زيارة أخرى', N(blocked.length), blocked.length ? 'wrn' : 'ok'],   /* (V39.0) the Ministry's name */
+                      ['أعادها المهندس', N(revisit.length), revisit.length ? 'wrn' : '']])
 
       + card('بحث في السجلّ',
           '<input type="search" id="survQ" value="' + esc(SURV_Q)
@@ -777,14 +780,14 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
 
     var views = [['pending','بانتظار اعتمادك', lists.pending.length],
                  ['approved','معتمدة', lists.approved.length],
-                 ['revisit','تحتاج زيارة أخرى', lists.revisit.length]];
+                 ['revisit','أعادها المهندس', lists.revisit.length]];   /* (V39.0) the Ministry follow-up's name for a returned visit */
     var html = '<div class="chips">' + views.map(function(v){
         return '<button type="button" class="chip' + (SVA_ST === v[0] ? ' on' : '')
           + '" data-svast="' + v[0] + '">' + esc(t(v[1])) + ' <span class="num">' + nm(v[2]) + '</span></button>';
       }).join('') + '</div>'
       + stats([['بانتظار اعتمادك', N(S.pending), S.pending ? 'wrn' : ''],
                ['معتمدة', N(S.approved), 'ok'],
-               ['تحتاج زيارة أخرى', N(S.revisit), S.revisit ? 'bad' : ''],
+               ['أعادها المهندس', N(lists.revisit.length), lists.revisit.length ? 'bad' : ''],   /* (V39.0) the chip's own list */
                ['لم يُزر', N(siteKeyStats().total.noRec)]])
       + card('بحث', '<input type="search" id="svaQ" data-svaq value="' + esc(SVA_Q) + '" placeholder="'
           + esc(t('ابحث بالنقطة أو الاسم أو المشرف')) + '" dir="auto">');
@@ -996,7 +999,11 @@ function chalEngTools(){
 function svaLists(){
   var lists = { pending:[], approved:[], revisit:[] };
   surveyList().filter(function(x){ return x.rec && (x.rec.review || x.done); })
-    .forEach(function(x){ var rv = svReview(x.rec); if (lists[rv]) lists[rv].push(x); });
+    .forEach(function(x){ var rv = svReview(x.rec);
+      /* (V39.0) «أعادها المهندس» is a returned visit that reached its point — the Ministry follow-up's definition; one that did
+         not reach is «تحتاج زيارة أخرى» there and here, and its decision lives in «المتعذّر» */
+      if (rv === 'revisit' && !svReached(x.rec)) return;
+      if (lists[rv]) lists[rv].push(x); });
   return lists;
 }
 function svaFilter(rows){

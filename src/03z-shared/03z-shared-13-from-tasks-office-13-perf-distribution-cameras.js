@@ -101,8 +101,8 @@ function siteKeyStats(){
 /* حالةُ المسح بكلمةٍ واحدةٍ — للقوائم والإكسل، بالتعريف نفسِه */
 function svLabel(r){
   if (!r) return 'لم يُزر';
-  if (svStuck(r)) return 'متعذّر';                        /* من لم يصل — بالتعريف نفسِه (V17.77) */
-  if (r.review === 'revisit') return 'تحتاج زيارة أخرى';
+  if (svStuck(r)) return 'تحتاج زيارة أخرى';              /* من لم يصل — بالتعريف نفسِه (V17.77) · (V39.0) باسم متابعة الوزارة */
+  if (r.review === 'revisit') return 'أعادها المهندس';
   return r.review === 'approved' ? 'معتمدة' : 'تمت الزيارة';
 }
 
