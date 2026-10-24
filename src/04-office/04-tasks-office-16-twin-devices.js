@@ -96,5 +96,5 @@ function dtwCardHtml(p){
 function dtwClick(f, ev){
   var p = f && f.properties; if (!p || !window.maplibregl) return;
   if (ev && ev.originalEvent) ev.originalEvent._nskIot = true;   /* the ground and the point under it do not take this tap */
-  try { new maplibregl.Popup({ closeButton:true, maxWidth:'280px' }).setLngLat(ev.lngLat).setHTML('<div class="iot-pop" dir="auto">' + dtwCardHtml(p) + '</div>').addTo(M3); } catch (e){ LS_ERR = e; }
+  m3PopOpen(ev.lngLat, dtwCardHtml(p), '280px');   /* (V39.33) one popup, a real X, a tap outside closes it */
 }

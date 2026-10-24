@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V39.32",
+  "app_version": "V39.33",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2294,7 +2294,8 @@
   "V39.29": "04-tasks-office-20-map3d-overview.js (PREFIX m3ov): m3ovKey(x, z) مشعرٌ تحت ١٢٫٥ ثم شبكة ٤٥٠ م ثم ٢٥٠ م من ١٣٫٥ · m3ovGroups(z) العدد والألوان والحدود · m3ovDonut حلقة SVG مقسومة بالألوان · m3ovPaint: تحت ١٤٫٥ علامات maplibregl.Marker للمجموعات (fitBounds باللمس) وnsk-pts/nsk-cols مخفيّة، ومن ١٧ علامات الشواخص (٦٠ الأقرب، data-site) · m3ovClear مع m3Off · m3ui: زرّ 📍 ولوح المناظر m3uiViews/m3uiViewGo (fitBounds من نقاط المشعر)/m3uiViewSave/m3uiViewList (localStorage nsk.m3views، ١٢ منظرًا) · لوح الطبقات: «العرض» data-m3agg/data-m3lab · الأسطورة: data-lgk يرشّح FILT.life في المسح وFILT.stg (mode:stage) في التركيب والفك؛ modeStageOf؛ مفتاح ذاكرة filtered() بـstg والمسار والدور · سيناريو ٦١ (٣٤٤ فحصًا)",
   "V39.30": "m3uiTop: .m3-seg (مفتاح مقسوم بثلاث m3-segb، aria-pressed) بدل chip-pair (صُنع لنصفين فينزع حافّة الأول)؛ m3-ic للبحث والمناظر؛ .map-top.m3-top يلتفّ (flex-wrap:wrap) كقرار V17.41 · CSS: #m3Box .maplibregl-ctrl-bottom-right فوق شريط الحالة على المكتب ومخفيّ على الهاتف · phPinOn افتراضيًّا مطفأ، من تقريب ١٨ و٢٤ دبّوسًا · nsk-iot من ١٨٫٥ وdtw من ١٨٫٥ · سيناريو ٦٢ و٥٣ و٦٠ محدَّثة (٣٤٨ فحصًا)",
   "V39.31": "05-lifecycle-map-21-move-devices.js (PREFIX mvd): mvdItems(id) النقطة (may edit) ووحدات التركيب code#i (inss.pos أو حلقة ١٫٦ م حول بوابة الشارع) وحساسات/جيت واي الخطّة (mayIot) · mvdPaint دبابيس قابلة للسحب: maplibregl.Marker draggable في المجسّم وL.marker draggable في المسطّحة · mvdSet: النقطة بـmoveApply نفسه (تجاوز الموقع وعودة الزيارة للمراجعة والسجل)، والوحدة في inss.pos، والحساس/الجيت واي في خطّة المخيم بـsiteOvSet مع iotMax؛ logEvent لكلٍّ · mvdUndo آخر سحبة · mvdBarHtml · زرّ data-mvd في النافذة؛ data-mvdx/data-mvdundo · dtwFeatures والمحرّك الثلاثي يقفان بالوحدة في inss.pos · clickAMapViews: معالجات الخريطة منذ V39.28 خارج clickAPart7 (تحت ١٥٠ سطرًا) · سيناريو ٦٣ (٣٥٧ فحصًا)",
-  "V39.32": "m3uiState().terrain افتراضيًّا false (لا setTerrain) — DEM بخلايا ١٠ م يعلو قاعدة ٠٫٥–١٫٢ م على المنحدر فيدفنها بخطّ منحنٍ · m3IotFeatures: منارة الحساس iotSq 0.8 (١٫٦ م) من ٤٫٨ إلى ٦ م والجيت واي ١٫١ (٢٫٢ م) إلى ٧٫٢ م، وساق stem للحساس ٠٫٢٤ م من ١٫٨ إلى ٤٫٨ م · nsk-iot من تقريب ١٨ مع الخيام · سيناريو ٦٤ و٤٥ و٥٥ محدَّثة (٣٦١ فحصًا)"
+  "V39.32": "m3uiState().terrain افتراضيًّا false (لا setTerrain) — DEM بخلايا ١٠ م يعلو قاعدة ٠٫٥–١٫٢ م على المنحدر فيدفنها بخطّ منحنٍ · m3IotFeatures: منارة الحساس iotSq 0.8 (١٫٦ م) من ٤٫٨ إلى ٦ م والجيت واي ١٫١ (٢٫٢ م) إلى ٧٫٢ م، وساق stem للحساس ٠٫٢٤ م من ١٫٨ إلى ٤٫٨ م · nsk-iot من تقريب ١٨ مع الخيام · سيناريو ٦٤ و٤٥ و٥٥ محدَّثة (٣٦١ فحصًا)",
+  "V39.33": "m3PopOpen(ll, html, maxW) في نواة المجسّم: نافذة MapLibre واحدة متتبَّعة (closeButton وcloseOnClick، التالية تُغلق السابقة) ومستمع pointerdown واحد على المستند يُغلقها بأي لمسة خارجها (إلا لمسة الفتح ٢٥٠ مللي ثانية) · m3PopClose · m3HoverOk (hover:hover وpointer:fine) — m3Hover لا يفتح على اللمس ولا فوق بطاقة مفتوحة · بطاقات الحساس (m3IotClick) والجهاز (dtwClick) والنموذج (teClick) تمرّ بها · CSS: إكس ٣٦ بكسل وهامش النص · سيناريو ٦٥ (٣٦٦ فحصًا)"
   },
   "map_and_geolocation": {
     "tile_layers": {

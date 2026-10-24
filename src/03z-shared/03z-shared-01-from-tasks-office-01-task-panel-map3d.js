@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-01-from-tasks-office-01-task-panel-map3d.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/04-office/04-tasks-office-01-task-panel-map3d.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : m3Height, m3Points, m3Cols, m3Count, m3Paint
+   DEFINES : m3Height, m3Points, m3Cols, m3Count, m3Paint, m3PopOpen, m3PopClose, m3HoverOk
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ═══ الخريطةُ ثلاثيةً — زرٌّ واحدٌ على الخريطة نفسِها ═══
@@ -112,3 +112,34 @@ function m3Paint(){
   try { if (typeof m3ovPaint === 'function') m3ovPaint(); } catch (e9){ LS_ERR = e9; }   /* (V39.29) the groups and labels follow the data */   /* (V39.24) the models follow the data — and appear on entering 3D already close */
   m3Count(P);
 }
+
+/* (V39.33) owner: «علامة الإكس محتاجها تشتغل، ولو ضغطت أي مكان على الشاشة البوب أب تختفي». Three popup kinds opened their
+   own MapLibre popups (the sensor card, the device card, the 3D model's card) and none knew of the others; the X was the
+   engine's 14-px glyph — too small for a finger; and the hover tooltip (no X, never closing on a tap) opened on a phone too,
+   because a tap fires the mouse's move. Now one popup at a time: the next replaces it, its X is a 36-px target, and a tap
+   anywhere outside it closes it. */
+function m3PopOpen(ll, html, maxW){
+  m3PopClose();
+  if (typeof M3 === 'undefined' || !M3 || !window.maplibregl) return null;
+  try {
+    var p = new maplibregl.Popup({ closeButton:true, closeOnClick:true, closeOnMove:false, maxWidth:maxW || '280px', className:'m3-pop' })
+      .setLngLat(ll).setHTML('<div class="iot-pop" dir="auto">' + html + '</div>').addTo(M3);
+    p.on('close', function(){ if (m3PopOpen.p === p) m3PopOpen.p = null; });
+    m3PopOpen.p = p; m3PopOpen.at = Date.now();
+    if (!m3PopOpen.wired){ m3PopOpen.wired = true;
+      document.addEventListener('pointerdown', function(e){   /* a tap anywhere outside the popup closes it */
+        if (!m3PopOpen.p || (e.target && e.target.closest && e.target.closest('.maplibregl-popup'))) return;
+        if (Date.now() - (m3PopOpen.at || 0) < 250) return;   /* the tap that opened it */
+        m3PopClose();
+      }, true);
+    }
+    return p;
+  } catch (e){ LS_ERR = e; return null; }
+}
+function m3PopClose(){
+  var p = m3PopOpen.p; m3PopOpen.p = null;
+  if (p){ try { p.remove(); } catch (e){ LS_ERR = e; } }
+  if (typeof m3Hover === 'function'){ try { m3Hover(null); } catch (e2){ LS_ERR = e2; } }
+}
+/* a hover tooltip only where there is a hover: a mouse, not a finger */
+function m3HoverOk(){ try { return !!(window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches); } catch (e){ LS_ERR = e; return false; } }

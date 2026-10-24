@@ -1742,6 +1742,28 @@ console.log('\n══ ٦٤ · المخيمُ كاملًا والحساساتُ �
   w.siteOvSet(camp.id, { iot:null });
 }
 
+/* ── ٦٥ · (V39.33) النوافذُ تُغلَق: بالإكس، وبأيِّ لمسةٍ خارجها، والتالية تحلّ محلَّ السابقة، ولا تلميحَ عائمَ على الهاتف ── */
+console.log('\n══ ٦٥ · إغلاقُ النوافذ ══');
+{
+  const removed = [], made = [];
+  const M30 = w.M3, ML0 = w.maplibregl, mm0 = w.matchMedia;
+  w.M3 = { getCanvas:() => ({ style:{} }) };
+  w.maplibregl = { Popup:function(o){ const self = this; this.o = o; this.h = {}; made.push(this);
+    this.setLngLat = () => self; this.setHTML = () => self; this.addTo = () => self; this.on = (k, f) => { self.h[k] = f; return self; };
+    this.remove = () => { removed.push(self); if (self.h.close) self.h.close(); return self; }; } };
+  const p1 = w.m3PopOpen({ lng:39.9, lat:21.4 }, 'a');
+  T(!!p1 && p1.o.closeButton === true && p1.o.closeOnClick === true, 'نافذةُ الجهاز بإكسٍ وتُغلَق بلمسة الخريطة');
+  const p2 = w.m3PopOpen({ lng:39.9, lat:21.4 }, 'b');
+  T(removed.indexOf(p1) > -1 && w.m3PopOpen.p === p2, 'والتاليةُ تحلّ محلَّ السابقة — نافذةٌ واحدةٌ في كلِّ مرة');
+  w.m3PopOpen.at = 0; w.document.body.dispatchEvent(new w.Event('pointerdown', { bubbles:true }));
+  T(removed.indexOf(p2) > -1 && !w.m3PopOpen.p, 'ولمسةٌ في أيِّ مكانٍ خارجها تُغلقها');
+  w.matchMedia = () => ({ matches:false });
+  T(w.m3HoverOk() === false, 'وعلى الهاتف (لا مؤشّر) لا تلميحَ يعلق — اللمسةُ كانت تفتحه ولا يُغلَق');
+  w.matchMedia = mm0; w.M3 = M30; w.maplibregl = ML0;
+  const css = w.document.documentElement.innerHTML;
+  T(/maplibregl-popup-close-button\{width:36px;height:36px/.test(css), 'وإكسُ النافذة ٣٦ بكسل — هدفٌ للإصبع لا رمزٌ ١٤ بكسل');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

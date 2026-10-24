@@ -135,7 +135,7 @@ function m3IotClick(f, ev){
   var E = IOT.edit;
   if (E && E.id === p.camp){ E.sel = { k:p.kind, i:+p.i }; E.add = false; E.addGw = false; iotPaint(); render(1); return; }
   var html = iotDevHtml(p.camp, p.kind, +p.i); if (!html || !window.maplibregl) return;
-  try { new maplibregl.Popup({ closeButton:true, maxWidth:'280px' }).setLngLat(ev.lngLat).setHTML('<div class="iot-pop" dir="auto">' + html + '</div>').addTo(M3); } catch (e){ LS_ERR = e; }
+  m3PopOpen(ev.lngLat, html, '280px');   /* (V39.33) one popup, a real X, a tap outside closes it */
 }
 function iotNextId(E, pre){ var used = {}; (pre === 'S' ? E.sm : E.gm).forEach(function(m){ used[m.id] = 1; }); var n = 1; while (used[E.id + '-' + pre + (pre === 'S' ? iotPad(n) : n)]) n++; return E.id + '-' + pre + (pre === 'S' ? iotPad(n) : n); }
 function iotMapClick(ll){

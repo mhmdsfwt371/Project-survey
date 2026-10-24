@@ -205,7 +205,7 @@ function teClick(ev){
   var u = teRay(ev.point); if (!u || u.kind === 'tent') return false;
   if (ev.originalEvent) ev.originalEvent._nskTe = true;
   var html = u.kind === 's' || u.kind === 'g' ? iotDevHtml(u.camp, u.kind, u.i) : dtwCardHtml({ site:u.site, code:u.code, i:0, serial:u.serial });
-  try { new maplibregl.Popup({ closeButton:true, maxWidth:'290px' }).setLngLat(ev.lngLat).setHTML('<div class="iot-pop" dir="auto">' + html + '</div>').addTo(M3); } catch (e){ LS_ERR = e; }
+  m3PopOpen(ev.lngLat, html, '290px');   /* (V39.33) */
   return true;
 }
 

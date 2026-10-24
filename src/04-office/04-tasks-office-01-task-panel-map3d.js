@@ -190,6 +190,8 @@ function m3Init(){
 /* (V39.17) the hover tooltip: one small popup, moved with the mouse, gone when it leaves */
 function m3Hover(ev, html){
   if (!ev || !html){ if (m3Hover.p){ try { m3Hover.p.remove(); } catch (e){ LS_ERR = e; } m3Hover.p = null; } if (M3) M3.getCanvas().style.cursor = ''; return; }
+  if (!m3HoverOk()) return;   /* (V39.33) a finger has no hover: on a phone the tap's own mouse-move opened a tooltip that never closed */
+  if (m3PopOpen.p) return;    /* a card is open: no tooltip over it */
   try {
     if (!m3Hover.p) m3Hover.p = new maplibregl.Popup({ closeButton:false, closeOnClick:false, maxWidth:'260px', offset:10 });
     m3Hover.p.setLngLat(ev.lngLat).setHTML('<div class="iot-pop" dir="auto" style="font-size:12.5px">' + html + '</div>').addTo(M3);
