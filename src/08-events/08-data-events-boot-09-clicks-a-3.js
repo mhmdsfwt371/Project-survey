@@ -150,6 +150,7 @@ function clickAPart7(e){
   var svd = e.target.closest('[data-svd]');
   if (svd){ sk = svd.getAttribute('data-svd'); SVD_PICK = (SVD_PICK === sk ? '' : sk); render(1); return true; }
   if (e.target.closest('[data-svdxls]')){ svdXls(); return true; }
+  if (e.target.closest('[data-heat]')){ heatPaint.on = !heatPaint.on; heatPaint(); heatPaint3d(); render(); return true; }   /* (V39.16) */
   if (e.target.closest('[data-cov]')){ covPaint.on = !covPaint.on; covPaint(); covPaint3d(); render(); return true; }   /* (V39.14) */
   if (e.target.closest('[data-twin]') && typeof dtwPaint === 'function'){ dtwPaint.on = dtwPaint.on === false; dtwPaint(); render(); return true; }   /* (V39.13) */
   var mqb = e.target.closest('[data-mapq]');   /* (V39.4) the map search box opens and closes */

@@ -1386,6 +1386,25 @@ console.log('\n══ ٤٩ · طوابقُ منشأة الجمرات في الم
   w.FILT.zone = z0; w.FILT.floor = f0; w.CUR = cur0; w.ROLE = role0; w.STATE.meta.role = role0;
 }
 
+/* ── ٥٠ · (V39.16) الخريطةُ الحرارية: التحدياتُ في المسح والمتبقّي في التركيب ── */
+console.log('\n══ ٥٠ · الخريطة الحرارية ══');
+{
+  const m0 = w.FIELD_MODE, on0 = w.heatPaint.on, cur0 = w.CUR;
+  w.CUR = 'map'; w.FIELD_MODE = 'survey';
+  const all = () => true;
+  const hot = w.heatPoints(all).length, total = w.STATE.sites.filter(x => +x.lat && +x.lng).length;
+  T(hot > 0 && hot < total, 'في وضع المسح تسخن النقاطُ التي سجّلت تحديًا أو لم تُمسح: ' + hot + ' من ' + total);
+  const withCh = w.STATE.sites.find(x => (w.STATE.recs[x.id] || {}).chals && w.STATE.recs[x.id].chals.some(c => c && c !== 'لا توجد تحديات'));
+  const noCh = w.STATE.sites.find(x => (w.STATE.recs[x.id] || {}).chals && w.STATE.recs[x.id].chals.every(c => c === 'لا توجد تحديات') && (w.STATE.recs[x.id].access === 'تم الوصول' || !w.STATE.recs[x.id].access));
+  T(!!withCh && w.heatWeight(withCh) === 1 && !!noCh && w.heatWeight(noCh) === 0, 'نقطةٌ بتحدٍّ ساخنة، ونقطةٌ بلا تحدٍّ ووصلها الفريقُ باردة');
+  w.FIELD_MODE = 'install';
+  const installed = w.STATE.sites.find(x => w.insDone(x.id)), pending = w.STATE.sites.find(x => !w.insDone(x.id) && !(w.STATE.inss || {})[x.id] && +x.lat);
+  T(!!installed && w.heatWeight(installed) === 0 && !!pending && w.heatWeight(pending) === 1, 'وفي وضع التركيب يسخن ما بقي ويبرد ما رُكِّب');
+  T(/data-heat="1"/.test(w.mapUIHtml()) && /الحرارة/.test(w.mapUIHtml()), 'وزرُّ «الحرارة» في صفِّ أزرار الخريطة');
+  T(w.heatColor(0) !== w.heatColor(1) && /^rgb\(255,/.test(w.heatColor(0.5)), 'واللونُ من الأصفر إلى الأحمر');
+  w.FIELD_MODE = m0; w.heatPaint.on = on0; w.CUR = cur0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

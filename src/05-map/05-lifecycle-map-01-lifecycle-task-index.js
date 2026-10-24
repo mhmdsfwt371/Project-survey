@@ -226,7 +226,8 @@ function mapInit(){
   basemapKick();   /* (V24.9) خريطةُ مكة: تُلحَق — وتُنزَّل أوّلَ مرة — بعد الدخول وحين تخمل الصفحة، لا في الإقلاع */
   if (POIL.on.ministry || POIL.on.tafweej) poiPaint();   /* (V25.2) */
   if (IOT.on) iotPaint();
-  if (covPaint.on) covPaint();   /* (V39.14) */   /* (V25.7) */
+  if (covPaint.on) covPaint();   /* (V39.14) */
+  if (heatPaint.on) heatPaint();   /* (V39.16) */   /* (V25.7) */
 
   MAP.on('zoomend moveend', mapPaintMove);   /* (V25.3) التحريكُ رسمةٌ خفيفة، والتقريبُ وسائرُ التغييرات كاملة */
   MAP.on('click', function(e){
