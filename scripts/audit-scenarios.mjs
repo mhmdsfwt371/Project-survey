@@ -1362,6 +1362,30 @@ console.log('\n══ ٤٨ · طبقة التغطية ══');
   delete w.STATE.inss[x.id]; w.ROLE = role0; w.STATE.meta.role = role0; w.CUR = cur0; w.covPaint.on = on0;
 }
 
+/* ── ٤٩ · (V39.15) طوابقُ منشأة الجمرات: النقطةُ وأجهزتُها على دورها في المجسّم، وأزرارُ الأدوار فوق ── */
+console.log('\n══ ٤٩ · طوابقُ منشأة الجمرات في المجسّم ══');
+{
+  const z0 = w.FILT.zone, f0 = w.FILT.floor, cur0 = w.CUR, role0 = w.ROLE;
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.CUR = 'map';
+  const cam = w.STATE.sites.find(x => /الدور الثالث/.test(x.name || '') && +x.lat && +x.lng) || null;
+  T(!!cam && w.siteFloor(cam) === 3 && Math.abs(w.m3Base(cam) - 12.6) < 1e-9, 'كاميرا «الدور الثالث» تقف على ١٢٫٦ م في المجسّم' + (cam ? '' : ' — لا كاميرا بدور في البذرة'));
+  const ground = w.STATE.sites.find(x => x.type === 'مخيم' && +x.lat);
+  T(w.m3Base(ground) === 0, 'والمخيمُ على الأرض');
+  if (cam){
+    w.STATE.inss = w.STATE.inss || {}; const had = w.STATE.inss[cam.id]; w.STATE.inss[cam.id] = { id:cam.id, status:'مُركّب', parts:{ cam_pe:1 }, serials:{} };
+    const M30 = w.M3, d30 = w.MAP_3D; let data = null; w.M3 = { getBounds:() => ({ contains:() => true }), getZoom:() => 17, getSource:() => ({ setData:v => { data = v; } }) }; w.MAP_3D = true; w.dtwPaint.on = true;
+    w.dtwPaint(); const f = data && data.features.find(q => q.properties.site === cam.id);
+    T(!!f && Math.abs(f.properties.base - 12.6) < 1e-9 && f.properties.h > f.properties.base, 'وجهازُها يقف على دورها لا على الأرض');
+    if (had) w.STATE.inss[cam.id] = had; else delete w.STATE.inss[cam.id]; w.M3 = M30; w.MAP_3D = d30;
+  } else T(true, '(لا جهازَ يُختبَر بلا كاميرا بدور)');
+  w.FILT.zone = 'كاميرات المتابعة'; w.FILT.floor = '';
+  const ui = w.mapUIHtml();
+  T((ui.match(/data-ffl="/g) || []).length === 6 && /الدور الثالث|الثالث/.test(ui), 'ومع اختيار كاميرات المتابعة تظهر أزرارُ الأدوار الستة فوق');
+  w.FILT.zone = ''; w.FILT.floor = '';
+  T(!/data-ffl="/.test(w.mapUIHtml()), 'وتختفي حين لا تُختار المنشأة');
+  w.FILT.zone = z0; w.FILT.floor = f0; w.CUR = cur0; w.ROLE = role0; w.STATE.meta.role = role0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

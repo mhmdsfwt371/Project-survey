@@ -17,6 +17,9 @@
 var MAP_3D = false, M3 = null, M3_READY = false, M3_LOADING = null, M3_ERR = '';
 
 /* ارتفاعُ العمود: ما سجّله المسحُ، وإلا افتراضٌ بحسب النوع */
+/* (V39.15) owner: «طوابق منشأة الجمرات» — a point on a floor stands on that floor: 4.2 m per floor, from the name's «الدور …»
+   (siteFloor), so the facility's cameras stack instead of piling on one spot. Ground and the unknown stay at 0. */
+function m3Base(x){ var f = typeof siteFloor === 'function' ? siteFloor(x) : null; return f != null && f > 0 ? f * 4.2 : 0; }
 function m3Height(x){
   var r = STATE.recs[x.id] || {}, h = +r.hgt || 0;
   if (h > 0) return Math.max(2, Math.min(25, h));
@@ -37,7 +40,7 @@ function m3Points(){
     if (ring) M3_FOOT[x.id] = ring;
     var foot = ring ? 1 : 0;
     return { type:'Feature', geometry:{ type:'Point', coordinates:[+x.lng, +x.lat] },
-      properties:{ id:x.id, color:mapColorOf(x), h:m3Height(x), sel:picked ? 1 : 0,
+      properties:{ id:x.id, color:mapColorOf(x), h:m3Height(x), base:m3Base(x), sel:picked ? 1 : 0,
         ring:picked ? '#ffffff' : ((FIELD_MODE === 'brief' && briefRing(x.id)) || '#0b1220'), foot:foot } };
   });
 }

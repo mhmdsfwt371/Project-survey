@@ -105,6 +105,9 @@ function mapUIHtml(){
     +     (MAP_3D ? '\u25A6 ' : '\u26F0 ')+esc(t(MAP_3D ? '٢د' : '٣د'))+'</button>'
     /* (V39.11) owner: the sensors and gateways layer up here with the other layers, not only inside the filter */
     +   '<button type="button" class="map-chip'+(IOT.on?' on':'')+'" data-iot="1">\u{1F4E1} '+esc(t('الحساسات'))+(IOT.on ? (function(){ var k = iotCount(); return ' \u00b7 ' + nm(k.s); })() : '')+'</button>'
+    /* (V39.15) the facility's floors as chips up here while the Jamarat (or a floor) is selected — the filter sheet's own switch */
+    +   ((FILT.zone === 'كاميرات المتابعة' || (FILT.floor !== '' && FILT.floor != null)) ? '<span class="chip-pair">' + [['', 'كل الأدوار'], ['0', 'الأرضي'], ['1', 'الأول'], ['2', 'الثاني'], ['3', 'الثالث'], ['4', 'الرابع']].map(function(f){
+          var on = String(FILT.floor) === f[0] && !(f[0] === '' && FILT.floor !== ''); return '<button type="button" class="map-chip' + (on ? ' on' : '') + '" data-ffl="' + f[0] + '">\u{1F3E2} ' + esc(t(f[1])) + '</button>'; }).join('') + '</span>' : '')
     /* (V39.14) the coverage: reader ranges, camera view sectors and gateway reach */
     +   '<button type="button" class="map-chip'+(covPaint.on?' on':'')+'" data-cov="1">\u{1F4F6} '+esc(t('التغطية'))+'</button>'
     /* (V39.13) the points' devices — a 3D layer, so its chip shows with the 3D map */

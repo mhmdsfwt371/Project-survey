@@ -54,7 +54,8 @@ function dtwFeatures(){
     var D = dtwOf(x.id); if (!D.length) return;
     D.forEach(function(dv, j){
       var K = dtwKinds(dv.code), p = dtwRing(+x.lat, +x.lng, j, D.length);
-      F.push({ type:'Feature', properties:{ site:x.id, code:dv.code, i:dv.i, serial:dv.serial, kind:K.k, color:K.color, h:K.h },
+      var base = typeof m3Base === 'function' ? m3Base(x) : 0;   /* (V39.15) a device on a floor stands on that floor */
+      F.push({ type:'Feature', properties:{ site:x.id, code:dv.code, i:dv.i, serial:dv.serial, kind:K.k, color:K.color, h:base + K.h, base:base },
                geometry:{ type:'Polygon', coordinates:iotSq(p, 0.5) } });
     });
   });
@@ -66,7 +67,7 @@ function dtwLayers(){
   if (!M3 || M3.getSource('nsktwin')) return;
   M3.addSource('nsktwin', { type:'geojson', data:{ type:'FeatureCollection', features:dtwFeatures() } });
   M3.addLayer({ id:'nsk-twin', type:'fill-extrusion', source:'nsktwin',
-    paint:{ 'fill-extrusion-color':['get','color'], 'fill-extrusion-height':['get','h'], 'fill-extrusion-base':0, 'fill-extrusion-opacity':0.95 } });
+    paint:{ 'fill-extrusion-color':['get','color'], 'fill-extrusion-height':['get','h'], 'fill-extrusion-base':['coalesce', ['get','base'], 0], 'fill-extrusion-opacity':0.95 } });
   M3.on('click', 'nsk-twin', function(ev){ var f = ev.features && ev.features[0]; if (f) dtwClick(f, ev); });
   M3.on('mouseenter', 'nsk-twin', function(){ M3.getCanvas().style.cursor = 'pointer'; });
   M3.on('mouseleave', 'nsk-twin', function(){ M3.getCanvas().style.cursor = ''; });

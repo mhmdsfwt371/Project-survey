@@ -95,8 +95,8 @@ function m3Layers(){
     if (!M3.getSource('nskc')){
       M3.addSource('nskc', { type:'geojson', data:{ type:'FeatureCollection', features:m3Cols(P) } });
       M3.addLayer({ id:'nsk-cols', type:'fill-extrusion', source:'nskc',
-        paint:{ 'fill-extrusion-color':['get','color'], 'fill-extrusion-height':['get','h'],
-                'fill-extrusion-base':0, 'fill-extrusion-opacity':0.92 } });
+        paint:{ 'fill-extrusion-color':['get','color'], 'fill-extrusion-height':['+', ['coalesce', ['get','base'], 0], ['get','h']],
+                'fill-extrusion-base':['coalesce', ['get','base'], 0], 'fill-extrusion-opacity':0.92 } });   /* (V39.15) floors stack */
       /* حدُّ المخيم يُرى من فوق كما في المسطّح — ويبيضُّ عند تحديده */
       M3.addLayer({ id:'nsk-cols-line', type:'line', source:'nskc', filter:['==', ['get','foot'], 1],
         paint:{ 'line-color':['case', ['==', ['get','sel'], 1], '#ffffff', 'rgba(11,18,32,.55)'],
