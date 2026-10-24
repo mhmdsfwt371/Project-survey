@@ -49,7 +49,7 @@ function dtwFeatures(){
   var F = [];
   if (!MAP_3D || !M3 || !M3.getBounds || !(dtwPaint.on !== false)) return F;
   var b, z; try { b = M3.getBounds(); z = M3.getZoom(); } catch (e){ LS_ERR = e; return F; }
-  if (z < 17.5) return F;   /* the columns are a metre wide — only when the camp fills the screen (V39.28: 17.5) */
+  if (z < 18.5) return F;   /* the columns are a metre wide — only when the camp fills the screen (V39.28: 17.5) */
   (STATE.sites || []).forEach(function(x){
     if (!(+x.lat && +x.lng) || !b.contains([+x.lng, +x.lat])) return;
     var D = dtwOf(x.id); if (!D.length) return;

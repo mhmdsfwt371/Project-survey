@@ -1259,9 +1259,17 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 .maplibregl-popup-anchor-left .maplibregl-popup-tip{border-right-color:var(--surface,#13203a) !important}
 .maplibregl-popup-anchor-right .maplibregl-popup-tip{border-left-color:var(--surface,#13203a) !important}
 .maplibregl-popup .maplibregl-popup-content .hint,.maplibregl-popup .maplibregl-popup-content .num{color:inherit}
-/* (V39.28) the 3D map's single row: never wraps, scrolls sideways if it must — the map stays the screen */
-.map-top.m3-top{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;max-height:none}
-@media (max-width:760px){ .map-top.m3-top{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;max-height:none} }
+/* (V39.30) the 3D bar wraps like the 2D one — nothing hidden off-screen — and stays short: a segmented control for the
+   three modes, icons for search and views */
+.map-top.m3-top{flex-wrap:wrap;overflow:visible;max-height:none;align-items:center}
+.m3-seg{display:inline-flex;flex:0 0 auto;padding:3px;gap:2px;border-radius:999px;background:rgba(10,16,30,.86);border:1px solid rgba(255,255,255,.18);box-shadow:0 2px 10px rgba(0,0,0,.35)}
+.m3-segb{border:0;background:transparent;color:#fff;font:inherit;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;min-height:34px;cursor:pointer;white-space:nowrap}
+.m3-segb.on{background:var(--brand);color:#06202a}
+.map-chip.m3-ic{min-width:42px;justify-content:center;padding-inline:10px}
+@media (max-width:760px){ .m3-segb{font-size:12px;padding:5px 9px;min-height:32px} }
+/* the map engine's own zoom and compass buttons: above the status bar on a desk, gone on a phone (pinch and «الشمال» do it) */
+#m3Box .maplibregl-ctrl-bottom-right{bottom:96px}
+@media (max-width:760px){ #m3Box .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group{display:none} }
 /* (V39.29) the 3D overview: a square's donut from afar, a camp's sign up close */
 .m3-agg{cursor:pointer;filter:drop-shadow(0 2px 6px rgba(0,0,0,.45));line-height:0}
 .m3-agg:hover{transform:scale(1.08)}
@@ -1312,7 +1320,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V39.29</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V39.30</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>

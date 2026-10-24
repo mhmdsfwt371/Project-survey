@@ -171,7 +171,7 @@ function clickAPart7(e){
   if (e.target.closest('[data-m3reset]')){ try { if (M3) M3.easeTo({ bearing:0, pitch:50, duration:600 }); } catch (e4){ LS_ERR = e4; } return true; }
   if (e.target.closest('[data-heat]')){ heatPaint.on = !heatPaint.on; heatPaint(); heatPaint3d(); render(); return true; }   /* (V39.16) */
   if (e.target.closest('[data-cov]')){ covPaint.on = !covPaint.on; covPaint(); covPaint3d(); render(); return true; }   /* (V39.14) */
-  if (e.target.closest('[data-phpin]') && typeof phPinPaint === 'function'){ phPinPaint.on = phPinPaint.on === false; if (phPinPaint.on) phPinPaint(); else phPinClear(); render(); return true; }   /* (V39.19) */
+  if (e.target.closest('[data-phpin]') && typeof phPinPaint === 'function'){ phPinPaint.on = phPinPaint.on !== true; if (phPinPaint.on) phPinPaint(); else phPinClear(); render(); return true; }   /* (V39.19) */
   if (e.target.closest('[data-tent]') && typeof tentPaint === 'function'){ tentPaint.on = tentPaint.on === false; if (typeof m3Paint === 'function') m3Paint(); if (typeof teMaybe === 'function') teMaybe(); render(); return true; }   /* (V39.18/V39.24) the models follow the chip */
   if (e.target.closest('[data-twin]') && typeof dtwPaint === 'function'){ dtwPaint.on = dtwPaint.on === false; dtwPaint(); render(); return true; }   /* (V39.13) */
   var mqb = e.target.closest('[data-mapq]');   /* (V39.4) the map search box opens and closes */

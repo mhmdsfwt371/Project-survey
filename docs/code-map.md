@@ -2,11 +2,11 @@
 
 المصدرُ في `src/` مجلّداتٌ بالمجال، تُجمَّع بترتيب المسار الكامل إلى `index.html` (ملفٌّ واحدٌ عند النشر ليعمل بلا شبكة). سقفُ الملف **1500 سطر** — البوابةُ تقع فوقه.
 
-## `00-shell/` — الهيكل — رأسُ الصفحة والأنماط  (1 ملفات · 1347 سطر · 0 دالة)
+## `00-shell/` — الهيكل — رأسُ الصفحة والأنماط  (1 ملفات · 1355 سطر · 0 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
-| `00-head.html` | 1347 | 0 |  |
+| `00-head.html` | 1355 | 0 |  |
 
 ## `01-core/` — النواة — اللغة والمحرك والمزامنة والسجل  (8 ملفات · 2791 سطر · 126 دالة)
 
@@ -217,7 +217,7 @@
 | `04-tasks-office-19-twin-engine.js` | 248 | 17 | (V39.24) owner: «الديجيتال توين حاجة دايناميك: أدخل بالماوس جوّه المكان، أشوف الأجهزة المتركّبة بمواقعها |
 | `04-tasks-office-20-map3d-overview.js` | 83 | 6 | (V39.29) the second step of the GIS review. From afar a monitoring map shows groups, not dust: below zoom |
 
-## `05-map/` — الخريطة ودورةُ الحياة — الطبقات والتصدير والاستيراد والدخول وشاشةُ الوزارة  (19 ملفات · 4408 سطر · 221 دالة)
+## `05-map/` — الخريطة ودورةُ الحياة — الطبقات والتصدير والاستيراد والدخول وشاشةُ الوزارة  (19 ملفات · 4412 سطر · 221 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -239,9 +239,9 @@
 | `05-lifecycle-map-17-timeline.js` | 73 | 9 | (V39.17) owner: a time slider that replays the season — drag it and the map shows the Holy Sites as they |
 | `05-lifecycle-map-18-live.js` | 69 | 8 | (V39.20) owner: the twin must live, not only record. The Nusuk card system bridge already brings two |
 | `05-lifecycle-map-19-field-layouts.js` | 58 | 7 | (V39.22) owner, with the R&D team's photos of the demo camp (Mina 74B, signpost 38/56): «دول فعليًّا اللي |
-| `05-lifecycle-map-20-map3d-ui.js` | 104 | 10 | (V39.28) owner: «الخريطة الـ3D مش حلوة وفيها حاجات كتير مخلياها صعبة — فكّر كمهندس GIS: نضيف وسهل المراقبة |
+| `05-lifecycle-map-20-map3d-ui.js` | 108 | 10 | (V39.28) owner: «الخريطة الـ3D مش حلوة وفيها حاجات كتير مخلياها صعبة — فكّر كمهندس GIS: نضيف وسهل المراقبة |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4325 سطر · 158 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4328 سطر · 158 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -255,7 +255,7 @@
 | `06-ministry-alerts-08-pptx-template.js` | 1044 | 23 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 284 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 1144 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 1147 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
 
@@ -299,4 +299,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 237 ملفًّا · 47227 سطر · 2156 دالة.
+**الإجمالي:** 237 ملفًّا · 47242 سطر · 2156 دالة.

@@ -24,14 +24,18 @@ function m3uiOn(){
 }
 /* the one row on top */
 function m3uiTop(mq){
+  /* (V39.30) owner's screenshot: «أوّل ما بقلب الخريطة ٣د كلُّ حاجة بتضرب في ديزاين الزراير». The modes sat in the
+     companies' chip-pair (made for two halves: the first loses its end radius), the row did not wrap and hid «الفك»,
+     the filter and «٢د» off the screen. Now: the three modes are one segmented control, search and views are icons, and
+     the row wraps like the 2D one (V17.41: nothing off-screen on a phone) — two short lines at most. */
   var S = m3uiState();
-  return '<button type="button" class="map-chip' + (mq.open ? ' on' : '') + '" data-mapq="' + (mq.open ? '0' : '1') + '">\u{1F50D} ' + esc(t('بحث')) + '</button>'
-    + '<span class="chip-pair">' + Object.keys(LAYERS).map(function(k){
-        return '<button type="button" class="map-chip' + (FIELD_MODE === k ? ' on' : '') + '" data-mode="' + k + '">' + LAYERS[k].i + ' ' + esc(t(LAYERS[k].n)) + '</button>';
-      }).join('') + '</span>'
-    + '<button type="button" class="map-chip' + (S.sheet ? ' on' : '') + '" data-m3ui="' + (S.sheet ? 'close' : 'sheet') + '">\u{1F5C2} ' + esc(t('الطبقات')) + ' \u00b7 ' + nm(m3uiOn()) + '</button>'
-    + '<button type="button" class="map-chip' + (S.views ? ' on' : '') + '" data-m3ui="' + (S.views ? 'close' : 'views') + '" aria-label="' + esc(t('المناظر')) + '" title="' + esc(t('المناظر')) + '">\u{1F4CD}</button>'   /* (V39.29) */
+  return '<div class="m3-seg" role="group" aria-label="' + esc(t('الطبقة')) + '">' + Object.keys(LAYERS).map(function(k){
+      return '<button type="button" class="m3-segb' + (FIELD_MODE === k ? ' on' : '') + '" data-mode="' + k + '" aria-pressed="' + (FIELD_MODE === k) + '">' + LAYERS[k].i + ' ' + esc(t(LAYERS[k].n)) + '</button>';
+    }).join('') + '</div>'
+    + '<button type="button" class="map-chip' + (S.sheet ? ' on' : '') + '" data-m3ui="' + (S.sheet ? 'close' : 'sheet') + '">\u{1F5C2} ' + esc(t('الطبقات')) + (m3uiOn() ? ' \u00b7 ' + nm(m3uiOn()) : '') + '</button>'
     + '<button type="button" class="map-chip' + (filtOn() ? ' on' : '') + '" data-mfilt="' + (MAP_FILT_OPEN ? '0' : '1') + '">\u2261 ' + esc(t('تصفية')) + (filtOn() ? ' \u00b7 ' + nm(layerFiltered().length) : '') + '</button>'
+    + '<button type="button" class="map-chip m3-ic' + (mq.open ? ' on' : '') + '" data-mapq="' + (mq.open ? '0' : '1') + '" aria-label="' + esc(t('بحث')) + '" title="' + esc(t('بحث')) + '">\u{1F50D}</button>'
+    + '<button type="button" class="map-chip m3-ic' + (S.views ? ' on' : '') + '" data-m3ui="' + (S.views ? 'close' : 'views') + '" aria-label="' + esc(t('المناظر')) + '" title="' + esc(t('المناظر')) + '">\u{1F4CD}</button>'
     + (MY_ONLY || isCrewRole(ROLE) ? '<button type="button" class="map-chip on" data-myonly="0">\u25C9 ' + esc(t('مهامي')) + '</button>' : '')
     + '<button type="button" class="map-chip" data-m3="1" title="' + esc(t('العودة إلى الخريطة المسطّحة')) + '">\u25A6 ' + esc(t('٢د')) + '</button>';
 }

@@ -11,13 +11,13 @@
    STATE   : phPinPaint.on (default on), phPinPaint.m (the live markers by site id) — on the function, no new global.
    ============================================================================ */
 
-function phPinOn(){ return phPinPaint.on !== false; }
+function phPinOn(){ return phPinPaint.on === true; }   /* (V39.30) off until asked — dozens of thumbnails covered the camps */
 
 /* the points in the frame that have a photo, nearest the centre first, at most sixty */
 function phPinTargets(){
   var out = [];
   if (!MAP_3D || !M3 || !phPinOn()) return out;
-  var b, c, z; try { z = M3.getZoom(); if (z < 16.5) return out; b = M3.getBounds(); c = M3.getCenter(); } catch (e){ LS_ERR = e; return out; }
+  var b, c, z; try { z = M3.getZoom(); if (z < 18) return out; b = M3.getBounds(); c = M3.getCenter(); } catch (e){ LS_ERR = e; return out; }
   (STATE.sites || []).forEach(function(x){
     if (!(+x.lat && +x.lng) || !b.contains([+x.lng, +x.lat])) return;
     var P = photosOf(x.id); if (!P.length) return;
@@ -25,7 +25,7 @@ function phPinTargets(){
     out.push({ site:x, src:src, d:Math.hypot((+x.lng - c.lng) * Math.cos(c.lat * Math.PI / 180), +x.lat - c.lat) });
   });
   out.sort(function(a, b2){ return a.d - b2.d; });
-  return out.slice(0, 60);
+  return out.slice(0, 24);   /* (V39.30) the nearest two dozen */
 }
 /* the pin: a thumbnail that opens its point — data-site is what the app's click router already understands */
 function phPinEl(x, src){

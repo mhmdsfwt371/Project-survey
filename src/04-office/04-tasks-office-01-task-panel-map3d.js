@@ -123,7 +123,7 @@ function m3Layers(){
                 /* (V39.28) 8,000 sensors are dust from afar: the gateways show at every zoom, the sensors from 15 */
                 'circle-opacity':['interpolate', ['linear'], ['zoom'], 14, ['case', ['==', ['get','kind'], 'g'], 0.95, 0], 15, 0.95],
                 'circle-stroke-opacity':['interpolate', ['linear'], ['zoom'], 14, ['case', ['==', ['get','kind'], 'g'], 1, 0], 15, 1] } });
-      M3.addLayer({ id:'nsk-iot', type:'fill-extrusion', source:'nskiot', filter:['==', ['geometry-type'], 'Polygon'], minzoom:17.5,   /* (V39.28) columns and beacons only up close */
+      M3.addLayer({ id:'nsk-iot', type:'fill-extrusion', source:'nskiot', filter:['==', ['geometry-type'], 'Polygon'], minzoom:18.5,   /* (V39.28/V39.30) columns and beacons only with the tents' models */
         paint:{ 'fill-extrusion-color':['get','color'], 'fill-extrusion-height':['get','h'], 'fill-extrusion-base':['coalesce', ['get','base'], 0], 'fill-extrusion-opacity':0.96 } });   /* (V39.21) beacons above the roofs carry their own base */
     }
     if (typeof dtwLayers === 'function') dtwLayers();   /* (V39.13) the points' devices */

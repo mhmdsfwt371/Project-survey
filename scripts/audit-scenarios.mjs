@@ -1280,7 +1280,7 @@ console.log('\n══ ٤٥ · التوأم الرقمي في الخريطة ال
   const sm = sensors.map((_, i) => ({ id:camp.id + '-S' + String(i + 1).padStart(2, '0'), status:i === 3 ? 'معطّل' : (i < 6 ? 'مُركّب' : 'مخطط'), serial:i === 0 ? 'SN-0001' : '' }));
   w.siteOvSet(camp.id, { iot:{ gw:[+camp.lat, +camp.lng], gws:[], sensors, sm, gm:[{ id:camp.id + '-GW1', status:'مُركّب' }], maxM:40, at:Date.now() } });
   let data = null;
-  w.M3 = { getBounds:() => ({ contains:() => true }), getZoom:() => 18, getSource:() => ({ setData:v => { data = v; } }) };
+  w.M3 = { getBounds:() => ({ contains:() => true }), getZoom:() => 19, getSource:() => ({ setData:v => { data = v; } }) };
   w.MAP_3D = true; w.IOT.on = true; w.IOT.edit = null;
   w.m3IotPaint();
   const F = data ? data.features.filter(f => f.properties.camp === camp.id) : [];
@@ -1326,7 +1326,7 @@ console.log('\n══ ٤٧ · أجهزةُ النقطة في المجسّم ═�
   w.STATE.inss[x.id] = { id:x.id, status:'مُركّب', parts:{ rdr8:1, cam_pe:2, rtr:1, sol:1 }, serials:{ rdr8:'RDR-TEST-01', rtr:'RTR-TEST-01' }, by:'فني التجربة', at:Date.now() };
   const D = w.dtwOf(x.id);
   T(D.length === 5 && D.filter(d => d.code === 'cam_pe').length === 2 && D[0].serial === 'RDR-TEST-01' && D.find(d => d.code === 'rtr').serial === 'RTR-TEST-01', 'سجلُّ التركيب يُقرأ أجهزةً: قارئ وكاميرتان وراوتر ولوح — بسيريالاتها (' + D.length + ')');
-  let data = null; w.M3 = { getBounds:() => ({ contains:() => true }), getZoom:() => 18, getSource:() => ({ setData:v => { data = v; } }) }; w.MAP_3D = true; w.dtwPaint.on = true;
+  let data = null; w.M3 = { getBounds:() => ({ contains:() => true }), getZoom:() => 19, getSource:() => ({ setData:v => { data = v; } }) }; w.MAP_3D = true; w.dtwPaint.on = true;
   w.dtwPaint();
   const F = data ? data.features.filter(f => f.properties.site === x.id) : [];
   const kinds = F.map(f => f.properties.kind);
@@ -1374,7 +1374,7 @@ console.log('\n══ ٤٩ · طوابقُ منشأة الجمرات في الم
   T(w.m3Base(ground) === 0, 'والمخيمُ على الأرض');
   if (cam){
     w.STATE.inss = w.STATE.inss || {}; const had = w.STATE.inss[cam.id]; w.STATE.inss[cam.id] = { id:cam.id, status:'مُركّب', parts:{ cam_pe:1 }, serials:{} };
-    const M30 = w.M3, d30 = w.MAP_3D; let data = null; w.M3 = { getBounds:() => ({ contains:() => true }), getZoom:() => 18, getSource:() => ({ setData:v => { data = v; } }) }; w.MAP_3D = true; w.dtwPaint.on = true;
+    const M30 = w.M3, d30 = w.MAP_3D; let data = null; w.M3 = { getBounds:() => ({ contains:() => true }), getZoom:() => 19, getSource:() => ({ setData:v => { data = v; } }) }; w.MAP_3D = true; w.dtwPaint.on = true;
     w.dtwPaint(); const f = data && data.features.find(q => q.properties.site === cam.id);
     T(!!f && Math.abs(f.properties.base - 12.6) < 1e-9 && f.properties.h > f.properties.base, 'وجهازُها يقف على دورها لا على الأرض');
     if (had) w.STATE.inss[cam.id] = had; else delete w.STATE.inss[cam.id]; w.M3 = M30; w.MAP_3D = d30;
@@ -1458,13 +1458,13 @@ console.log('\n══ ٥٣ · صورُ التركيب على المجسّم ═�
   const x = w.STATE.sites.find(q => +q.lat && +q.lng);
   w.STATE.photos = w.STATE.photos || {}; const k = 'ph-test-' + x.id;
   w.STATE.photos[k] = { site:x.id, at:Date.now(), driveId:'DRIVE-TEST-1' }; w.phTouch();
-  w.M3 = { getZoom:() => 17, getBounds:() => ({ contains:() => true }), getCenter:() => ({ lat:+x.lat, lng:+x.lng }) }; w.MAP_3D = true; w.phPinPaint.on = true;
+  w.M3 = { getZoom:() => 18.5, getBounds:() => ({ contains:() => true }), getCenter:() => ({ lat:+x.lat, lng:+x.lng }) }; w.MAP_3D = true; w.phPinPaint.on = true;
   const T0 = w.phPinTargets();
   T(T0.length >= 1 && T0[0].site.id === x.id && /DRIVE-TEST-1/.test(T0[0].src), 'النقطةُ ذاتُ الصورة هدفٌ أوّلُ (الأقربُ إلى المركز) بمصغّرةِ درايف');
-  w.M3.getZoom = () => 15; T(w.phPinTargets().length === 0, 'ولا دبابيسَ قبل التقريب ١٦٫٥'); w.M3.getZoom = () => 17;
+  w.M3.getZoom = () => 17; T(w.phPinTargets().length === 0, 'ولا دبابيسَ قبل التقريب ١٨ (V39.30)'); w.M3.getZoom = () => 18.5;
   const el = w.phPinEl(x, T0[0].src);
   T(el.className === 'ph-pin' && el.getAttribute('data-site') === x.id && el.querySelector('img') && el.querySelector('img').getAttribute('src') === T0[0].src, 'والدبّوسُ صورةٌ تفتح نقطتَها بـdata-site');
-  T(w.phPinTargets().length <= 60, 'وستّون دبّوسًا على الأكثر');
+  T(w.phPinTargets().length <= 24, 'وأربعةٌ وعشرون دبّوسًا على الأكثر (V39.30)');
   w.m3uiState().sheet = true; const ui = w.mapUIHtml(); w.m3uiState().sheet = false; T(/data-phpin="1"/.test(ui) && /الصور/.test(ui), 'وزرُّ «الصور» في لوح «الطبقات» مع المجسّم (V39.28)');
   delete w.STATE.photos[k]; w.phTouch(); w.M3 = M30; w.MAP_3D = d30; w.CUR = cur0;
 }
@@ -1563,7 +1563,7 @@ console.log('\n══ ٥٧ · مداخلُ مخيم العرض وصندوقُ ا
   w.M3 = M30; w.MAP_3D = d30; w.m3Enter.last = null; w.tentPaint.cache = {};
   const x = w.siteFind(id); w.STATE.inss = w.STATE.inss || {}; const ins0 = w.STATE.inss[id];
   w.STATE.inss[id] = { id, status:'مُركّب', parts:{ rdr8:1, rtr:1, cam_pe:1 }, serials:{} };
-  let data = null; w.M3 = { getBounds:() => ({ contains:() => true }), getZoom:() => 18, getSource:() => ({ setData:v => { data = v; } }) }; w.MAP_3D = true; w.dtwPaint.on = true; w.dtwPaint();
+  let data = null; w.M3 = { getBounds:() => ({ contains:() => true }), getZoom:() => 19, getSource:() => ({ setData:v => { data = v; } }) }; w.MAP_3D = true; w.dtwPaint.on = true; w.dtwPaint();
   const dv = data ? data.features.filter(f => f.properties.site === id) : [];
   const near = dv.every(f => { const c = f.geometry.coordinates[0][0]; return Math.hypot((c[0] - F.gate.at[1]) * 103650, (c[1] - F.gate.at[0]) * 111320) < 3; });
   T(dv.length === 3 && near, 'وأجهزةُ النقطة (القارئ والراوتر والكاميرا) تقف في المجسّم عند صندوق البوابة لا وسط المخيم');
@@ -1638,8 +1638,8 @@ console.log('\n══ ٦٠ · الثلاثيُّ للمراقبة ══');
 {
   const d30 = w.MAP_3D, cur0 = w.CUR; w.MAP_3D = true; w.CUR = 'map';
   const top = w.mapUIHtml();
-  const row = top.slice(top.indexOf('map-top'), top.indexOf('</div>', top.indexOf('map-top')));
-  T(/m3-top/.test(top) && /data-m3ui="sheet"/.test(row) && !/data-heat|data-cov|data-time|data-live|data-twin|data-tent|data-phpin|data-sat|data-apick|data-selmap/.test(row), 'الشريطُ سطرٌ واحد: بحثٌ والطبقاتُ الثلاثُ و«الطبقات» والتصفية — بلا أزرار الطبقات والإسناد');
+  const row = top.slice(top.indexOf('map-top'), top.indexOf('data-m3="1"', top.indexOf('map-top')) + 12);   /* (V39.30) the row opens with the segmented modes' own div */
+  T(/m3-top/.test(top) && /data-m3ui="sheet"/.test(row) && !/data-heat|data-cov|data-time|data-live|data-twin|data-tent|data-phpin|data-sat|data-apick|data-selmap/.test(row), 'الشريطُ قصير: الطبقاتُ الثلاثُ و«الطبقات» والتصفيةُ والبحثُ والمناظر و٢د — بلا أزرار الطبقات والإسناد');
   T(!/data-route|data-area|data-newsite|data-tfd/.test(top) && /data-m3reset/.test(top) && /data-locate/.test(top), 'وفي الجانب «الشمال» و«موقعي» فقط — أدواتُ الرسم في المسطّحة');
   T(!/class="map-legend"/.test(top) && /data-m3lg="1"/.test(top), 'والأسطورةُ مطويّةٌ حتى تُطلَب');
   w.m3uiState().sheet = true; const sh = w.mapUIHtml(); w.m3uiState().sheet = false;
@@ -1681,6 +1681,19 @@ console.log('\n══ ٦١ · النظرةُ العامةُ في الثلاثي�
   w.m3uiState().sheet = true; const sh = w.mapUIHtml(); w.m3uiState().sheet = false;
   T(/data-m3agg="1"/.test(sh) && /data-m3lab="1"/.test(sh), 'و«التجميع» و«أرقام الشواخص» في لوح الطبقات');
   w.M3 = M30; w.MAP_3D = d30; w.CUR = cur0; w.FIELD_MODE = m0;
+}
+
+/* ── ٦٢ · (V39.30) شريطُ الثلاثيّ لا ينكسر: الطبقاتُ الثلاثُ مفتاحٌ مقسومٌ واحد، والبحثُ والمناظرُ أيقونتان، والصورُ مطفأةٌ حتى تُطلَب ── */
+console.log('\n══ ٦٢ · شريطُ الثلاثيّ ══');
+{
+  const d30 = w.MAP_3D, cur0 = w.CUR; w.MAP_3D = true; w.CUR = 'map';
+  const top = w.mapUIHtml(), row = top.slice(top.indexOf('map-top'), top.indexOf('map-top') + 4000);
+  T(/class="m3-seg"/.test(row) && (row.match(/class="m3-segb/g) || []).length === 3 && !/chip-pair/.test(row.slice(0, row.indexOf('data-m3="1"'))), 'الطبقاتُ الثلاثُ مفتاحٌ مقسومٌ واحد — لا زوجَ الشركات الذي ينزع حافّةَ أوّلِه');
+  T(/m3-ic[^"]*" data-mapq/.test(row) && /m3-ic[^"]*" data-m3ui="views"/.test(row), 'والبحثُ والمناظرُ أيقونتان');
+  const css = w.document.documentElement.innerHTML;
+  T(/\.map-top\.m3-top\{flex-wrap:wrap/.test(css), 'والشريطُ يلتفُّ كالمسطّح — لا زرَّ خارجَ الشاشة على الهاتف');
+  const ph0 = w.phPinPaint.on; delete w.phPinPaint.on; T(w.phPinOn() === false, 'وصورُ التركيب مطفأةٌ حتى تُطلَب'); w.phPinPaint.on = ph0;
+  w.MAP_3D = d30; w.CUR = cur0;
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
