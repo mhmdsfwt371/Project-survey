@@ -57,6 +57,9 @@ var WO_KINDS = {
   buy:     { n:'مشتريات', i:'\u{1F4B3}', c:'#E88FBF', tgt:'' },
   drive:   { n:'نقل',     i:'\u{1F69A}', c:'#9AA7B2', tgt:'' }
 };
+/* (V39.12) a task written with kind «survey» (an older name of the visit) read its kind raw in the tables — «survey» on an
+   Arabic screen. It is the visit; the alias is hidden from Object.keys so no picker grows a second «زيارة». */
+Object.defineProperty(WO_KINDS, 'survey', { value:WO_KINDS.visit, enumerable:false });
 
 var CREWS = [
   { id:'eng',   n:'المهندسون',     base:'engineer',   kind:'*',

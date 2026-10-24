@@ -13,7 +13,7 @@
 function costGuardCard(){
   var on = !!cfgGet('budgetAlert');
   return card('حارسُ التكلفة', '<div class="wt-row" style="gap:12px;flex-wrap:wrap;align-items:center">'
-    + '<span>' + esc(t('تنبيهُ ميزانية Google Cloud')) + ': ' + (on ? pill(t('مضبوط'), 'ok') : pill(t('غيرُ مضبوط'), 'wrn')) + '</span>'
+    + '<span>' + esc(t('تنبيهُ ميزانية جوجل كلاود')) + ': ' + (on ? pill(t('مضبوط'), 'ok') : pill(t('غيرُ مضبوط'), 'wrn')) + '</span>'
     + btn(on ? t('أُلغي الضبط') : '\u2713 ' + t('ضبطتُه — أشِّر'), on ? 'btn-quiet btn-sm' : 'btn-primary btn-sm', ' data-budalert="' + (on ? 0 : 1) + '"')
     + '<a class="btn btn-quiet btn-sm" href="docs/cost-guard.md" target="_blank" rel="noopener">' + esc(t('خطواتُ الضبط')) + '</a></div>'
     + '<p class="hint" style="margin:8px 0 0">' + esc(t('الحصةُ المجانية ٥٠ ألف قراءةٍ و٢٠ ألف كتابةٍ في اليوم — والتنبيهُ يبلّغك قبل أن تصل الفاتورة. قراءاتُ اليوم في صحة النظام ← الاستهلاك.')) + '</p>');

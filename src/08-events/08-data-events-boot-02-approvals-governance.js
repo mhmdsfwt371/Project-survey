@@ -74,7 +74,7 @@ PAGE.acct = { m:'المساعدة', t:'حسابي', l:'دورك وصلاحيات
         + '<div><span class="k">'+esc(t('الاسم'))+'</span><span>'+esc(dispName(STATE.meta.name || ''))+'</span></div>'
         + '<div><span class="k">'+esc(t('الدور'))+'</span>'+pill(r.n,'acc')+'</div>'
         + '<div><span class="k">'+esc(t('الوصف'))+'</span><span>'+esc(t(r.d))+'</span></div>'
-        + '<div><span class="k">'+esc(t('النسخة'))+'</span><span class="num">' + esc(appVer()) + '</span></div>'
+        + '<div><span class="k">'+esc(t('النسخة'))+'</span><span class="num">' + esc(typeof verShow === 'function' ? verShow(appVer()) : appVer()) + '</span></div>'   /* (V39.12) in the language's digits */
         + '</div>')
       + card('ما أملكه',
           table(['الصلاحية','لي'],
