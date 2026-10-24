@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-33-from-approvals-reports-08-shipments-vehicles.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/07-reports/07-approvals-reports-08-shipments-vehicles.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : SHIP_Q, shipList, shipSave, shipLate, shipWatch, ASN_LABEL, todayISO, msDay, VEH_KINDS_SEED, VEH_Q, VEH_EDIT, vehKinds, vehKindName, vehList … (+9 more)
+   DEFINES : shipList, shipSave, shipLate, shipWatch, todayISO, msDay, vehKinds, vehKindName, vehList, vehOf, vehAsnList, vehAsnOf … (+3 more)
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 var SHIP_Q = '';

@@ -2,7 +2,7 @@
    FILE    : src/07-reports/07-approvals-reports-03-trials-invoices.js
    DOMAIN  : Approvals & reports — inventory, workshop, devices, notifications, roles
    PURPOSE : Trials with cost and hours, trial kits from the catalogue, trial points on camps, and invoice photos.
-   DEFINES : trialKitHtml, trialsDoc, trialRows, trialOf, trialInCost, trialMay, trialSave, trialAdd, trialHoursAdd, trialSiteNorm, trialForSite, trialLinkSite, trialLinkExisting, trialRemove … (+31 more)
+   DEFINES : trialAdd, trialHoursAdd, trialLinkSite, trialRemove, trialToggleCost, trialKitLoad, trialItemAdd, trialItemDel, buyEdit, buyDel, buyInvCell, buyAdd … (+3 more)
    GLOBALS : TRIAL_OUT, BUY_ED, BUY_PH
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

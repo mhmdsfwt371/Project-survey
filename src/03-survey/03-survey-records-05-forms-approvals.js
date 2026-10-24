@@ -2,7 +2,7 @@
    FILE    : src/03-survey/03-survey-records-05-forms-approvals.js
    DOMAIN  : Survey & installation — forms, points, assignment, plan
    PURPOSE : Field forms that write to the engine, the two approvals, missing survey fields, required-field marking and save blocking.
-   DEFINES : cfgList, chalsOf, svApproved, svReview, visitTaskOf, minState, minOk, minApprove, minReturn, minResubmit, svApprove, svRevisit, formSite, reqStar … (+3 more)
+   DEFINES : cfgList, chalsOf, svReview, minState, minOk, formSite, formPickHtml, reqStar, svNum, svSel, svTxt
    GLOBALS : TK_ST, FORM, SV_EXTRA_KEYS, CH_CAMP, CH_PATH, SV_ACCESS, SV_PHOTOS, SV_FIT, SV_CIVIL, SV_EQUIP … (+9 more)
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

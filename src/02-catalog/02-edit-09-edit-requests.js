@@ -2,7 +2,7 @@
    FILE    : src/02-catalog/02-edit-09-edit-requests.js
    DOMAIN  : Catalogue & point — definitions, classification, permissions, survey edit
    PURPOSE : Data-correction requests from the field (fixreqs) and their review.
-   DEFINES : gedPerm, gedFind, gedInject, gedHtml, gedSave, gdelInject, gdelRun, catDraftCatch, catD, catRow, catsCard, assistQFetch, assistQCard, assistQXls … (+1 more)
+   DEFINES : gedPerm, gedFind, gedInject, gedHtml, gdelInject, catDraftCatch, catD, catRow, catsCard, assistQFetch, assistQCard
    GLOBALS : GED, GED_REG, GDEL_REG, CAT_NEW, CAT_DRAFT, AQ
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

@@ -2,7 +2,7 @@
    FILE    : src/01-core/01-core-registry-03-config-values.js
    DOMAIN  : Core — language, engine, sync, registry
    PURPOSE : Single source of configurable values (CFG): rates, weights keyed by zone and type, numeric constants edited from Settings and synced to every device.
-   DEFINES : cfgN, cfgKey, wKeyNorm, cfgGet, cfgSet, cfgPushSoon, cfgPush, cfgDate, cfgWk, cfgInput, cfgDerived, T, K, itPts … (+4 more)
+   DEFINES : cfgN, cfgKey, wKeyNorm, cfgGet, cfgSet, cfgPushSoon, cfgPush, cfgWk, cfgInput, cfgDerived, T, K … (+5 more)
    GLOBALS : CFG_PULLED, CFG, WKEY_CACHE, _cfgT
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

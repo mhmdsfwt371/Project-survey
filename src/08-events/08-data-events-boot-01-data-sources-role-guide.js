@@ -2,7 +2,7 @@
    FILE    : src/08-events/08-data-events-boot-01-data-sources-role-guide.js
    DOMAIN  : Data & events — settings, users, click handlers, boot
    PURPOSE : Where data comes from and where it is read, page usage, and the role guide generated from permissions.
-   DEFINES : CLICK_NEXT, provHtml, tabHead, pageMeta, pageIds, goPage, pageUse, pageTick, seesRaw, seesPage, roleGuide
+   DEFINES : provHtml, tabHead, pageMeta, pageIds, goPage, pageUse, pageHist, pghLast, pageTick, seesRaw, seesPage
    GLOBALS : PROV, PG_USE, CAP_SAY, GUIDE
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

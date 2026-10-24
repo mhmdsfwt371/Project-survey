@@ -2,7 +2,7 @@
    FILE    : src/05-map/05-lifecycle-map-11-drawing-board-modules.js
    DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
    PURPOSE : Drawing board and its modules: survey details, single challenge key, rooms with sensors.
-   DEFINES : routePanelHtml, mapUIHtml, mapDraw, mapFallback, fieldRecords, fieldTools, dayDone, chalKey, chalKeys, svdChals, chalOtherTexts, chalOtherCard, svdMetal, svdAvgRooms … (+9 more)
+   DEFINES : routePanelHtml, mapQResHtml, mapUIHtml, mapDraw, mapFallback, fieldRecords, fieldTools, chalKey, chalKeys
    GLOBALS : SITE_Q, SVD_PICK, CHAL_ALIAS, SVD_SRC, SVD_CARDS, SVD_MEMO
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
@@ -105,6 +105,8 @@ function mapUIHtml(){
     +     (MAP_3D ? '\u25A6 ' : '\u26F0 ')+esc(t(MAP_3D ? '٢د' : '٣د'))+'</button>'
     /* (V39.11) owner: the sensors and gateways layer up here with the other layers, not only inside the filter */
     +   '<button type="button" class="map-chip'+(IOT.on?' on':'')+'" data-iot="1">\u{1F4E1} '+esc(t('الحساسات'))+(IOT.on ? (function(){ var k = iotCount(); return ' \u00b7 ' + nm(k.s); })() : '')+'</button>'
+    /* (V39.13) the points' devices — a 3D layer, so its chip shows with the 3D map */
+    +   (MAP_3D ? '<button type="button" class="map-chip'+((typeof dtwPaint !== 'function' || dtwPaint.on !== false)?' on':'')+'" data-twin="1">\u{1F9E9} '+esc(t('الأجهزة'))+'</button>' : '')
     +   '<button type="button" class="map-chip'+(filtOn()?' on':'')+'" data-mfilt="'
     +     (MAP_FILT_OPEN?'0':'1')+'">'
     +     '\u2261 '+esc(t('تصفية'))+(filtOn()?' \u00b7 '+nm(layerFiltered().length):'')+'</button>'

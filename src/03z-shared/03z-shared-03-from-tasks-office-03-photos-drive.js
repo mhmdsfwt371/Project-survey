@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-03-from-tasks-office-03-photos-drive.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/04-office/04-tasks-office-03-photos-drive.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : DRV, drvCfg, drvLoad, drvAuth, dataToBlob, drvUpload, PHOTO_Q, PHOTO_FAIL, photoNext, photoQueue, photoFlush, photoFlushCloud, photoDelete, PH_IDX … (+9 more)
+   DEFINES : drvCfg, drvLoad, drvAuth, dataToBlob, drvUpload, photoNext, photoQueue, photoFlush, photoFlushCloud, phIdx, phTouch, photosOf … (+4 more)
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ═══ جسرُ Google Drive — الصورُ في مساحتك لا في Firestore ═══

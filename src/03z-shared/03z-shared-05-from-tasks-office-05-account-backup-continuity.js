@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-05-from-tasks-office-05-account-backup-continuity.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/04-office/04-tasks-office-05-account-backup-continuity.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : myUid, meInactive, meActivatedCheck, MYDOC, permRelease, myDocFetch, BK_STATE, BK_RAW, bkFetch, contRes, contLoad
+   DEFINES : myUid, meInactive, meActivatedCheck, permRelease, myDocFetch, bkFetch, contRes, contLoad
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ═══ المعرِّفُ يُقرأ من المصادقة لا من الجلسة وحدَها ═══

@@ -2,7 +2,7 @@
    FILE    : src/03-survey/03-survey-records-07-demo-single-errors.js
    DOMAIN  : Survey & installation — forms, points, assignment, plan
    PURPOSE : Demo-point kits, single-point form, production error capture, events carrying their point and actor.
-   DEFINES : insPrefill47, ex47SiteCard, demoTag, insRevs, insRevSnap, partsDiff, demoRevsHtml, demoStdSave, insKind, insRevPhotoN, insPhotoBtn, insPhotoAdd, insSave, formGo … (+7 more)
+   DEFINES : insPrefill47, ex47SiteCard, demoTag, insRevs, insRevSnap, partsDiff, demoRevsHtml, insKind, insRevPhotoN, insPhotoBtn, insPhotoAdd, svLastMine … (+4 more)
    GLOBALS : SV_COPY_KEYS, ERR_SEEN
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

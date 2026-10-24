@@ -2,7 +2,7 @@
    FILE    : src/05-map/05-lifecycle-map-08-cameras-report-sw-update.js
    DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
    PURPOSE : Ministry camera report, service worker registration, auto-update, version announcement, the epoch (no uploads from a pre-epoch device) and 'sync everyone now'.
-   DEFINES : mohuDms, mohuPole, mohuSec, mohuSiteKey, mohuParse, camxRows, impRead, impValidate, impApply, swInstall, swBusy, swCancel, swApply, swNow … (+6 more)
+   DEFINES : mohuDms, mohuPole, mohuSec, mohuSiteKey, mohuParse, camxRows, impRead, impValidate, swInstall, swBusy, swCancel, swApply … (+9 more)
    GLOBALS : SW_STATE, SW_RELOADED, SW_TICK, EPOCH_PENDING, SYNC_ALL_SEEN
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

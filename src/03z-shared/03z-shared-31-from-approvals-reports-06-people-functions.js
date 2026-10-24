@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-31-from-approvals-reports-06-people-functions.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/07-reports/07-approvals-reports-06-people-functions.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : FIELD_ROLES, isFieldRole, isCrewRole, SITES_ALL, techsList, techUid, techSet, crewsList, crewTechs, crewTeams, unassignedTechs, depTechAdd, JOBS_SEED, jobsList … (+7 more)
+   DEFINES : isFieldRole, isCrewRole, techsList, techUid, techSet, crewsList, crewTechs, crewTeams, unassignedTechs, jobsList, jobSave, jobOf … (+3 more)
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ═══ من يُسنَد إليه عملٌ ميدانيّ ═══

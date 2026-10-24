@@ -2,7 +2,7 @@
    FILE    : src/06-ministry/06-ministry-alerts-10-season-start-invites.js
    DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
    PURPOSE : Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change.
-   DEFINES : seedPlan, seedApply, seedCard, readyRows, readyCard, passGen, normAr, roleGuess, jobGuess, bulkParse, bulkApply, bulkCard, ghToken, ghSetToken … (+11 more)
+   DEFINES : seedApply, bulkApply, ghSetToken, provWipe, provClear, provSync, provCancelAll, provReask
    GLOBALS : BULK_TXT, ROLE_ALIAS, GH_REPO, GH_RAN, PROV_CANCEL, BOARD_ROLE, PW, SESS_PW
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

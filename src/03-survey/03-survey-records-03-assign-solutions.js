@@ -2,7 +2,7 @@
    FILE    : src/03-survey/03-survey-records-03-assign-solutions.js
    DOMAIN  : Survey & installation — forms, points, assignment, plan
    PURPOSE : Assignment from list or map, request codes, and the proposed device solution for a point before an installation request.
-   DEFINES : selHas, selToggle, selClear, selIds, selAll, asnOf, asnOfTech, asnLoad, kindLabel, reqNext, solutionOf, solutionSave, solutionAppr, asnPickHtml … (+6 more)
+   DEFINES : selHas, selToggle, selClear, selIds, asnOf, asnOfTech, kindLabel, reqNext, reqFmt, reqClaims, reqClaimsSave, reqClaimAdd … (+9 more)
    GLOBALS : ASN_OPEN, SEL, ASN_BASE, ASN_MODE, ASN_PICK, ASN_KIND_DEST, REQ_PREFIX, REQSEQ, ASN_TEAM
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

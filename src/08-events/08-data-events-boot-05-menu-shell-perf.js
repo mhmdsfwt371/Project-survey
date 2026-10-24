@@ -2,7 +2,7 @@
    FILE    : src/08-events/08-data-events-boot-05-menu-shell-perf.js
    DOMAIN  : Data & events — settings, users, click handlers, boot
    PURPOSE : Menu and shell, scroll position kept across renders, measured performance and browser vitals, focus kept in fields.
-   DEFINES : navIco, arNorm, subseq, navMatch, navTabHits, navTabLinks, navHtml, navPush, navBack, scrollGrab, scrollBack, perfNote, perfAvg, vitDay … (+10 more)
+   DEFINES : navIco, arNorm, subseq, navMatch, navTabHits, navTabLinks, navHtml, navMoreHtml, scrollGrab, scrollBack, perfNote, perfAvg … (+11 more)
    GLOBALS : NAV, NAV_ICO, CUR, OPEN, NAV_Q, FIELD_PAGES, NAV_HIST, SCROLL_KEEP, SCROLL_SEEN, PERF … (+1 more)
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

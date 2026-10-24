@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-b-12-from-tasks-office-13-perf-distribution-cameras.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/04-office/04-tasks-office-13-perf-distribution-cameras.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : RENDER_CUR, RENDER_KEY, RENDER_N, renderKey
+   DEFINES : renderKey
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ── الرسم: لا يُعاد إن لم يتغيّر شيء ── */

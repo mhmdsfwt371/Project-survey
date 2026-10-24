@@ -2,7 +2,7 @@
    FILE    : src/08-events/08-data-events-boot-13-toast-wheel-ios-boot.js
    DOMAIN  : Data & events — settings, users, click handlers, boot
    PURPOSE : Toast, label cells, mouse wheel never types numbers, iOS viewport stability, assistant scroll fix, file-input change handlers and the boot sequence.
-   DEFINES : labelCells, toast, supRemove, svPopRemove, liteSync, qStaleSync, phStaleSync, assistSync, reflow, reflowSoon, assistGoHome
+   DEFINES : labelCells, toast, liteSync, qStaleSync, phStaleSync, assistSync, reflow, reflowSoon, assistGoHome
    GLOBALS : REFLOW_T
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

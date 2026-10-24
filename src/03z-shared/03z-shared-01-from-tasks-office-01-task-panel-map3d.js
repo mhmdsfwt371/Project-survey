@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-01-from-tasks-office-01-task-panel-map3d.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/04-office/04-tasks-office-01-task-panel-map3d.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : MAP_3D, M3, M3_READY, M3_LOADING, M3_ERR, m3Height, M3_FOOT, m3Points, m3Cols, m3Count, m3Paint
+   DEFINES : m3Height, m3Points, m3Cols, m3Count, m3Paint
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ═══ الخريطةُ ثلاثيةً — زرٌّ واحدٌ على الخريطة نفسِها ═══
@@ -77,5 +77,6 @@ function m3Paint(){
     var s2 = M3.getSource('nskc'); if (s2) s2.setData({ type:'FeatureCollection', features:m3Cols(P) });
   } catch (e){ LS_ERR = e; }
   try { if (typeof m3IotPaint === 'function') m3IotPaint(); } catch (e2){ LS_ERR = e2; }   /* (V39.11) */
+  try { if (typeof dtwPaint === 'function') dtwPaint(); } catch (e3){ LS_ERR = e3; }   /* (V39.13) */
   m3Count(P);
 }

@@ -2,7 +2,7 @@
    FILE    : src/04-office/04-tasks-office-15-handover-minutes.js
    DOMAIN  : Office — photos, governance, assistant, word reports, drawing
    PURPOSE : Handover and official receipt minutes.
-   DEFINES : handNext, handReady, handBlock, handSave, hoSetParty, hoSetSigner, hoSetupCard, hoTpl, hoParty, hoSigners, hoLocOf, hoItems, handDocSite, handDocCo
+   DEFINES : handNext, handBlock, handSave
    GLOBALS : HAND_SEQ, HO_PARTIES, HO_SIGNERS, HO_TPL
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

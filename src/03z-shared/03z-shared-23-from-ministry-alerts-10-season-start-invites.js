@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-23-from-ministry-alerts-10-season-start-invites.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/06-ministry/06-ministry-alerts-10-season-start-invites.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : seedPlan, seedCard, readyRows, readyCard, BULK_TXT, passGen, normAr, ROLE_ALIAS, roleGuess, jobGuess, bulkParse, bulkCard, provList, PROV_CANCEL … (+5 more)
+   DEFINES : seedPlan, seedCard, readyRows, readyCard, passGen, normAr, roleGuess, jobGuess, bulkParse, bulkCard, provList, provQueued … (+2 more)
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ═══ بدءُ الموسم بقيمٍ مقترحة ═══

@@ -2,7 +2,7 @@
    FILE    : src/01-core/01-core-registry-02-data-display-search.js
    DOMAIN  : Core — language, engine, sync, registry
    PURPOSE : Project constants, display helpers (HTML escaping, pills, cards, tables), isolation of Latin tokens inside Arabic text, and the per-page search box.
-   DEFINES : bdiNeed, bdi, bdiText, fsi, fsiText, esc, N, stat, stats, meter, card, cardRaw, cardFlush, cellT … (+9 more)
+   DEFINES : bdiNeed, bdi, bdiText, esc, N, stat, stats, meter, card, cardRaw, cardFlush, cellT … (+9 more)
    GLOBALS : DATA, PAGE, BDI_TOK, PG_Q, PG_BIND, PG_LAST_BIND, PG_T
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

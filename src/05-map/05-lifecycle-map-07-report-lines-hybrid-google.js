@@ -2,7 +2,7 @@
    FILE    : src/05-map/05-lifecycle-map-07-report-lines-hybrid-google.js
    DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
    PURPOSE : Report lines (Abar Mid), hybrid map with street names over satellite, and Google Maps inside our map.
-   DEFINES : fontsCard, fontMime, fontUp, fontsLoad, fontsFace, gmapsCard, basemapSatCls, basemapKick, basemapNetOk, basemapDownload, basemapRemove, basemapScripts, basemapAttach, namesFetch … (+13 more)
+   DEFINES : fontsCard, fontUp, gmapsCard, basemapSatCls, basemapKick, basemapNetOk, basemapDownload, basemapScripts, basemapAttach, namesFetch, namesLoad, namesLayerClass … (+9 more)
    GLOBALS : FONTS_MAX, NAMES, NAMES_FILE, NAMES_RANK, NAMES_PLACE, GMAP, SEL_IDS, IMP_COLS, IMP_PREVIEW
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

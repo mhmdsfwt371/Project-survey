@@ -2,7 +2,7 @@
    FILE    : src/04-office/04-tasks-office-08-reports-center-sop-help.js
    DOMAIN  : Office — photos, governance, assistant, word reports, drawing
    PURPOSE : Reports centre, the operations guide (every cycle step by step) and 'what is this page' help.
-   DEFINES : repChips, repGen, repPack, helpOf
+   DEFINES : repChips, repGen, repPack
    GLOBALS : REPORTS, SOPS, SOP_CUR, HELP_OPEN, HELP
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

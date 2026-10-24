@@ -1315,6 +1315,29 @@ console.log('\n══ ٤٦ · «ما الجديد» بلغة الشاشة ══
   w.WN = wn0; w.setLang(L0); if (seen0 == null) w.localStorage.removeItem('nsk14.seenVer'); else w.localStorage.setItem('nsk14.seenVer', seen0); w.ROLE = role0; w.STATE.meta.role = role0;
 }
 
+/* ── ٤٧ · (V39.13) التوأم الرقمي ٢: أجهزةُ النقطة المركّبة أعمدةٌ بسيريالاتها في المجسّم ── */
+console.log('\n══ ٤٧ · أجهزةُ النقطة في المجسّم ══');
+{
+  const M30 = w.M3, d30 = w.MAP_3D, role0 = w.ROLE, cur0 = w.CUR;
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.CUR = 'map';
+  const x = w.STATE.sites.find(s => +s.lat && +s.lng && !(w.STATE.inss || {})[s.id]);
+  w.STATE.inss = w.STATE.inss || {};
+  w.STATE.inss[x.id] = { id:x.id, status:'مُركّب', parts:{ rdr8:1, cam_pe:2, rtr:1, sol:1 }, serials:{ rdr8:'RDR-TEST-01', rtr:'RTR-TEST-01' }, by:'فني التجربة', at:Date.now() };
+  const D = w.dtwOf(x.id);
+  T(D.length === 5 && D.filter(d => d.code === 'cam_pe').length === 2 && D[0].serial === 'RDR-TEST-01' && D.find(d => d.code === 'rtr').serial === 'RTR-TEST-01', 'سجلُّ التركيب يُقرأ أجهزةً: قارئ وكاميرتان وراوتر ولوح — بسيريالاتها (' + D.length + ')');
+  let data = null; w.M3 = { getBounds:() => ({ contains:() => true }), getZoom:() => 17, getSource:() => ({ setData:v => { data = v; } }) }; w.MAP_3D = true; w.dtwPaint.on = true;
+  w.dtwPaint();
+  const F = data ? data.features.filter(f => f.properties.site === x.id) : [];
+  const kinds = F.map(f => f.properties.kind);
+  T(F.length === 5 && kinds.indexOf('reader') > -1 && kinds.filter(k => k === 'camera').length === 2 && kinds.indexOf('router') > -1 && kinds.indexOf('solar') > -1, 'وفي المجسّم خمسةُ أعمدةٍ حول النقطة بأنواعها');
+  const reader = F.find(f => f.properties.kind === 'reader');
+  T(reader.properties.color === '#7C4DFF' && reader.properties.h === 2.6 && reader.properties.serial === 'RDR-TEST-01' && F.every(f => f.geometry.type === 'Polygon'), 'القارئُ بلونه وطوله وسيرياله');
+  const card = w.dtwCardHtml(reader.properties);
+  T(/RDR-TEST-01/.test(card) && /مُركّب/.test(card) && /فني التجربة/.test(card) && /data-site="/.test(card) && /data-insq="/.test(card), 'وبطاقةُ الجهاز: السيريال والحالة ومن ركّبه، وزرّا صفحة النقطة وتعديل التركيب');
+  w.dtwPaint.on = false; w.dtwPaint(); T(data.features.length === 0, 'وزرُّ «الأجهزة» يطفئ الطبقة');
+  w.dtwPaint.on = true; w.M3 = M30; w.MAP_3D = d30; delete w.STATE.inss[x.id]; w.ROLE = role0; w.STATE.meta.role = role0; w.CUR = cur0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

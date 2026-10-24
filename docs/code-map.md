@@ -54,11 +54,11 @@
 | `03-survey-records-10-wbs-plan-trials.js` | 471 | 29 | Work breakdown structure, plan versus actual, plan export with formulas, item file and the trials page. |
 | `03-survey-records-11-weekly-tasks-paths.js` | 477 | 31 | Weekly tasks as sentence cards, meeting mode, the one filter for screen and paper, and path filtering with each path's status. |
 
-## `03z-shared/` — المشتركُ — تعريفاتٌ تحتاجها النواةُ قبل مجالات المكتب والوزارة والتقارير (نُقلت حرفيًّا، لا كودَ جديدًا هنا)  (63 ملفات · 7955 سطر · 443 دالة)
+## `03z-shared/` — المشتركُ — تعريفاتٌ تحتاجها النواةُ قبل مجالات المكتب والوزارة والتقارير (نُقلت حرفيًّا، لا كودَ جديدًا هنا)  (63 ملفات · 7956 سطر · 443 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
-| `03z-shared-01-from-tasks-office-01-task-panel-map3d.js` | 82 | 5 | Definitions moved verbatim from src/04-office/04-tasks-office-01-task-panel-map3d.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these n |
+| `03z-shared-01-from-tasks-office-01-task-panel-map3d.js` | 83 | 5 | Definitions moved verbatim from src/04-office/04-tasks-office-01-task-panel-map3d.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these n |
 | `03z-shared-02-from-tasks-office-02-newsite-schedule.js` | 92 | 5 | Definitions moved verbatim from src/04-office/04-tasks-office-02-newsite-schedule.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these n |
 | `03z-shared-03-from-tasks-office-03-photos-drive.js` | 306 | 16 | Definitions moved verbatim from src/04-office/04-tasks-office-03-photos-drive.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names |
 | `03z-shared-04-from-tasks-office-04-pmi-weekplan.js` | 73 | 6 | Definitions moved verbatim from src/04-office/04-tasks-office-04-pmi-weekplan.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names |
@@ -192,11 +192,11 @@
 | `08-events--08-data-events-boot-06-long-lists-storage-clicks.js` | 185 | 2 | Moved verbatim from src/08-events/08-data-events-boot-06-long-lists-storage-clicks.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or t |
 | `08-events--08-data-events-boot-13-toast-wheel-ios-boot.js` | 12 | 2 | Moved verbatim from src/08-events/08-data-events-boot-13-toast-wheel-ios-boot.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the of |
 
-## `04-office/` — المكتب — الصور والحوكمة والمساعد والتقارير بالكلام والرسم على الخريطة  (15 ملفات · 2268 سطر · 67 دالة)
+## `04-office/` — المكتب — الصور والحوكمة والمساعد والتقارير بالكلام والرسم على الخريطة  (16 ملفات · 2364 سطر · 75 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
-| `04-tasks-office-01-task-panel-map3d.js` | 356 | 15 | Task panel, challenge-point window, field/office work on a challenge, and the 3D map toggle. |
+| `04-tasks-office-01-task-panel-map3d.js` | 357 | 15 | Task panel, challenge-point window, field/office work on a challenge, and the 3D map toggle. |
 | `04-tasks-office-02-newsite-schedule.js` | 184 | 6 | Unregistered site added from the field, who decides what it becomes, visit recorded on add, and scheduling visits for office-added points. |
 | `04-tasks-office-03-photos-drive.js` | 64 | 4 | Photos: Google Drive bridge, naming, upload to the database then server move to Drive, who uploaded/viewed/deleted, open/download in app, and plain-language tra |
 | `04-tasks-office-04-pmi-weekplan.js` | 485 | 8 | Project governance per PMI and the engineer's week plan. |
@@ -211,8 +211,9 @@
 | `04-tasks-office-13-perf-distribution-cameras.js` | 50 | 3 | Performance for 150 concurrent users, distribution by zone and type, survey progress per zone, ministry cameras (Bullet/PTZ/LPR) and hierarchy views. |
 | `04-tasks-office-14-pull-scope-listen-map.js` | 26 | 0 | Pull scope per role, differential pulls, per-device read caps, change-pulse listening, and the Leaflet map with two layers and camp polygons. |
 | `04-tasks-office-15-handover-minutes.js` | 58 | 3 | Handover and official receipt minutes. |
+| `04-tasks-office-16-twin-devices.js` | 95 | 8 | (V39.13) owner: «الخريطة المجسّمة محتاجها تكون digital twin». The sensors and gateways stand in the 3D map |
 
-## `05-map/` — الخريطة ودورةُ الحياة — الطبقات والتصدير والاستيراد والدخول وشاشةُ الوزارة  (13 ملفات · 3921 سطر · 172 دالة)
+## `05-map/` — الخريطة ودورةُ الحياة — الطبقات والتصدير والاستيراد والدخول وشاشةُ الوزارة  (13 ملفات · 3923 سطر · 172 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -226,11 +227,11 @@
 | `05-lifecycle-map-08-cameras-report-sw-update.js` | 316 | 21 | Ministry camera report, service worker registration, auto-update, version announcement, the epoch (no uploads from a pre-epoch device) and 'sync everyone now'. |
 | `05-lifecycle-map-09-role-switch-login-install.js` | 533 | 20 | Role switching, logout, add-to-home-screen prompts (incl. iPhone) and the login page. |
 | `05-lifecycle-map-10-field-companies.js` | 261 | 8 | Field map-first home, composite-name parsing, companies board and company camps classified. |
-| `05-lifecycle-map-11-drawing-board-modules.js` | 312 | 9 | Drawing board and its modules: survey details, single challenge key, rooms with sensors. |
+| `05-lifecycle-map-11-drawing-board-modules.js` | 314 | 9 | Drawing board and its modules: survey details, single challenge key, rooms with sensors. |
 | `05-lifecycle-map-12-ministry-screen-progress.js` | 119 | 5 | Ministry hall screen, completion forecast, progress map, far points, satellite in the ministry screen, week sentence and the hall view. |
 | `05-lifecycle-map-13-ministry-followup.js` | 184 | 15 | Ministry follow-up page: dynamic follow-up, season brief header, 'whose turn' groups, two modes, and the no-challenge camps card. |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4285 سطر · 158 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4288 سطر · 158 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -244,7 +245,7 @@
 | `06-ministry-alerts-08-pptx-template.js` | 1044 | 23 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 284 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 1104 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 1107 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
 
@@ -264,7 +265,7 @@
 | `07-approvals-reports-10-point-actions-export-pdf.js` | 69 | 0 | Point window actions, click identity, export centre by section, export by role, PDF cover page. |
 | `07-approvals-reports-11-import-roles-perms.js` | 322 | 10 | Import via downloaded template, roles (who sees and does what), the owner is never locked out, database permissions matrix, custom roles, ranks, org tree and me |
 
-## `08-events/` — البياناتُ والأحداث — الإعدادات والمستخدمون والنقرات والإقلاع  (13 ملفات · 5032 سطر · 119 دالة)
+## `08-events/` — البياناتُ والأحداث — الإعدادات والمستخدمون والنقرات والإقلاع  (13 ملفات · 5033 سطر · 119 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -276,7 +277,7 @@
 | `08-data-events-boot-06-long-lists-storage-clicks.js` | 388 | 11 | Long lists (100 first then 'show more'), persistent storage request, table and window clicks. |
 | `08-data-events-boot-07-clicks-a-1.js` | 268 | 3 | Delegated click handlers, group A part 1 (return true when the event is consumed). |
 | `08-data-events-boot-08-clicks-a-2.js` | 378 | 3 | Delegated click handlers, group A part 2. |
-| `08-data-events-boot-09-clicks-a-3.js` | 258 | 2 | Delegated click handlers, group A part 3. |
+| `08-data-events-boot-09-clicks-a-3.js` | 259 | 2 | Delegated click handlers, group A part 3. |
 | `08-data-events-boot-10-clicks-doc-1.js` | 356 | 4 | Document-level click handlers part 1 (onDocClick and parts 1–3): settings, constants, survey edit, pending file, E-GATE verification. |
 | `08-data-events-boot-11-clicks-doc-2.js` | 531 | 5 | Document-level click handlers part 2 (parts 4–7). |
 | `08-data-events-boot-12-clicks-doc-3.js` | 262 | 3 | Document-level click handlers part 3 (parts 8–9). |
@@ -288,4 +289,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 226 ملفًّا · 46002 سطر · 2056 دالة.
+**الإجمالي:** 227 ملفًّا · 46105 سطر · 2064 دالة.

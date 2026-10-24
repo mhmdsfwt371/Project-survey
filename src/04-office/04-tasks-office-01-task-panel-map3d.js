@@ -2,7 +2,7 @@
    FILE    : src/04-office/04-tasks-office-01-task-panel-map3d.js
    DOMAIN  : Office — photos, governance, assistant, word reports, drawing
    PURPOSE : Task panel, challenge-point window, field/office work on a challenge, and the 3D map toggle.
-   DEFINES : chalUpd, chalUpds, chalUpdNote, chalUpdBox, chalAssignBox, chalPopHtml, chalPopSync, wtHostSync, wtSheet, m3Load, m3Height, m3Points, m3Cols, m3Style … (+10 more)
+   DEFINES : chalUpd, chalUpds, chalUpdNote, chalUpdBox, chalAssignBox, m3Load, m3Style, m3Layers, m3Click, m3Init, m3From2D, m3Toggle … (+3 more)
    GLOBALS : CHAL_POP, MAP_3D, M3_FOOT
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
@@ -116,6 +116,7 @@ function m3Layers(){
       M3.addLayer({ id:'nsk-iot', type:'fill-extrusion', source:'nskiot',
         paint:{ 'fill-extrusion-color':['get','color'], 'fill-extrusion-height':['get','h'], 'fill-extrusion-base':0, 'fill-extrusion-opacity':0.96 } });
     }
+    if (typeof dtwLayers === 'function') dtwLayers();   /* (V39.13) the points' devices */
     /* مبانٍ ثلاثيةٌ من النمط نفسِه إن وُجدت — سياقٌ لا أكثر */
     var lyr = (M3.getStyle().layers || []).filter(function(l){ return /building/i.test(l.id) && l.type === 'fill-extrusion'; })[0];
     if (lyr) M3.setPaintProperty(lyr.id, 'fill-extrusion-opacity', 0.45);
@@ -155,7 +156,7 @@ function m3Init(){
     if (ev.originalEvent && ev.originalEvent._nskIot) return;
     if (typeof IOT === 'object' && IOT.edit && ev.lngLat){ try { if (M3.queryRenderedFeatures(ev.point, { layers:['nsk-iot'] }).length) return; } catch (eQ){ LS_ERR = eQ; } iotMapClick({ lat:ev.lngLat.lat, lng:ev.lngLat.lng }); }
   });
-  M3.on('moveend', function(){ if (MAP_3D && typeof IOT === 'object' && IOT.on && typeof m3IotPaint === 'function') m3IotPaint(); });
+  M3.on('moveend', function(){ if (MAP_3D && typeof IOT === 'object' && IOT.on && typeof m3IotPaint === 'function') m3IotPaint(); if (MAP_3D && typeof dtwPaint === 'function') dtwPaint(); });
   M3.on('mouseenter', 'nsk-iot', function(){ M3.getCanvas().style.cursor = 'pointer'; });
   M3.on('mouseleave', 'nsk-iot', function(){ M3.getCanvas().style.cursor = ''; });
   M3.on('mouseenter', 'nsk-pts', function(){ M3.getCanvas().style.cursor = 'pointer'; });

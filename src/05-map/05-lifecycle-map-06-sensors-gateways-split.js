@@ -2,7 +2,7 @@
    FILE    : src/05-map/05-lifecycle-map-06-sensors-gateways-split.js
    DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
    PURPOSE : Sensors and gateways as first-class points, and splitting a camp.
-   DEFINES : iotOf, iotCampIds, iotPad, iotSid, iotGid, iotAllGw, iotM, iotMax, iotRing, iotOutside, iotGrid, iotCentroid, iotMakePlan, iotGen … (+29 more)
+   DEFINES : iotOf, iotCampIds, iotPad, iotSid, iotGid, iotAllGw, iotM, iotMax, iotRing, iotOutside, iotDevHtml, iotPaint … (+15 more)
    GLOBALS : IOT_ST, IOT_N, BED, SPLIT, SPLIT_COL
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

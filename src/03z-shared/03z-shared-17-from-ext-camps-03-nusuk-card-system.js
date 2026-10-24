@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-17-from-ext-camps-03-nusuk-card-system.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/06-ministry/06-ext-camps-03-nusuk-card-system.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : EXT, EXT_API, EXT_STREAM, extTokLoad, extFetch, extReadersLoad, extTentsLoad, extOvLoad, EXT_MATCH_STATE, extMatchLoad, EXT_OV_LOADED, extSerKey, extCodeKey, extTentByCode … (+26 more)
+   DEFINES : extTokLoad, extFetch, extReadersLoad, extTentsLoad, extOvLoad, extMatchLoad, extSerKey, extCodeKey, extTentByCode, extTentForSite, extLink, extReaderSerial … (+21 more)
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ═══ (V37.75) المخيماتُ المركزية — إشغالٌ حيٌّ من نظام البطاقات ═══

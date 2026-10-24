@@ -5,7 +5,7 @@
              in place, installation photos deleted (engineer, or their taker before approval) and added, every change
              logged on the record and written into the point's chat. A field edit of an approved installation returns
              it to the engineer's review.
-   DEFINES : insqState, insqMay, insqCanDel, insqKindLabel, insqPhotos, insqSheet, insqPhotoDel, insqSave
+   DEFINES : insqState, insqMay, insqCanDel, insqKindLabel, insqPhotos, insqSheet
    NOTE    : Build order is the full path (see scripts/build.mjs). State lives on insqState() — no new globals.
    ============================================================================ */
 function insqState(){ return insqState.s || (insqState.s = { id:'', delAsk:'', st:'' }); }

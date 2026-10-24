@@ -2,7 +2,7 @@
    FILE    : src/05-map/05-lifecycle-map-13-ministry-followup.js
    DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
    PURPOSE : Ministry follow-up page: dynamic follow-up, season brief header, 'whose turn' groups, two modes, and the no-challenge camps card.
-   DEFINES : mfuPartyRaw, mfuPartyLabel, mfuParties, mfuFetch, mfuData, mfuList, mfuPut, mfuOwnDefOf, mfuOwnerOf, mfuObstacles, svStats, svStats0, jmrConfirm, mfuInstalled … (+35 more)
+   DEFINES : mfuPartyRaw, mfuPartyLabel, mfuParties, mfuData, mfuList, mfuPut, mfuOwnDefOf, mfuOwnerOf, mfuObstacles, svStats, svStats0, jmrConfirm … (+3 more)
    GLOBALS : MFU, SUP_EXTRA, SUP_POP, CC_GROUPS, SV_POP, SV_LISTS
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

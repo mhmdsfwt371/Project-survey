@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-b-27-from-approvals-reports-11-import-roles-perms.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/07-reports/07-approvals-reports-11-import-roles-perms.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : PAGE_CAP
+   DEFINES : لا دوالَّ — بياناتٌ وجملٌ فقط
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* «موقع جديد» في قائمة كلِّ دورٍ ميدانيٍّ يملك التسجيل (V16.80): كان الزرُّ

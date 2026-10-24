@@ -2,7 +2,7 @@
    FILE    : src/06-ministry/06-ministry-alerts-07-weekly-export-scope.js
    DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
    PURPOSE : Weekly update export, scope selection of points for the file, and the pre-download file check.
-   DEFINES : hijriToday, expScopeIds, expScopeLabel, mfuReport, mfuReport0, mfuSecTitle, mfuRowsOf, mfuFileName, mfuXlsx, mfuPrintHtml, mfuPdf, zipMany, mfuDocxXml, mfuDocx … (+6 more)
+   DEFINES : mfuSecTitle, mfuRowsOf, mfuFileName, mfuXlsx, readexFace, mfuPrintHtml, mfuPdf, zipMany, mfuDocxXml, mfuDocx, expDigits, expBadText … (+4 more)
    GLOBALS : MOH_LOGO
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

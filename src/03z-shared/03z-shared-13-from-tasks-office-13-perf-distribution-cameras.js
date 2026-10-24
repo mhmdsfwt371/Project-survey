@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-13-from-tasks-office-13-perf-distribution-cameras.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/04-office/04-tasks-office-13-perf-distribution-cameras.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : SITE_IX, SITE_TOK, siteIndex, siteFind, siteSearch, STAT_CACHE, STAT_VER, statBump, recLocApply, siteKeyStats, svLabel, declaredKeys, typeOfLabel, declaredTypeKeys … (+10 more)
+   DEFINES : siteIndex, siteFind, siteSearch, statBump, recLocApply, siteKeyStats, svLabel, declaredKeys, typeOfLabel, declaredTypeKeys, camKind, camKindLabel … (+2 more)
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ── فهرسٌ للمواقع: بحثٌ فوريٌّ بدل مسحٍ خطي ── */

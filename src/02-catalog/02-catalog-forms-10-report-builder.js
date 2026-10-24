@@ -6,7 +6,7 @@
              technician, block, group-by; V38.45: also the challenges and the photos of those points; V38.47: the weekly tasks by status, track and owner) and sees the exact sentence and the conditions understood before computing.
              It feeds the existing reports-by-words engine (aqRepParse/aqRepData/aqRepCard), so every number has its
              list and its Excel/PDF; favourites are kept on the device by name.
-   DEFINES : rbState, rbOptions, rbTypePhrase, rbSentence, rbPreviewHtml, rbShows, rbHtml, rbFavLocal, rbFavShared, rbFavs, rbFavMayShare, rbFavSave, rbFavPin, rbCountOf, rbSnap, rbPinnedHtml, rbPresets, rbPresetsAdd, rbFavDel, rbOnChange, rbPopChips, rbPopRows, rbPopKey, rbPopCols, rbPopRow, rbPopCard, rbPopName, rbRun, rbXls
+   DEFINES : rbState, rbOptions, rbTypePhrase, rbSentence, rbPreviewHtml, rbShows, rbHtml, rbFavLocal, rbFavShared, rbFavs, rbFavMayShare, rbCountOf … (+6 more)
    NOTE    : Build order is the full path (see scripts/build.mjs). New comments are written in English.
    ============================================================================ */
 function rbState(){ return rbState.s || (rbState.s = { sel:{}, open:false }); }

@@ -2,7 +2,7 @@
    FILE    : src/04-office/04-tasks-office-10-assistant-reports.js
    DOMAIN  : Office — photos, governance, assistant, word reports, drawing
    PURPOSE : Reports by words ('Excel/PDF for the points that…'): parser, data, grouping, card, export; plus the pending-upload window HTML.
-   DEFINES : aqRepStop, aqRepParse, aqRepData, aqRepGroup, aqRepCols, aqRepRow, aqRepPrep, aqRepCard, aqRepExport, aqGoTo, aqExamples, assistHomeHtml, assistResHtml, queueHtml … (+1 more)
+   DEFINES : aqRepCols, aqRepExport, aqGoTo
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
    ============================================================================ */

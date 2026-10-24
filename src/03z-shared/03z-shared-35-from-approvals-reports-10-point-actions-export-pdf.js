@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-35-from-approvals-reports-10-point-actions-export-pdf.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/07-reports/07-approvals-reports-10-point-actions-export-pdf.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : BOOT_AT, POP_OPEN, POP_JUST, POP_EV, popOpenAt, expAllowed, pdfTile, pdfBar, pdfCols, pdfDonut, pdfCover, expPdf
+   DEFINES : popOpenAt, expAllowed
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ═══ نافذة النقطة — كل ما تحمله النقطة من إجراءات ═══

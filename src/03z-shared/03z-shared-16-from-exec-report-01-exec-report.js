@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-16-from-exec-report-01-exec-report.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/06-ministry/06-exec-report-01-exec-report.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : EXEC_L, EXEC_ORDER_L, EXEC_PICK, execOvOf, execAutoOf, execLabelOf, EXEC_MEMO, execStatusMemo, ccGroupsOfSite, execOvRow, selExecHtml, EXEC_POLICY, EXEC_OV, execT1 … (+5 more)
+   DEFINES : execOvOf, execAutoOf, execLabelOf, execStatusMemo, ccGroupsOfSite, execOvRow, selExecHtml, execT1, execT2, execT3, execT4, execPolicy … (+1 more)
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* (V37.47) طلبُ المالك بنسختِه: «عاوز التقرير يكون كده». كلُّ نقطةٍ في صفٍّ واحدٍ فقط (مجموعُ «العدد» = كلُّ النقاط)، وعمودُ الجهة متروكٌ كما تركه،

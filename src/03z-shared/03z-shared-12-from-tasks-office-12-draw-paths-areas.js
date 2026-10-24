@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-12-from-tasks-office-12-draw-paths-areas.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/04-office/04-tasks-office-12-draw-paths-areas.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : TFD, tfdMay, tfdGraph, tfdMpp, tfdSnap, tfdPath, tfdAdd, tfdDrawn, tfdLen, tfdPanelHtml, ROUTE, RT_MIN, RT_EVERY_MIN, RT_CAP … (+21 more)
+   DEFINES : tfdMay, tfdGraph, tfdMpp, tfdSnap, tfdPath, tfdAdd, tfdDrawn, tfdLen, tfdPanelHtml, drawFlag, routeAdd, geoDist … (+16 more)
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ═══ (V28.0) رسمُ مسارات التفويج من وإلى الجمرات — بيد المهندس، على الشوارع ═══

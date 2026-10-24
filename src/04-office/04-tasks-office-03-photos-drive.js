@@ -2,7 +2,7 @@
    FILE    : src/04-office/04-tasks-office-03-photos-drive.js
    DOMAIN  : Office — photos, governance, assistant, word reports, drawing
    PURPOSE : Photos: Google Drive bridge, naming, upload to the database then server move to Drive, who uploaded/viewed/deleted, open/download in app, and plain-language transfer failures.
-   DEFINES : drvCfg, drvLoad, drvAuth, dataToBlob, drvUpload, photoNext, photoQueue, photoFlush, photoFlushCloud, photoSeen, photoDelete, phIdx, phTouch, photosOf … (+9 more)
+   DEFINES : photoSeen, photoCount, drvSave, drvTest
    GLOBALS : DRV, PHOTO_Q, SEEN_TODAY, PH_IDX, PH_VER, PH_ERR
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

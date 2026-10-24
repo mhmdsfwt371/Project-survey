@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-34-from-approvals-reports-09-followup-export-events.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/07-reports/07-approvals-reports-09-followup-export-events.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : EV_KINDS, evKind, EV_CATS, evCat, EVF, EV_NAMES, EV_NAMES_V, evNames, evActor, evAll, evNorm, evRows
+   DEFINES : evKind, evCat, evNames, evActor, evAll, evNorm, evRows
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ═══ سجلُّ الأحداث ═══

@@ -2,7 +2,7 @@
    FILE    : src/06-ministry/06-ext-camps-03-nusuk-card-system.js
    DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
    PURPOSE : Nusuk card system bridge: bulk linking, signal status, overview sheet, point status card, setup bar.
-   DEFINES : extTokLoad, extTokSave, extTokClear, extFetch, extReadersLoad, extTentsLoad, extOvLoad, extOvCard, extStatBox, extTokCard, extMatchLoad, mtCamps, extSerKey, extCodeKey … (+65 more)
+   DEFINES : extTokSave, extTokClear, extOvCard, extStatBox, extTokCard, mtCamps, pilotRowsList, extSnapView, extNkSave, extBulkPlan, extBulkCard, extBulkApply … (+23 more)
    GLOBALS : EXT, EXT_API, EXT_STREAM, EXT_LIVE, EXT_LIVE_KEY, EXT_MATCH_STATE, EXT_OV_LOADED
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

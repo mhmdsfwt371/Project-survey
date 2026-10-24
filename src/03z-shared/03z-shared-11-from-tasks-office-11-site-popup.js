@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-11-from-tasks-office-11-site-popup.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/04-office/04-tasks-office-11-site-popup.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : MOVE_ID, MOVE_AT, siteTitle, siteSub, netRows, popPhotosHtml, popHtml
+   DEFINES : siteTitle, siteSub, netRows, popPhotosHtml, popHtml
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ═══ نافذة النقطة — كما في العامل، وكلُّ زرٍّ يفعل ═══

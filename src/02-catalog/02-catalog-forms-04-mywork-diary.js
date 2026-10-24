@@ -2,7 +2,7 @@
    FILE    : src/02-catalog/02-catalog-forms-04-mywork-diary.js
    DOMAIN  : Catalogue & point — definitions, classification, permissions, survey edit
    PURPOSE : 'My work' screens, project diary, weight/target simulator and how dues are computed.
-   DEFINES : perfRankTable, diaryRows, diaryBody, simState, simSave, simTypes, simW, simRows, simCard, moneyHowCard
+   DEFINES : perfRankTable, diaryRows, simState, simSave, simTypes, simW, simRows, simCard, moneyHowCard
    GLOBALS : STAGE_TAB, PERF_VIEW, SIM
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

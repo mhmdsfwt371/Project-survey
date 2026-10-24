@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-27-from-approvals-reports-01-approvals-review.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/07-reports/07-approvals-reports-01-approvals-review.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : SVA_ST, SVA_REV, SVA_SOL, SVA_Q, SVA_PH, HO_DOC, HO_CO, CHAL_Q, NTF_Q, MIN_ST, MIN_Q, MIN_OPEN, MIN_T
+   DEFINES : لا دوالَّ — بياناتٌ وجملٌ فقط
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ═══ اعتمادُ الزيارات — المهندسُ يراجع ما زاره المشرفُ قبل أن يُبنى عليه ═══

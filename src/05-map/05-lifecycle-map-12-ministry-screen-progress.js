@@ -2,7 +2,7 @@
    FILE    : src/05-map/05-lifecycle-map-12-ministry-screen-progress.js
    DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
    PURPOSE : Ministry hall screen, completion forecast, progress map, far points, satellite in the ministry screen, week sentence and the hall view.
-   DEFINES : zoneForecast, forecastHtml, geoOutliers, pmState, pmViewBox, pmApply, pmZoomAt, pmReset, pmFrac, kkSatHtml, kkSatInit, pointMap, kioskObsTally, kioskObsHtml … (+8 more)
+   DEFINES : geoOutliers, pmViewBox, pmApply, pmZoomAt, pmFrac
    GLOBALS : KK_ZONE, PM_VIEW, PM_DRAG, KK_VIEW, PM_CLICK_SKIP, KIOSK_ON, KSC
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

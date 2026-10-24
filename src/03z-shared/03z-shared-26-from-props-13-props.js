@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-26-from-props-13-props.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/06-ministry/06-props-13-props.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : propList, propIs, propKeep, propFind, PROP_POP, PROP_SHEET, propMay, propLine, propPopHtml, propMarkers, propChip, propSheetHtml
+   DEFINES : propList, propIs, propKeep, propFind, propMay, propLine, propPopHtml, propMarkers, propChip, propSheetHtml
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ═══ (V37.69) مقترحاتُ الوزارة — قرارُ المالك «مقترحة أفضل»: النقطةُ التي تضيفها الوزارةُ تبقى خارجَ السجلِّ والعدِّ والتقارير حتى يعتمدها المهندس ═══

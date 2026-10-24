@@ -2,7 +2,7 @@
    FILE    : src/07-reports/07-approvals-reports-09-followup-export-events.js
    DOMAIN  : Approvals & reports — inventory, workshop, devices, notifications, roles
    PURPOSE : Follow-up file export from its template, events log, classification by action, and the audit trail read from the database in batches.
-   DEFINES : fupPct, fupPctRaw, zipRead, zipWrite, fupExport, evKind, evCat, evPillKind, evFetch, evNames, evActor, evAll, evNorm, evSiteHistory … (+1 more)
+   DEFINES : fupPct, fupPctRaw, zipRead, zipWrite, fupExport, evPillKind, evFetch, evSiteHistory
    GLOBALS : FUP_ROWS, FUP_MEMO, EV_KINDS, EV_CATS, EVF, EV_FETCHED, EV_NAMES
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

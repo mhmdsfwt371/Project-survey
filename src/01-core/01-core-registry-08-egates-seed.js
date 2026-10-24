@@ -2,7 +2,7 @@
    FILE    : src/01-core/01-core-registry-08-egates-seed.js
    DOMAIN  : Core — language, engine, sync, registry
    PURPOSE : Al Mashaaer train: the nine stations and their 62 E-GATE points (registry points at the station reference, owner decision Q-023), the station card listing its gates and the per-gate verification editor.
-   DEFINES : egSeed, egIsStation, egIsGate, egList, egOf, egOps, egCard, egSave
+   DEFINES : egSeed, egIsStation, egIsGate, egList, egOf, egOps, egCard
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
    ============================================================================ */

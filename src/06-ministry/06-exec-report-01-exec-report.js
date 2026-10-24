@@ -2,7 +2,7 @@
    FILE    : src/06-ministry/06-exec-report-01-exec-report.js
    DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
    PURPOSE : Executive report builder.
-   DEFINES : execOvOf, execOvSeed, execOvSet, execAutoOf, execLabelOf, execStatusMemo, ccGroupsOfSite, execOvRow, techDoneSet, selTechDone, selExecSet, selExecHtml, execT1, execT2 … (+8 more)
+   DEFINES : techDoneSet, selTechDone, selExecSet, execRows, execSheetXml, execTplParts, execXlsx
    GLOBALS : EXEC_L, EXEC_ORDER_L, EXEC_PICK, EXEC_MEMO, EXEC_POLICY, EXEC_OV, EXEC_STATIC, EXEC_O
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

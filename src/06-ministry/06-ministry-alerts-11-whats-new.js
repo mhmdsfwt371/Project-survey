@@ -2,7 +2,7 @@
    FILE    : src/06-ministry/06-ministry-alerts-11-whats-new.js
    DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
    PURPOSE : 'What's new' — the version log shown once per update (also the release notes source for bump.mjs).
-   DEFINES : releaseNotesSince, releaseNotesSince, whatsNewMaybe, wnClose, wnHtml, pwOpen, pwNeeded, pwHtml, pwSave
+   DEFINES : releaseNotesSince, wnClose, pwNeeded, pwSave
    GLOBALS : RELEASE_NOTES, RELEASE_NOTES, WN
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
@@ -17,6 +17,9 @@
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V39.13', d:'2026-10-24', notes:[
+      'التوأم الرقمي ٢: أجهزة كل نقطة مركّبة (القارئ والكاميرات والراوتر والطاقة) أعمدة بألوانها في المجسّم، بسيريالاتها من سجل التركيب، ولمسة تفتح بطاقة الجهاز وتعديل التركيب',
+      'حارس جديد على الكود: لا دالّة تُعرَّف مرتين في المجال العام (كان يكسر شاشة بلا صوت)، وعنوان كل ملف يذكر ما فيه فعلًا — ١٢٦ عنوانًا صُحّح' ] },
   { v:'V39.12', d:'2026-10-24', notes:[
       'آخر كلمات الشاشة العربي: نوع المهمة «مسح» القديم بقى «زيارة»، وقدرتا الاقتراح والتفعيل باسمهما، ورقم النسخة في «حسابي» بأرقامك، وجوجل كلاود والقاطع الكهربائي بالعربي' ] },
   { v:'V39.11', d:'2026-10-24', notes:[

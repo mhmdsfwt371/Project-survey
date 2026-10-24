@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-06-from-tasks-office-06-risks-changes-coverage.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/04-office/04-tasks-office-06-risks-changes-coverage.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : risksList, riskSave, RISKS, riskScore, riskLevel, CHANGES, ORG, HSE
+   DEFINES : risksList, riskSave, riskScore, riskLevel
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ═══ سجلُّ المخاطر الحيّ ═══

@@ -2,7 +2,7 @@
    FILE    : src/08-events/08-data-events-boot-06-long-lists-storage-clicks.js
    DOMAIN  : Data & events — settings, users, click handlers, boot
    PURPOSE : Long lists (100 first then 'show more'), persistent storage request, table and window clicks.
-   DEFINES : moreKey, capList, moreHtml, render, render0, enterApp, enterShell, syncOnHide, storagePersistMaybe, actList, clickTables
+   DEFINES : moreKey, capList, moreHtml, render, renderKeepGrab, renderKeepPut, render0, enterApp, enterShell, syncOnHide, storagePersistMaybe
    GLOBALS : MORE_SHOWN, PERSIST, ACTS_CACHE
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

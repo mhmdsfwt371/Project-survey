@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-b-20-from-approvals-reports-03-trials-invoices.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/07-reports/07-approvals-reports-03-trials-invoices.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : trialOf, trialSiteNorm, trialForSite, trialLinkExisting, trialPick, BUY_PH, buyPhPrevHtml
+   DEFINES : trialOf, trialSiteNorm, trialForSite, trialLinkExisting, trialPick, buyPhPrevHtml
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ═══ التجارب: كلُّ ريالٍ وكلُّ ساعة — وقرارُ دخولها التكاليف (V16.96) ═══

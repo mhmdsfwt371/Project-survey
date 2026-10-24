@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-30-from-approvals-reports-04-devices-reset-pulse.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/07-reports/07-approvals-reports-04-devices-reset-pulse.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : appVer, agoTxt, PRES, presenceBeat, presenceFetch, presenceRows, WIPE_KEYS, SYSREP, sysReportFetch
+   DEFINES : appVer, agoTxt, presenceBeat, presenceFetch, presenceRows
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ═══ نسخُ الأجهزة: كلُّ جهازٍ يقول نسختَه ═══

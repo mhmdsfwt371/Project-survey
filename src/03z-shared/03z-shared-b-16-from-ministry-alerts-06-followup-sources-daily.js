@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-b-16-from-ministry-alerts-06-followup-sources-daily.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/06-ministry/06-ministry-alerts-06-followup-sources-daily.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : mfuUnseen, WDY
+   DEFINES : mfuUnseen
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* الجديدُ منذ آخر زيارةٍ لمتابعة الوزارة — على هذا الجهاز */

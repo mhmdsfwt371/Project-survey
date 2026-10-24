@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-20-from-ministry-alerts-06-followup-sources-daily.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/06-ministry/06-ministry-alerts-06-followup-sources-daily.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : mfuTaskState, mfuAllChal, mfuHist, mfuTaskNote, mfuReqView, mfuTimeline, mfuTaskGone, mfuDoneAt, mfuWeekBlocks, mfuBlocksCard, mfuOwnersLoad, mfuOwnersCard, mfuWeeksCard, mfuMinWait … (+2 more)
+   DEFINES : mfuTaskState, mfuAllChal, mfuHist, mfuTimeline
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ═══ التحدياتُ بمصادرها الثلاثة (V20.5) ═══

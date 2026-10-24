@@ -2,7 +2,7 @@
    FILE    : src/05-map/05-lifecycle-map-10-field-companies.js
    DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
    PURPOSE : Field map-first home, composite-name parsing, companies board and company camps classified.
-   DEFINES : coDash, coBucketsAll, coBuckets, coPopRows, coPopHtml, coPopXls, coDashCard, coSplit, siteCos, coCompounds, coPick, coFill, coColor, coFiltHtml … (+3 more)
+   DEFINES : coSplit, coCompounds, coFill, coColor, coFiltHtml, legendRows, typeShort, legendShapes
    GLOBALS : FIELD_MODE, EXP_OPEN, POP_SITE, CO_OPEN, CO_MODE, CO_Q, MAP_SAT, MAP_FILT_OPEN, CO_SEL, CO_BK … (+7 more)
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

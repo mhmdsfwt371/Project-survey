@@ -2,7 +2,7 @@
    FILE    : src/05-map/05-lifecycle-map-09-role-switch-login-install.js
    DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
    PURPOSE : Role switching, logout, add-to-home-screen prompts (incl. iPhone) and the login page.
-   DEFINES : roleWatch, verChase, swLater, swPoll, verCheck, quotaEstimate, swClear, signOut, pwaWatch, pwaStandalone, pwaIOS, pwaAndroid, pwaInstall, iosNudgeDue … (+8 more)
+   DEFINES : roleWatch, verChase, swPoll, displayMode, dispState, dispTick, signOut, pwaWatch, pwaStandalone, pwaIOS, pwaAndroid, iosNudgeDue … (+8 more)
    GLOBALS : VIS_LAST, LEGEND_ON, VER_CHASE, INSTALL_EVT, POP_HELP, LOGO, MANIFEST, LOGIN_CSS
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

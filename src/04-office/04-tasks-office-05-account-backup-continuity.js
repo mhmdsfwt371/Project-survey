@@ -2,7 +2,7 @@
    FILE    : src/04-office/04-tasks-office-05-account-backup-continuity.js
    DOMAIN  : Office — photos, governance, assistant, word reports, drawing
    PURPOSE : Account document, identity from auth, pending-activation state, cause fixes that release blocked work, backup/Drive status, and the 'what depends on a person' continuity card.
-   DEFINES : myUid, meInactive, meActivatedCheck, permRelease, myDocFetch, myDocFix, bkFetch, contRes, contLoad, contSave, contCard, bkAgeDays, bkCard
+   DEFINES : myDocFix, contSave, contCard, bkCard
    GLOBALS : MYDOC, PZ_ARM, BK_STATE, BK_RAW
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

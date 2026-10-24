@@ -2,7 +2,7 @@
    FILE    : src/04-office/04-tasks-office-02-newsite-schedule.js
    DOMAIN  : Office — photos, governance, assistant, word reports, drawing
    PURPOSE : Unregistered site added from the field, who decides what it becomes, visit recorded on add, and scheduling visits for office-added points.
-   DEFINES : nsNear, coHit, nsCoRows, nsCoCard, nsCapture, nsCoRequest, nsOffice, typeCode, nsName, nsVisitRec, visitAsnOpen, nsSave
+   DEFINES : nsCapture, nsCoRequest, nsName, nsVisitRec, visitAsnOpen, nsSave
    GLOBALS : WA_CO, WR_EDIT, NEWSITE, NS_CENTERS, NS_REASONS_PT, NS_CO_OPEN, NS_REASONS, NS_PHOTOS, NS_SIGN_RE, NS_SQ_RE … (+1 more)
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

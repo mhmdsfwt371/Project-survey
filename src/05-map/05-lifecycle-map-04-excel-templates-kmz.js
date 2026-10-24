@@ -2,7 +2,7 @@
    FILE    : src/05-map/05-lifecycle-map-04-excel-templates-kmz.js
    DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
    PURPOSE : Current page to Excel, the tasks file from a template, and KMZ/KML import.
-   DEFINES : lsGet, lsSet, xlsPage, xlsSheets, jszipLoad, xmlEsc, xlSerial, wtWorkbook, xlsExport, crc32, zipStore, kmzCamTable, kmzBuild, geoM … (+8 more)
+   DEFINES : lsGet, lsSet, jszipLoad, geoM, nameKey, nameLike, unzipKml, kmlPlaces, kmiClassify, kmiImport
    GLOBALS : JSZIP_LOADING, KMZ_STY, KMI, KMI_NEAR
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

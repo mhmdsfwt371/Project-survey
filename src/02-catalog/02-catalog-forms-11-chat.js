@@ -4,7 +4,7 @@
    PURPOSE : (V38.60) Field chat between the office and the installers: a message is a small append-only document
              (msgs), optionally tied to a site; the installation save, approval and return post their own system lines,
              so the thread of a site is its record. Live through a small listener; notifications for the addressee.
-   DEFINES : chMsgs, chOf, chVisible, chSend, chSystem, chIncoming, chSeen, chUnread, chLineHtml, chThreadHtml, chPageHtml
+   DEFINES : chMsgs, chOf, chScheduled, chPeople, chVisible, chKey, chSeenT, chMarkSeen, chIncoming, chAlert, chTopSync, chBeep … (+17 more)
    NOTE    : Build order is the full path (see scripts/build.mjs). State lives on the functions and in STATE.msgs.
    ============================================================================ */
 /* all messages, oldest first */

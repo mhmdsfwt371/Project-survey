@@ -2,7 +2,7 @@
    FILE    : src/06-ministry/06-props-13-props.js
    DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
    PURPOSE : Ministry props helpers.
-   DEFINES : propList, propIs, propKeep, propFind, propMay, propLine, propPopHtml, propApprove, propReject, propMarkers, propChip, propSheetHtml, propGo
+   DEFINES : propApprove, propReject, propGo
    GLOBALS : PROP_POP
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

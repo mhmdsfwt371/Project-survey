@@ -2,7 +2,7 @@
    FILE    : src/05-map/05-lifecycle-map-03-export-import-docx.js
    DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
    PURPOSE : Export/import with real data, ExcelJS for self-updating files, and Word export that stays inside the app.
-   DEFINES : xlsxLoad, exlLoad, dlIOS, dlSheet, dl
+   DEFINES : xlsxLoad, dlIOS, dlSheet, dl
    GLOBALS : XLSX_READY, EXLJS_READY, SHEETS, SHEET_NAMES
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

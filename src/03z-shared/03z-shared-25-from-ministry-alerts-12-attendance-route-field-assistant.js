@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-25-from-ministry-alerts-12-attendance-route-field-assistant.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/06-ministry/06-ministry-alerts-12-attendance-route-field-assistant.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : attKey, attToday, hm, attMyCard, ROUTE_POS, routeTasks, routeOrder, kmTxt, mapsUrl, FH_PREP, fhNearest, fhToday, fhTodayText, fieldHelperCard … (+6 more)
+   DEFINES : attKey, attToday, hm, attMyCard, routeTasks, routeOrder, kmTxt, mapsUrl, fhNearest, fhToday, fhTodayText, fieldHelperCard … (+5 more)
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* نطاقُ المشاعر */

@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-28-from-approvals-reports-02-inventory-workshop.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/07-reports/07-approvals-reports-02-inventory-workshop.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : seedOnce, itemsList, itemName, REG_KIND, REG_ST, REG_Q, REG_EDIT, regList, regStatus, itemSave, movesList, itemKey, itemCode, stockBalance … (+1 more)
+   DEFINES : seedOnce, itemsList, itemName, regList, regStatus, itemSave, movesList, itemKey, itemCode, movAt, stockBalance, buysSpent
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ═══ المخزنُ والمشترياتُ والكتالوج: من الحركة لا من البذرة ═══════════════

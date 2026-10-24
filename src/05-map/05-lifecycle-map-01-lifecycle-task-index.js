@@ -2,7 +2,7 @@
    FILE    : src/05-map/05-lifecycle-map-01-lifecycle-task-index.js
    DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
    PURPOSE : Point lifecycle (one state read by all), task index by point and type, and stacked points on one coordinate.
-   DEFINES : tasksTouched, taskIndex, taskKindOf, lifeOf, lifeOfRaw, lifeColor, mapColorOf, mapLoad, mapInit, mapDupIndex, mapPosOf, mapPaintDebounced, mapPaintMove
+   DEFINES : taskIndex, taskKindOf, lifeOf, lifeOfRaw, lifeColor, mapColorOf, mapLoad, mapInit, mapDupIndex, mapPosOf, mapPaintDebounced, mapPaintMove
    GLOBALS : LIFE, LIFE_ORDER, TK_IX, _mapT, MAP_DUP, _mapMoveT
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

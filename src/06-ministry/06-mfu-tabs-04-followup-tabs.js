@@ -2,7 +2,7 @@
    FILE    : src/06-ministry/06-mfu-tabs-04-followup-tabs.js
    DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
    PURPOSE : Ministry follow-up tabs: installation status, challenges (who handles, which challenge, by location per zone), daily summary.
-   DEFINES : mtHero, mtSec, mtDot, mtIcon, mtGrid, mtDetails, mtOpen, mtAllBtn, mtXlsx, mtTabXlsx, mtSites, mtInst, mtGrpOf, obsLocCats … (+25 more)
+   DEFINES : mtHero, mtSec, mtIcon, mtDetails, mtAllBtn, mtTabXlsx, mtInst, obsLocCats, obsLocGroups, obsLocKey, obsLocGrp, obsLocLists … (+10 more)
    GLOBALS : MT_TILE, MT_GRP, MT_COB, MT_CO_ALL, MT_WF, MT_WST, MT_WWHO, HALL_URL, HALL
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

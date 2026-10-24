@@ -2,7 +2,7 @@
    FILE    : src/06-ministry/06-ministry-alerts-12-attendance-route-field-assistant.js
    DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
    PURPOSE : Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment.
-   DEFINES : attKey, attToday, attInZone, attLocate, attMark, hm, attMyCard, attTeamCard, routeLocate, routeTasks, routeOrder, kmTxt, mapsUrl, fhNearest … (+10 more)
+   DEFINES : attInZone, attLocate, attMark, attTeamCard, routeLocate, waAsnText, waAsn
    GLOBALS : ATT_IN, ROUTE_POS, FH_PREP, WA_LAST
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

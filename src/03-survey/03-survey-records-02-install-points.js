@@ -2,7 +2,7 @@
    FILE    : src/03-survey/03-survey-records-02-install-points.js
    DOMAIN  : Survey & installation — forms, points, assignment, plan
    PURPOSE : Installation points for a given type read from one place (what gets installed where).
-   DEFINES : insPtsOf, insRecalcPlan, insRecalcCard, insRecalcRun, ptsDis, selPts, layerStats, layerFiltered, layerBar, disSchedule, disComplete
+   DEFINES : insRecalcPlan, insRecalcCard, ptsDis, selPts, layerStats, layerFiltered, layerBar
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
    ============================================================================ */

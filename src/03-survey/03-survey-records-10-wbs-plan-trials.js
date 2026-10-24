@@ -2,7 +2,7 @@
    FILE    : src/03-survey/03-survey-records-10-wbs-plan-trials.js
    DOMAIN  : Survey & installation — forms, points, assignment, plan
    PURPOSE : Work breakdown structure, plan versus actual, plan export with formulas, item file and the trials page.
-   DEFINES : wbsRows, wbsKeys, wbsDepth, wbsChildren, wbsPct, wbsSvPct, wbsSvPctT, wbsInsPct, wbsAutoPct, wbsPlanPct, wbsVar, wbsVarPill, wbsProjectPct, wbsPlanCard … (+30 more)
+   DEFINES : wbsRows, wbsKeys, wbsDepth, wbsChildren, wbsPct, wbsSvPct, wbsSvPctT, wbsInsPct, wbsAutoPct, wbsPlanPct, wbsVar, wbsVarPill … (+17 more)
    GLOBALS : WBS_AUTO, WBS_DOS, WBS_F
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

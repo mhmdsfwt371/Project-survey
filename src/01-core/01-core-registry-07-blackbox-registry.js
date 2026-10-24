@@ -2,7 +2,7 @@
    FILE    : src/01-core/01-core-registry-07-blackbox-registry.js
    DOMAIN  : Core — language, engine, sync, registry
    PURPOSE : Black box (crash forensics) and the embedded site registry SITES_RAW with its publish/cache cycle to the database.
-   DEFINES : boxRedact, boxLoad, boxNote, boxAction, boxText, boxCopy, softErr, softErrCard, syncBadge, watchNet, regEmpty, regLocal, regVer, regEnsure … (+3 more)
+   DEFINES : boxRedact, boxLoad, boxNote, boxAction, softErr, syncBadge, watchNet, regEmpty, regLocal, regDecode, regEnsure, zoneOf
    GLOBALS : BOX, SITES_RAW
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.

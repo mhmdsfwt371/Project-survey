@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-32-from-approvals-reports-07-network-notifications.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/07-reports/07-approvals-reports-07-network-notifications.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : IP_Q, ipRows, vehKindSave, breakCell, rollupBy, rollupTable, techPerfTable, bonusFormHtml, bonusLogHtml, NOTIF_MAX, notifStore, NOTIF_SEEN, notifConcerns, notifOnArrival … (+21 more)
+   DEFINES : ipRows, vehKindSave, breakCell, rollupBy, rollupTable, techPerfTable, bonusFormHtml, bonusLogHtml, notifStore, notifConcerns, notifOnArrival, stepAgo … (+13 more)
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ═══ عناوينُ الشبكة ═══

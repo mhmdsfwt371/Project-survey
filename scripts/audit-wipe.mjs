@@ -162,7 +162,7 @@ T(/[1١] [1١] [1١] [1١]/.test(st), 'متصلٌ وغيرُ متصلٍ وفاص
 
 /* حسابي بنسخة الرأس */
 w.CUR = 'acct'; w.render(1); c = d.getElementById('content');
-T(c.textContent.indexOf(cur) > -1 && !/V14\.0/.test(c.textContent), 'حسابي يقول نسخةَ الرأس', cur);
+T(c.textContent.indexOf(w.verShow(cur)) > -1 && !/V14\.0|١٤٫٠/.test(c.textContent), 'حسابي يقول نسخةَ الرأس', cur);   /* (V39.12) in the language's digits */
 
 console.log(bad ? '\nجردُ التصفير ونسخ الأجهزة فشل ✗ (' + bad + ')' : '\nالتصفيرُ يصل السحابةَ ونسخُ الأجهزة من القاعدة ✅');
 process.exit(bad ? 1 : 0);

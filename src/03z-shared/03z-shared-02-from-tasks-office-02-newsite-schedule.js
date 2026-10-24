@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-02-from-tasks-office-02-newsite-schedule.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/04-office/04-tasks-office-02-newsite-schedule.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : NEWSITE, NS_CENTERS, NS_REASONS_PT, NS_CO_OPEN, NS_CO_Q, NS_REASONS, NS_PHOTOS, nsNear, coHit, nsCoRows, nsCoCard, nsOffice, TYPE_CODE, typeCode
+   DEFINES : nsNear, coHit, nsCoRows, nsCoCard, nsOffice
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* طلبُ الورشة المفتوحُ للتعديل */

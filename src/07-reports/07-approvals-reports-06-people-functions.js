@@ -2,7 +2,7 @@
    FILE    : src/07-reports/07-approvals-reports-06-people-functions.js
    DOMAIN  : Approvals & reports — inventory, workshop, devices, notifications, roles
    PURPOSE : People and functions: who gets field work, unified department page, functions from which roles derive.
-   DEFINES : isFieldRole, isCrewRole, techsList, techUid, techSet, techDel, crewsList, crewSave, crewAdd, crewDel, crewTechs, crewTeams, unassignedTechs, depTechAdd … (+21 more)
+   DEFINES : techDel, crewSave, crewAdd, crewDel, depTeamNew, depTeamAdd, depTeamRm, depTeamEven, depTeamByRole, depTeamDel, roleOfJob, jobAdd … (+3 more)
    GLOBALS : FIELD_ROLES, SITES_ALL, JOBS_SEED, LESS_SHOW
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
