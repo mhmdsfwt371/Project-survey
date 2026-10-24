@@ -2,7 +2,7 @@
    FILE    : src/01-core/01-core-registry-06-data-gate-live.js
    DOMAIN  : Core — language, engine, sync, registry
    PURPOSE : DB gate (the only path to Firestore), silent-failure capture, live listeners that mirror other devices' writes, sync counters and pull accounting.
-   DEFINES : arCmp, dayKey, rollupToday, statsHistory, liveSmallStop, liveSmall, liveTickStop, pulseBadge, syncCdSecs, syncCdTxt, syncCycle, liveTick, logEventQuiet
+   DEFINES : arCmp, dayKey, rollupToday, statsHistory, liveSmallStop, liveSmall, liveTickStop, pulseBadge, syncCdSecs, syncCdTxt, syncCycle, liveTick, logEventQuiet, liveSmallTail
    GLOBALS : EXP, DB, ROLL_LAST, LIVE_SMALL, LIVE_WORK_PAGES, BADGE_TICK, SYNC, SOFT_ERRS
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
@@ -223,6 +223,10 @@ function liveSmall(){
       }, function(e){ softErr('إنصات حسابي', e, ''); }));
     } catch (e){ softErr('إنصات حسابي', e, ''); }
   }
+  return liveSmallTail(watch, scope, sig0);   /* (V39.38) the rest lives in liveSmallTail — kept under 150 lines (audit-health) */
+}
+/* (V39.38) the second half of liveSmall, moved out whole to keep each under 150 lines — same statements, same order */
+function liveSmallTail(watch, scope, sig0){
   if (rankOf(ROLE) > 30){
     /* (V38.60) the field chat is live: every message of the last week arrives as it is written */
     watch('msgs', function(id, v){ STATE.msgs = STATE.msgs || {}; if (v){ var fresh = !STATE.msgs[id]; STATE.msgs[id] = v; if (fresh && typeof chIncoming === 'function') chIncoming(v); } }, 400, ['_at', '>', Date.now() - 7 * 86400000]);

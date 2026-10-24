@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-11-from-tasks-office-11-site-popup.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/04-office/04-tasks-office-11-site-popup.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : siteTitle, siteSub, netRows, popPhotosHtml, popHtml
+   DEFINES : siteTitle, siteSub, netRows, popPhotosHtml, popHtml, popNextHtml, popMarksHtml
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ═══ نافذة النقطة — كما في العامل، وكلُّ زرٍّ يفعل ═══
@@ -82,37 +82,7 @@ function popHtml(){
 
   /* أزرارُ الوسم: في وضع التركيب مجدولٌ وتم، وفي المسح «تمت الزيارة» —
      ولا تظهر إلا لنقطةٍ أُسندت، فلا يُوسَم ما لم يُطلَب. */
-  var marks = '';
-  /* (V38.58) owner's rule: the engineer may say «installed» from here; supervisor and technician record the
-     installation in its form with parts, serials and photos */
-  if (FIELD_MODE === 'install' && !may('approve')){
-    marks = '<span class="hint" style="margin:0;font-size:11.5px">' + esc(t('سجّل التركيبَ من «نموذج التركيب» بقطعه وسيريالاته وصوره')) + '</span>';
-  } else if (FIELD_MODE === 'install'){
-    marks = [['مجدول','#FF8C42'], ['مُركّب','#3AD6A0'], ['متعذّر','#E05252']].map(function(o){
-      var on = st === o[0];
-      return '<button type="button" class="go' + (on?' on':'') + '"'
-        + ' style="border-color:' + o[1] + ';color:' + (on ? '#0A0B0D' : o[1])
-        + (on ? ';background:' + o[1] : '') + '"'
-        + ' data-fmark="' + esc(s.id) + '|' + esc(o[0]) + '">' + esc(t(o[0])) + '</button>';
-    }).join('');
-  } else if (may('approve')){   /* (V28.7) قرارُ المالك: «اسمها زيارة — المشرفُ ملزَمٌ بنموذج المسح، والمهندسُ يقدر يعملها من عنده (تمت الزيارة) ويتجاوز النموذج» */
-    /* (V28.3) زرٌّ يقول ما يفعل: يسجّل زيارةً سريعةً حين لا زيارة، ويُلغي السريعةَ وحدَها، ولا يظهر على مسحٍ كامل */
-    var rq = STATE.recs[s.id];
-    marks = !rq ? '<button type="button" class="go" style="border-color:#4BC9F5;color:#4BC9F5" data-smark="' + esc(s.id) + '">\u2713 ' + esc(t('تمت الزيارة')) + '</button>'
-      : recIsQuick(rq) ? '<span class="pill info">' + esc(t('تمت الزيارة — بقرار المهندس')) + '</span>'   /* (V28.4) لا زرَّ إلغاء — الحذفُ موقوف */
-      : '';
-  } else if (task || rankOf(ROLE) >= rankOf('supervisor')){   /* (V28.7) المشرفُ والفنيُّ: الزيارةُ من نموذج المسح بصوره */
-    marks = STATE.recs[s.id] ? '' : '<span class="hint" style="margin:0;font-size:11.5px">' + esc(t('سجّل الزيارةَ من «نموذج المسح» بصورها')) + '</span>';
-  } else {
-    marks = '<span class="hint" style="margin:0;font-size:11.5px">'
-      + esc(t('لم تُجدول زيارة لهذه النقطة بعد')) + '</span>';
-  }
-
-  /* (V36.1) «مش لاقي حذف نقطة منين»: الزرُّ كان داخل «تعديل بيانات النقطة» وحدَه — صار في النافذة نفسِها للمهندس فما فوق */
-  /* (V36.3) بلاغُ المالك «دي مفيهاش حذف» — نقطةٌ مضافة (NSK-HJM-LPR-N006) كانت مستثناة: صار الزرُّ لكلِّ نقطة، والحذفُ منه قابلٌ للاستعادة
-     للمضافة وللأصلية سواء؛ والحذفُ النهائيُّ للمضافة باقٍ في «تعديل البيانات» لمن أراد محوها بسجلّاتها. */
-  if (mayDeleteFinal()) marks += siteLocked(s.id) ?   /* (V37.9 ق-٠١٦) الحذفُ النهائيُّ للمهندس فما فوق */   /* (V36.8) المزارةُ لمدير المشروع */ '<span class="pill" title="' + esc(t('ما رُكّب لا يُحذَف')) + '">\u{1F512} ' + esc(t(siteLocked(s.id))) + '</span>'   /* (V36.4) */
-    : '<button type="button" class="go" style="border-color:#E05252;color:#E05252" data-popdel="' + esc(s.id) + '">\u{1F5D1} ' + esc(t('حذف نهائي')) + '</button>';
+  var marks = popMarksHtml(st, s, task);   /* (V39.38) the popup's action marks — moved out whole (audit-health) */
 
   /* (V39.27) the brief card that was a mode of its own now lives in every mode's popup: popSumHtml + popFieldHtml */
 
@@ -222,7 +192,46 @@ function popHtml(){
        من رأى نقطةً مسوحةً لا تظهر في التركيب سأل: أهي معطَّلةٌ أم تنتظر؟
        فصار كلُّ حالٍ يقول ما بعده ومن يملكه — ومن يملكه يجد الزرَّ، ومن
        لا يملكه يعرف من ينتظر بدل أن يظنَّ العطل. */
-    +   (function(){
+    +   popNextHtml(s, rec, sv)
+    + '</div></div>';
+}
+/* (V39.38) the popup's action marks (install, delete…), moved out of popHtml whole — same statements, same order */
+function popMarksHtml(st, s, task){
+  var marks = '';
+  /* (V38.58) owner's rule: the engineer may say «installed» from here; supervisor and technician record the
+     installation in its form with parts, serials and photos */
+  if (FIELD_MODE === 'install' && !may('approve')){
+    marks = '<span class="hint" style="margin:0;font-size:11.5px">' + esc(t('سجّل التركيبَ من «نموذج التركيب» بقطعه وسيريالاته وصوره')) + '</span>';
+  } else if (FIELD_MODE === 'install'){
+    marks = [['مجدول','#FF8C42'], ['مُركّب','#3AD6A0'], ['متعذّر','#E05252']].map(function(o){
+      var on = st === o[0];
+      return '<button type="button" class="go' + (on?' on':'') + '"'
+        + ' style="border-color:' + o[1] + ';color:' + (on ? '#0A0B0D' : o[1])
+        + (on ? ';background:' + o[1] : '') + '"'
+        + ' data-fmark="' + esc(s.id) + '|' + esc(o[0]) + '">' + esc(t(o[0])) + '</button>';
+    }).join('');
+  } else if (may('approve')){   /* (V28.7) قرارُ المالك: «اسمها زيارة — المشرفُ ملزَمٌ بنموذج المسح، والمهندسُ يقدر يعملها من عنده (تمت الزيارة) ويتجاوز النموذج» */
+    /* (V28.3) زرٌّ يقول ما يفعل: يسجّل زيارةً سريعةً حين لا زيارة، ويُلغي السريعةَ وحدَها، ولا يظهر على مسحٍ كامل */
+    var rq = STATE.recs[s.id];
+    marks = !rq ? '<button type="button" class="go" style="border-color:#4BC9F5;color:#4BC9F5" data-smark="' + esc(s.id) + '">\u2713 ' + esc(t('تمت الزيارة')) + '</button>'
+      : recIsQuick(rq) ? '<span class="pill info">' + esc(t('تمت الزيارة — بقرار المهندس')) + '</span>'   /* (V28.4) لا زرَّ إلغاء — الحذفُ موقوف */
+      : '';
+  } else if (task || rankOf(ROLE) >= rankOf('supervisor')){   /* (V28.7) المشرفُ والفنيُّ: الزيارةُ من نموذج المسح بصوره */
+    marks = STATE.recs[s.id] ? '' : '<span class="hint" style="margin:0;font-size:11.5px">' + esc(t('سجّل الزيارةَ من «نموذج المسح» بصورها')) + '</span>';
+  } else {
+    marks = '<span class="hint" style="margin:0;font-size:11.5px">'
+      + esc(t('لم تُجدول زيارة لهذه النقطة بعد')) + '</span>';
+  }
+
+  /* (V36.1) «مش لاقي حذف نقطة منين»: الزرُّ كان داخل «تعديل بيانات النقطة» وحدَه — صار في النافذة نفسِها للمهندس فما فوق */
+  /* (V36.3) بلاغُ المالك «دي مفيهاش حذف» — نقطةٌ مضافة (NSK-HJM-LPR-N006) كانت مستثناة: صار الزرُّ لكلِّ نقطة، والحذفُ منه قابلٌ للاستعادة
+     للمضافة وللأصلية سواء؛ والحذفُ النهائيُّ للمضافة باقٍ في «تعديل البيانات» لمن أراد محوها بسجلّاتها. */
+  if (mayDeleteFinal()) marks += siteLocked(s.id) ?   /* (V37.9 ق-٠١٦) الحذفُ النهائيُّ للمهندس فما فوق */   /* (V36.8) المزارةُ لمدير المشروع */ '<span class="pill" title="' + esc(t('ما رُكّب لا يُحذَف')) + '">\u{1F512} ' + esc(t(siteLocked(s.id))) + '</span>'   /* (V36.4) */
+    : '<button type="button" class="go" style="border-color:#E05252;color:#E05252" data-popdel="' + esc(s.id) + '">\u{1F5D1} ' + esc(t('حذف نهائي')) + '</button>';
+  return marks;
+}
+/* (V39.38) the point's «next step» block, moved out of popHtml whole — kept under 150 lines (audit-health) */
+function popNextHtml(s, rec, sv){
           /* ═══ الاعتمادان في الخطوة التالية ═══
              كانت البطاقةُ تقفز من المسح إلى «جاهزةٌ للتركيب» وتعرض نموذجَ
              التركيب — وقد صار بينهما اعتمادان: تقنيٌّ من المهندس، ثم اعتمادُ
@@ -283,9 +292,7 @@ function popHtml(){
             /* وسمُ التركيب التجريبي — للمدير: يقاس الزمنُ بين مراحلها في «الفك والمراحل ← السلسلة» (V17.95) */
             + (may('users') ? '<div class="actions" style="margin:8px 0 0">' + btn((s.pilot ? '\u2713 ' : '') + t(s.pilot ? 'نقطةُ تجربة — أعِدها عادية' : 'اجعلها نقطةَ تجربة'), 'btn-quiet btn-sm', ' data-pilot="' + esc(s.id) + '"') + '</div>' : '')
             + (typeof execOvRow === 'function' ? execOvRow(siteFind(s.id) || s) : '');   /* (V37.52) تصنيفُ التقرير التنفيذي وزيارتُها التقنية — بالنقطة الأصلية لا نسخة العرض */
-        })()
-    + '</div></div>';
-}
+        }
 
 
 /* (V39.27) the summary of the mode's record: its verdict (تمام · تحدٍّ · ملاحظة) and one line, by whom and when — and,

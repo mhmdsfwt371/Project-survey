@@ -8,7 +8,7 @@
 |---|---:|---:|---|
 | `00-head.html` | 1364 | 0 |  |
 
-## `01-core/` — النواة — اللغة والمحرك والمزامنة والسجل  (8 ملفات · 2791 سطر · 126 دالة)
+## `01-core/` — النواة — اللغة والمحرك والمزامنة والسجل  (8 ملفات · 2795 سطر · 127 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -17,7 +17,7 @@
 | `01-core-registry-03-config-values.js` | 184 | 17 | Single source of configurable values (CFG): rates, weights keyed by zone and type, numeric constants edited from Settings and synced to every device. |
 | `01-core-registry-04-engine-storage.js` | 223 | 14 | Local-first storage engine: IndexedDB/localStorage persistence, resilience when the local store fails, and the save banner when data is at risk. |
 | `01-core-registry-05-sync-scale.js` | 1137 | 3 | CORE: the write queue, deduplication, upload with backoff and poison isolation, pending-upload limit and pending-file export/import, pull scheduling and scale-o |
-| `01-core-registry-06-data-gate-live.js` | 420 | 13 | DB gate (the only path to Firestore), silent-failure capture, live listeners that mirror other devices' writes, sync counters and pull accounting. |
+| `01-core-registry-06-data-gate-live.js` | 424 | 14 | DB gate (the only path to Firestore), silent-failure capture, live listeners that mirror other devices' writes, sync counters and pull accounting. |
 | `01-core-registry-07-blackbox-registry.js` | 190 | 12 | Black box (crash forensics) and the embedded site registry SITES_RAW with its publish/cache cycle to the database. |
 | `01-core-registry-08-egates-seed.js` | 72 | 7 | Al Mashaaer train: the nine stations and their 62 E-GATE points (registry points at the station reference, owner decision Q-023), the station card listing its g |
 
@@ -38,13 +38,13 @@
 | `02-definitions-08-definitions.js` | 563 | 83 | Canonical definitions used everywhere: visit/survey/installation states, challenge categories (chalCats), location choices (locOpts/locApplies), helper predicat |
 | `02-edit-09-edit-requests.js` | 185 | 11 | Data-correction requests from the field (fixreqs) and their review. |
 
-## `03-survey/` — المسح والتركيب — النماذج والنقاط والإسناد والخطة  (11 ملفات · 4012 سطر · 178 دالة)
+## `03-survey/` — المسح والتركيب — النماذج والنقاط والإسناد والخطة  (11 ملفات · 4016 سطر · 179 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
 | `03-survey-records-01-labels-colors.js` | 225 | 14 | Human-readable labels for recorded data, texts written about a point, layer colour by approval stage, field names and company names per UI language. |
 | `03-survey-records-02-install-points.js` | 896 | 7 | Installation points for a given type read from one place (what gets installed where). |
-| `03-survey-records-03-assign-solutions.js` | 439 | 21 | Assignment from list or map, request codes, and the proposed device solution for a point before an installation request. |
+| `03-survey-records-03-assign-solutions.js` | 443 | 22 | Assignment from list or map, request codes, and the proposed device solution for a point before an installation request. |
 | `03-survey-records-04-readiness-conditions.js` | 384 | 9 | What is ready per request type and the condition chain explaining why a point cannot be assigned. |
 | `03-survey-records-05-forms-approvals.js` | 160 | 11 | Field forms that write to the engine, the two approvals, missing survey fields, required-field marking and save blocking. |
 | `03-survey-records-06-survey-form.js` | 325 | 17 | The survey form: basic fields first and details on demand, prefix generation, automatic photo checks, and the draft that survives iOS closing the page. |
@@ -54,7 +54,7 @@
 | `03-survey-records-10-wbs-plan-trials.js` | 471 | 29 | Work breakdown structure, plan versus actual, plan export with formulas, item file and the trials page. |
 | `03-survey-records-11-weekly-tasks-paths.js` | 477 | 31 | Weekly tasks as sentence cards, meeting mode, the one filter for screen and paper, and path filtering with each path's status. |
 
-## `03z-shared/` — المشتركُ — تعريفاتٌ تحتاجها النواةُ قبل مجالات المكتب والوزارة والتقارير (نُقلت حرفيًّا، لا كودَ جديدًا هنا)  (63 ملفات · 8007 سطر · 451 دالة)
+## `03z-shared/` — المشتركُ — تعريفاتٌ تحتاجها النواةُ قبل مجالات المكتب والوزارة والتقارير (نُقلت حرفيًّا، لا كودَ جديدًا هنا)  (63 ملفات · 8014 سطر · 453 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -68,7 +68,7 @@
 | `03z-shared-08-from-tasks-office-08-reports-center-sop-help.js` | 213 | 0 | Definitions moved verbatim from src/04-office/04-tasks-office-08-reports-center-sop-help.js (V38.38, stage A of core + chunks): the core (01–05, 08) references  |
 | `03z-shared-09-from-tasks-office-09-assistant.js` | 165 | 9 | Definitions moved verbatim from src/04-office/04-tasks-office-09-assistant.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, s |
 | `03z-shared-10-from-tasks-office-10-assistant-reports.js` | 199 | 7 | Definitions moved verbatim from src/04-office/04-tasks-office-10-assistant-reports.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these  |
-| `03z-shared-11-from-tasks-office-11-site-popup.js` | 393 | 7 | Definitions moved verbatim from src/04-office/04-tasks-office-11-site-popup.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names,  |
+| `03z-shared-11-from-tasks-office-11-site-popup.js` | 400 | 9 | Definitions moved verbatim from src/04-office/04-tasks-office-11-site-popup.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names,  |
 | `03z-shared-12-from-tasks-office-12-draw-paths-areas.js` | 307 | 28 | Definitions moved verbatim from src/04-office/04-tasks-office-12-draw-paths-areas.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these n |
 | `03z-shared-13-from-tasks-office-13-perf-distribution-cameras.js` | 260 | 14 | Definitions moved verbatim from src/04-office/04-tasks-office-13-perf-distribution-cameras.js (V38.38, stage A of core + chunks): the core (01–05, 08) reference |
 | `03z-shared-14-from-tasks-office-14-pull-scope-listen-map.js` | 365 | 21 | Definitions moved verbatim from src/04-office/04-tasks-office-14-pull-scope-listen-map.js (V38.38, stage A of core + chunks): the core (01–05, 08) references th |
@@ -242,7 +242,7 @@
 | `05-lifecycle-map-20-map3d-ui.js` | 111 | 10 | (V39.28) owner: «الخريطة الـ3D مش حلوة وفيها حاجات كتير مخلياها صعبة — فكّر كمهندس GIS: نضيف وسهل المراقبة |
 | `05-lifecycle-map-21-move-devices.js` | 127 | 11 | (V39.31) owner: «عاوز أي نقطة، من أقل نقطة، أقدر أحرّكها: كاميرا وأنتنات وريدر وحساسات وجيت واي وخلافه». A point |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4346 سطر · 158 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4348 سطر · 158 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -256,7 +256,7 @@
 | `06-ministry-alerts-08-pptx-template.js` | 1044 | 23 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 284 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 1165 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 1167 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
 
@@ -276,7 +276,7 @@
 | `07-approvals-reports-10-point-actions-export-pdf.js` | 69 | 0 | Point window actions, click identity, export centre by section, export by role, PDF cover page. |
 | `07-approvals-reports-11-import-roles-perms.js` | 322 | 10 | Import via downloaded template, roles (who sees and does what), the owner is never locked out, database permissions matrix, custom roles, ranks, org tree and me |
 
-## `08-events/` — البياناتُ والأحداث — الإعدادات والمستخدمون والنقرات والإقلاع  (13 ملفات · 5095 سطر · 121 دالة)
+## `08-events/` — البياناتُ والأحداث — الإعدادات والمستخدمون والنقرات والإقلاع  (13 ملفات · 5107 سطر · 124 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -285,12 +285,12 @@
 | `08-data-events-boot-03-settings-types-users.js` | 563 | 28 | Settings: point types, moving points between categories, users from the database, user log, delete/duplicate accounts, passwords, login-name change and on-devic |
 | `08-data-events-boot-04-weights-zones.js` | 576 | 8 | Weight rows, zones from one source, display-name fixes and the constants card (incl. pending-upload limit). |
 | `08-data-events-boot-05-menu-shell-perf.js` | 307 | 23 | Menu and shell, scroll position kept across renders, measured performance and browser vitals, focus kept in fields. |
-| `08-data-events-boot-06-long-lists-storage-clicks.js` | 409 | 12 | Long lists (100 first then 'show more'), persistent storage request, table and window clicks. |
+| `08-data-events-boot-06-long-lists-storage-clicks.js` | 413 | 13 | Long lists (100 first then 'show more'), persistent storage request, table and window clicks. |
 | `08-data-events-boot-07-clicks-a-1.js` | 273 | 3 | Delegated click handlers, group A part 1 (return true when the event is consumed). |
 | `08-data-events-boot-08-clicks-a-2.js` | 378 | 3 | Delegated click handlers, group A part 2. |
 | `08-data-events-boot-09-clicks-a-3.js` | 294 | 3 | Delegated click handlers, group A part 3. |
 | `08-data-events-boot-10-clicks-doc-1.js` | 356 | 4 | Document-level click handlers part 1 (onDocClick and parts 1–3): settings, constants, survey edit, pending file, E-GATE verification. |
-| `08-data-events-boot-11-clicks-doc-2.js` | 531 | 5 | Document-level click handlers part 2 (parts 4–7). |
+| `08-data-events-boot-11-clicks-doc-2.js` | 539 | 7 | Document-level click handlers part 2 (parts 4–7). |
 | `08-data-events-boot-12-clicks-doc-3.js` | 262 | 3 | Document-level click handlers part 3 (parts 8–9). |
 | `08-data-events-boot-13-toast-wheel-ios-boot.js` | 797 | 9 | Toast, label cells, mouse wheel never types numbers, iOS viewport stability, assistant scroll fix, file-input change handlers and the boot sequence. |
 
@@ -300,4 +300,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 238 ملفًّا · 47492 سطر · 2172 دالة.
+**الإجمالي:** 238 ملفًّا · 47521 سطر · 2179 دالة.

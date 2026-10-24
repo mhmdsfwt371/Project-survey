@@ -2,7 +2,7 @@
    FILE    : src/03-survey/03-survey-records-03-assign-solutions.js
    DOMAIN  : Survey & installation — forms, points, assignment, plan
    PURPOSE : Assignment from list or map, request codes, and the proposed device solution for a point before an installation request.
-   DEFINES : selHas, selToggle, selClear, selIds, asnOf, asnOfTech, kindLabel, reqNext, reqFmt, reqClaims, reqClaimsSave, reqClaimAdd … (+9 more)
+   DEFINES : selHas, selToggle, selClear, selIds, asnOf, asnOfTech, kindLabel, reqNext, reqFmt, reqClaims, reqClaimsSave, reqClaimAdd … (+9 more), asnSheetTail
    GLOBALS : ASN_OPEN, SEL, ASN_BASE, ASN_MODE, ASN_PICK, ASN_KIND_DEST, REQ_PREFIX, REQSEQ, ASN_TEAM
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
@@ -220,6 +220,10 @@ function asnSheet(){
     var pin0 = selIds().filter(function(id){ return !seen0[id]; }).map(siteFind).filter(Boolean);
     if (pin0.length) view = pin0.concat(view);
   }
+  return asnSheetTail(L, view);   /* (V39.38) the rest lives in asnSheetTail — kept under 150 lines (audit-health) */
+}
+/* (V39.38) the second half of asnSheet, moved out whole to keep each under 150 lines — same statements, same order */
+function asnSheetTail(L, view){
   var techs = techNames();
   ASN_KIND = L.kind || ASN_KIND;
   if (!ASN_TO) ASN_TO = techs[0] || '';

@@ -35,7 +35,9 @@ const click = (/function onDocClick\(e\)\{[\s\S]*?\n\}/.exec(src)||[''])[0]
             + (/function clickTables\(e\)\{[\s\S]*?\n\}/.exec(src)||[''])[0]
             + (/function clickA\(e\)\{[\s\S]*?\n\}/.exec(src)||[''])[0]
             /* (V33.0) المعالجان صارا أجزاءً متتالية — تُقرأ كلُّها كما يقرؤها الحارسُ في التطبيق (actList) */
-            + [...src.matchAll(/function (?:onDocClickPart|clickAPart)\d+b?\(e\)\{[\s\S]*?\n\}/g)].map(m => m[0]).join('\n');
+            + [...src.matchAll(/function (?:onDocClickPart|clickAPart)\d+b?\(e\)\{[\s\S]*?\n\}/g)].map(m => m[0]).join('\n')
+            /* (V39.34/V39.38) every other click handler by name — the split-out halves (…Tail) and clickAMapViews — as actList reads them */
+            + [...src.matchAll(/function (?:click|onDocClick)[A-Z0-9][\w$]*\([^)]*\)\{[\s\S]*?\n\}/g)].map(m => m[0]).join('\n');
 /* ═══ الحارسُ يحرس نفسَه (V16.68) ═══
    `actList()` تشتقُّ الخصائصَ المربوطةَ من نصِّ المستمع، وبها يقرّر الحارسُ
    العامُّ أيَّ زرٍّ يبتلعه. فلمّا فُصلت أجزاءُ المستمع إلى دوالَّ صارت خصائصُ

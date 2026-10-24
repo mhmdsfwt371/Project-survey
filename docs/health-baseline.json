@@ -2,12 +2,12 @@
  "m": {
   "globals": 675,
   "over300": 0,
-  "over150": 6,
+  "over150": 0,
   "lintErrors": 0,
   "lintWarnings": 24,
   "maxSrcKB": 315
  },
  "capSrcKB": 520,
- "ver": "V39.27",
+ "ver": "V39.37",
  "at": "2026-10-24"
 }

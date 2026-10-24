@@ -2,7 +2,7 @@
    FILE    : src/08-events/08-data-events-boot-11-clicks-doc-2.js
    DOMAIN  : Data & events — settings, users, click handlers, boot
    PURPOSE : Document-level click handlers part 2 (parts 4–7).
-   DEFINES : onDocClickPart4, onDocClickPart5, onDocClickPart6, onDocClickPart7, onDocClickPart4b
+   DEFINES : onDocClickPart4, onDocClickPart5, onDocClickPart6, onDocClickPart7, onDocClickPart4b, onDocClickPart4Tail, onDocClickPart4bTail
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
    ============================================================================ */
@@ -100,6 +100,10 @@ function onDocClickPart4(e){
   var svr = e.target.closest('[data-svreopen]');
   if (svr){ SURV_REOPEN = svr.getAttribute('data-svreopen'); render(1); return; }
   if (e.target.closest('[data-svreopencancel]')){ SURV_REOPEN = ''; render(1); return; }
+  return onDocClickPart4Tail(e, rid);   /* (V39.38) the rest lives in onDocClickPart4Tail — kept under 150 lines (audit-health) */
+}
+/* (V39.38) the second half of onDocClickPart4, moved out whole to keep each under 150 lines — same statements, same order */
+function onDocClickPart4Tail(e, rid){
   var svg = e.target.closest('[data-svreopengo]');
   if (svg){
     svReopen(svg.getAttribute('data-svreopengo'),
@@ -301,6 +305,10 @@ function onDocClickPart4b(e){
   if (e.target.closest('[data-vkadd]')){ vehKindAdd(); return; }
   vkd = e.target.closest('[data-vkdel]');
   if (vkd){ vehKindDel(vkd.getAttribute('data-vkdel')); return; }
+  return onDocClickPart4bTail(e);   /* (V39.38) the rest lives in onDocClickPart4bTail — kept under 150 lines (audit-health) */
+}
+/* (V39.38) the second half of onDocClickPart4b, moved out whole to keep each under 150 lines — same statements, same order */
+function onDocClickPart4bTail(e){
   if (e.target.closest('[data-tyadd]')){ typeAdd(); return; }
   if (e.target.closest('[data-typesopen]')){ TYPES_OPEN = e.target.closest('[data-typesopen]').getAttribute('data-typesopen') === '1'; render(1); return; }
   if (e.target.closest('[data-selname]')){ if (selRename((document.getElementById('selNamePfx') || {}).value, (document.getElementById('selNameFrom') || {}).value)){ ASN_OPEN = false; if (typeof mapPaint === 'function' && MAP) mapPaint(); } render(1); return; }   /* (V23.1) */

@@ -2,7 +2,7 @@
    FILE    : src/08-events/08-data-events-boot-06-long-lists-storage-clicks.js
    DOMAIN  : Data & events — settings, users, click handlers, boot
    PURPOSE : Long lists (100 first then 'show more'), persistent storage request, table and window clicks.
-   DEFINES : moreKey, capList, moreHtml, render, renderKeepGrab, renderKeepPut, render0, enterApp, enterShell, syncOnHide, storagePersistMaybe, a11yFieldNames
+   DEFINES : moreKey, capList, moreHtml, render, renderKeepGrab, renderKeepPut, render0, enterApp, enterShell, syncOnHide, storagePersistMaybe, a11yFieldNames, render0Tail
    GLOBALS : MORE_SHOWN, PERSIST, ACTS_CACHE
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
@@ -179,6 +179,10 @@ function render0(force){
   var bk = document.getElementById('backBtn');
   if (bk) bk.hidden = !NAV_HIST.length;
   document.getElementById('crumb').textContent = t(p.t);
+  return render0Tail(wasCur, p, pl, wasTab);   /* (V39.38) the rest lives in render0Tail — kept under 150 lines (audit-health) */
+}
+/* (V39.38) the second half of render0, moved out whole to keep each under 150 lines — same statements, same order */
+function render0Tail(wasCur, p, pl, wasTab){
   document.getElementById('brandName').innerHTML =
       esc(t('قارئات أفاقي')) + '<div class="brand-sub">' + esc(t('حج ١٤٤٨هـ')) + '</div>';
   var wr = document.getElementById('whoRole');
