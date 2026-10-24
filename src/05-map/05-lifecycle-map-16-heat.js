@@ -6,12 +6,15 @@
              mode a point counts when its visit recorded a challenge or could not be surveyed; in installation (and
              dismantling) mode a point counts while its work remains. The flat map draws 120 m cells coloured by how
              many such points they hold; the 3D map draws the engine's own heat layer from the same points. The chip
-             «الحرارة» switches it on both; it reads the records and writes nothing.
-   DEFINES : heatWeight, heatPoints, heatColor, heatPaint, heatLayers3d, heatPaint3d
+             switches it on both; it reads the records and writes nothing. (V39.26) owner: «ما تسمّهاش حرارة» — the
+             chip says what it shows in the mode: «بؤر التحديات» in survey, «المتبقّي للتركيب» / «المتبقّي للفك».
+   DEFINES : heatLabel, heatWeight, heatPoints, heatColor, heatPaint, heatLayers3d, heatPaint3d
    PREFIX  : heat   (every function here starts with it — scripts/audit-names.mjs)
    STATE   : heatPaint.on, heatPaint.layer — on the function, no new global.
    ============================================================================ */
 
+/* (V39.26) what the layer is called in the current mode — the same rule heatWeight follows */
+function heatLabel(){ return FIELD_MODE === 'install' ? 'المتبقّي للتركيب' : FIELD_MODE === 'dis' ? 'المتبقّي للفك' : 'بؤر التحديات'; }
 /* 1 when the point is «hot» in the current mode, else 0 */
 function heatWeight(x){
   if (FIELD_MODE === 'install' || FIELD_MODE === 'dis'){

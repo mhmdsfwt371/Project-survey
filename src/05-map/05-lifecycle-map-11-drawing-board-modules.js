@@ -113,7 +113,7 @@ function mapUIHtml(){
     /* (V39.17) the season replayed day by day */
     +   '<button type="button" class="map-chip'+(timeState().on?' on':'')+'" data-time="1">\u23F3 '+esc(t('الزمن'))+'</button>'
     /* (V39.16) the heat: challenges in survey mode, remaining work in installation and dismantling */
-    +   '<button type="button" class="map-chip'+(heatPaint.on?' on':'')+'" data-heat="1">\u{1F525} '+esc(t('الحرارة'))+'</button>'
+    +   '<button type="button" class="map-chip'+(heatPaint.on?' on':'')+'" data-heat="1">\u{1F3AF} '+esc(t(heatLabel()))+'</button>'   /* (V39.26) named for what it shows, not «heat» */
     /* (V39.14) the coverage: reader ranges, camera view sectors and gateway reach */
     +   '<button type="button" class="map-chip'+(covPaint.on?' on':'')+'" data-cov="1">\u{1F4F6} '+esc(t('التغطية'))+'</button>'
     /* (V39.19) the installation photos as pins — with the 3D map */

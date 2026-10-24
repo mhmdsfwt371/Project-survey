@@ -1388,7 +1388,7 @@ console.log('\n══ ٤٩ · طوابقُ منشأة الجمرات في الم
 }
 
 /* ── ٥٠ · (V39.16) الخريطةُ الحرارية: التحدياتُ في المسح والمتبقّي في التركيب ── */
-console.log('\n══ ٥٠ · الخريطة الحرارية ══');
+console.log('\n══ ٥٠ · بؤر الشغل (كانت «الخريطة الحرارية») ══');
 {
   const m0 = w.FIELD_MODE, on0 = w.heatPaint.on, cur0 = w.CUR;
   w.CUR = 'map'; w.FIELD_MODE = 'survey';
@@ -1401,7 +1401,8 @@ console.log('\n══ ٥٠ · الخريطة الحرارية ══');
   w.FIELD_MODE = 'install';
   const installed = w.STATE.sites.find(x => w.insDone(x.id)), pending = w.STATE.sites.find(x => !w.insDone(x.id) && !(w.STATE.inss || {})[x.id] && +x.lat);
   T(!!installed && w.heatWeight(installed) === 0 && !!pending && w.heatWeight(pending) === 1, 'وفي وضع التركيب يسخن ما بقي ويبرد ما رُكِّب');
-  T(/data-heat="1"/.test(w.mapUIHtml()) && /الحرارة/.test(w.mapUIHtml()), 'وزرُّ «الحرارة» في صفِّ أزرار الخريطة');
+  T(/data-heat="1"/.test(w.mapUIHtml()) && /المتبقّي للتركيب/.test(w.mapUIHtml()) && !/الحرارة/.test(w.mapUIHtml()), 'وزرُّه في التركيب «المتبقّي للتركيب» — لا «الحرارة» (V39.26)');
+  w.FIELD_MODE = 'survey'; T(/بؤر التحديات/.test(w.mapUIHtml()), 'وفي المسح «بؤر التحديات»'); w.FIELD_MODE = 'dis'; T(/المتبقّي للفك/.test(w.mapUIHtml()), 'وفي الفك «المتبقّي للفك»'); w.FIELD_MODE = 'install';
   T(w.heatColor(0) !== w.heatColor(1) && /^rgb\(255,/.test(w.heatColor(0.5)), 'واللونُ من الأصفر إلى الأحمر');
   w.FIELD_MODE = m0; w.heatPaint.on = on0; w.CUR = cur0;
 }

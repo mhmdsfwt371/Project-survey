@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V39.25",
+  "app_version": "V39.26",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2287,7 +2287,8 @@
   "V39.22": "layers/iot-field-1448.json: مواقع الأجهزة الفعلية بالمخيم (spots → dev {model, tag, at}) — مخيم NSK-MIN-CMP-0449 من لقطة الفريق مطابَقةً بحدود poly.json (تطابق ٩٨٪) · 05-lifecycle-map-19-field-layouts.js: iotFieldLoad/iotFieldOf/iotFieldCount/iotFieldApply/iotFieldBanner — اللافتة في iotPanelHtml والتطبيق في المحرّر فقط والحفظ بـiotSave المعتاد · sm/gm: حقلا model وtag في المحرّر (datalist EM300/EM320/UG65/UG67) وiotMetaSet وبطاقة الجهاز وتلميح المجسّم وعمودان في إكسل الحساسات · data-iotfield · سيناريو ٥٦ (٣٠١ فحصًا)",
   "V39.23": "iot-field-1448.json: gate {at, box} وentrances [{at, main}] للمخيم 0449 (المدخل الجنوبي الشرقي على الشارع، من لقطة الفريق) · iotGateOf/iotEntrancesOf · iotFieldApply يضع gw عند البوابة وgm[0] مركّبًا بملاحظة الصندوق · اللافتة تعود إن حُفظت الخطّة والجيت واي أبعد من ١٫٥ م عن البوابة · dtwFeatures: حلقة الأجهزة حول البوابة إن وُجدت · m3Enter من البوابة · tentFence(ring, ents): فتحة ٤ م في أقرب ضلع لكل مدخل وإطار بوابة (عمودان وعتبة؛ الرئيسية ٣٫٦ م بالأخضر) · iotFieldLoad في المجسّم ويعيد رسم الخيام والأجهزة · t('عدّل الحساسات') · سيناريو ٥٧ (٣٠٨ فحوص)",
   "V39.24": "vendor/three/0.149.0/three.min.js (+LICENSE، SHA256؛ آخر إصدار بنسخة متصفح؛ مسار LAZY في sw.js، يُحمَّل في المجسّم فقط) · 04-tasks-office-19-twin-engine.js: طبقة custom «nsk-twin3d» بـrenderingMode 3d تشارك كاميرا الخريطة وعمقها؛ teBuild للمخيمات الستة الأقرب ضمن ٢٥٠ م من تقريب ١٧٫٥: InstancedMesh لأجسام الخيام وأسقفها (ConeGeometry رباعي)، حساسات على ٢٫٤ م بهالة بلون الحالة أو النبض، دولاب الجيت واي، وأجهزة سجل التركيب عند iotGateOf؛ الارتفاع من queryTerrainElevation؛ من ١٩٫٢ الأسقف تُرفع والأجسام تشفّ؛ teFilters تخفي nsk-tent/nsk-twin/nsk-iot لنفس المخيمات؛ teRay شعاع من نقطتي البكسل القريبة والبعيدة؛ teHit تلميح وteClick بطاقة قبل نافذة المخيم؛ liveSensor في التلميح · سيناريو ٥٨ (٣١٩ فحصًا)",
-  "V39.25": "teWalkOn/teWalkOff/teWalkDo/teWalkHtml في محرّك التوأم: ↑/W و↓/S خطوة ٢٫٥ م باتجاه النظر (easeTo)، ←/A و→/D استدارة ١٥°، Esc خروج؛ M3.keyboard يُوقف أثناء المشي؛ لوحة data-tewalk في mapUIHtml؛ «ادخل المخيم» والنقر المزدوج يبدآن المشي وm3Off ينهيه · audit-names §٣: كل ملف مؤرَّخ V39.13 فما بعد يعلن PREFIX وكل دوالّه تبدأ به · PREFIX في الوحدات التسع وDEFINES صادق · iotGateOf→iotFieldGate وiotEntrancesOf→iotFieldEntrances · dev-guide §5c · خريطة system.md · handover-review محدَّث · سيناريو ٥٩ (٣٢٤ فحصًا)"
+  "V39.25": "teWalkOn/teWalkOff/teWalkDo/teWalkHtml في محرّك التوأم: ↑/W و↓/S خطوة ٢٫٥ م باتجاه النظر (easeTo)، ←/A و→/D استدارة ١٥°، Esc خروج؛ M3.keyboard يُوقف أثناء المشي؛ لوحة data-tewalk في mapUIHtml؛ «ادخل المخيم» والنقر المزدوج يبدآن المشي وm3Off ينهيه · audit-names §٣: كل ملف مؤرَّخ V39.13 فما بعد يعلن PREFIX وكل دوالّه تبدأ به · PREFIX في الوحدات التسع وDEFINES صادق · iotGateOf→iotFieldGate وiotEntrancesOf→iotFieldEntrances · dev-guide §5c · خريطة system.md · handover-review محدَّث · سيناريو ٥٩ (٣٢٤ فحصًا)",
+  "V39.26": "heatLabel() بوضع الخريطة (نفس قاعدة heatWeight) في زرّ data-heat بعلامة 🎯 · ملاحظة V39.16 في «ما الجديد» وترجمتاها بالأسماء الجديدة · سيناريو ٥٠ محدَّث (٣٢٦ فحصًا)"
   },
   "map_and_geolocation": {
     "tile_layers": {

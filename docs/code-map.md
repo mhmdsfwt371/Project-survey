@@ -216,7 +216,7 @@
 | `04-tasks-office-18-twin-photos.js` | 50 | 5 | (V39.19) owner: the installation photos on the 3D map. Every point with photos gets a small pin at its |
 | `04-tasks-office-19-twin-engine.js` | 248 | 17 | (V39.24) owner: «الديجيتال توين حاجة دايناميك: أدخل بالماوس جوّه المكان، أشوف الأجهزة المتركّبة بمواقعها |
 
-## `05-map/` — الخريطة ودورةُ الحياة — الطبقات والتصدير والاستيراد والدخول وشاشةُ الوزارة  (18 ملفات · 4300 سطر · 210 دالة)
+## `05-map/` — الخريطة ودورةُ الحياة — الطبقات والتصدير والاستيراد والدخول وشاشةُ الوزارة  (18 ملفات · 4303 سطر · 211 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -234,12 +234,12 @@
 | `05-lifecycle-map-12-ministry-screen-progress.js` | 119 | 5 | Ministry hall screen, completion forecast, progress map, far points, satellite in the ministry screen, week sentence and the hall view. |
 | `05-lifecycle-map-13-ministry-followup.js` | 184 | 15 | Ministry follow-up page: dynamic follow-up, season brief header, 'whose turn' groups, two modes, and the no-challenge camps card. |
 | `05-lifecycle-map-15-coverage.js` | 79 | 8 | (V39.14) owner: coverage on the map — what each installed device covers, so a gap or an overlap is seen, |
-| `05-lifecycle-map-16-heat.js` | 69 | 6 | (V39.16) owner: a heat map of the challenges and of the progress — where the work stands still and where it |
+| `05-lifecycle-map-16-heat.js` | 72 | 7 | (V39.16) owner: a heat map of the challenges and of the progress — where the work stands still and where it |
 | `05-lifecycle-map-17-timeline.js` | 73 | 9 | (V39.17) owner: a time slider that replays the season — drag it and the map shows the Holy Sites as they |
 | `05-lifecycle-map-18-live.js` | 69 | 8 | (V39.20) owner: the twin must live, not only record. The Nusuk card system bridge already brings two |
 | `05-lifecycle-map-19-field-layouts.js` | 58 | 7 | (V39.22) owner, with the R&D team's photos of the demo camp (Mina 74B, signpost 38/56): «دول فعليًّا اللي |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4314 سطر · 158 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4316 سطر · 158 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -253,7 +253,7 @@
 | `06-ministry-alerts-08-pptx-template.js` | 1044 | 23 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 284 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 1133 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 1135 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
 
@@ -297,4 +297,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 235 ملفًّا · 47041 سطر · 2136 دالة.
+**الإجمالي:** 235 ملفًّا · 47046 سطر · 2137 دالة.
