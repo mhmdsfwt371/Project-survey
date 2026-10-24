@@ -63,7 +63,7 @@ function mkPlace(x, z, r, sun, TOUCH){
   var picked = (typeof selHas === 'function') && selHas(x.id);
   var col = mapColorOf(x);
   /* طبقةُ التفاصيل: حافّةٌ تحمل خبرَ السطر المكتوب فوق لونِ المرحلة */
-  var ring = (FIELD_MODE === 'brief' && !picked) ? briefRing(x.id) : '';
+  var ring = !picked ? briefRing(x.id) : '';   /* (V39.27) the mode's summary frames the point in every mode */
   var pos = mapPosOf(x), posK = pos[0].toFixed(6) + ',' + pos[1].toFixed(6), FT = null, kind, shp = 'circle';
   /* المخيمُ مضلّعٌ إن تقرّبت (POLY_Z) وإلا دائرة، والممرُّ والكاميرا معيّنان، وما عداهما شكلُ نوعه */
   if (x.type === 'مخيم' && z >= POLY_Z && (FT = campFoot(x))) kind = 'poly';

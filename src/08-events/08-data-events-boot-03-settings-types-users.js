@@ -284,10 +284,10 @@ function userLog(name, cap){
     if (r.apprBy === name) push(r.apprAt || r.at, 'اعتماد تقني', 'ok', id);
     if (r.minBy === name) push(r.minAt, 'قرارُ الوزارة', 'ok', id);
     if (r.revisitBy === name) push(r.revisitAt, 'ردٌّ لزيارةٍ أخرى', 'back', id);
-    if (r.briefBy === name) push(r.briefAt, 'تفاصيل مختصرة', 'note', id);
+    if (r.briefBy === name) push(r.briefAt, 'خلاصة الزيارة', 'note', id);   /* (V39.27) */
   });
-  Object.keys(STATE.inss || {}).forEach(function(id){ var x = STATE.inss[id] || {}; if (x.by === name) push(x.at, 'تركيب', 'ins', id); });
-  Object.keys(STATE.diss || {}).forEach(function(id){ var x = STATE.diss[id] || {}; if (x.by === name) push(x.at, 'فكّ', 'dis', id); });
+  Object.keys(STATE.inss || {}).forEach(function(id){ var x = STATE.inss[id] || {}; if (x.by === name) push(x.at, 'تركيب', 'ins', id); if (x.briefBy === name) push(x.briefAt, 'خلاصة التركيب', 'note', id); });
+  Object.keys(STATE.diss || {}).forEach(function(id){ var x = STATE.diss[id] || {}; if (x.by === name) push(x.at, 'فكّ', 'dis', id); if (x.briefBy === name) push(x.briefAt, 'خلاصة الفك', 'note', id); });
   Object.keys(STATE.photos || {}).forEach(function(k){ var p = STATE.photos[k] || {}; if (p.by === name) push(p.at, 'رفعُ صورة', 'photo', p.site || ''); });
   Object.keys(STATE.tasks || {}).forEach(function(k){
     var x = STATE.tasks[k] || {};

@@ -45,6 +45,11 @@ service cloud.firestore {
     // في القاعدة، إذنُها في التطبيق أوسعُ عرضًا لا كتابةً. فمن رفع بدورها
     // شيئًا رُفض، ومن قرأ رأى ما يقرؤه المطّلع.
     function viewer() { return ok() && role() in ['viewer', 'exec']; }
+    // (V39.27) الخلاصةُ (تمام · تحدٍّ · ملاحظة وسطرٌ) تكتبها الوزارةُ على سجلٍّ قائمٍ في المسح والتركيب والفك —
+    // حقولُها وحدَها، لا تُنشئ ولا تمسُّ غيرَها. كانت الوزارةُ تكتبها في التطبيق وتردّها القاعدةُ فلا تصل.
+    function briefOnly() { return ok() && role() == 'viewer' && resource != null
+      && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['bst', 'brief', 'briefBy', 'briefAt', '_at', '_by'])
+      && request.resource.data.get('bst', '') in ['', 'تمام', 'تحدٍّ', 'ملاحظة']; }
     // ═══ الرتبةُ في القاعدة كما في التطبيق ═══
     // كلُّ حسابٍ يرى من هو دونه رتبةً: المشرفُ يرى فنيّيه، والمهندسُ يرى
     // المشرفين ومن دونهم. وكانت القراءةُ للمهندس وحده — فالمشرفُ لا يرى
@@ -216,6 +221,7 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys()
              .hasOnly(['minReview', 'minBy', 'minAt', 'minNote', '_at', '_by'])
         && request.resource.data.minReview in ['approved', 'returned'];
+      allow update: if briefOnly();   // (V39.27)
       allow delete: if pm('recs', 'd', mgr());
     }
     /* اعتمادُ التركيب واعتمادُ حل التركيب فعلا مديرٍ لا فعلَ منفِّذ — كلاهما
@@ -237,6 +243,7 @@ service cloud.firestore {
          !('status' in request.resource.data.solution) ||
          request.resource.data.solution.status != 'معتمد'))
       );
+      allow update: if briefOnly();   // (V39.27)
       allow delete: if pm('inss', 'd', mgr());
     }
     // (V38.60) the field chat: a message is a line that is written once — the office and the field read, nobody edits or deletes
@@ -349,7 +356,7 @@ service cloud.firestore {
     match /stats/{day} { allow read: if pm('stats', 'r', ok()); allow create, update: if pm('stats', 'w', canW()); allow delete: if pm('stats', 'd', mgr()); }
 
     // الفكُّ والمواقعُ المقترحةُ وطلباتُ الشركات وحساباتُ الفنيين
-    match /dismantles/{id} { allow read: if pm('dismantles', 'r', ok()); allow create, update: if pm('dismantles', 'w', canW()); allow delete: if pm('dismantles', 'd', mgr()); }
+    match /dismantles/{id} { allow read: if pm('dismantles', 'r', ok()); allow create, update: if pm('dismantles', 'w', canW()); allow update: if briefOnly(); allow delete: if pm('dismantles', 'd', mgr()); }   // (V39.27) الخلاصةُ للوزارة
     // (V37.68) الوزارةُ تقترح نقطةً: إنشاءٌ فقط، بمصدر «ministry» وغيرَ معتمدة — والاعتمادُ والتعديلُ للمهندس كما كانا
     match /newsites/{id} { allow read: if pm('newsites', 'r', ok()); allow create: if pm('newsites', 'w', canW()) || (ok() && role() == 'viewer' && request.resource.data.get('origin', '') == 'ministry' && request.resource.data.get('approved', true) == false); allow update: if pm('newsites', 'w', canW()); allow delete: if pm('newsites', 'd', mgr()); }
     match /coreqs/{id} { allow read: if pm('coreqs', 'r', ok()); allow create: if pm('coreqs', 'w', canW()); allow update: if pm('coreqs', 'a', mgr()); allow delete: if pm('coreqs', 'd', mgr()); }

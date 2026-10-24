@@ -114,102 +114,7 @@ function popHtml(){
   if (mayDeleteFinal()) marks += siteLocked(s.id) ?   /* (V37.9 ق-٠١٦) الحذفُ النهائيُّ للمهندس فما فوق */   /* (V36.8) المزارةُ لمدير المشروع */ '<span class="pill" title="' + esc(t('ما رُكّب لا يُحذَف')) + '">\u{1F512} ' + esc(t(siteLocked(s.id))) + '</span>'   /* (V36.4) */
     : '<button type="button" class="go" style="border-color:#E05252;color:#E05252" data-popdel="' + esc(s.id) + '">\u{1F5D1} ' + esc(t('حذف نهائي')) + '</button>';
 
-  /* ═══ بطاقةُ «تفاصيل مختصرة»: تقييمٌ بالعين لا تنقّلٌ بين شاشات ═══ */
-  if (FIELD_MODE === 'brief'){
-    var bR = STATE.recs[s.id], bHas = !!bR, bSv = svDone(bR), bMe = briefMay(), bf2 = briefOf(s.id);
-    var rv3 = svReview(bR), ms3 = minState(bR);
-    /* الزرُّ الوحيدُ: الاعتمادُ الذي يملكه القارئُ في هذه اللحظة */
-    var apr = '';
-    if (bSv && rv3 !== 'approved' && may('approve'))
-      /* يُفتَح على النقطة نفسِها لا على الشاشة: كان يفتحها بقائمةٍ من مئاتٍ
-         فيُعتمَد غيرُ المقصود (V17.21) */
-      apr = btn('\u2705 ' + t('افتح الاعتماد التقني'),'btn-primary btn-sm',' data-goto="svappr" data-gotosite="' + esc(s.id) + '"');
-    else if (bSv && rv3 === 'approved' && ms3 !== 'approved' && may('minapprove'))
-      apr = btn('\u{1F3DB} ' + t('افتح اعتماد الوزارة'),'btn-primary btn-sm',' data-goto="minappr" data-gotosite="' + esc(s.id) + '"');
-    var bStage = briefStage(s.id);
-    var stateLine = !bHas ? 'لم تُزر بعد'
-      : (bStage === 'blocked' ? 'نزل الميدانُ ولم يصل'
-      : (rv3 === 'revisit' ? 'رُدّت لزيارةٍ أخرى'
-      : (rv3 !== 'approved' ? 'تمت الزيارة — تنتظر الاعتمادَ التقني'
-      : (ms3 === 'returned' ? 'أعادتها الوزارةُ بملاحظة'
-      : (ms3 !== 'approved' ? 'اعتُمدت تقنيًّا — تنتظر اعتمادَ الوزارة' : 'اعتُمدت من الوزارة')))));
-    return '<div class="pop" id="pkPop">'
-      + '<div class="pop-head">'
-      +   '<div style="min-width:0"><div class="pid" style="color:var(--brand);font-weight:700">' + bdi(siteKey(s)) + (siteKey(s) !== s.id ? ' <span class="hint" style="margin:0;font-weight:400">\u00b7 ' + bdi(s.id) + '</span>' : '') + '</div>'   /* (V35.0) */
-      +   '<h3 style="margin-top:3px">' + bdiText(siteTitle(s)) + '</h3>' + (siteSub(s) ? '<div class="hint" style="margin:2px 0 0">' + esc(siteSub(s)) + '</div>' : '') + (typeof clashPill === 'function' ? clashPill(s.id) : '') + '</div>'
-      +   '<button type="button" class="btn btn-quiet btn-sm" data-pop="0" aria-label="' + esc(t('إغلاق')) + '">\u2715</button>'
-      + '</div>'
-      + '<div class="pop-body">'
-      + '<div class="hint" style="margin:0 0 6px">' + esc(t(s.zone)) + ' \u00b7 ' + esc(t(s.type)) + (s.sign ? ' \u00b7 ' + esc(t('الشاخص')) + ' <span class="num">' + esc(s.sign) + '</span>' : '')
-      + (camKind(s) ? ' \u00b7 ' + pill(camKindLabel(camKind(s)), '') + (s.type === 'كاميرا' && may('settings')
-          ? ' <select data-camkind="' + esc(s.id) + '" aria-label="' + esc(t('نوع الكاميرا')) + '" style="min-height:30px;font-size:12px;width:auto">' + ['Bullet', 'PTZ'].map(function(k){ return '<option value="' + k + '"' + (camKind(s) === k ? ' selected' : '') + '>' + esc(camKindLabel(k)) + '</option>'; }).join('') + '</select>' : '') : '')
-      + '</div>'
-      /* الخبرُ أوّلًا */
-      + '<div class="card" style="margin:0 0 8px;padding:10px 12px;border-inline-start:4px solid ' + briefColor(s.id) + '">'
-      +   (!bHas
-            ? '<p class="hint" style="margin:0">' + esc(t('لم ينزل الميدانُ إلى هذه النقطة بعد')) + '</p>'
-            : (bf2
-                ? '<div class="wt-row">' + pill(bf2.st, bf2.st === 'تمام' ? 'ok' : (bf2.st === 'تحدٍّ' ? 'bad' : 'warn'))
-                  + '<span class="hint" style="margin:0">' + esc(dispName(bf2.by)) + (bf2.at ? ' \u00b7 ' + esc(stepAgo(bf2.at)) : '') + '</span></div>'
-                  + '<div style="margin:6px 0 0;font-size:13.5px;line-height:1.6">' + esc(bf2.d || t('بلا تفاصيلَ مكتوبة')) + '</div>'
-                : '<p class="hint" style="margin:0">' + esc(t('لم تُكتَب تفاصيلُ هذه النقطة بعد')) + '</p>'))
-      +   (bHas && bMe
-            ? '<div class="chips" style="margin:8px 0 0">' + BRIEF_ST.map(function(x){
-                return '<button type="button" class="chip' + (bf2 && bf2.st === x ? ' on' : '') + '" data-bst="' + esc(s.id) + '|' + esc(x) + '">' + esc(t(x)) + '</button>';
-              }).join('') + '</div>'
-              + '<div style="display:flex;gap:6px;margin-top:8px">'
-              + '<input id="bfTxt" dir="auto" value="' + esc(bf2 ? bf2.d : '') + '" placeholder="' + esc(t('سطرٌ واحد: ما الذي وقع في هذه النقطة؟')) + '" style="flex:1">'
-              + btn('\u{1F4BE} ' + t('حفظ'),'btn-primary btn-sm',' data-bfsave="' + esc(s.id) + '"') + '</div>'
-            : '')
-      + '</div>'
-      /* ثم ما سجّله الميدانُ بالحرف — فيُقيَّم بالعين */
-      + (bHas
-          ? '<div class="hint" style="margin:10px 0 4px;font-weight:700">\u{1F4CB} ' + esc(t('ما سجّله الميدان'))
-            + ' <span style="font-weight:400">\u00b7 ' + esc(dispName(bR.by || '')) + (bR.at ? ' \u00b7 ' + esc(stepAgo(bR.at)) : '') + '</span></div>'
-            + '<div class="pop-rows">' + svFieldRows(bR) + '</div>'
-            + ((bR.chals || []).length
-                ? /* لا يُعاد نصُّ «تحديات التركيب» هنا: حارسُ الحُرّاس يزرع عطلَه في تلك
-                     المرساة بعينها، ويشترط ألّا تتكرّر — وإلا زرع في موضعٍ وفحص آخر */
-                  '<div class="hint" style="margin:8px 0 4px;font-weight:700">\u26A0 ' + esc(t('التحديات المرصودة')) + '</div>'
-                  + '<div class="chips" style="margin:0">' + bR.chals.map(function(c){ return pill(c, /لا توجد/.test(c) ? 'ok' : 'warn'); }).join('') + '</div>'
-                : '')
-            /* كلُّ نصٍّ كُتب عن النقطة — بمصدره وكاتبه */
-            + (function(){
-                var TX = svTexts(s.id); if (!TX.length) return '';
-                return '<div class="hint" style="margin:10px 0 4px;font-weight:700">\u{1F5E8} ' + esc(t('ما كُتب عن النقطة')) + '</div>'
-                  + TX.map(function(x){
-                      return '<div class="bf-tx"><div class="hint" style="margin:0">' + esc(t(x.src))
-                        + (x.who ? ' \u00b7 ' + esc(dispName(x.who)) : '') + (x.at ? ' \u00b7 ' + esc(stepAgo(x.at)) : '') + '</div>'
-                        + '<div style="font-size:13.5px;line-height:1.6">' + esc(x.txt) + '</div></div>';
-                    }).join('');
-              })()
-            /* والصورُ تُفتَح من هنا — لا من شاشةٍ أخرى */
-            + (function(){
-                var L = photosOf(s.id).filter(function(x){ return !x[1].del; });
-                /* (V38.73) the visit's photos are fetched even when the installation's are already here */
-                if (bR && ((bR.photos || []).length || +bR.phN) && !L.some(function(x){ return !/^ins/.test(String(x[1].kind || '')); })) photosFetchSite(s.id);
-                if (!L.length) return (bR.photos || []).length   /* (V37.7) تُجلَب من القاعدة حين تُفتَح النقطة، ويُقال الصدق */
-                  ? '<div class="hint" style="margin:8px 0 0">' + esc(photosMissingLine(s.id, bR))
-                    + (PH_FETCH[s.id] === 'err' ? ' ' + btn('\u21BB ' + t('أعد الجلب'), 'btn-quiet btn-sm', ' data-phrefetch="' + esc(s.id) + '"') : '') + '</div>'
-                  : '';
-                var fold = null; L.forEach(function(x){ if (!fold && x[1].folderId) fold = x[1].folderId; });
-                return '<div class="hint" style="margin:10px 0 4px;font-weight:700">\u{1F4F7} ' + esc(t('الصور')) + ' <span style="font-weight:400">\u00b7 ' + nm(L.length) + '</span></div>'
-                  + '<div class="bf-ph">' + L.slice(0, 8).map(function(x){
-                      var id = x[0], p = x[1];
-                      var src = p.data || (p.driveId ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(p.driveId) + '&sz=w400' : '');
-                      if (!src) return '';
-                      return '<img src="' + esc(src) + '" alt="' + esc(t(p.kind || '')) + '" title="' + esc(t(p.kind || '')) + '"'
-                        + ' data-phview="' + esc(id) + '" loading="lazy">';
-                    }).join('') + '</div>'
-                  + (fold && rankOf(ROLE) >= rankOf('admin')
-                      ? '<a class="btn btn-quiet btn-sm" style="margin-top:6px" target="_blank" rel="noopener" href="https://drive.google.com/drive/folders/' + esc(fold) + '">\u{1F4C1} ' + esc(t('مجلد النقطة على الدرايف')) + '</a>'
-                      : '');
-              })()
-          : '')
-      + '<div class="alert info" style="margin:10px 0 0"><span><strong>' + esc(t('الحالة')) + ':</strong> ' + esc(t(stateLine)) + '</span></div>'
-      + (apr ? '<div class="actions" style="margin:8px 0 0">' + apr + '</div>' : '')
-      + '</div></div>';
-  }
+  /* (V39.27) the brief card that was a mode of its own now lives in every mode's popup: popSumHtml + popFieldHtml */
 
   return '<div class="pop" id="pkPop">'
     + '<div class="pop-head">'
@@ -228,30 +133,8 @@ function popHtml(){
           ? ' <select data-camkind="' + esc(s.id) + '" aria-label="' + esc(t('نوع الكاميرا')) + '" style="min-height:30px;font-size:12px;width:auto">' + ['Bullet', 'PTZ'].map(function(k){ return '<option value="' + k + '"' + (camKind(s) === k ? ' selected' : '') + '>' + esc(camKindLabel(k)) + '</option>'; }).join('') + '</select>' : '') : '')
     +   '</div>'
 
-    /* ═══ التفاصيلُ المختصرة: أوّلَ ما يُقرأ في طبقتها ═══
-       الوزارةُ تفتح النقطةَ لتعرف ما وقع فيها — فيُقدَّم الخبرُ على البيانات:
-       حالةٌ بلونها وسطرٌ بمن كتبه ومتى. ومن يكتب يجد الشرائحَ والسطرَ هنا
-       نفسِه، فلا يفتح نموذجًا آخر. */
-    + (FIELD_MODE === 'brief' ? (function(){
-        var bf = briefOf(s.id), me = briefMay(), sv2 = svDone(STATE.recs[s.id]);
-        if (!sv2) return '<div class="card" style="margin:8px 0;padding:10px 12px">'
-          + '<p class="hint" style="margin:0">' + esc(t('تُكتَب بعد تمام الزيارة')) + '</p></div>';
-        return '<div class="card" style="margin:8px 0;padding:10px 12px;border-inline-start:4px solid ' + briefColor(s.id) + '">'
-          + (bf
-              ? '<div class="wt-row">' + pill(bf.st, bf.st === 'تمام' ? 'ok' : (bf.st === 'تحدٍّ' ? 'bad' : 'warn'))
-                + '<span class="hint" style="margin:0">' + esc(dispName(bf.by)) + (bf.at ? ' · ' + esc(stepAgo(bf.at)) : '') + '</span></div>'
-                + '<div style="margin:6px 0 0;font-size:13.5px;line-height:1.6">' + esc(bf.d || t('بلا تفاصيلَ مكتوبة')) + '</div>'
-              : '<p class="hint" style="margin:0">' + esc(t('لم تُكتَب تفاصيلُ هذه النقطة بعد')) + '</p>')
-          + (me
-              ? '<div class="chips" style="margin:8px 0 0">' + BRIEF_ST.map(function(x){
-                  return '<button type="button" class="chip' + (bf && bf.st === x ? ' on' : '') + '" data-bst="' + esc(s.id) + '|' + esc(x) + '">' + esc(t(x)) + '</button>';
-                }).join('') + '</div>'
-                + '<div style="display:flex;gap:6px;margin-top:8px">'
-                + '<input id="bfTxt" dir="auto" value="' + esc(bf ? bf.d : '') + '" placeholder="' + esc(t('سطرٌ واحد: ما الذي وقع في هذه النقطة؟')) + '" style="flex:1">'
-                + btn('\u{1F4BE} ' + t('حفظ'),'btn-primary btn-sm',' data-bfsave="' + esc(s.id) + '"') + '</div>'
-              : '')
-          + '</div>';
-      })() : '')
+    /* (V39.27) the mode's summary first — then what the field recorded, folded, in the mode's own form */
+    + popSumHtml(s) + popFieldHtml(s)
 
     + '<div class="pop-rows">'
     +   kv('الشاخص', s.sign ? '<span class="num">' + esc(s.sign) + '</span>' : '')
@@ -401,4 +284,108 @@ function popHtml(){
             + (typeof execOvRow === 'function' ? execOvRow(siteFind(s.id) || s) : '');   /* (V37.52) تصنيفُ التقرير التنفيذي وزيارتُها التقنية — بالنقطة الأصلية لا نسخة العرض */
         })()
     + '</div></div>';
+}
+
+
+/* (V39.27) the summary of the mode's record: its verdict (تمام · تحدٍّ · ملاحظة) and one line, by whom and when — and,
+   for whoever may write it, the three chips and the line, here, without another screen. Shown once the record exists. */
+function popSumHtml(s){
+  var ph = briefPhase(), r = briefRec(s.id, ph); if (!r) return '';
+  if (ph === 'survey' && !svDone(r) && !(r.access && r.access !== 'تم الوصول')) return '';
+  var bf = briefOf(s.id, ph), me = briefMay(), col = bf ? (BRIEF_C[bf.st] || 'var(--line)') : 'var(--line)';
+  var title = ph === 'install' ? 'خلاصة التركيب' : ph === 'dis' ? 'خلاصة الفك' : 'خلاصة الزيارة';
+  return '<div class="card" style="margin:8px 0;padding:10px 12px;border-inline-start:4px solid ' + col + '">'
+    + '<div class="hint" style="margin:0 0 4px;font-weight:700">\u{1F4DD} ' + esc(t(title)) + '</div>'
+    + (bf
+        ? '<div class="wt-row">' + pill(bf.st, bf.st === 'تمام' ? 'ok' : (bf.st === 'تحدٍّ' ? 'bad' : 'warn'))
+          + '<span class="hint" style="margin:0">' + esc(dispName(bf.by)) + (bf.at ? ' \u00b7 ' + esc(stepAgo(bf.at)) : '') + '</span></div>'
+          + '<div style="margin:6px 0 0;font-size:13.5px;line-height:1.6">' + esc(bf.d || t('بلا تفاصيلَ مكتوبة')) + '</div>'
+        : '<p class="hint" style="margin:0">' + esc(t('لم تُكتَب خلاصةٌ بعد')) + '</p>')
+    + (me
+        ? '<div class="chips" style="margin:8px 0 0">' + BRIEF_ST.map(function(x){
+            return '<button type="button" class="chip' + (bf && bf.st === x ? ' on' : '') + '" data-bst="' + esc(s.id) + '|' + esc(x) + '|' + ph + '">' + esc(t(x)) + '</button>';
+          }).join('') + '</div>'
+          + '<div style="display:flex;gap:6px;margin-top:8px">'
+          + '<input id="bfTxt" dir="auto" value="' + esc(bf ? bf.d : '') + '" placeholder="' + esc(t('سطرٌ واحد: ما الذي وقع في هذه النقطة؟')) + '" style="flex:1">'
+          + btn('\u{1F4BE} ' + t('حفظ'), 'btn-primary btn-sm', ' data-bfsave="' + esc(s.id) + '|' + ph + '"') + '</div>'
+        : '')
+    + '</div>';
+}
+/* (V39.27) what the field recorded for the mode, folded under the summary: the visit's answers, its challenges and photos in
+   survey; the installation's parts, serials and photos in installation; the dismantling's state in dismantling — and every
+   text written about the point, by its source and writer, in all three. */
+function popFieldHtml(s){
+  var ph = briefPhase(), r = briefRec(s.id, ph); if (!r) return '';
+  var row = function(k, v){ return v ? '<div><span class="k">' + esc(t(k)) + '</span><span>' + v + '</span></div>' : ''; };
+  var texts = (function(){
+    var TX = svTexts(s.id); if (!TX.length) return '';
+    return '<div class="hint" style="margin:10px 0 4px;font-weight:700">\u{1F5E8} ' + esc(t('ما كُتب عن النقطة')) + '</div>'
+      + TX.map(function(x){ return '<div class="bf-tx"><div class="hint" style="margin:0">' + esc(t(x.src)) + (x.who ? ' \u00b7 ' + esc(dispName(x.who)) : '') + (x.at ? ' \u00b7 ' + esc(stepAgo(x.at)) : '') + '</div>'
+        + '<div style="font-size:13.5px;line-height:1.6">' + esc(x.txt) + '</div></div>'; }).join('');
+  })();
+  var photos = function(re){
+    var L = photosOf(s.id).filter(function(x){ return !x[1].del && re.test(String(x[1].kind || '')); }); if (!L.length) return '';
+    return '<div class="hint" style="margin:10px 0 4px;font-weight:700">\u{1F4F7} ' + esc(t('الصور')) + ' <span style="font-weight:400">\u00b7 ' + nm(L.length) + '</span></div>'
+      + '<div class="bf-ph">' + L.slice(0, 8).map(function(x){ var src = phSrc(x[0], x[1], 400); return src ? '<img src="' + esc(src) + '" alt="' + esc(t(x[1].kind || '')) + '" data-phview="' + esc(x[0]) + '" loading="lazy">' : ''; }).join('') + '</div>';
+  };
+  var body;
+  if (ph === 'survey'){
+    var bR = r;
+    body = (true
+          ? '<div class="pop-rows">' + svFieldRows(bR) + '</div>'   /* the summary line above already says who and when */
+            + ((bR.chals || []).length
+                ? /* لا يُعاد نصُّ «تحديات التركيب» هنا: حارسُ الحُرّاس يزرع عطلَه في تلك
+                     المرساة بعينها، ويشترط ألّا تتكرّر — وإلا زرع في موضعٍ وفحص آخر */
+                  '<div class="hint" style="margin:8px 0 4px;font-weight:700">\u26A0 ' + esc(t('التحديات المرصودة')) + '</div>'
+                  + '<div class="chips" style="margin:0">' + bR.chals.map(function(c){ return pill(c, /لا توجد/.test(c) ? 'ok' : 'warn'); }).join('') + '</div>'
+                : '')
+            /* كلُّ نصٍّ كُتب عن النقطة — بمصدره وكاتبه */
+            + (function(){
+                var TX = svTexts(s.id); if (!TX.length) return '';
+                return '<div class="hint" style="margin:10px 0 4px;font-weight:700">\u{1F5E8} ' + esc(t('ما كُتب عن النقطة')) + '</div>'
+                  + TX.map(function(x){
+                      return '<div class="bf-tx"><div class="hint" style="margin:0">' + esc(t(x.src))
+                        + (x.who ? ' \u00b7 ' + esc(dispName(x.who)) : '') + (x.at ? ' \u00b7 ' + esc(stepAgo(x.at)) : '') + '</div>'
+                        + '<div style="font-size:13.5px;line-height:1.6">' + esc(x.txt) + '</div></div>';
+                    }).join('');
+              })()
+            /* والصورُ تُفتَح من هنا — لا من شاشةٍ أخرى */
+            + (function(){
+                var L = photosOf(s.id).filter(function(x){ return !x[1].del && !/^(ins|dis)/.test(String(x[1].kind || '')); });   /* the visit's own photos — the installation's are in its mode */
+                /* (V38.73) the visit's photos are fetched even when the installation's are already here */
+                if (bR && ((bR.photos || []).length || +bR.phN) && !L.some(function(x){ return !/^ins/.test(String(x[1].kind || '')); })) photosFetchSite(s.id);
+                if (!L.length) return (bR.photos || []).length   /* (V37.7) تُجلَب من القاعدة حين تُفتَح النقطة، ويُقال الصدق */
+                  ? '<div class="hint" style="margin:8px 0 0">' + esc(photosMissingLine(s.id, bR))
+                    + (PH_FETCH[s.id] === 'err' ? ' ' + btn('\u21BB ' + t('أعد الجلب'), 'btn-quiet btn-sm', ' data-phrefetch="' + esc(s.id) + '"') : '') + '</div>'
+                  : '';
+                var fold = null; L.forEach(function(x){ if (!fold && x[1].folderId) fold = x[1].folderId; });
+                return '<div class="hint" style="margin:10px 0 4px;font-weight:700">\u{1F4F7} ' + esc(t('الصور')) + ' <span style="font-weight:400">\u00b7 ' + nm(L.length) + '</span></div>'
+                  + '<div class="bf-ph">' + L.slice(0, 8).map(function(x){
+                      var id = x[0], p = x[1];
+                      var src = p.data || (p.driveId ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(p.driveId) + '&sz=w400' : '');
+                      if (!src) return '';
+                      return '<img src="' + esc(src) + '" alt="' + esc(t(p.kind || '')) + '" title="' + esc(t(p.kind || '')) + '"'
+                        + ' data-phview="' + esc(id) + '" loading="lazy">';
+                    }).join('') + '</div>'
+                  + (fold && rankOf(ROLE) >= rankOf('admin')
+                      ? '<a class="btn btn-quiet btn-sm" style="margin-top:6px" target="_blank" rel="noopener" href="https://drive.google.com/drive/folders/' + esc(fold) + '">\u{1F4C1} ' + esc(t('مجلد النقطة على الدرايف')) + '</a>'
+                      : '');
+              })()
+          : '');
+  } else if (ph === 'install'){
+    var parts = Object.keys(r.parts || {}).filter(function(k){ return +r.parts[k] > 0; });
+    body = '<div class="pop-rows">'
+      + row('الحالة', esc(t(r.status || ''))) + row('ركّبه', esc(dispName(r.by || ''))) + row('بتاريخ', r.at ? esc(fmtDate(r.at)) : '')
+      + row('القطع', parts.map(function(k){ return esc(t(itemName(k))) + ' \u00d7 <span class="num">' + nm(+r.parts[k]) + '</span>'; }).join('<br>'))
+      + row('السيريالات', Object.keys(r.serials || {}).filter(function(k){ return r.serials[k]; }).map(function(k){ return esc(t(itemName(k))) + ': <span class="num">' + esc(r.serials[k]) + '</span>'; }).join('<br>'))
+      + row('ملاحظة', esc(r.note || r.notes || '')) + '</div>'
+      + photos(/^ins/) + texts;
+  } else {
+    body = '<div class="pop-rows">'
+      + row('الحالة', esc(t(r.status || ''))) + row('حالة الأجهزة', esc(t(r.cond || ''))) + row('بواسطة', esc(dispName(r.by || ''))) + row('بتاريخ', r.at ? esc(fmtDate(r.at)) : '')
+      + row('ملاحظة', esc(r.note || r.notes || '')) + '</div>'
+      + photos(/^dis/) + texts;
+  }
+  return '<details class="card" style="margin:0 0 8px;padding:8px 12px"><summary style="cursor:pointer;font-weight:700">\u{1F4CB} ' + esc(t('ما سجّله الميدان'))
+    + (r.by ? ' <span class="hint" style="margin:0;font-weight:400">\u00b7 ' + esc(dispName(r.by)) + (r.at ? ' \u00b7 ' + esc(stepAgo(r.at)) : '') + '</span>' : '') + '</summary>' + body + '</details>';
 }

@@ -627,7 +627,7 @@ console.log('\n══ ١٩ · كما على الهاتف (Firebase قائم) ═
     w.ROLE = role; w.STATE.meta.role = role; w.STATE.meta.name = name;
     pts.forEach(x => {
       w.POP_SITE = x.id;
-      ['survey','install','brief'].forEach(m => { w.FIELD_MODE = m; tryIt(role + ' نافذة ' + m + ' ' + x.id, () => String(w.popHtml()).length > 300); });
+      ['survey','install','dis'].forEach(m => { w.FIELD_MODE = m; tryIt(role + ' نافذة ' + m + ' ' + x.id, () => String(w.popHtml()).length > 300); });
       w.FIELD_MODE = 'survey';
       tryIt(role + ' صفحة النقطة ' + x.id, () => { w.DETAIL_ID = x.id; return String(w.PAGE.site.body()).length > 300; });
       tryIt(role + ' نموذج التركيب ' + x.id, () => { w.formReset(); w.formGo(x.id); w.CUR = 'insForm'; w.render(1); return !!d.querySelector('#content [data-fst]'); });

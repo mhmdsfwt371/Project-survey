@@ -60,7 +60,7 @@ function m3Points(){
     var foot = ring ? 1 : 0;
     return { type:'Feature', geometry:{ type:'Point', coordinates:[+x.lng, +x.lat] },
       properties:{ id:x.id, color:mapColorOf(x), h:(ring && typeof tentOn === 'function' && tentOn()) ? tentCfg().plinth : m3Height(x), base:m3Base(x), sel:picked ? 1 : 0,   /* (V39.18) under the tents the camp is a thin plinth in its colour */
-        ring:picked ? '#ffffff' : ((FIELD_MODE === 'brief' && briefRing(x.id)) || '#0b1220'), foot:foot } };
+        ring:picked ? '#ffffff' : (briefRing(x.id) || '#0b1220'), foot:foot } };
   });
 }
 

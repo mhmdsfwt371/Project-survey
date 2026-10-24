@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   جردُ التفاصيل المختصرة — node scripts/audit-brief.mjs
+   جردُ الخلاصة (كانت «التفاصيل المختصرة») — node scripts/audit-brief.mjs
    ───────────────────────────────────────────────────────────────────────────
    طبقةٌ رابعةٌ بجوار المسح والتركيب والفك (V16.88): سطرٌ لكلِّ نقطةٍ زارها
    الميدان — «تمام» أو «تحدٍّ» أو «ملاحظة» — بلونه، تُضغَط فتُقرأ. يُثبَت هنا
@@ -34,9 +34,11 @@ d.getElementById('lgU').value = 'x'; d.getElementById('lgP').value = 'TestPass12
 d.getElementById('lgGo').dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
 await wait(1500);
 
-T(!!w.LAYERS.brief && w.LAYERS.brief.kind === 'brief', 'الطبقةُ مسجَّلةٌ بجوار المسح والتركيب والفك');
-const html0 = w.mapUIHtml();
-T(html0.indexOf('data-mode="brief"') > -1, 'وشريحتُها على شريط الخريطة');
+/* ═══ (V39.27) قرارُ المالك: «نشيل التفاصيل المختصرة ونحط اللي فيها في المسح والتركيب والفك باختلاف نماذجهم» ═══
+   الطبقةُ الرابعةُ ذهبت، والخلاصةُ (تمام · تحدٍّ · ملاحظة وسطر) صارت في كلِّ طبقةٍ على سجلّها: الزيارةُ في المسح،
+   والتركيبُ في التركيب، والفكُّ في الفك — إطارُ النقطة يقولها، ونافذتُها تكتبها، وتحتها ما سجّله الميدانُ بنموذج الطبقة. */
+T(!w.LAYERS.brief && Object.keys(w.LAYERS).join(',') === 'survey,install,dis', 'ثلاثُ طبقاتٍ: المسح والتركيب والفك — بلا طبقةٍ رابعة');
+T(w.mapUIHtml().indexOf('data-mode="brief"') < 0, 'ولا شريحةَ لها على شريط الخريطة');
 
 /* نقطتان مزارتان وثالثةٌ لم تُزَر */
 w.STATE.sites = [
@@ -46,113 +48,68 @@ w.STATE.sites = [
 ];
 const done = { st:'تمت الزيارة', by:'فني', at:Date.now() };
 w.STATE.recs = { C1:Object.assign({}, done), C2:Object.assign({}, done) };
+w.STATE.inss = { C2:{ id:'C2', status:'مُركّب', parts:{ rdr8:1, rtr:1 }, serials:{ rdr8:'RDR-77' }, by:'فريق التركيب', at:Date.now(), note:'رُكّب على عمودٍ جديد' } };
+w.STATE.diss = { C2:{ id:'C2', status:'تم الفك', cond:'سليم', by:'فريق الفك', at:Date.now() } };
 w.CORE.set = (k, id, v) => { w.STATE[k][id] = v; w.__wrote = k; };
 w.STATE.meta.name = 'م. فحص';
-w.FILT_CACHE = null; w.FILT_KEY = '';     /* قائمةُ النقاط مخبَّأةٌ — تُبطَل بعد استبدالها */
-w.FIELD_MODE = 'brief'; w.render(1); await wait(150);
-
-const L = w.layerFiltered().map(x => x.id);
-T(L.length === 2 && L.indexOf('C3') < 0, 'الطبقةُ تعرض ما تمّت زيارتُه وحدَه: ' + L.join(','));
-/* ═══ اللونُ مرحلةُ الاعتماد (V16.90) — والإطارُ خبرُ السطر ═══ */
-T(w.mapColorOf(w.siteFind('C1')) === '#4FA3FF', 'المسوحةُ التي تنتظر الاعتمادَ التقنيَّ زرقاء');
-w.STATE.recs.C2.review = 'approved';
-T(w.briefStage('C2') === 'min' && w.mapColorOf(w.siteFind('C2')) === '#E8C34B', 'والمعتمَدةُ تقنيًّا التي تنتظر الوزارةَ صفراء — وهي ما كان لا يُرى');
-w.STATE.recs.C2.minReview = 'approved';
-T(w.briefStage('C2') === 'ok' && w.mapColorOf(w.siteFind('C2')) === '#3AD6A0', 'وما اعتمدته الوزارةُ خضراء');
-w.STATE.recs.C2.minReview = 'returned';
-T(w.mapColorOf(w.siteFind('C2')) === '#E05252', 'وما أعادته الوزارةُ حمراء');
-T(w.mapColorOf(w.siteFind('C3')) === '#6B7A87', 'وما لم يُزَر رمادية');
-/* المتعذّرُ والمردودُ خبرٌ يُرى — لا نقطةٌ غائبةٌ عن الطبقة (V16.95) */
-w.STATE.recs.C3 = { st:'لم يتم الوصول', access:'لم يتم الوصول', accessWhy:'بوابةٌ مغلقة', by:'فنيُّ الميدان', at:Date.now() };
 w.FILT_CACHE = null; w.FILT_KEY = '';
-T(w.briefStage('C3') === 'blocked' && w.mapColorOf(w.siteFind('C3')) === '#E07B39', 'ما تعذّر الوصولُ إليه يظهر بلونه (برتقاليّ) لا يختفي');
-T(w.layerFiltered().map(x => x.id).indexOf('C3') > -1, 'والطبقةُ تعرضه — فهي تقول ما وقع لا ما تمَّ فقط');
-w.STATE.recs.C3.review = 'revisit';
-T(w.briefStage('C3') === 'revisit' && w.mapColorOf(w.siteFind('C3')) === '#C77DFF', 'والمردودُ لزيارةٍ أخرى ببنفسجيّه');
-w.POP_SITE = 'C3'; w.POP_OPEN = true; w.render(1); await wait(140);
-T(/بوابةٌ مغلقة/.test(d.getElementById('pkPop').textContent), 'وبطاقتُه تقول سببَ التعذُّر كما كتبه الميدان');
-T(!!d.querySelector('#pkPop [data-bst]'), 'ويُكتَب له سطرٌ كغيره');
-delete w.STATE.recs.C3; w.FILT_CACHE = null; w.FILT_KEY = ''; w.POP_OPEN = false;
-w.STATE.recs.C2.review = ''; delete w.STATE.recs.C2.minReview;
+w.FIELD_MODE = 'survey'; w.render(1); await wait(150);
 
-/* الكتابة: حالةٌ وسطرٌ على وثيقة الزيارة */
-w.briefSet('C1', 'تحدٍّ', 'الكابل لم يصل — الشركة وعدت غدًا');
+/* المسح: الخلاصةُ على الزيارة */
+w.POP_SITE = 'C1'; w.POP_OPEN = true; w.render(1); await wait(140);
+let pop = d.getElementById('pkPop');
+T(!!pop && /خلاصة الزيارة/.test(pop.textContent) && !!pop.querySelector('[data-bst="C1|تمام|survey"]') && !!pop.querySelector('[data-bfsave="C1|survey"]') && !!pop.querySelector('#bfTxt'),
+  'في المسح: نافذةُ النقطة فيها «خلاصة الزيارة» بشرائحها وسطرها');
+d.getElementById('bfTxt').value = 'الكابل لم يصل — الشركة وعدت غدًا';
+pop.querySelector('[data-bst="C1|تحدٍّ|survey"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(80);
 const r1 = w.STATE.recs.C1;
-T(r1.bst === 'تحدٍّ' && r1.brief === 'الكابل لم يصل — الشركة وعدت غدًا' && r1.briefBy === 'م. فحص' && r1.briefAt > 0,
-  'تُكتَب على وثيقة الزيارة نفسِها باسم كاتبها ووقته — لا في مجموعةٍ جديدة');
-T(w.__wrote === 'recs', 'فتُزامَن وتُنسَخ احتياطيًّا بقواعد الزيارة كما هي');
-T(w.briefRing('C1') === '#E05252', 'وإطارُ النقطة يحمل خبرَ السطر: تحدٍّ أحمر');
-w.briefSet('C2', 'تمام', 'رُكّب واختُبر');
-T(w.briefRing('C2') === '#3AD6A0' && w.briefRing('C3') === '', 'وتمامٌ أخضر — ولا إطارَ لمن لا سطرَ له');
-w.LEGEND_ON = true; w.render(1); await wait(150);
-const lg = d.querySelector('.map-legend');
-T(!!lg && /تنتظر الاعتمادَ التقني/.test(lg.textContent) && /تنتظر الوزارة/.test(lg.textContent) && /اعتمدتها الوزارة/.test(lg.textContent),
-  'والأسطورةُ تعدُّ كلَّ مرحلةٍ بلونها');
-T(/إطارُ النقطة/.test(lg.textContent) && /بلا تفاصيلَ بعد/.test(lg.textContent), 'وتفصل خبرَ الإطار عن لون المرحلة');
-w.LEGEND_ON = false;
+T(r1.bst === 'تحدٍّ' && r1.brief === 'الكابل لم يصل — الشركة وعدت غدًا' && r1.briefBy === 'م. فحص' && r1.briefAt > 0 && w.__wrote === 'recs', 'والخلاصةُ تُحفَظ على وثيقة الزيارة نفسِها');
+T(w.briefRing('C1') === '#E05252' && w.briefRing('C2') === '', 'وإطارُ النقطة في المسح يحمل خلاصتَها: تحدٍّ أحمر — ولا إطارَ لمن لا خلاصةَ له');
+w.POP_SITE = 'C1'; w.render(1); await wait(120); pop = d.getElementById('pkPop');
+T(pop.textContent.indexOf('الكابل لم يصل') > -1 && !!pop.querySelector('details') && /ما سجّله الميدان/.test(pop.querySelector('details summary').textContent), 'والنافذةُ تعرض الخلاصةَ ثم «ما سجّله الميدان» مطويًّا');
+const lg = d.querySelector('.lg-sep') ? d.body : null;
+w.render(1); await wait(80);
+T(/إطارُ النقطة/.test(d.body.textContent) && /بلا خلاصةٍ بعد/.test(d.body.textContent), 'والأسطورةُ تعدّ الخلاصاتِ في المسح');
+/* ألوانُ المسح فيها مراحلُ الاعتماد أصلًا */
+T(w.mapColorOf(w.siteFind('C1')) === w.LIFE.visited.c, 'ولونُ النقطة لونُ المسح (تنتظر الاعتماد) — المرحلةُ هنا لا في طبقةٍ أخرى');
 
-/* النافذة: الخبرُ قبل البيانات، والشرائحُ لمن يكتب */
-w.POP_SITE = 'C1'; w.POP_OPEN = true; w.render(1); await wait(150);
-const pop = d.getElementById('pkPop');
-T(!!pop && /الكابل لم يصل/.test(pop.textContent), 'النافذةُ تعرض السطرَ');
-T(pop.textContent.indexOf('الكابل لم يصل') < pop.textContent.indexOf('ما سجّله الميدان'), 'قبل ما سجّله الميدانُ لا بعده');
-T(!!pop.querySelector('[data-bst="C1|تمام"]') && !!pop.querySelector('#bfTxt') && !!pop.querySelector('[data-bfsave="C1"]'),
-  'ومن يكتب يجد الشرائحَ والسطرَ في النافذة نفسِها');
+/* التركيب: الخلاصةُ على التركيب */
+w.FIELD_MODE = 'install'; w.POP_SITE = 'C2'; w.POP_OPEN = true; w.render(1); await wait(140); pop = d.getElementById('pkPop');
+T(/خلاصة التركيب/.test(pop.textContent) && !!pop.querySelector('[data-bst="C2|تمام|install"]'), 'في التركيب: «خلاصة التركيب»');
+T(/RDR-77/.test(pop.querySelector('details').textContent) && /رُكّب على عمودٍ جديد/.test(pop.querySelector('details').textContent), 'و«ما سجّله الميدان» بنموذج التركيب: القطعُ والسيريالاتُ والملاحظة');
+pop.querySelector('[data-bst="C2|تمام|install"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(80);
+T(w.STATE.inss.C2.bst === 'تمام' && w.__wrote === 'inss' && !w.STATE.recs.C2.bst, 'وتُحفَظ على سجلّ التركيب لا على الزيارة');
+T(w.briefRing('C2') === '#3AD6A0' && w.briefRing('C1') === '', 'وإطارُ التركيب أخضر — وخلاصةُ الزيارة لا تظهر في طبقة التركيب');
 
-/* الوزارة: ترى وتكتب */
-w.ROLE = 'viewer';
-T(w.briefMay() === true, 'الوزارةُ تكتب التفاصيل');
-T(w.mapUIHtml().indexOf('data-mode="brief"') > -1, 'وترى شريحةَ الطبقة');
-w.render(1); await wait(120);
-T(!!d.querySelector('#pkPop [data-bst]'), 'وتجد شرائحَها في النافذة');
+/* الفك: الخلاصةُ على الفك */
+w.FIELD_MODE = 'dis'; w.POP_SITE = 'C2'; w.render(1); await wait(140); pop = d.getElementById('pkPop');
+T(/خلاصة الفك/.test(pop.textContent) && /سليم/.test(pop.querySelector('details').textContent), 'في الفك: «خلاصة الفك» وحالةُ الأجهزة');
+pop.querySelector('[data-bst="C2|ملاحظة|dis"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(80);
+T(w.STATE.diss.C2.bst === 'ملاحظة' && w.__wrote === 'diss', 'وتُحفَظ على سجلّ الفك');
 
-/* نقطةٌ لم تُزَر: يُقال لماذا لا تُكتَب */
-w.POP_SITE = 'C3'; w.render(1); await wait(120);
-T(/لم ينزل الميدانُ إلى هذه النقطة بعد/.test(d.getElementById('pkPop').textContent), 'وما لم يُنزَل إليه يقول ذلك صراحةً');
-
-/* ═══ البطاقةُ في هذه الطبقة: تقييمٌ بالعين وزرٌّ واحد (V16.89) ═══ */
+/* من يكتب */
+w.FIELD_MODE = 'survey'; w.POP_OPEN = false;
+w.ROLE = 'viewer'; T(w.briefMay() === true, 'الوزارةُ تكتب الخلاصة (والقاعدةُ تسمح لها بحقولها وحدَها)');
+w.ROLE = 'exec'; T(w.briefMay() === false, 'والإدارةُ العليا تقرأ ولا تكتب — كما في القاعدة');
 w.ROLE = 'engineer';
-w.STATE.recs.C1 = Object.assign({}, w.STATE.recs.C1, {
-  by:'فنيُّ الميدان', at:Date.now(), access:'تم الوصول', mount:'عمود', power:'مولّد',
-  wid_m:3, hgt_m:4, fit:'نعم', note:'الموقع ضيّقٌ من الجهة الشرقية',
-  chals:['العارضة الحديدية ناقصة أو غير مكتملة'], photos:['site','mount']
-});
-w.POP_SITE = 'C1'; w.POP_OPEN = true; w.render(1); await wait(150);
-const p2 = d.getElementById('pkPop'); const txt = p2.textContent;
-T(/ما سجّله الميدان/.test(txt) && /نوع التركيب/.test(txt) && /عمود/.test(txt) && /مولّد/.test(txt),
-  'البطاقةُ تعرض ما سجّله الميدانُ بالحرف — فيُقيَّم بالعين بلا فتح نموذج');
-T(/الموقع ضيّقٌ من الجهة الشرقية/.test(txt) && /العارضة الحديدية/.test(txt) && /التحديات المرصودة/.test(txt) && /الصور/.test(txt),
-  'ومعه الملاحظةُ والتحدياتُ وعددُ الصور');
-T(!/تعديل البيانات|نموذج المسح|اتجاهات|تحريك/.test(txt) && !p2.querySelector('[data-psel],[data-move],[data-site],[data-form],[data-insform]'),
-  'ولا زرَّ سواه: لا تعديلَ ولا نموذجَ ولا اتجاهاتٍ ولا تحريك');
-const aprs = [...p2.querySelectorAll('.actions .btn, .actions a')];
-T(aprs.length === 1 && /الاعتماد التقني/.test(aprs[0].textContent), 'والزرُّ الوحيدُ هو الاعتمادُ التقنيُّ للمهندس: ' + (aprs[0] ? aprs[0].textContent.trim() : '—'));
-w.ROLE = 'viewer'; w.render(1); await wait(120);
-const p3 = d.getElementById('pkPop'), a3 = [...p3.querySelectorAll('.actions .btn, .actions a')];
-T(a3.length === 0, 'والوزارةُ لا تُعرَض عليها الاعتمادُ التقني — ليس من شأنها');
-w.STATE.recs.C1.review = 'approved'; w.render(1); await wait(120);
-const a4 = [...d.querySelectorAll('#pkPop .actions .btn, #pkPop .actions a')];
-T(a4.length === 1 && /اعتماد الوزارة/.test(a4[0].textContent), 'فإذا اعتُمدت تقنيًّا وجدت زرَّها وحدَه: ' + (a4[0] ? a4[0].textContent.trim() : '—'));
-T(/اعتُمدت تقنيًّا/.test(d.getElementById('pkPop').textContent), 'والحالةُ مكتوبةٌ بجملةٍ تُقرأ');
-w.ROLE = 'engineer'; w.STATE.recs.C1.review = '';
 
-/* ═══ النصوصُ والصورُ في البطاقة (V16.93) ═══ */
-w.ROLE = 'engineer';
-Object.assign(w.STATE.recs.C1, { chal_note:'العارضةُ مائلة', power_note:'المصدرُ بعيدٌ ٤٠ م', minNote:'أعيدت لتصوير الزاوية', minBy:'الوزارة', minAt:Date.now() });
-w.STATE.inss = w.STATE.inss || {}; w.STATE.inss.C1 = { note:'رُكّب على عمودٍ جديد', by:'فريق التركيب', at:Date.now() };
+/* ═══ النصوصُ والصورُ في «ما سجّله الميدان» (V16.93 → V39.27) ═══ */
+Object.assign(w.STATE.recs.C1, { note:'الموقع ضيّقٌ من الجهة الشرقية', chal_note:'العارضةُ مائلة', power_note:'المصدرُ بعيدٌ ٤٠ م', minNote:'أعيدت لتصوير الزاوية', minBy:'الوزارة', minAt:Date.now() });
+w.STATE.inss.C1 = { note:'رُكّب على عمودٍ جديد', by:'فريق التركيب', at:Date.now() };
 const TX = w.svTexts('C1').map(x => x.src);
 T(TX.length >= 5 && TX.indexOf('ملاحظةُ الميدان') > -1 && TX.indexOf('ملاحظةُ الوزارة') > -1 && TX.indexOf('ملاحظةُ التركيب') > -1,
   'كلُّ نصٍّ كُتب عن النقطة يُجمَع بمصدره: ' + TX.join(' · '));
 w.STATE.photos = { p1:{ site:'C1', kind:'صورة الموقع', at:Date.now(), driveId:'D1', folderId:'F1' },
                    p2:{ site:'C1', kind:'صورة التثبيت', at:Date.now(), data:'data:image/jpeg;base64,AAA' },
                    p3:{ site:'C1', kind:'محذوفة', del:{ by:'x' } } };
+if (typeof w.phTouch === 'function') w.phTouch();
 w.POP_SITE = 'C1'; w.POP_OPEN = true; w.render(1); await wait(150);
 const pc = d.getElementById('pkPop');
 T(/ما كُتب عن النقطة/.test(pc.textContent) && /العارضةُ مائلة/.test(pc.textContent) && /رُكّب على عمودٍ جديد/.test(pc.textContent),
-  'وتُقرأ في البطاقة نصًّا نصًّا');
+  'وتُقرأ في «ما سجّله الميدان» نصًّا نصًّا');
 const ph = [...pc.querySelectorAll('.bf-ph img[data-phview]')];
 T(ph.length === 2, 'والصورُ مُصغَّراتٌ تُفتَح بالضغط — والمحذوفةُ لا تُعرَض: ' + ph.length);
-T(/drive\.google\.com\/thumbnail\?id=D1/.test(ph[0].src) || /drive\.google\.com\/thumbnail\?id=D1/.test(ph[1].src), 'ما على الدرايف يُعرَض بمصغّرته');
+T(ph.some(im => /drive\.google\.com\/thumbnail\?id=D1/.test(im.src)), 'ما على الدرايف يُعرَض بمصغّرته');
 w.ROLE = 'admin'; w.render(1); await wait(120);
 T(!!d.querySelector('#pkPop a[href*="drive.google.com/drive/folders/F1"]'), 'ومجلدُ النقطة يُفتَح لمدير المشروع فما فوق');
 w.ROLE = 'engineer';
@@ -235,7 +192,7 @@ w.ROLE = 'engineer';
   T(w.svApprove('P2') === false, 'ولا تُعتمَد زيارةٌ لم يصل إليها الميدان');
   w.STATE.recs.P1.review = ''; w.SVA_Q = ''; w.SVA_ST = 'pending';
   /* النافذةُ لا تُرسَم إلا على الخريطة — والكتلةُ السابقةُ تركتنا في شاشة الموقع */
-  w.goPage('map'); w.FIELD_MODE = 'brief'; w.POP_SITE = 'P1'; w.POP_OPEN = true; w.render(1); await wait(250);
+  w.goPage('map'); w.FIELD_MODE = 'survey'; w.POP_SITE = 'P1'; w.POP_OPEN = true; w.render(1); await wait(250);
   const gb = d.querySelector('#pkPop [data-goto="svappr"]');
   T(!!gb && gb.getAttribute('data-gotosite') === 'P1', 'وزرُّ الاعتماد في النافذة يحمل معرِّفَ نقطته');
   gb.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(250);

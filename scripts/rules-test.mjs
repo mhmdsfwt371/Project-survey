@@ -77,6 +77,16 @@ await deny('ولا تمسُّ الاعتمادَ التقنيَّ',             
 await deny('ولا حقلًا آخر',                             updateDoc(doc(as('vwr'), 'recs/SM'), { minReview:'approved', mount:'x' }));
 await setDoc(doc(as('eng'), 'recs/SN'), { ...rec, id:'SN' });
 await deny('ولا تعتمد ما لم يعتمده المهندس',            updateDoc(doc(as('vwr'), 'recs/SN'), { minReview:'approved' }));
+/* V39.27: الخلاصةُ (تمام · تحدٍّ · ملاحظة) تكتبها الوزارةُ على سجلٍّ قائمٍ في المسح والتركيب والفك — حقولُها وحدَها */
+await ok  ('والوزارةُ تكتب خلاصةَ الزيارة',              updateDoc(doc(as('vwr'), 'recs/SM'), { bst:'تحدٍّ', brief:'الكابل لم يصل', briefBy:'وزارة', briefAt:3 }));
+await deny('ولا حقلًا آخر معها',                         updateDoc(doc(as('vwr'), 'recs/SM'), { bst:'تمام', mount:'x' }));
+await deny('ولا حكمًا خارج الثلاثة',                     updateDoc(doc(as('vwr'), 'recs/SM'), { bst:'ممتاز' }));
+await setDoc(doc(as('eng'), 'inss/SM'), { id:'SM', status:'مُركّب', parts:{ rdr8:1 } });
+await ok  ('وخلاصةَ التركيب',                            updateDoc(doc(as('vwr'), 'inss/SM'), { bst:'تمام', brief:'تركيب نظيف', briefBy:'وزارة', briefAt:4 }));
+await deny('ولا تغيّر حالةَ التركيب',                    updateDoc(doc(as('vwr'), 'inss/SM'), { status:'متعذّر' }));
+await setDoc(doc(as('eng'), 'dismantles/SM'), { id:'SM', status:'تم الفك' });
+await ok  ('وخلاصةَ الفك',                               updateDoc(doc(as('vwr'), 'dismantles/SM'), { bst:'ملاحظة', brief:'بقي كابل', briefBy:'وزارة', briefAt:5 }));
+await deny('ولا تُنشئ سجلًّا لتكتب عليه',                 setDoc(doc(as('vwr'), 'dismantles/NEW1'), { bst:'تمام' }));
 await deny('الفنيُّ لا يحذف',                       deleteDoc(doc(as('tec'), 'recs/S1')));
 await ok  ('المهندسُ يحذف',                         deleteDoc(doc(as('eng'), 'recs/S2')));
 

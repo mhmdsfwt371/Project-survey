@@ -77,10 +77,12 @@ function siteLog(id){
     if (r.revisitAt) push(r.revisitAt, 'رُدّت لزيارةٍ أخرى' + (r.revisitNote ? ' — ' + r.revisitNote : ''), r.revisitBy, 'back');
     if (r.apprAt || r.review === 'approved') push(r.apprAt || r.at, 'الاعتماد التقني', r.apprBy || r.by, 'ok');
     if (r.minAt) push(r.minAt, minState(r) === 'returned' ? ('أعادتها الوزارة' + (r.minNote ? ' — ' + r.minNote : '')) : 'اعتماد الوزارة', r.minBy, minState(r) === 'returned' ? 'back' : 'ok');
-    if (r.briefAt) push(r.briefAt, 'تفاصيل مختصرة' + (r.bst ? ' — ' + t(r.bst) : '') + (r.brief ? ': ' + r.brief : ''), r.briefBy, 'note');
+    if (r.briefAt) push(r.briefAt, 'خلاصة الزيارة' + (r.bst ? ' — ' + t(r.bst) : '') + (r.brief ? ': ' + r.brief : ''), r.briefBy, 'note');   /* (V39.27) */
   }
   if (ins) push(ins.at, 'التركيب' + (ins.status ? ' — ' + t(ins.status) : '') + (ins.note ? ': ' + ins.note : ''), ins.by, 'ins');
   if (ds)  push(ds.at, 'الفكّ' + (ds.note ? ' — ' + ds.note : ''), ds.by, 'dis');
+  if (ins && ins.briefAt) push(ins.briefAt, 'خلاصة التركيب' + (ins.bst ? ' — ' + t(ins.bst) : '') + (ins.brief ? ': ' + ins.brief : ''), ins.briefBy, 'note');
+  if (ds && ds.briefAt) push(ds.briefAt, 'خلاصة الفك' + (ds.bst ? ' — ' + t(ds.bst) : '') + (ds.brief ? ': ' + ds.brief : ''), ds.briefBy, 'note');
   /* صورٌ أُخذت ولم تصل: الزيارةُ تقول كم أخذ الفنيُّ، والسجلُّ يقول كم وصل */
   if (r && r.phN){
     var got = (typeof photosOf === 'function' ? photosOf(id) : []).filter(function(p){ return !(p[1] || {}).del; }).length;

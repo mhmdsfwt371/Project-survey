@@ -182,7 +182,6 @@ function legendRows(){
     LST.forEach(function(x){
       var k;
       if (FIELD_MODE === 'survey') k = lifeOf(x);
-      else if (FIELD_MODE === 'brief') k = briefStage(x.id);
       else if (FIELD_MODE === 'install') k = insDone(x.id) ? 'done' : (asnOf(x.id) ? 'asn' : 'wait');
       else k = disDone(x.id) ? 'done' : (asnOf(x.id) ? 'asn' : 'wait');
       CNT[k] = (CNT[k] || 0) + 1; TOT++;
@@ -191,8 +190,6 @@ function legendRows(){
   if (FIELD_MODE === 'survey'){
     /* الأسطورةُ تُشتقُّ من دورة الحياة نفسِها — فلا تفترق عن الخريطة */
     rows = LIFE_ORDER.map(function(k){ return [LIFE[k].c, LIFE[k].n, k]; });
-  } else if (FIELD_MODE === 'brief'){
-    rows = BRIEF_STAGE_ORDER.map(function(k){ return [BRIEF_STAGE[k].c, BRIEF_STAGE[k].n, k]; });
   } else if (FIELD_MODE === 'install'){
     rows = [[LIFE.ready.c,'معتمدة — جاهزة للإسناد','wait'], [LIFE.sched.c,'مُسندة للتركيب','asn'], [L.c,'مُركّب','done']];
   } else {
@@ -208,22 +205,23 @@ function legendRows(){
   }).join('')
   + '<div class="lg-row lg-tot"><span class="lg-n">' + esc(t('في هذا الترشيح')) + '</span>'
   + '<b class="num lg-c">' + nm(TOT) + '</b></div>';
-  /* وفي طبقة التفاصيل: الإطارُ خبرٌ ثانٍ فوق لون المرحلة — يُقال في أسطورتها */
-  if (FIELD_MODE === 'brief'){
+  /* (V39.27) the summaries of the mode's records — shown once the mode has at least one */
+  var BCx = { 'تمام':0, 'تحدٍّ':0, 'ملاحظة':0 }; ((typeof layerFiltered === 'function') ? layerFiltered() : []).forEach(function(x){ var b0 = briefOf(x.id); if (b0 && BCx[b0.st] !== undefined) BCx[b0.st]++; });
+  if (BCx['تمام'] + BCx['تحدٍّ'] + BCx['ملاحظة'] > 0){
     var BC = { 'تمام':0, 'تحدٍّ':0, 'ملاحظة':0 }, noB = 0;
     ((typeof layerFiltered === 'function') ? layerFiltered() : []).forEach(function(x){
       var b = briefOf(x.id);
       if (b && BC[b.st] !== undefined) BC[b.st]++; else noB++;
     });
     out += '<div class="lg-sep"></div>'
-      + '<div style="font-weight:700;margin:0 0 4px">' + esc(t('إطارُ النقطة — التفاصيل المكتوبة')) + '</div>'
+      + '<div style="font-weight:700;margin:0 0 4px">' + esc(t('إطارُ النقطة — الخلاصة')) + '</div>'
       + BRIEF_ST.map(function(k){
           return '<div class="lg-row' + (BC[k] ? '' : ' lg-off') + '">'
             + '<i class="lg-dot" style="background:transparent;box-shadow:inset 0 0 0 2px ' + BRIEF_C[k] + '"></i>'
             + '<span class="lg-n">' + esc(t(k)) + '</span><b class="num lg-c">' + nm(BC[k]) + '</b></div>';
         }).join('')
       + '<div class="lg-row' + (noB ? '' : ' lg-off') + '"><i class="lg-dot" style="background:transparent;box-shadow:inset 0 0 0 1px var(--line)"></i>'
-      + '<span class="lg-n">' + esc(t('بلا تفاصيلَ بعد')) + '</span><b class="num lg-c">' + nm(noB) + '</b></div>';
+      + '<span class="lg-n">' + esc(t('بلا خلاصةٍ بعد')) + '</span><b class="num lg-c">' + nm(noB) + '</b></div>';
   }
   /* الأشكالُ — تُذكَر مرةً في آخر الأسطورة، وتُشتقُّ من سجلِّ الأنواع (V17.60):
      كانت ثلاثةَ أسطرٍ مكتوبةٍ بيد، فلا يظهر فيها شكلُ نوعٍ أُضيف ولا شكلٌ غُيِّر. */

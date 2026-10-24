@@ -64,8 +64,7 @@ function clickAPart1(e){
   if (m){
     /* (V28.5) ملاحظةُ «تحديثات المنصة»: «التفاصيل المختصرة» حين تُفعَّل لا تُغلق — صارت الضغطةُ الثانيةُ عليها تُعيد الطبقةَ السابقة */
     var nmode = m.getAttribute('data-mode');
-    if (nmode === 'brief' && FIELD_MODE === 'brief') nmode = (typeof FIELD_PREV === 'string' && FIELD_PREV && FIELD_PREV !== 'brief') ? FIELD_PREV : 'survey';
-    else if (nmode === 'brief') FIELD_PREV = FIELD_MODE;
+    if (!LAYERS[nmode]) nmode = 'survey';   /* (V39.27) «تفاصيل مختصرة» is no longer a mode — an old button lands on the survey */
     FIELD_MODE = nmode;
     selClear();
     if (CUR !== 'map' && CUR !== 'layers') CUR = 'map';
@@ -80,12 +79,13 @@ function clickAPart1(e){
   if (bst){
     var pr = bst.getAttribute('data-bst').split('|');
     var bi = document.getElementById('bfTxt');
-    POP_JUST = Date.now(); briefSet(pr[0], pr[1], bi ? bi.value : null); return true;
+    POP_JUST = Date.now(); briefSet(pr[0], pr[1], bi ? bi.value : null, pr[2] || ''); return true;   /* (V39.27) id|verdict|phase */
   }
   var bfs = e.target.closest('[data-bfsave]');
   if (bfs){
     var bi2 = document.getElementById('bfTxt');
-    POP_JUST = Date.now(); briefSet(bfs.getAttribute('data-bfsave'), '', bi2 ? bi2.value : ''); return true;
+    var pb = (bfs.getAttribute('data-bfsave') || '').split('|');
+    POP_JUST = Date.now(); briefSet(pb[0], '', bi2 ? bi2.value : '', pb[1] || ''); return true;
   }
 
   /* ═══ كلُّ لوحٍ يُغلَق بنقرةٍ خارجه ═══

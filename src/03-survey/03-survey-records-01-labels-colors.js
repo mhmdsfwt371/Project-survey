@@ -2,7 +2,7 @@
    FILE    : src/03-survey/03-survey-records-01-labels-colors.js
    DOMAIN  : Survey & installation — forms, points, assignment, plan
    PURPOSE : Human-readable labels for recorded data, texts written about a point, layer colour by approval stage, field names and company names per UI language.
-   DEFINES : svTexts, svFieldRows, briefOf, briefStage, briefColor, briefRing, briefMay, translitWord, coName, dispName, catLabel, typeLabel … (+2 more)
+   DEFINES : svTexts, svFieldRows, briefPhase, briefRec, briefOf, briefStage, briefColor, briefRing, briefMay, translitWord, coName, dispName, catLabel, typeLabel … (+2 more)
    GLOBALS : SV_LABELS, SV_ORDER, BRIEF_C, BRIEF_STAGE, BRIEF_STAGE_ORDER, NAME_FIX, TRANSLIT
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
@@ -63,8 +63,13 @@ function svFieldRows(r){
   return out;
 }
 var BRIEF_C  = { 'تمام':'#3AD6A0', 'تحدٍّ':'#E05252', 'ملاحظة':'#E8C34B' };
-function briefOf(id){
-  var r = STATE.recs[id];
+/* (V39.27) owner: «نشيل التفاصيل المختصرة ونحط اللي فيها في المسح والتركيب والفك باختلاف نماذجهم». The one-line
+   summary (تمام · تحدٍّ · ملاحظة) is no longer a fourth map mode: every mode carries it on its own record — the visit in
+   survey, the installation in installation, the dismantling in dismantling — and the point's frame says it. */
+function briefPhase(){ return FIELD_MODE === 'install' ? 'install' : FIELD_MODE === 'dis' ? 'dis' : 'survey'; }
+function briefRec(id, ph){ ph = ph || briefPhase(); var r = ph === 'install' ? (STATE.inss || {})[id] : ph === 'dis' ? (STATE.diss || {})[id] : (STATE.recs || {})[id]; return r && !r.voided && !r.deleted ? r : null; }   /* a cancelled or deleted record carries no summary */
+function briefOf(id, ph){
+  var r = briefRec(id, ph);
   if (!r) return null;
   var st = String(r.bst || '').trim(), d = String(r.brief || '').trim();
   if (!st && !d) return null;
@@ -102,11 +107,11 @@ function briefStage(id){
 }
 function briefColor(id){ return (BRIEF_STAGE[briefStage(id)] || BRIEF_STAGE.none).c; }
 /* الإطار: خبرُ السطر المكتوب — ولا إطارَ مميّزًا لمن لم يُكتَب له */
-function briefRing(id){
-  var b = briefOf(id);
+function briefRing(id, ph){
+  var b = briefOf(id, ph);
   return b ? (BRIEF_C[b.st] || '#E8C34B') : '';
 }
-function briefMay(){ var r = effRole(ROLE); return rankOf(r) >= 90 || r === 'viewer' || may('edit'); }
+function briefMay(){ var r = effRole(ROLE); if (r === 'exec') return false; return rankOf(r) >= 90 || r === 'viewer' || may('edit'); }   /* (V39.27) management reads and does not write — as in the rules */
 
 
 /* ── النقاط: كلُّ عملٍ وزنُه من الإعدادات ── */

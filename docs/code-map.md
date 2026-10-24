@@ -21,7 +21,7 @@
 | `01-core-registry-07-blackbox-registry.js` | 190 | 12 | Black box (crash forensics) and the embedded site registry SITES_RAW with its publish/cache cycle to the database. |
 | `01-core-registry-08-egates-seed.js` | 72 | 7 | Al Mashaaer train: the nine stations and their 62 E-GATE points (registry points at the station reference, owner decision Q-023), the station card listing its g |
 
-## `02-catalog/` — الكتالوج والنقطة — التعريفات والتصنيف والصلاحيات وتعديل المسح  (12 ملفات · 4129 سطر · 240 دالة)
+## `02-catalog/` — الكتالوج والنقطة — التعريفات والتصنيف والصلاحيات وتعديل المسح  (12 ملفات · 4113 سطر · 240 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -31,30 +31,30 @@
 | `02-catalog-forms-04-mywork-diary.js` | 537 | 9 | 'My work' screens, project diary, weight/target simulator and how dues are computed. |
 | `02-catalog-forms-05-management-performance.js` | 435 | 4 | Management records, methodology matching and the single performance page with five levels. |
 | `02-catalog-forms-06-teams-accounts-perms.js` | 525 | 10 | Teams and shares, crews and rates, the permissions module (UI + Firebase rules mirror) and role/team assignment to users. |
-| `02-catalog-forms-07-layers-dismantle-svedit.js` | 251 | 13 | Three map layers (what each shows and assigns), dismantle and maintenance forms, the brief line on visit documents, and editing a survey without redoing it (svq |
+| `02-catalog-forms-07-layers-dismantle-svedit.js` | 235 | 13 | Three map layers (what each shows and assigns), dismantle and maintenance forms, the brief line on visit documents, and editing a survey without redoing it (svq |
 | `02-catalog-forms-10-report-builder.js` | 207 | 18 | (V38.43) Report builder — the owner composes any point report from dropdowns (place, owner category, type, survey, |
 | `02-catalog-forms-11-chat.js` | 280 | 29 | (V38.60) Field chat between the office and the installers: a message is a small append-only document |
 | `02-catalog-forms-12-install-edit.js` | 71 | 6 | (V38.61) «تعديل التركيب» — the installation's counterpart of «تعديل المسح»: status, parts and serials edited |
 | `02-definitions-08-definitions.js` | 563 | 83 | Canonical definitions used everywhere: visit/survey/installation states, challenge categories (chalCats), location choices (locOpts/locApplies), helper predicat |
 | `02-edit-09-edit-requests.js` | 185 | 11 | Data-correction requests from the field (fixreqs) and their review. |
 
-## `03-survey/` — المسح والتركيب — النماذج والنقاط والإسناد والخطة  (11 ملفات · 4036 سطر · 178 دالة)
+## `03-survey/` — المسح والتركيب — النماذج والنقاط والإسناد والخطة  (11 ملفات · 4043 سطر · 180 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
-| `03-survey-records-01-labels-colors.js` | 251 | 14 | Human-readable labels for recorded data, texts written about a point, layer colour by approval stage, field names and company names per UI language. |
+| `03-survey-records-01-labels-colors.js` | 256 | 16 | Human-readable labels for recorded data, texts written about a point, layer colour by approval stage, field names and company names per UI language. |
 | `03-survey-records-02-install-points.js` | 896 | 7 | Installation points for a given type read from one place (what gets installed where). |
 | `03-survey-records-03-assign-solutions.js` | 439 | 21 | Assignment from list or map, request codes, and the proposed device solution for a point before an installation request. |
 | `03-survey-records-04-readiness-conditions.js` | 384 | 9 | What is ready per request type and the condition chain explaining why a point cannot be assigned. |
 | `03-survey-records-05-forms-approvals.js` | 160 | 11 | Field forms that write to the engine, the two approvals, missing survey fields, required-field marking and save blocking. |
 | `03-survey-records-06-survey-form.js` | 325 | 17 | The survey form: basic fields first and details on demand, prefix generation, automatic photo checks, and the draft that survives iOS closing the page. |
 | `03-survey-records-07-demo-single-errors.js` | 199 | 16 | Demo-point kits, single-point form, production error capture, events carrying their point and actor. |
-| `03-survey-records-08-parts-history-onboarding.js` | 217 | 9 | Parts picker, three items missing from the worker, the point's full history, and the first-run tour. |
+| `03-survey-records-08-parts-history-onboarding.js` | 219 | 9 | Parts picker, three items missing from the worker, the point's full history, and the first-run tour. |
 | `03-survey-records-09-team-bugs-companies.js` | 217 | 14 | Team numbers in one pass, bug report and bug screen, accepted-only work rule, daily WhatsApp briefing, company phone book and company rename. |
 | `03-survey-records-10-wbs-plan-trials.js` | 471 | 29 | Work breakdown structure, plan versus actual, plan export with formulas, item file and the trials page. |
 | `03-survey-records-11-weekly-tasks-paths.js` | 477 | 31 | Weekly tasks as sentence cards, meeting mode, the one filter for screen and paper, and path filtering with each path's status. |
 
-## `03z-shared/` — المشتركُ — تعريفاتٌ تحتاجها النواةُ قبل مجالات المكتب والوزارة والتقارير (نُقلت حرفيًّا، لا كودَ جديدًا هنا)  (63 ملفات · 7984 سطر · 446 دالة)
+## `03z-shared/` — المشتركُ — تعريفاتٌ تحتاجها النواةُ قبل مجالات المكتب والوزارة والتقارير (نُقلت حرفيًّا، لا كودَ جديدًا هنا)  (63 ملفات · 7971 سطر · 448 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -68,7 +68,7 @@
 | `03z-shared-08-from-tasks-office-08-reports-center-sop-help.js` | 213 | 0 | Definitions moved verbatim from src/04-office/04-tasks-office-08-reports-center-sop-help.js (V38.38, stage A of core + chunks): the core (01–05, 08) references  |
 | `03z-shared-09-from-tasks-office-09-assistant.js` | 165 | 9 | Definitions moved verbatim from src/04-office/04-tasks-office-09-assistant.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, s |
 | `03z-shared-10-from-tasks-office-10-assistant-reports.js` | 199 | 7 | Definitions moved verbatim from src/04-office/04-tasks-office-10-assistant-reports.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these  |
-| `03z-shared-11-from-tasks-office-11-site-popup.js` | 405 | 5 | Definitions moved verbatim from src/04-office/04-tasks-office-11-site-popup.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names,  |
+| `03z-shared-11-from-tasks-office-11-site-popup.js` | 392 | 7 | Definitions moved verbatim from src/04-office/04-tasks-office-11-site-popup.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names,  |
 | `03z-shared-12-from-tasks-office-12-draw-paths-areas.js` | 307 | 28 | Definitions moved verbatim from src/04-office/04-tasks-office-12-draw-paths-areas.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these n |
 | `03z-shared-13-from-tasks-office-13-perf-distribution-cameras.js` | 260 | 14 | Definitions moved verbatim from src/04-office/04-tasks-office-13-perf-distribution-cameras.js (V38.38, stage A of core + chunks): the core (01–05, 08) reference |
 | `03z-shared-14-from-tasks-office-14-pull-scope-listen-map.js` | 365 | 21 | Definitions moved verbatim from src/04-office/04-tasks-office-14-pull-scope-listen-map.js (V38.38, stage A of core + chunks): the core (01–05, 08) references th |
@@ -122,7 +122,7 @@
 | `03z-shared-b-26-from-approvals-reports-10-point-actions-export-pdf.js` | 52 | 2 | Definitions moved verbatim from src/07-reports/07-approvals-reports-10-point-actions-export-pdf.js (V38.38–V38.39, stage A of core + chunks, pass b): the core ( |
 | `03z-shared-b-27-from-approvals-reports-11-import-roles-perms.js` | 29 | 0 | Definitions moved verbatim from src/07-reports/07-approvals-reports-11-import-roles-perms.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, |
 
-## `03zz-late/` —   (65 ملفات · 6820 سطر · 439 دالة)
+## `03zz-late/` —   (65 ملفات · 6823 سطر · 439 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -142,7 +142,7 @@
 | `02-catalog--02-catalog-forms-11-chat.js` | 20 | 2 | Moved verbatim from src/02-catalog/02-catalog-forms-11-chat.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk call th |
 | `02-catalog--02-catalog-forms-12-install-edit.js` | 85 | 3 | Moved verbatim from src/02-catalog/02-catalog-forms-12-install-edit.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk |
 | `02-catalog--02-edit-09-edit-requests.js` | 59 | 4 | Moved verbatim from src/02-catalog/02-edit-09-edit-requests.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk call th |
-| `03-survey--03-survey-records-01-labels-colors.js` | 21 | 1 | Moved verbatim from src/03-survey/03-survey-records-01-labels-colors.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chun |
+| `03-survey--03-survey-records-01-labels-colors.js` | 24 | 1 | Moved verbatim from src/03-survey/03-survey-records-01-labels-colors.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chun |
 | `03-survey--03-survey-records-02-install-points.js` | 66 | 4 | Moved verbatim from src/03-survey/03-survey-records-02-install-points.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chu |
 | `03-survey--03-survey-records-03-assign-solutions.js` | 85 | 5 | Moved verbatim from src/03-survey/03-survey-records-03-assign-solutions.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office c |
 | `03-survey--03-survey-records-04-readiness-conditions.js` | 32 | 1 | Moved verbatim from src/03-survey/03-survey-records-04-readiness-conditions.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the offi |
@@ -216,11 +216,11 @@
 | `04-tasks-office-18-twin-photos.js` | 50 | 5 | (V39.19) owner: the installation photos on the 3D map. Every point with photos gets a small pin at its |
 | `04-tasks-office-19-twin-engine.js` | 248 | 17 | (V39.24) owner: «الديجيتال توين حاجة دايناميك: أدخل بالماوس جوّه المكان، أشوف الأجهزة المتركّبة بمواقعها |
 
-## `05-map/` — الخريطة ودورةُ الحياة — الطبقات والتصدير والاستيراد والدخول وشاشةُ الوزارة  (18 ملفات · 4303 سطر · 211 دالة)
+## `05-map/` — الخريطة ودورةُ الحياة — الطبقات والتصدير والاستيراد والدخول وشاشةُ الوزارة  (18 ملفات · 4300 سطر · 211 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
-| `05-lifecycle-map-01-lifecycle-task-index.js` | 282 | 12 | Point lifecycle (one state read by all), task index by point and type, and stacked points on one coordinate. |
+| `05-lifecycle-map-01-lifecycle-task-index.js` | 281 | 12 | Point lifecycle (one state read by all), task index by point and type, and stacked points on one coordinate. |
 | `05-lifecycle-map-02-map-incremental.js` | 314 | 12 | Incremental map painting (never rebuilt from scratch), marker cache MK, faster first paint, flying to a point, locate, theme and satellite toggles. |
 | `05-lifecycle-map-03-export-import-docx.js` | 711 | 4 | Export/import with real data, ExcelJS for self-updating files, and Word export that stays inside the app. |
 | `05-lifecycle-map-04-excel-templates-kmz.js` | 197 | 10 | Current page to Excel, the tasks file from a template, and KMZ/KML import. |
@@ -229,7 +229,7 @@
 | `05-lifecycle-map-07-report-lines-hybrid-google.js` | 332 | 21 | Report lines (Abar Mid), hybrid map with street names over satellite, and Google Maps inside our map. |
 | `05-lifecycle-map-08-cameras-report-sw-update.js` | 316 | 21 | Ministry camera report, service worker registration, auto-update, version announcement, the epoch (no uploads from a pre-epoch device) and 'sync everyone now'. |
 | `05-lifecycle-map-09-role-switch-login-install.js` | 533 | 20 | Role switching, logout, add-to-home-screen prompts (incl. iPhone) and the login page. |
-| `05-lifecycle-map-10-field-companies.js` | 261 | 8 | Field map-first home, composite-name parsing, companies board and company camps classified. |
+| `05-lifecycle-map-10-field-companies.js` | 259 | 8 | Field map-first home, composite-name parsing, companies board and company camps classified. |
 | `05-lifecycle-map-11-drawing-board-modules.js` | 331 | 9 | Drawing board and its modules: survey details, single challenge key, rooms with sensors. |
 | `05-lifecycle-map-12-ministry-screen-progress.js` | 119 | 5 | Ministry hall screen, completion forecast, progress map, far points, satellite in the ministry screen, week sentence and the hall view. |
 | `05-lifecycle-map-13-ministry-followup.js` | 184 | 15 | Ministry follow-up page: dynamic follow-up, season brief header, 'whose turn' groups, two modes, and the no-challenge camps card. |
@@ -239,7 +239,7 @@
 | `05-lifecycle-map-18-live.js` | 69 | 8 | (V39.20) owner: the twin must live, not only record. The Nusuk card system bridge already brings two |
 | `05-lifecycle-map-19-field-layouts.js` | 58 | 7 | (V39.22) owner, with the R&D team's photos of the demo camp (Mina 74B, signpost 38/56): «دول فعليًّا اللي |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4316 سطر · 158 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4319 سطر · 158 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -253,7 +253,7 @@
 | `06-ministry-alerts-08-pptx-template.js` | 1044 | 23 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 284 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 1135 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 1138 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
 
@@ -297,4 +297,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 235 ملفًّا · 47046 سطر · 2137 دالة.
+**الإجمالي:** 235 ملفًّا · 47027 سطر · 2141 دالة.
