@@ -1811,6 +1811,16 @@ console.log('\n══ ٦٧ · حرّك من بطاقة الجهاز ══');
   w.mvdStop(); delete w.STATE.inss[x.id]; if (w.STATE.siteOv[x.id]) delete w.STATE.siteOv[x.id].iot; w.ROLE = role0; w.STATE.meta.role = role0;
 }
 
+/* ── ٦٨ · (V39.36) «ده الشكل اللي عاوز أشوفه كل ما أعمل زوم»: المخيمُ بلونه وحساساتُه دبابيس، والخيامُ اختيارية ── */
+console.log('\n══ ٦٨ · الشكلُ الافتراضيّ عند التقريب ══');
+{
+  const on0 = w.tentPaint.on; delete w.tentPaint.on;
+  T(w.tentOn() === false, 'الخيامُ مطفأةٌ حتى تُطلَب من «الطبقات»');
+  w.tentPaint.on = on0;
+  T(/nsk-iot["'],\s*type:\s*["']fill-extrusion["'][\s\S]{0,200}?minzoom:\s*16\.5/.test(String(w.m3Layers)), 'ودبابيسُ الحساسات (العمودُ والساقُ والرأس) من تقريب ١٦٫٥ — حين يملأ المخيمُ الشاشة');
+  T(/if \(!IOT\.on && !IOT\.touched\)\{ IOT\.on = true;/.test(String(w.m3Toggle)), 'والحساساتُ تظهر مع الدخول إلى الثلاثيّ ما لم يُطفئها المستخدمُ بنفسه');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

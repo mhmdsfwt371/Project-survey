@@ -123,7 +123,7 @@ function m3Layers(){
                 /* (V39.28) 8,000 sensors are dust from afar: the gateways show at every zoom, the sensors from 15 */
                 'circle-opacity':['interpolate', ['linear'], ['zoom'], 14, ['case', ['==', ['get','kind'], 'g'], 0.95, 0], 15, 0.95],
                 'circle-stroke-opacity':['interpolate', ['linear'], ['zoom'], 14, ['case', ['==', ['get','kind'], 'g'], 1, 0], 15, 1] } });
-      M3.addLayer({ id:'nsk-iot', type:'fill-extrusion', source:'nskiot', filter:['==', ['geometry-type'], 'Polygon'], minzoom:18,   /* (V39.28/V39.32) the beacons come with the tents (18): up close the sensors stand above the roofs, not under them */
+      M3.addLayer({ id:'nsk-iot', type:'fill-extrusion', source:'nskiot', filter:['==', ['geometry-type'], 'Polygon'], minzoom:16.5,   /* (V39.36) the sensors as pins — column, stem and head — as soon as a camp fills the view */
         paint:{ 'fill-extrusion-color':['get','color'], 'fill-extrusion-height':['get','h'], 'fill-extrusion-base':['coalesce', ['get','base'], 0], 'fill-extrusion-opacity':0.96 } });   /* (V39.21) beacons above the roofs carry their own base */
     }
     if (typeof dtwLayers === 'function') dtwLayers();   /* (V39.13) the points' devices */
@@ -220,7 +220,9 @@ function m3From2D(){
 }
 function m3Toggle(){
   if (MAP_3D){ m3Off(); return; }
-  MAP_3D = true; render(1);
+  MAP_3D = true;
+  if (!IOT.on && !IOT.touched){ IOT.on = true; try { iotLoad(); } catch (e0){ LS_ERR = e0; } }   /* (V39.36) the sensors are part of the look the owner asked to see on every zoom */
+  render(1);
   var b3 = document.getElementById('m3Box'); if (b3) b3.hidden = false;
   m3Load().then(function(ok){
     if (!ok || !m3Init()){ toast(t(M3_ERR || 'تعذّر تحميلُ محرّك العرض الثلاثي')); m3Off(); return; }

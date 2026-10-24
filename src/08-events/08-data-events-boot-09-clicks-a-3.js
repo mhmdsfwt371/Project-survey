@@ -115,7 +115,7 @@ function clickAPart6(e){
   if (e.target.closest('[data-iotfield]')){ iotFieldApply(); return true; }   /* (V39.22) the real positions from the field */
   if (e.target.closest('[data-iotcancel]')){ IOT.edit = null; iotPaint(); render(1); return true; }
   if (e.target.closest('[data-iot]')){   /* (V25.7) طبقةُ تخطيط الحساسات */
-    IOT.on = !IOT.on; iotLoad(); iotPaint(); render(1);
+    IOT.on = !IOT.on; IOT.touched = true; iotLoad(); iotPaint(); render(1);   /* (V39.36) the user's choice stands over the 3D default */
     if (IOT.on && MAP && MAP.getZoom() < IOT.Z) toast(t('قرّب أكثر لتظهر الحساسات'));
     return true; }
   var ffl = e.target.closest('[data-ffl]');
@@ -159,7 +159,7 @@ function clickAPart7(e){
   if (e.target.closest('[data-heat]')){ heatPaint.on = !heatPaint.on; heatPaint(); heatPaint3d(); render(); return true; }   /* (V39.16) */
   if (e.target.closest('[data-cov]')){ covPaint.on = !covPaint.on; covPaint(); covPaint3d(); render(); return true; }   /* (V39.14) */
   if (e.target.closest('[data-phpin]') && typeof phPinPaint === 'function'){ phPinPaint.on = phPinPaint.on !== true; if (phPinPaint.on) phPinPaint(); else phPinClear(); render(); return true; }   /* (V39.19) */
-  if (e.target.closest('[data-tent]') && typeof tentPaint === 'function'){ tentPaint.on = tentPaint.on === false; if (typeof m3Paint === 'function') m3Paint(); if (typeof teMaybe === 'function') teMaybe(); render(); return true; }   /* (V39.18/V39.24) the models follow the chip */
+  if (e.target.closest('[data-tent]') && typeof tentPaint === 'function'){ tentPaint.on = tentPaint.on !== true; if (typeof m3Paint === 'function') m3Paint(); if (typeof teMaybe === 'function') teMaybe(); render(); return true; }   /* (V39.18/V39.24) the models follow the chip */
   if (e.target.closest('[data-twin]') && typeof dtwPaint === 'function'){ dtwPaint.on = dtwPaint.on === false; dtwPaint(); render(); return true; }   /* (V39.13) */
   var mqb = e.target.closest('[data-mapq]');   /* (V39.4) the map search box opens and closes */
   if (mqb){ var mqs = mapUIHtml.s || (mapUIHtml.s = { open:false, q:'' }); mqs.open = mqb.getAttribute('data-mapq') === '1'; render();

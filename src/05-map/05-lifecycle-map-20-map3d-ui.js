@@ -64,7 +64,7 @@ function m3uiSheet(){
         + tg(timeState().on, 'data-time="1"', '\u23F3', 'الزمن') + tg(liveState().on, 'data-live="1"', '\u{1F493}', 'الحي'))
     + (typeof m3ovState === 'function' ? sec('العرض', tg(m3ovState().agg, 'data-m3agg="1"', '\u25CE', 'تجميع من بعيد') + tg(m3ovState().lab, 'data-m3lab="1"', '\u{1F3F7}', 'أرقام الشواخص')) : '')   /* (V39.29) */
     + floors
-    + '<p class="hint" style="margin:10px 0 0">' + esc(t('الخيام والأجهزة والنماذج تظهر حين تقترب — من بعيد ترى المخيمات بلون حالتها فقط')) + '</p>'
+    + '<p class="hint" style="margin:10px 0 0">' + esc(t('المخيم بلون حالته وحساساته دبابيس — والخيام اختيارية من هنا')) + '</p>'
     + '</div>';
 }
 /* on the side: where am I, and north up */

@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V39.35",
+  "app_version": "V39.36",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2297,7 +2297,8 @@
   "V39.32": "m3uiState().terrain افتراضيًّا false (لا setTerrain) — DEM بخلايا ١٠ م يعلو قاعدة ٠٫٥–١٫٢ م على المنحدر فيدفنها بخطّ منحنٍ · m3IotFeatures: منارة الحساس iotSq 0.8 (١٫٦ م) من ٤٫٨ إلى ٦ م والجيت واي ١٫١ (٢٫٢ م) إلى ٧٫٢ م، وساق stem للحساس ٠٫٢٤ م من ١٫٨ إلى ٤٫٨ م · nsk-iot من تقريب ١٨ مع الخيام · سيناريو ٦٤ و٤٥ و٥٥ محدَّثة (٣٦١ فحصًا)",
   "V39.33": "m3PopOpen(ll, html, maxW) في نواة المجسّم: نافذة MapLibre واحدة متتبَّعة (closeButton وcloseOnClick، التالية تُغلق السابقة) ومستمع pointerdown واحد على المستند يُغلقها بأي لمسة خارجها (إلا لمسة الفتح ٢٥٠ مللي ثانية) · m3PopClose · m3HoverOk (hover:hover وpointer:fine) — m3Hover لا يفتح على اللمس ولا فوق بطاقة مفتوحة · بطاقات الحساس (m3IotClick) والجهاز (dtwClick) والنموذج (teClick) تمرّ بها · CSS: إكس ٣٦ بكسل وهامش النص · سيناريو ٦٥ (٣٦٦ فحصًا)",
   "V39.34": "actList: يقرأ كل دالة عامة باسم ^(click|onDocClick)[A-Z0-9] غير الأجزاء المرقّمة (كان clickAMapViews خارج المسح فابتلع حارس clickAPart2 كل .btn منه وأظهر toast نصّه «✕») · SHEETS في clickAPart1: لوحا m3ui (sheet/views) يُغلقان بالنقر خارجهما مع pass:true — النقرة تُغلق وتمضي لفعلها · زرّ التثبيت في «حسابي» بلا id (pwaBtn للشريط وحده) · سيناريو ٦٦: كل .btn/.chip بفعل data-* في الصفحات الـ٣٣ ولوحات الخريطة والنافذة وشريط التحريك موصول بـactList، والإكس بالنقر الحقيقي، واللمسة خارجه، ولا معرّف مكرّر (٣٧١ فحصًا)",
-  "V39.35": "iotDevHtml وdtwCardHtml: زرّ data-mvd + data-mvdk (s<i> / g<j> / code#i) لمن يملك تعديل الخطة أو التركيب · mvdStart(id, only) يُغلق البطاقة (m3PopClose) · mvdShown يرشّح الدبابيس بـonly · mvdBarHtml يعرض اسم الجهاز و«كل أجهزة النقطة» · سيناريو ٦٧ (٣٧٦ فحصًا)"
+  "V39.35": "iotDevHtml وdtwCardHtml: زرّ data-mvd + data-mvdk (s<i> / g<j> / code#i) لمن يملك تعديل الخطة أو التركيب · mvdStart(id, only) يُغلق البطاقة (m3PopClose) · mvdShown يرشّح الدبابيس بـonly · mvdBarHtml يعرض اسم الجهاز و«كل أجهزة النقطة» · سيناريو ٦٧ (٣٧٦ فحصًا)",
+  "V39.36": "tentOn افتراضيًّا false (tentPaint.on === true) والمفتاح يقلبه · m3Toggle: IOT.on = true عند الدخول ما لم IOT.touched (يُضبط عند ضغط المستخدم data-iot) · nsk-iot (العمود والساق والرأس) من تقريب ١٦٫٥ · نصّ لوح الطبقات · سيناريو ٦٨ (٣٧٩ فحصًا)"
   },
   "map_and_geolocation": {
     "tile_layers": {

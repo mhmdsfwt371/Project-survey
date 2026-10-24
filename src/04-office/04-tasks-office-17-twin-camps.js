@@ -15,7 +15,9 @@
 
 /* the tent module's measures and colours come from tentCfg() in the core's 3D file — the plinth height is needed there too */
 
-function tentOn(){ return tentPaint.on !== false; }
+/* (V39.36) owner, with a screenshot of the camp in its colour and its sensors as pins: «ده الشكل الجامد اللي أنا عاوز أشوفه كل
+   ما أعمل زوم» — the tents are a switch in «الطبقات», off until asked; the camp reads by its colour and its sensors */
+function tentOn(){ return tentPaint.on === true; }
 
 /* local metres around the camp's centre: [x east, y north] ↔ [lng, lat] */
 function tentCells(ring){
