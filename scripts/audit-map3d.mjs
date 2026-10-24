@@ -52,14 +52,14 @@ const T = (c, n) => { console.log((c ? '  ✓ ' : '  ✗ ') + n);
  await new Promise(r=>setTimeout(r,400));
  T(w.MAP_3D===true, 'بعد الضغطة: الوضعُ ثلاثي');
  T(!d.getElementById('m3Box').hidden, 'الحاويةُ ظاهرة');
- const chip2=d.querySelector('[data-m3]'); T(chip2 && chip2.textContent.includes('٢د') && chip2.classList.contains('on'), 'الزرُّ صار «٢د» ومضاء: '+(chip2&&chip2.textContent.trim()));
+ const chip2=d.querySelector('[data-m3]'); T(chip2 && chip2.textContent.includes('٢د'), 'الزرُّ صار «٢د» — العودةُ إلى المسطّحة: '+(chip2&&chip2.textContent.trim()));   /* (V39.28) in the one-row 3D bar it is a way back, not a lit switch */
  T(!!calls.sources.nsk && !!calls.sources.nskc && calls.layers.includes('nsk-cols') && calls.layers.includes('nsk-pts'), 'طبقتا النقاط والأعمدة أُضيفتا: '+calls.layers.join(','));
  const feats=calls.sources.nsk.data.features; const ids=feats.map(f=>f.properties.id).sort().join(',');
  const want=w.layerFiltered().filter(x=>+x.lat&&+x.lng).map(x=>x.id).sort().join(',');
  T(ids===want && ids.length>0, 'النقاطُ هي نقاطُ الخريطة المسطّحة نفسُها: '+feats.length+' نقطة');
  const BY={}; w.layerFiltered().forEach(x=>BY[x.id]=x);
  T(feats.every(f=>f.properties.color===w.mapColorOf(BY[f.properties.id])), 'والألوانُ هي ألوانُها نفسُها');
- const cols=calls.sources.nskc.data.features; T(cols.length===feats.length && cols[0].geometry.type==='Polygon' && cols[0].properties.h>0, 'لكلِّ نقطةٍ عمودٌ مضلّعٌ بارتفاع: h='+cols[0].properties.h);
+ const cols=calls.sources.nskc.data.features; T(cols.length===feats.filter(f=>f.properties.foot===1||+f.properties.base>0).length && (cols.length===0 || (cols[0].geometry.type==='Polygon' && cols[0].properties.h>0)), 'المجسّماتُ للمخيمات بحدودها ولعلامات الأدوار وحدها — وكلُّ نقطةٍ أخرى قرصٌ على الأرض (V39.28): '+cols.length);
  /* المخيمُ بحدوده الحقيقية حين تُحمَّل — لا مربّعًا حول نقطته */
  const camp=feats.find(f=>w.siteFind && (w.siteFind(f.properties.id)||{}).type==='مخيم') || feats[0];
  const cs=w.siteFind(camp.properties.id)||{lat:21.33815,lng:39.98378}; const la=+cs.lat, lo=+cs.lng;   /* (V28.6) الحدودُ حول علامة المخيم — البعيدةُ عنها (>٦٠ م) تُترَك عمدًا */
@@ -69,10 +69,10 @@ const T = (c, n) => { console.log((c ? '  ✓ ' : '  ✗ ') + n);
  const pf=calls.sources.nsk.data.features.find(f=>f.properties.id===camp.properties.id);
  T(cf && cf.properties.foot===1 && cf.geometry.coordinates[0].length>=5 && Math.abs(cf.geometry.coordinates[0][0][0]-(lo-0.0002))<1e-9, 'المخيمُ يُرفَع بحدوده من poly.json لا بمربّع: '+(cf?cf.geometry.coordinates[0].length:0)+' رأسًا');
  T(pf && pf.properties.foot===1, 'ونقطتُه تختفي خلف حدوده (foot=1)');
- const other=calls.sources.nskc.data.features.find(f=>f.properties.id!==camp.properties.id);
- T(other && other.properties.foot===0 && other.geometry.coordinates[0].length===5, 'وما لا حدودَ له يبقى عمودًا صغيرًا');
+ const other=calls.sources.nsk.data.features.find(f=>f.properties.id!==camp.properties.id && f.properties.foot===0);
+T(other && !calls.sources.nskc.data.features.some(f=>f.properties.id===other.properties.id && !(+f.properties.base>0)), 'وما لا حدودَ له قرصٌ على الأرض لا عمود (V39.28)');
  w.POLY=null;
- T(!w.MAP || (calls.jump && Math.abs(calls.jump.center[1]-w.MAP.getCenter().lat)<1e-6 && calls.jump.pitch===60), 'الكاميرا انتقلت حيث كانت الخريطةُ المسطّحة'+(w.MAP?'':' (لا خريطةَ مسطّحةً في المحاكي — تُختبَر في المتصفّح)'));
+ T(!w.MAP || (calls.jump && Math.abs(calls.jump.center[1]-w.MAP.getCenter().lat)<1e-6 && calls.jump.pitch===50), 'الكاميرا انتقلت حيث كانت الخريطةُ المسطّحة'+(w.MAP?'':' (لا خريطةَ مسطّحةً في المحاكي — تُختبَر في المتصفّح)'));
  // تغييرُ الطبقة يُعيد الرسم في الثلاثيّ
  const before=calls.sources.nsk.data; w.FIELD_MODE='install'; w.mapPaint(); T(calls.sources.nsk.data!==before, 'تبديلُ الطبقة يُعيد رسمَ الثلاثيّ');
  const BY2={}; w.layerFiltered().forEach(x=>BY2[x.id]=x); T(calls.sources.nsk.data.features.every(f=>f.properties.color===w.mapColorOf(BY2[f.properties.id])), 'وألوانُ طبقة التركيب تُطابق ('+calls.sources.nsk.data.features.length+')');
@@ -82,7 +82,12 @@ const T = (c, n) => { console.log((c ? '  ✓ ' : '  ✗ ') + n);
  T(w.POP_OPEN===true && w.POP_SITE===anyId, 'النقرةُ في الثلاثيّ تفتح بطاقةَ النقطة: '+w.POP_SITE);
  w.POP_OPEN=false;
  // القمر الصناعي يتبع
- const sat0=w.MAP_SAT; d.querySelector('[data-sat]').dispatchEvent(new w.MouseEvent('click',{bubbles:true})); await new Promise(r=>setTimeout(r,150));
+ /* (V39.28) in 3D the satellite switch lives in the «الطبقات» sheet: open it first */
+ T(!d.querySelector('.m3-top [data-sat]') && !d.querySelector('.m3-top [data-heat]'), 'شريطُ الثلاثيّ سطرٌ واحد: الطبقاتُ ليست فيه');
+ d.querySelector('[data-m3ui="sheet"]').dispatchEvent(new w.MouseEvent('click',{bubbles:true})); await new Promise(r=>setTimeout(r,100));
+ T(!!d.querySelector('.map-sheet [data-sat]') && !!d.querySelector('.map-sheet [data-iot]') && !!d.querySelector('.map-sheet [data-heat]') && !!d.querySelector('.map-sheet [data-m3terrain]'), 'و«الطبقات» تفتح لوحًا واحدًا: الأساسُ والتشغيلُ والتحليل');
+ T(!d.querySelector('.map-fab [data-route]') && !d.querySelector('.map-fab [data-newsite]') && !!d.querySelector('.map-fab [data-m3reset]'), 'وفي الجانب «الشمال» و«موقعي» فقط — الرسمُ في المسطّحة');
+ const sat0=w.MAP_SAT; d.querySelector('.map-sheet [data-sat]').dispatchEvent(new w.MouseEvent('click',{bubbles:true})); await new Promise(r=>setTimeout(r,150));
  T(w.MAP_SAT===!sat0 && calls.style===2, 'زرُّ القمر الصناعي يبدّل نمطَ الثلاثيّ أيضًا (القمرُ هو الأساسُ منذ V25.1 — الضغطةُ تعيد الشوارع)');
  // العودة
  d.querySelector('[data-m3]').dispatchEvent(new w.MouseEvent('click',{bubbles:true})); await new Promise(r=>setTimeout(r,300));

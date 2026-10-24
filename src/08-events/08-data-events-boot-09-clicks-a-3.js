@@ -155,6 +155,11 @@ function clickAPart7(e){
   if (e.target.closest('[data-time]')){ var TS = timeState(); TS.on = !TS.on; if (!TS.on && TS.timer){ clearInterval(TS.timer); TS.timer = null; } render(); if (typeof mapPaint === 'function') mapPaint(); if (MAP_3D && typeof m3Paint === 'function') m3Paint(); return true; }   /* (V39.17) */
   var tst = e.target.closest('[data-timestep]'); if (tst){ timeStep(+tst.getAttribute('data-timestep')); return true; }
   if (e.target.closest('[data-timeplay]')){ timePlayToggle(); return true; }
+  /* (V39.28) the 3D map's own controls */
+  var m3u = e.target.closest('[data-m3ui]'); if (m3u){ m3uiState().sheet = m3u.getAttribute('data-m3ui') === 'sheet'; if (m3uiState().sheet) MAP_FILT_OPEN = false; render(); return true; }
+  var m3l = e.target.closest('[data-m3lg]'); if (m3l){ m3uiState().lg = m3l.getAttribute('data-m3lg') === '1'; render(); return true; }
+  if (e.target.closest('[data-m3terrain]')){ var TS3 = m3uiState(); TS3.terrain = !TS3.terrain; try { if (M3) M3.setTerrain(TS3.terrain && M3.getSource('dem') ? { source:'dem', exaggeration:1 } : null); } catch (e3){ LS_ERR = e3; } render(); return true; }
+  if (e.target.closest('[data-m3reset]')){ try { if (M3) M3.easeTo({ bearing:0, pitch:50, duration:600 }); } catch (e4){ LS_ERR = e4; } return true; }
   if (e.target.closest('[data-heat]')){ heatPaint.on = !heatPaint.on; heatPaint(); heatPaint3d(); render(); return true; }   /* (V39.16) */
   if (e.target.closest('[data-cov]')){ covPaint.on = !covPaint.on; covPaint(); covPaint3d(); render(); return true; }   /* (V39.14) */
   if (e.target.closest('[data-phpin]') && typeof phPinPaint === 'function'){ phPinPaint.on = phPinPaint.on === false; if (phPinPaint.on) phPinPaint(); else phPinClear(); render(); return true; }   /* (V39.19) */

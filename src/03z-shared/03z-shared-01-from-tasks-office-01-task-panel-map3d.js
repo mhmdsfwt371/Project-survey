@@ -42,7 +42,7 @@ function m3Base(x){ var f = typeof siteFloor === 'function' ? siteFloor(x) : nul
 function m3Height(x){
   var r = STATE.recs[x.id] || {}, h = +r.hgt || 0;
   if (h > 0) return Math.max(2, Math.min(25, h));
-  return x.type === 'مخيم' ? 4 : (x.type === 'كاميرا' ? 8 : 6);
+  return x.type === 'مخيم' ? 1.2 : (x.type === 'كاميرا' ? 8 : 6);   /* (V39.28) a camp is a low status plinth, not a 4 m block */
 }
 
 /* حدودُ المخيمات كما حسبها m3Points — يقرؤها m3Cols في الرسمة نفسِها بلا بحثٍ
@@ -59,7 +59,7 @@ function m3Points(){
     if (ring) M3_FOOT[x.id] = ring;
     var foot = ring ? 1 : 0;
     return { type:'Feature', geometry:{ type:'Point', coordinates:[+x.lng, +x.lat] },
-      properties:{ id:x.id, color:mapColorOf(x), h:(ring && typeof tentOn === 'function' && tentOn()) ? tentCfg().plinth : m3Height(x), base:m3Base(x), sel:picked ? 1 : 0,   /* (V39.18) under the tents the camp is a thin plinth in its colour */
+      properties:{ id:x.id, color:mapColorOf(x), h:(ring && typeof tentOn === 'function' && tentOn() && M3 && M3.getZoom && M3.getZoom() >= 18) ? tentCfg().plinth : m3Height(x), base:m3Base(x), sel:picked ? 1 : 0,   /* (V39.18) under the tents the camp is a thin plinth in its colour */
         ring:picked ? '#ffffff' : (briefRing(x.id) || '#0b1220'), foot:foot } };
   });
 }
@@ -67,7 +67,10 @@ function m3Points(){
 /* المخيمُ يُرفَع بحدوده المرسومة (poly.json — الحدودُ نفسُها التي يرسمها المسطّح
    عند التقريب)، وما سواه عمودٌ مضلّعٌ صغيرٌ حول نقطته — المحرّكُ لا يرفع نقطةً */
 function m3Cols(P){
-  return P.map(function(f){
+  /* (V39.28) only the camps with a boundary are volumes (their plinth, their tents up close); a reader, camera or gate is a
+     disc on the ground (nsk-pts) — the forest of 6–8 m columns hid the camps and each other in the oblique view */
+  /* — except a point on an upper floor of the Jamarat facility: a small block at its floor's height keeps the floors readable */
+  return P.filter(function(f){ return (f.properties.foot && M3_FOOT[f.properties.id] && M3_FOOT[f.properties.id].length >= 3) || +f.properties.base > 0; }).map(function(f){
     var p = f.properties, c = f.geometry.coordinates, lng = c[0], lat = c[1];
     var FR = p.foot ? M3_FOOT[p.id] : null;
     if (FR && FR.length >= 3){
@@ -76,7 +79,8 @@ function m3Cols(P){
       if (a0[0] !== aN[0] || a0[1] !== aN[1]) R.push([a0[0], a0[1]]);
       return { type:'Feature', properties:p, geometry:{ type:'Polygon', coordinates:[R] } };
     }
-    var d = 2.2, dy = d / 111320, dx = d / (111320 * Math.cos(lat * Math.PI / 180));
+    var d = 0.9, dy = d / 111320, dx = d / (111320 * Math.cos(lat * Math.PI / 180));   /* (V39.28) a floor marker, not a column */
+    p = Object.assign({}, p, { h:1 });
     return { type:'Feature', properties:p,
       geometry:{ type:'Polygon', coordinates:[[[lng - dx, lat - dy], [lng + dx, lat - dy], [lng + dx, lat + dy], [lng - dx, lat + dy], [lng - dx, lat - dy]]] } };
   });

@@ -87,11 +87,12 @@ function mapUIHtml(){
      The box and its query live on this function — no new global. */
   var mq = mapUIHtml.s || (mapUIHtml.s = { open:false, q:'' });
   return '<div class="' + (busy ? 'map-busy-on' : '') + '"></div>'
-    + '<div class="map-top">'
+    + '<div class="map-top' + (MAP_3D ? ' m3-top' : '') + '">'
     +   (mq.open ? '<div style="flex:1 1 100%;display:flex;flex-direction:column;gap:6px;margin-bottom:2px">'
     +     '<input id="mapQ" type="search" value="' + esc(mq.q) + '" placeholder="' + esc(t('ابحث بالمعرّف أو الشاخص')) + '" aria-label="' + esc(t('ابحث بالمعرّف أو الشاخص')) + '" dir="auto" autocomplete="off"'
     +     ' style="min-height:44px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(10,16,30,.85);color:#fff;padding:0 14px;font:inherit;font-size:15px">'
     +     '<div id="mapQRes">' + mapQResHtml(mq.q) + '</div></div>' : '')
+    +   (MAP_3D ? m3uiTop(mq) : (''   /* (V39.28) the 3D map has one row; its layers live in one sheet */
     +   '<button type="button" class="map-chip' + (mq.open ? ' on' : '') + '" data-mapq="' + (mq.open ? '0' : '1') + '">\u{1F50D} ' + esc(t('بحث')) + '</button>'
     +   Object.keys(LAYERS).map(function(k){
           return '<button type="button" class="map-chip '+(FIELD_MODE===k?'on':'')+'" data-mode="'+k+'">'
@@ -140,9 +141,11 @@ function mapUIHtml(){
     +     '<button type="button" class="map-chip chip-caret'+(CO_OPEN?' on':'')+'" data-co="1"'
     +       ' aria-label="'+esc(t('اختر الشركات'))+'">\u25BE</button>'
     +   '</span>'
+    ))
     + propChip()   /* (V37.69) مقترحاتُ الوزارة */
     + '</div>'
 
+    + (MAP_3D ? m3uiSheet() : '')   /* (V39.28) */
     + (MAP_FILT_OPEN ? '<div class="map-sheet">'
         + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'
         +   '<p class="hint" style="margin:0 0 9px;flex:1">'
@@ -177,7 +180,7 @@ function mapUIHtml(){
     + (typeof teWalkHtml === 'function' ? teWalkHtml() : '')   /* (V39.25) walking inside a camp */
     + (BED ? bedPanelHtml() : '')   /* (V25.9) */
     + (SPLIT ? splitPanelHtml() : '')   /* (V37.67) */
-    + '<div class="map-fab">'
+    + (MAP_3D ? m3uiFab() : '<div class="map-fab">'   /* (V39.28) in 3D only «الشمال» and «موقعي» — drawing stays in 2D */
     +   ((may('edit') || ROLE === 'viewer') ? btn('+ '+t('موقع غير مسجّل'),'btn-primary btn-sm',' data-newsite="1"') : '')   /* (V37.68) الوزارةُ تقترح نقطة */
     +   (ROLE === 'viewer' ? btn((PIN_ON ? '\u23F3 ' + t('اضغط على الخريطة') : '\u{1F4CC} ' + t('نقطة هنا')), PIN_ON ? 'btn-danger btn-sm' : 'btn-secondary btn-sm', ' data-pin="1"') : '')   /* بلا أدوات الرسم */
     +   (may('settings')   /* (V37.96) كان «newsite» مفتاحًا لا وجودَ له فيُرجع كاذبًا دائمًا */
@@ -189,16 +192,16 @@ function mapUIHtml(){
             + btn((ROUTE.on && ROUTE.mode === 'area' ? '\u270F ' + t('جارٍ الرسم') : '\u{1F17F} ' + t('مساحة بنقاط')),
                 (ROUTE.on && ROUTE.mode === 'area') ? 'btn-danger btn-sm' : 'btn-secondary btn-sm', ' data-area="1"') : '')
     +   btn('\u25CE '+t('موقعي'),'btn-light btn-sm',' data-locate="1"')
-    + '</div>'
+    + '</div>')
 
 
     /* الأسطورةُ تحجب الخريطةَ على الشاشة الصغيرة — تُطوى بزرٍّ ويُذكَر اختيارُه */
-    + '<div class="map-stack">' + layerBar()
-      + '<button type="button" class="map-chip lg-toggle" data-legend="' + (LEGEND_ON ? '0' : '1') + '" title="'
+    + '<div class="map-stack">' + layerBar() + (MAP_3D ? m3uiLegendBtn() + '</div>' : '')   /* (V39.28) folded until asked */
+      + (MAP_3D ? '' : '<button type="button" class="map-chip lg-toggle" data-legend="' + (LEGEND_ON ? '0' : '1') + '" title="'
       +   esc(t(LEGEND_ON ? 'إخفاء حالات النقاط' : 'إظهار حالات النقاط')) + '">'
       +   (LEGEND_ON ? '\u25BE ' + esc(t('إخفاء الحالات')) : '\u25B4 ' + esc(t('الحالات'))) + '</button>'
       + (LEGEND_ON ? '<div class="map-legend">' + legendRows() + '</div>' : '')
-    + '</div>'
+    + '</div>')
     + mapSelBar() + moveBar()
     + (CO_OPEN ? coFiltHtml() : '')
     + (ASN_PICK ? asnPickHtml() : '')

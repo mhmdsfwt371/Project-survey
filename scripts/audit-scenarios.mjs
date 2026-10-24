@@ -1280,7 +1280,7 @@ console.log('\n══ ٤٥ · التوأم الرقمي في الخريطة ال
   const sm = sensors.map((_, i) => ({ id:camp.id + '-S' + String(i + 1).padStart(2, '0'), status:i === 3 ? 'معطّل' : (i < 6 ? 'مُركّب' : 'مخطط'), serial:i === 0 ? 'SN-0001' : '' }));
   w.siteOvSet(camp.id, { iot:{ gw:[+camp.lat, +camp.lng], gws:[], sensors, sm, gm:[{ id:camp.id + '-GW1', status:'مُركّب' }], maxM:40, at:Date.now() } });
   let data = null;
-  w.M3 = { getBounds:() => ({ contains:() => true }), getZoom:() => 17, getSource:() => ({ setData:v => { data = v; } }) };
+  w.M3 = { getBounds:() => ({ contains:() => true }), getZoom:() => 18, getSource:() => ({ setData:v => { data = v; } }) };
   w.MAP_3D = true; w.IOT.on = true; w.IOT.edit = null;
   w.m3IotPaint();
   const F = data ? data.features.filter(f => f.properties.camp === camp.id) : [];
@@ -1326,7 +1326,7 @@ console.log('\n══ ٤٧ · أجهزةُ النقطة في المجسّم ═�
   w.STATE.inss[x.id] = { id:x.id, status:'مُركّب', parts:{ rdr8:1, cam_pe:2, rtr:1, sol:1 }, serials:{ rdr8:'RDR-TEST-01', rtr:'RTR-TEST-01' }, by:'فني التجربة', at:Date.now() };
   const D = w.dtwOf(x.id);
   T(D.length === 5 && D.filter(d => d.code === 'cam_pe').length === 2 && D[0].serial === 'RDR-TEST-01' && D.find(d => d.code === 'rtr').serial === 'RTR-TEST-01', 'سجلُّ التركيب يُقرأ أجهزةً: قارئ وكاميرتان وراوتر ولوح — بسيريالاتها (' + D.length + ')');
-  let data = null; w.M3 = { getBounds:() => ({ contains:() => true }), getZoom:() => 17, getSource:() => ({ setData:v => { data = v; } }) }; w.MAP_3D = true; w.dtwPaint.on = true;
+  let data = null; w.M3 = { getBounds:() => ({ contains:() => true }), getZoom:() => 18, getSource:() => ({ setData:v => { data = v; } }) }; w.MAP_3D = true; w.dtwPaint.on = true;
   w.dtwPaint();
   const F = data ? data.features.filter(f => f.properties.site === x.id) : [];
   const kinds = F.map(f => f.properties.kind);
@@ -1374,7 +1374,7 @@ console.log('\n══ ٤٩ · طوابقُ منشأة الجمرات في الم
   T(w.m3Base(ground) === 0, 'والمخيمُ على الأرض');
   if (cam){
     w.STATE.inss = w.STATE.inss || {}; const had = w.STATE.inss[cam.id]; w.STATE.inss[cam.id] = { id:cam.id, status:'مُركّب', parts:{ cam_pe:1 }, serials:{} };
-    const M30 = w.M3, d30 = w.MAP_3D; let data = null; w.M3 = { getBounds:() => ({ contains:() => true }), getZoom:() => 17, getSource:() => ({ setData:v => { data = v; } }) }; w.MAP_3D = true; w.dtwPaint.on = true;
+    const M30 = w.M3, d30 = w.MAP_3D; let data = null; w.M3 = { getBounds:() => ({ contains:() => true }), getZoom:() => 18, getSource:() => ({ setData:v => { data = v; } }) }; w.MAP_3D = true; w.dtwPaint.on = true;
     w.dtwPaint(); const f = data && data.features.find(q => q.properties.site === cam.id);
     T(!!f && Math.abs(f.properties.base - 12.6) < 1e-9 && f.properties.h > f.properties.base, 'وجهازُها يقف على دورها لا على الأرض');
     if (had) w.STATE.inss[cam.id] = had; else delete w.STATE.inss[cam.id]; w.M3 = M30; w.MAP_3D = d30;
@@ -1443,8 +1443,8 @@ console.log('\n══ ٥٢ · خيامُ منى في المجسّم ══');
   const bodies = F.filter(f => f.properties.k === 'body'), roofs = F.filter(f => f.properties.k === 'roof'), fence = F.filter(f => f.properties.k === 'fence');
   T(bodies.length === 24 && roofs.length === 24 && fence.length === 4 && roofs[0].properties.base > bodies[0].properties.base && roofs[0].properties.h > bodies[0].properties.h, 'الخيامُ أجسامٌ وأسقفٌ فوقها وسورٌ من أربعة أضلاع');
   T(w.tentFeaturesOf('camp-test', rect(60, 40)) === F, 'والمخيمُ يُحسَب مرةً ويُخزَّن');
-  const d30 = w.MAP_3D; w.MAP_3D = true; const ui = w.mapUIHtml(); w.MAP_3D = d30;
-  T(/data-tent="1"/.test(ui) && /الخيام/.test(ui), 'وزرُّ «الخيام» مع المجسّم');
+  const d30 = w.MAP_3D; w.MAP_3D = true; w.m3uiState().sheet = true; const ui = w.mapUIHtml(); w.m3uiState().sheet = false; w.MAP_3D = d30;
+  T(/data-tent="1"/.test(ui) && /الخيام/.test(ui), 'وزرُّ «الخيام» في لوح «الطبقات» مع المجسّم (V39.28)');
   const camp = w.STATE.sites.find(x => x.type === 'مخيم' && w.campFoot(x));
   if (camp){ w.tentPaint.on = true; const P = w.m3Points().find(f => f.properties.id === camp.id); T(!!P && P.properties.h === 0.5, 'وتحت الخيام يصير المخيمُ قاعدةً ٠٫٥ م بلونه'); w.tentPaint.on = false; const P2 = w.m3Points().find(f => f.properties.id === camp.id); T(!!P2 && P2.properties.h === 4, 'وبلا خيامٍ يعود كتلةً ٤ م'); w.tentPaint.on = true; }
   else T(true, '(لا مخيمَ بحدودٍ في البذرة)');
@@ -1465,7 +1465,7 @@ console.log('\n══ ٥٣ · صورُ التركيب على المجسّم ═�
   const el = w.phPinEl(x, T0[0].src);
   T(el.className === 'ph-pin' && el.getAttribute('data-site') === x.id && el.querySelector('img') && el.querySelector('img').getAttribute('src') === T0[0].src, 'والدبّوسُ صورةٌ تفتح نقطتَها بـdata-site');
   T(w.phPinTargets().length <= 60, 'وستّون دبّوسًا على الأكثر');
-  const ui = w.mapUIHtml(); T(/data-phpin="1"/.test(ui) && /الصور/.test(ui), 'وزرُّ «الصور» مع المجسّم');
+  w.m3uiState().sheet = true; const ui = w.mapUIHtml(); w.m3uiState().sheet = false; T(/data-phpin="1"/.test(ui) && /الصور/.test(ui), 'وزرُّ «الصور» في لوح «الطبقات» مع المجسّم (V39.28)');
   delete w.STATE.photos[k]; w.phTouch(); w.M3 = M30; w.MAP_3D = d30; w.CUR = cur0;
 }
 
@@ -1563,7 +1563,7 @@ console.log('\n══ ٥٧ · مداخلُ مخيم العرض وصندوقُ ا
   w.M3 = M30; w.MAP_3D = d30; w.m3Enter.last = null; w.tentPaint.cache = {};
   const x = w.siteFind(id); w.STATE.inss = w.STATE.inss || {}; const ins0 = w.STATE.inss[id];
   w.STATE.inss[id] = { id, status:'مُركّب', parts:{ rdr8:1, rtr:1, cam_pe:1 }, serials:{} };
-  let data = null; w.M3 = { getBounds:() => ({ contains:() => true }), getZoom:() => 17, getSource:() => ({ setData:v => { data = v; } }) }; w.MAP_3D = true; w.dtwPaint.on = true; w.dtwPaint();
+  let data = null; w.M3 = { getBounds:() => ({ contains:() => true }), getZoom:() => 18, getSource:() => ({ setData:v => { data = v; } }) }; w.MAP_3D = true; w.dtwPaint.on = true; w.dtwPaint();
   const dv = data ? data.features.filter(f => f.properties.site === id) : [];
   const near = dv.every(f => { const c = f.geometry.coordinates[0][0]; return Math.hypot((c[0] - F.gate.at[1]) * 103650, (c[1] - F.gate.at[0]) * 111320) < 3; });
   T(dv.length === 3 && near, 'وأجهزةُ النقطة (القارئ والراوتر والكاميرا) تقف في المجسّم عند صندوق البوابة لا وسط المخيم');
@@ -1631,6 +1631,27 @@ console.log('\n══ ٥٩ · المشي داخل المخيم ══');
   T(eased.center && (eased.center[1] - cen.lat) * 111320 < -2.4, 'والسهمُ لأسفل يخطو إلى الخلف');
   w.teWalkDo('x'); T(!w.teState().walk && kb === 'on' && !/data-tewalk/.test(w.mapUIHtml()), 'و«اخرج» تنهي المشي وتعيد مفاتيحَ الخريطة');
   w.M3 = M30; w.MAP_3D = d30;
+}
+
+/* ── ٦٠ · (V39.28) الخريطةُ الثلاثيةُ للمراقبة: سطرٌ واحد، ولوحُ طبقات، وأقراصٌ لا أعمدة، والتفاصيلُ عن قرب ── */
+console.log('\n══ ٦٠ · الثلاثيُّ للمراقبة ══');
+{
+  const d30 = w.MAP_3D, cur0 = w.CUR; w.MAP_3D = true; w.CUR = 'map';
+  const top = w.mapUIHtml();
+  const row = top.slice(top.indexOf('map-top'), top.indexOf('</div>', top.indexOf('map-top')));
+  T(/m3-top/.test(top) && /data-m3ui="sheet"/.test(row) && !/data-heat|data-cov|data-time|data-live|data-twin|data-tent|data-phpin|data-sat|data-apick|data-selmap/.test(row), 'الشريطُ سطرٌ واحد: بحثٌ والطبقاتُ الثلاثُ و«الطبقات» والتصفية — بلا أزرار الطبقات والإسناد');
+  T(!/data-route|data-area|data-newsite|data-tfd/.test(top) && /data-m3reset/.test(top) && /data-locate/.test(top), 'وفي الجانب «الشمال» و«موقعي» فقط — أدواتُ الرسم في المسطّحة');
+  T(!/class="map-legend"/.test(top) && /data-m3lg="1"/.test(top), 'والأسطورةُ مطويّةٌ حتى تُطلَب');
+  w.m3uiState().sheet = true; const sh = w.mapUIHtml(); w.m3uiState().sheet = false;
+  T(/الأساس/.test(sh) && /التشغيل/.test(sh) && /التحليل/.test(sh) && /data-m3terrain/.test(sh) && /data-iot="1"/.test(sh) && /data-heat="1"/.test(sh), 'و«الطبقات» لوحٌ واحد: الأساسُ والتشغيلُ والتحليل');
+  const x = w.STATE.sites.find(q => q.type !== 'مخيم' && +q.lat && !w.siteFloor(q));
+  const P = [{ type:'Feature', properties:{ id:x.id, foot:0, base:0, h:6 }, geometry:{ type:'Point', coordinates:[+x.lng, +x.lat] } }];
+  T(w.m3Cols(P).length === 0, 'والنقطةُ بلا حدودٍ قرصٌ على الأرض لا عمودٌ يحجب ما خلفه');
+  const fl = [{ type:'Feature', properties:{ id:x.id, foot:0, base:12.6, h:12.6 }, geometry:{ type:'Point', coordinates:[+x.lng, +x.lat] } }];
+  T(w.m3Cols(fl).length === 1 && w.m3Cols(fl)[0].properties.h === 1, 'إلا علامةَ الدور في منشأة الجمرات: كتلةٌ صغيرةٌ على ارتفاع دورها');
+  const camp = w.STATE.sites.find(q => q.type === 'مخيم');
+  T(w.m3Height(camp) === 1.2, 'والمخيمُ قاعدةٌ منخفضةٌ بلون حالته (١٫٢ م) لا كتلةٌ ٤ م');
+  w.MAP_3D = d30; w.CUR = cur0;
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

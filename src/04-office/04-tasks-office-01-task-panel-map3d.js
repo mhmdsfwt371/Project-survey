@@ -74,7 +74,7 @@ function m3Load(){
 function m3Style(){
   if (MAP_SAT) return { version:8,
     sources:{ sat:{ type:'raster', tiles:[TILES.esri], tileSize:256, maxzoom:18, attribution:'&copy; Esri' } },   /* (V39.17) beyond 18 the imagery is stretched, not requested: no grey «no data» tiles */
-    layers:[{ id:'sat', type:'raster', source:'sat' }] };
+    layers:[{ id:'sat', type:'raster', source:'sat', paint:{ 'raster-saturation':-0.25, 'raster-brightness-max':0.86, 'raster-contrast':0.06 } }] };   /* (V39.28) the base steps back so the status colours read first */
   return 'https://tiles.openfreemap.org/styles/liberty';
 }
 /* الطبقاتُ تُضاف بعد كلِّ تحميلِ نمطٍ — أوّلِ مرةٍ وبعد تبديل القمر */
@@ -84,9 +84,8 @@ function m3Layers(){
     if (!M3.getSource('dem')){
       M3.addSource('dem', { type:'raster-dem', tiles:['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],
                             encoding:'terrarium', tileSize:256, maxzoom:14, attribution:'Terrain &copy; Mapzen/AWS' });
-      M3.setTerrain({ source:'dem', exaggeration:1.25 });
-      M3.addLayer({ id:'hills', type:'hillshade', source:'dem',
-                    paint:{ 'hillshade-exaggeration':0.35, 'hillshade-shadow-color':'#243044' } });
+      /* (V39.28) true-scale terrain and no hillshade over the photograph — the shading muddied the imagery and the colours */
+      if (m3uiState().terrain) M3.setTerrain({ source:'dem', exaggeration:1 });
     }
   } catch (e){ LS_ERR = e; }
   try {
@@ -100,14 +99,14 @@ function m3Layers(){
                 'fill-extrusion-base':['coalesce', ['get','base'], 0], 'fill-extrusion-opacity':0.92 } });   /* (V39.15) floors stack */
       /* حدُّ المخيم يُرى من فوق كما في المسطّح — ويبيضُّ عند تحديده */
       M3.addLayer({ id:'nsk-cols-line', type:'line', source:'nskc', filter:['==', ['get','foot'], 1],
-        paint:{ 'line-color':['case', ['==', ['get','sel'], 1], '#ffffff', 'rgba(11,18,32,.55)'],
-                'line-width':['case', ['==', ['get','sel'], 1], 2.4, 1] } });
+        paint:{ 'line-color':['case', ['==', ['get','sel'], 1], '#ffffff', 'rgba(11,18,32,.7)'],
+                'line-width':['case', ['==', ['get','sel'], 1], 2.6, 1.2] } });
     }
     if (!M3.getSource('nsk')){
       M3.addSource('nsk', { type:'geojson', data:{ type:'FeatureCollection', features:P } });
       /* النقطةُ لما لا حدودَ له — المخيمُ المحدود يُلمَس على حدوده */
       M3.addLayer({ id:'nsk-pts', type:'circle', source:'nsk', filter:['==', ['get','foot'], 0],
-        paint:{ 'circle-radius':['interpolate', ['linear'], ['zoom'], 12, 3.5, 17, 8],
+        paint:{ 'circle-radius':['interpolate', ['linear'], ['zoom'], 12, 4, 15, 6.5, 18, 10], 'circle-pitch-alignment':'map',   /* (V39.28) a disc on the ground, not a 6 m column */
                 'circle-color':['get','color'],
                 'circle-stroke-width':['case', ['==', ['get','sel'], 1], 2.5, 1],
                 'circle-stroke-color':['get','ring'] } });
@@ -119,9 +118,12 @@ function m3Layers(){
       M3.addSource('nskiot', { type:'geojson', data:{ type:'FeatureCollection', features:(typeof m3IotFeatures === 'function' ? m3IotFeatures() : []) } });
       /* (V39.17) owner: the sensors stay visible — a dot of fixed size at every zoom, and the column when close enough */
       M3.addLayer({ id:'nsk-iot-pt', type:'circle', source:'nskiot', filter:['==', ['geometry-type'], 'Point'],   /* (V39.18) at every zoom: inside a tent the dot still marks the sensor */
-        paint:{ 'circle-radius':['interpolate', ['linear'], ['zoom'], 11, 2.5, 15, 6], 'circle-color':['get','color'],
-                'circle-stroke-width':['case', ['==', ['get','kind'], 'g'], 1.5, 0.8], 'circle-stroke-color':'#ffffff', 'circle-opacity':0.95 } });
-      M3.addLayer({ id:'nsk-iot', type:'fill-extrusion', source:'nskiot', filter:['==', ['geometry-type'], 'Polygon'], minzoom:15,
+        paint:{ 'circle-radius':['interpolate', ['linear'], ['zoom'], 11, 2.5, 15, 5, 18, 7], 'circle-color':['get','color'],
+                'circle-stroke-width':['case', ['==', ['get','kind'], 'g'], 1.5, 0.8], 'circle-stroke-color':'#ffffff',
+                /* (V39.28) 8,000 sensors are dust from afar: the gateways show at every zoom, the sensors from 15 */
+                'circle-opacity':['interpolate', ['linear'], ['zoom'], 14, ['case', ['==', ['get','kind'], 'g'], 0.95, 0], 15, 0.95],
+                'circle-stroke-opacity':['interpolate', ['linear'], ['zoom'], 14, ['case', ['==', ['get','kind'], 'g'], 1, 0], 15, 1] } });
+      M3.addLayer({ id:'nsk-iot', type:'fill-extrusion', source:'nskiot', filter:['==', ['geometry-type'], 'Polygon'], minzoom:17.5,   /* (V39.28) columns and beacons only up close */
         paint:{ 'fill-extrusion-color':['get','color'], 'fill-extrusion-height':['get','h'], 'fill-extrusion-base':['coalesce', ['get','base'], 0], 'fill-extrusion-opacity':0.96 } });   /* (V39.21) beacons above the roofs carry their own base */
     }
     if (typeof dtwLayers === 'function') dtwLayers();   /* (V39.13) the points' devices */
@@ -148,7 +150,7 @@ function m3Init(){
   try {
     M3 = new maplibregl.Map({
       container:el, style:m3Style(),
-      center:[39.89, 21.41], zoom:14.2, pitch:60, bearing:-18, maxPitch:80,
+      center:[39.89, 21.41], zoom:14.2, pitch:50, bearing:0, maxPitch:80,   /* (V39.28) standard tilt, north up */
       attributionControl:{ compact:true }
     });
   } catch (e){ M3_ERR = String(e && e.message || e).slice(0, 90); M3 = null; return false; }
@@ -173,7 +175,9 @@ function m3Init(){
     if (typeof IOT === 'object' && IOT.edit && ev.lngLat){ try { if (M3.queryRenderedFeatures(ev.point, { layers:['nsk-iot'] }).length) return; } catch (eQ){ LS_ERR = eQ; } iotMapClick({ lat:ev.lngLat.lat, lng:ev.lngLat.lng }); }
   });
   /* (V39.17) the sensors no longer depend on the view, so a move does not rebuild them — the devices, coverage and heat still follow the frame */
-  M3.on('moveend', function(){ if (MAP_3D && typeof dtwPaint === 'function') dtwPaint(); if (MAP_3D){ covPaint3d(); heatPaint3d(); tentPaint(); phPinPaint(); teMaybe(); } });
+  M3.on('moveend', function(){ if (MAP_3D && typeof dtwPaint === 'function') dtwPaint(); if (MAP_3D){ covPaint3d(); heatPaint3d(); tentPaint(); phPinPaint(); teMaybe();
+    /* (V39.28) crossing zoom 18 the camps change between their status plinth and the tents' base */
+    var zb = M3.getZoom() >= 18, U = m3uiState(); if (zb !== U.band){ U.band = zb; if (typeof m3Paint === 'function') m3Paint(); } } });
   /* (V39.24) the twin engine's models: hover anywhere (a device by the entrance may stand outside every layer), tap outside the layers */
   M3.on('mousemove', function(ev){ if (MAP_3D) teHit(ev); });
   M3.on('click', function(ev){ if (MAP_3D) teClick(ev); });
@@ -209,7 +213,7 @@ function m3HoverHtml(layer, p){
 /* الكاميرا تنتقل حيث كان الناظر — لا تبدأ من مكانٍ آخر */
 function m3From2D(){
   if (!MAP || !M3) return;
-  try { var c = MAP.getCenter(); M3.jumpTo({ center:[c.lng, c.lat], zoom:Math.max(11, MAP.getZoom() - 1), pitch:60, bearing:-18 }); }
+  try { var c = MAP.getCenter(); M3.jumpTo({ center:[c.lng, c.lat], zoom:Math.max(11, MAP.getZoom() - 1), pitch:50, bearing:0 }); }
   catch (e){ LS_ERR = e; }
 }
 function m3Toggle(){

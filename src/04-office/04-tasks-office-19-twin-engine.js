@@ -63,7 +63,7 @@ function teLayer(){
 function teMaybe(force){
   if (!MAP_3D || !M3) return;
   var z; try { z = M3.getZoom(); } catch (e){ LS_ERR = e; return; }
-  if (z < 17.5 || !teOn() || (typeof LITE !== 'undefined' && LITE)){ teClear(); return; }   /* far, switched off, or the light mode: the flat blocks only */
+  if (z < 18.5 || !teOn() || (typeof LITE !== 'undefined' && LITE)){ teClear(); return; }   /* (V39.28) the models from 18.5 */   /* far, switched off, or the light mode: the flat blocks only */
   teLoad().then(function(ok){ if (!ok || !MAP_3D) return; teLayer(); teBuild(!!force); });
 }
 /* what the scene shows depends on: the camps near the centre, their sensors and installations, the live mode, the zoom band */

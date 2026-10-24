@@ -96,7 +96,7 @@ function tentFeaturesOf(id, ring){
 function tentFeatures(){
   var F = [];
   if (!MAP_3D || !M3 || !tentOn() || typeof M3_FOOT !== 'object') return F;
-  var b; try { if (M3.getZoom() < 15) return F; b = M3.getBounds(); } catch (e){ LS_ERR = e; return F; }
+  var b; try { if (M3.getZoom() < 18) return F; b = M3.getBounds(); } catch (e){ LS_ERR = e; return F; }
   Object.keys(M3_FOOT).forEach(function(id){
     var ring = M3_FOOT[id]; if (!ring || ring.length < 3) return;
     if (!ring.some(function(q){ return b.contains([+q[0], +q[1]]); })) return;
@@ -110,7 +110,7 @@ function tentFeatures(){
 function tentLayers(){
   if (!M3 || M3.getSource('nsktent')) return;
   M3.addSource('nsktent', { type:'geojson', data:{ type:'FeatureCollection', features:tentFeatures() } });
-  M3.addLayer({ id:'nsk-tent', type:'fill-extrusion', source:'nsktent', minzoom:15,
+  M3.addLayer({ id:'nsk-tent', type:'fill-extrusion', source:'nsktent', minzoom:18,   /* (V39.28) up close only — from afar the camps read by their status colour */
     paint:{ 'fill-extrusion-color':['get','color'], 'fill-extrusion-height':['get','h'], 'fill-extrusion-base':['get','base'],
             'fill-extrusion-opacity':0.72, 'fill-extrusion-vertical-gradient':true } });   /* (V39.21) translucent: what stands inside the tent shows through */
 }
