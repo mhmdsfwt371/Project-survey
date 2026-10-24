@@ -27,7 +27,7 @@ function basemapRemove(){
 }
 
 function kmzExport(kind){
-  var f = null, title = 'أفاقي — قارئات RFID ١٤٤٨هـ', name = 'nusuk.kmz';
+  var f = null, title = 'أفاقي — قارئات بطاقة نسك ١٤٤٨هـ', name = 'nusuk.kmz';
   if (kind === 'main'){
     f = function(x){ return x.zone === 'منى' || x.zone === 'عرفات'; };
     title = 'أفاقي — منى وعرفات · ١٤٤٨هـ'; name = 'nusuk-mina-arafat.kmz';

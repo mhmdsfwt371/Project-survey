@@ -228,7 +228,7 @@ function siteGate(x){
 /* صفوفُ نافذة النقطة للكاميرا: بدالة الصفِّ التي تمرّرها النافذةُ أو صفحةُ الموقع */
 function camInfoRows(x, kvf){
   var c = x && CAM_INFO[x.id]; if (!c) return '';
-  var kinds = (c[1] || []).map(function(k){ return t(k[0] === 'P' ? 'متحرّكة (PTZ)' : k[0] === 'L' ? 'قارئة لوحات (LPR)' : 'ثابتة (Bullet)') + (k[1] > 1 ? ' \u00d7' + nm(k[1]) : ''); }).join(' \u00b7 ');
+  var kinds = (c[1] || []).map(function(k){ return t(k[0] === 'P' ? 'متحرّكة' : k[0] === 'L' ? 'قارئة لوحات (LPR)' : 'ثابتة (Bullet)') + (k[1] > 1 ? ' \u00d7' + nm(k[1]) : ''); }).join(' \u00b7 ');
   return kvf('الكاميرات', '<b class="num">' + nm(c[0]) + '</b> \u00b7 ' + esc(kinds))
     + (c[2] ? kvf('حالة الربط', esc(t(c[2]))) : '')
     + (c[3] ? kvf('القطاع', '<span dir="ltr">' + esc(c[3]) + '</span>') : '')

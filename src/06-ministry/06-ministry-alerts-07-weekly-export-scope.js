@@ -106,7 +106,7 @@ function mfuPdf(){
     }
     return html.length;
   };
-  logEvent('تصديرُ التحديث الأسبوعي — PDF', ''); toast(t('اختر «حفظ كـ PDF» في نافذة الطباعة'));
+  logEvent('تصديرُ التحديث الأسبوعي — ملف للطباعة', ''); toast(t('اختر «حفظ كـ PDF» في نافذة الطباعة'));
   if (CFG.fonts && CFG.fonts.r) return go(CFG.fonts);
   fontsLoad().then(go);
   return true;

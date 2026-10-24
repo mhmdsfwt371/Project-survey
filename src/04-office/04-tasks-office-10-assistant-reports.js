@@ -40,10 +40,10 @@ function aqRepExport(fmt){
     + '</tbody></table>' + (body.length > 1500 ? '<div class="foot">' + esc(t('عُرض ألفٌ وخمسمئة صفٍّ — والإكسلُ فيه الباقي')) + '</div>' : '')
     + '<div class="foot">' + esc(t('من بيانات الجهاز وقتَ الإصدار — قارئات أفاقي للمسح والتركيب'))   /* (V38.18) العلامةُ البيضاء: «أفاقي» لا الاسمُ السابق (V16.92) */ + '</div>';
   var w2 = window.open('', '_blank');
-  if (!w2){ toast(t('امنع حجبَ النوافذ لتصدير PDF')); return; }
+  if (!w2){ toast(t('امنع حجبَ النوافذ لتصدير ملف الطباعة')); return; }
   w2.document.write('<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>' + esc(t('قارئات أفاقي — تقرير')) + '</title><style>' + css + '</style></head><body>' + html + '</body></html>');
   w2.document.close();
-  setTimeout(function(){ try { w2.focus(); w2.print(); } catch (e){ softErr('طباعة PDF', e, 'افتح النافذةَ واطبع منها'); } }, 400);
+  setTimeout(function(){ try { w2.focus(); w2.print(); } catch (e){ softErr('ملف للطباعة', e, 'افتح النافذةَ واطبع منها'); } }, 400);
   toast(t('اختر «حفظ كـPDF» من نافذة الطباعة'));
 }
 function aqGoTo(spec){

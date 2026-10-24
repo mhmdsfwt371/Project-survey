@@ -73,7 +73,7 @@ function camxRows(x, kvf){
      فارغًا. صارت كلُّ كاميرا كتلةً: سطرٌ بالعربية، وثلاثةٌ من اليسار تلتفّ بأيِّ موضع */
   var L = function(v){ return '<div dir="ltr" class="cx-l">' + v + '</div>'; };
   var list = '<div class="cx-box">' + c.cams.map(function(k){
-    return '<div class="cx"><b>' + esc(t('كاميرا')) + ' ' + esc(k.n || '\u2014') + '</b> \u2014 ' + esc(t(k.kind === 'P' ? 'متحرّكة (PTZ)' : k.kind === 'L' ? 'قارئة لوحات (LPR)' : 'ثابتة (Bullet)'))
+    return '<div class="cx"><b>' + esc(t('كاميرا')) + ' ' + esc(k.n || '\u2014') + '</b> \u2014 ' + esc(t(k.kind === 'P' ? 'متحرّكة' : k.kind === 'L' ? 'قارئة لوحات (LPR)' : 'ثابتة (Bullet)'))
       + (k.ip ? L('IP ' + esc(k.ip) + (/\d/.test(k.vlan || '') ? ' \u00b7 VLAN ' + esc(k.vlan) : '')) : '')
       + (k.model ? L(esc(k.model) + (CAM_SPEC[k.model] ? ' \u00b7 ' + esc(CAM_SPEC[k.model]) : '')) : '')
       + (k.ip ? L('<span class="hint" style="margin:0;font-size:11px">rtsp://' + esc(k.ip) + ':554/cam/realmonitor?channel=1&amp;subtype=0</span>') : '')
@@ -308,7 +308,7 @@ function libsStatus(){
 function libsLinePaint(){
   var el = document.getElementById('libsLine'); if (!el) return;
   libsStatus().then(function(s){
-    el.innerHTML = (s.ok ? '\u2705 ' + esc(t('مكتباتُ الدخول والتصدير محفوظةٌ على الجهاز — الإكسلُ والـPDF يعملان بلا شبكة'))
+    el.innerHTML = (s.ok ? '\u2705 ' + esc(t('مكتباتُ الدخول والتصدير محفوظةٌ على الجهاز — الإكسلُ وملفُّ الطباعة يعملان بلا شبكة'))
                          : '\u26A0 ' + esc(t('مكتباتُ التصدير لم تُحفَظ كلُّها على الجهاز بعد')) + ' (' + nm(s.have) + '/' + nm(s.n) + ') ' + btn(t('جهّزها الآن'), 'btn-secondary btn-sm', ' data-libswarm="1"'))
       + (libLoad.fellBack ? ' <span class="hint" style="margin:0">' + esc(t('استُعمل المصدرُ العامُّ احتياطًا')) + ' \u00d7' + nm(libLoad.fellBack) + '</span>' : '');
   });

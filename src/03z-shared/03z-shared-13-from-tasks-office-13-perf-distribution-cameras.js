@@ -144,7 +144,7 @@ function camKind(x){
   return /\bPTZ\b/i.test(String(x.name || '')) ? 'PTZ' : 'Bullet';
 }
 
-function camKindLabel(k){ return { Bullet:t('ثابتة (Bullet)'), PTZ:t('متحرّكة (PTZ)'), LPR:t('قراءة اللوحات (LPR)') }[k] || ''; }
+function camKindLabel(k){ return { Bullet:t('ثابتة (Bullet)'), PTZ:t('متحرّكة'), LPR:t('قراءة اللوحات (LPR)') }[k] || ''; }
 
 function siteStats(){
   if (STAT_CACHE) return STAT_CACHE;

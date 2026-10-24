@@ -112,12 +112,12 @@ function expPdf(keys){
   });
   if (!n){ toast(t('لا بياناتٍ في الأقسام المختارة')); return; }
   var w2 = window.open('', '_blank');
-  if (!w2){ toast(t('امنع حجبَ النوافذ لتصدير PDF')); return; }
+  if (!w2){ toast(t('امنع حجبَ النوافذ لتصدير ملف الطباعة')); return; }
   w2.document.write('<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8">'
     + '<title>' + esc(t('قارئات أفاقي — تقرير اللوحة')) + '</title><style>' + css + '</style></head><body>'
     + body + '</body></html>');
   w2.document.close();
-  setTimeout(function(){ try { w2.focus(); w2.print(); } catch (e){ softErr('طباعة PDF', e, 'افتح النافذةَ واطبع منها'); } }, 400);
-  logEvent('تصدير PDF — ' + n + ' قسمًا');
+  setTimeout(function(){ try { w2.focus(); w2.print(); } catch (e){ softErr('ملف للطباعة', e, 'افتح النافذةَ واطبع منها'); } }, 400);
+  logEvent('تصدير ملف للطباعة — ' + n + ' قسمًا');
   toast(nm(n) + ' ' + t('قسمًا — اختر «حفظ كـPDF» من نافذة الطباعة'));
 }

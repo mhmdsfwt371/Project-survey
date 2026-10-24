@@ -16,7 +16,7 @@ function fontsCard(){
   var F = CFG.fonts || {}, ed = may('settings');
   var st = function(k, l){ return '<span class="pill ' + (F[k] ? 'ok' : 'wrn') + '">' + (F[k] ? '\u2713 ' : '') + esc(t(l)) + (F[k + 'n'] ? ' \u00b7 ' + esc(F[k + 'n']) : '') + '</span>'; };
   return card('\u{1F524} ' + t('خطوط التقارير'),
-      '<p class="hint" style="margin:0 0 8px">' + esc(t('خطُّ الوزارة «Abar Mid» للـPDF: ارفع ملفَّي العاديّ والعريض مرةً واحدة فيُضمَّنان في كلِّ تقريرٍ مطبوع. الباوربوينت يضمّنه من قالب الوزارة نفسِه.')) + '</p>'
+      '<p class="hint" style="margin:0 0 8px">' + esc(t('خطُّ الوزارة «Abar Mid» لملف الطباعة: ارفع ملفَّي العاديّ والعريض مرةً واحدة فيُضمَّنان في كلِّ تقريرٍ مطبوع. العرض التقديمي يضمّنه من قالب الوزارة نفسِه.')) + '</p>'
     + '<div class="chips" style="margin:0 0 8px">' + st('r', 'العادي') + ' ' + st('b', 'العريض') + '</div>'
     + (ed ? '<div class="grid cols-2"><div class="field"><label>' + esc(t('العادي (Regular)')) + '</label><input type="file" accept=".otf,.ttf,.woff,.woff2" data-fontup="r"></div>'
           + '<div class="field"><label>' + esc(t('العريض (Bold)')) + '</label><input type="file" accept=".otf,.ttf,.woff,.woff2" data-fontup="b"></div></div>' : ''));
@@ -28,7 +28,7 @@ function fontUp(kind, file){
   var fr = new FileReader();
   fr.onload = function(){ var b64 = String(fr.result || '').split(',')[1] || ''; if (!b64){ toast(t('تعذّرت قراءةُ الملف')); return; }
     var v = Object.assign({}, CFG.fonts || {}); v[kind] = b64; v[kind + 'n'] = file.name; v.at = Date.now(); v.by = STATE.meta.name || '';
-    CFG.fonts = v; CORE.set('cfg', 'fonts', v); logEvent('خطُّ التقارير — ' + (kind === 'b' ? 'العريض' : 'العادي') + ' · ' + file.name, ''); toast(t('حُفظ الخط — يُضمَّن في الـPDF')); render(1); };
+    CFG.fonts = v; CORE.set('cfg', 'fonts', v); logEvent('خطُّ التقارير — ' + (kind === 'b' ? 'العريض' : 'العادي') + ' · ' + file.name, ''); toast(t('حُفظ الخط — يُضمَّن في ملف الطباعة')); render(1); };
   fr.readAsDataURL(file);
 }
 

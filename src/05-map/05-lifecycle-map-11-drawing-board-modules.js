@@ -239,7 +239,7 @@ function fieldTools(){
             + btn('🌍 KMZ — إعادة تركيب ١٤٤٧','btn-secondary',' data-kmz="redo"')
             + btn('🌍 KMZ — بلون الشركة','btn-secondary',' data-kmz="co"')
             : '')
-        + btn('🖨 PDF — تقرير اليوم','btn-secondary',' data-print="1"')
+        + btn('🖨 ملف للطباعة — تقرير اليوم','btn-secondary',' data-print="1"')
         + btn('\u{1F5FA} GeoJSON — ' + t('المواقع بحالتها'),'btn-secondary',' data-geojson="1"')
         + '</div>')
     + deviceCards()

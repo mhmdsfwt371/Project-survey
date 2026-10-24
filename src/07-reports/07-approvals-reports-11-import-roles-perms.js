@@ -187,12 +187,12 @@ PAGE.exp = { m:'الأدوات', t:'التصدير والتقارير', l:'ما 
         btn('⬇ ملف المتابعة — محدَّثًا','btn-primary btn-sm',' data-fup="1"'))
       + card('تصدير تقرير اللوحة',
         '<p class="hint" style="margin:0 0 12px">'
-        + esc(t('تسعةٌ وعشرون قسمًا قابلة للاختيار — إكسل ورقةً لكل قسم، أو PDF صفحةً لكل قسم برسمها.'))
+        + esc(t('تسعةٌ وعشرون قسمًا قابلة للاختيار — إكسل ورقةً لكل قسم، أو ملف للطباعة صفحةً لكل قسم برسمها.'))
         + '</p>'
         + '<div class="actions">'
         + btn('اختر الأقسام','btn-primary',' data-exp="1"')
         + btn('⬇ إكسل — الكل','btn-secondary',' data-xls="*"')
-        + btn('🖨 PDF — الكل','btn-secondary',' data-print="1"')
+        + btn('🖨 ملف للطباعة — الكل','btn-secondary',' data-print="1"')
         + '</div>')
       + card('تصديرات جاهزة',
           '<div class="actions">'

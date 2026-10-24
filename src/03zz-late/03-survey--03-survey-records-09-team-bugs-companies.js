@@ -278,7 +278,7 @@ function coStat(co){
 
 function waText(kind, co, when){
   var S = coStat(co), L = ['السلام عليكم ورحمة الله'];
-  L.push('قارئات أفاقي — RFID · موسم ١٤٤٨هـ');
+  L.push('قارئات بطاقة نسك — أفاقي · موسم ١٤٤٨هـ');
   L.push('');
   L.push('الشركة: ' + fsiText(co));
   if (kind === 'plan'){

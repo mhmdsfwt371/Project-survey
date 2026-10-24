@@ -67,13 +67,13 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
       /* الملفُّ المُنزَّلُ كان واحدًا للجميع — فتقرأ الوزارةُ عن اعتماداتٍ لا
        تملكها. صار لكلِّ دورٍ ملفُّه، مُولَّدًا من الصلاحيات نفسِها التي
        تُولِّد هذه الصفحة. */
-    + card('دليلُك — ملف Word',
+    + card('دليلُك — ملف وورد',
           '<div class="actions">'
           + '<a class="btn btn-primary btn-sm" href="docs/manuals/nusuk-manual-' + esc(cur) + '.docx" download>'
           +   '⬇ ' + esc(t('دليل') + ' ' + t(ROLES[cur].n) + ' — ' + t('وورد')) + '</a>'
           + (may('settings')
               ? '<a class="btn btn-secondary btn-sm" href="docs/nusuk-user-manual.docx" download>'
-                + '⬇ ' + esc(t('الدليل الكامل — Word')) + '</a>'
+                + '⬇ ' + esc(t('الدليل الكامل — وورد')) + '</a>'
               : '')
           + '</div>'
           + '<p class="hint" style="margin:9px 0 0">'
@@ -91,7 +91,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  التصفير حين تبدّلت النسخة */
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
               +   esc(appVer()) + '.docx" download>⬇ '
-              +   esc(t('دليل النظام — Word')) + '</a>'
+              +   esc(t('دليل النظام — وورد')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
               + '</div>')

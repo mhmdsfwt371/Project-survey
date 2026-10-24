@@ -148,7 +148,7 @@ function handDocCo(co){
   return '<div class="hdoc">'
     + '<h3 style="margin:0 0 2px">' + esc(t('محضر تسليم شركة')) + '</h3>'
     + '<p class="hint" style="margin:0 0 12px">' + esc(co) + ' \u00b7 '
-    + esc(t('قارئات أفاقي — RFID · موسم ١٤٤٨هـ')) + '</p>'
+    + esc(t('قارئات بطاقة نسك — أفاقي · موسم ١٤٤٨هـ')) + '</p>'
     + stats([['نقاطٌ مُركّبةٌ معتمدة', N(L.length), 'acc'],
              ['سُلِّمت', N(done.length), done.length === L.length && L.length ? 'ok' : 'wrn'],
              ['بانتظار التسليم', N(L.length - done.length), L.length - done.length ? 'wrn' : 'ok']])

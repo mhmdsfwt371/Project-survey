@@ -37,7 +37,7 @@ function expHtml(){
     + '<div class="grid cols-2" style="margin-bottom:12px">'
     +   '<div class="field" style="margin:0"><label>'+esc(t('الصيغة'))+'</label>'
     +   '<select id="expFmt"><option value="xlsx">'+esc(t('إكسل — ورقة لكل قسم'))+'</option>'
-    +   '<option value="pdf">'+esc(t('PDF — بالرسوم البيانية'))+'</option>'
+    +   '<option value="pdf">'+esc(t('ملف للطباعة — بالرسوم البيانية'))+'</option>'
     +   '<option value="both">'+esc(t('الاثنان معًا'))+'</option></select></div>'
     +   '<div class="field" style="margin:0"><label>'+esc(t('الرسوم البيانية'))+'</label>'
     +   '<select><option value="مضمّنة">'+esc(t('مضمّنة'))+'</option><option value="بدونها">'+esc(t('بدونها'))+'</option></select></div>'
@@ -45,7 +45,7 @@ function expHtml(){
     + '<div class="actions">' + btn('تصدير','btn-primary',' data-expgo="1"')
     +   btn('إلغاء','btn-secondary',' data-exp="0"') + '</div></div>'
     + '<p class="hint" style="font-size:11.5px">'
-    +   esc(t('الإكسل ورقةٌ لكل قسم بعناوينها كما تظهر على الشاشة · والPDF صفحةٌ لكل قسم برسمها البياني.')) + '<br>'
+    +   esc(t('الإكسل ورقةٌ لكل قسم بعناوينها كما تظهر على الشاشة · وملفُّ الطباعة صفحةٌ لكل قسم برسمها البياني.')) + '<br>'
     +   esc(t('يُصدَّر ما بعد التصفية — وبلا تصفيةٍ يُصدَّر الكلّ.'))
     + '</p></div>';
 }
