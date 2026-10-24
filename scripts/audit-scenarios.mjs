@@ -4,9 +4,11 @@
    هنا خمسةُ مساراتٍ كاملة، تُحرَّك بدوالِّ التطبيق نفسِها ويُتحقَّق مما كُتب في الحالة والطابور:
    ١ التركيب · ٢ تجهيزةُ الديمو · ٣ المسح والاعتماد · ٤ بياناتُ ١٤٤٧ ← نموذجُ التركيب · ٥ جسرُ نظام البطاقات والتحقق ·
    (V37.99) ٦ المخزن · ٧ أرقامُ المسح للوزارة · ٨ الفكّ · (V38.16) ٩ مساعدُ البيانات: كلُّ رقمٍ يجيب به = عدٌّ مستقلٌّ من الحالة. */
+import './lib/jsdom-dict.cjs';   /* (V39.11) the dictionary in the test page — scenario ٤٦ reads the sheet in English */
 import { readFileSync } from 'fs';
 import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
-import { JSDOM, VirtualConsole } from 'jsdom';
+import { createRequire } from 'module';
+const { JSDOM, VirtualConsole } = createRequire(import.meta.url)('jsdom');   /* through require, so the dictionary patch applies */
 
 const html = (await appHtml());
 let pass = 0; const fails = [];
@@ -1263,6 +1265,54 @@ console.log('\n══ ٤٤ · تنبيهُ الرسالة: الشريط والع
   T(!!mb && w.localStorage.getItem('nsk14.chMute') === '1' && /مكتوم/.test(w.chAlertChips()), 'وصوتُ الرسائل يُكتَم من صفحة المحادثات ويُفتَح');
   if (m0 == null) w.localStorage.removeItem('nsk14.chMute'); else w.localStorage.setItem('nsk14.chMute', m0);
   delete w.STATE.msgs[v.id]; w.STATE.meta.name = me0; w.ROLE = role0; w.STATE.meta.role = role0; w.CUR = cur0; w.chPageHtml.f = {};
+}
+
+/* ── ٤٥ · (V39.11) التوأم الرقمي: الحساسات والجيت واي في الخريطة المجسّمة، وزرُّ الطبقة فوق ── */
+console.log('\n══ ٤٥ · التوأم الرقمي في الخريطة المجسّمة ══');
+{
+  const M30 = w.M3, d30 = w.MAP_3D, on0 = w.IOT.on, ed0 = w.IOT.edit, role0 = w.ROLE, cur0 = w.CUR;
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.CUR = 'map';
+  T(/data-iot="1"/.test(w.mapUIHtml()) && /الحساسات/.test(w.mapUIHtml()), 'زرُّ «الحساسات» في صفِّ أزرار الخريطة فوق، لا داخل التصفية وحدَها');
+  /* a camp with a plan: twelve sensors and a gateway, one sensor faulty */
+  const camp = w.STATE.sites.find(x => x.type === 'مخيم' && +x.lat && +x.lng);
+  const sensors = Array.from({ length:12 }, (_, i) => [+camp.lat + i * 0.00002, +camp.lng + i * 0.00002]);
+  const sm = sensors.map((_, i) => ({ id:camp.id + '-S' + String(i + 1).padStart(2, '0'), status:i === 3 ? 'معطّل' : (i < 6 ? 'مُركّب' : 'مخطط'), serial:i === 0 ? 'SN-0001' : '' }));
+  w.siteOvSet(camp.id, { iot:{ gw:[+camp.lat, +camp.lng], gws:[], sensors, sm, gm:[{ id:camp.id + '-GW1', status:'مُركّب' }], maxM:40, at:Date.now() } });
+  let data = null;
+  w.M3 = { getBounds:() => ({ contains:() => true }), getZoom:() => 17, getSource:() => ({ setData:v => { data = v; } }) };
+  w.MAP_3D = true; w.IOT.on = true; w.IOT.edit = null;
+  w.m3IotPaint();
+  const F = data ? data.features.filter(f => f.properties.camp === camp.id) : [];
+  const col = k => F.filter(f => f.properties.kind === k).map(f => f.properties.color);
+  T(F.length === 13 && col('s').length === 12 && col('g').length === 1, 'المخيمُ في المجسّم: اثنا عشر حساسًا وجيت واي، كلٌّ عمودٌ صغير (' + F.length + ')');
+  T(col('s')[3] === '#E05252' && col('s')[0] === w.IOT_C.sensor && col('s')[9] !== w.IOT_C.sensor && col('g')[0] === w.IOT_C.gw && F.every(f => f.geometry.type === 'Polygon' && f.properties.h > 0),
+    'ولونُه بحالته: المعطّلُ أحمر، والمركّبُ بلونه، والمخطَّطُ أفتح — والجيت واي أطول');
+  /* the editor: a tap selects, the next tap on the ground moves */
+  w.iotEditStart(camp.id);
+  const E = w.IOT.edit; w.m3IotClick({ properties:{ camp:camp.id, kind:'s', i:2 } }, { originalEvent:{} });
+  T(!!E && E.sel && E.sel.k === 's' && E.sel.i === 2, 'في المحرّر: الضغطُ على حساسٍ في المجسّم يحدّده');
+  w.iotMapClick({ lat:+camp.lat + 0.001, lng:+camp.lng + 0.001 });
+  T(Math.abs(E.sensors[2][0] - (+camp.lat + 0.001)) < 1e-6 && data.features.some(f => f.properties.sel === 1), 'والضغطةُ التاليةُ على الأرض تنقله، ويُرسَم محدَّدًا');
+  E.sel = { k:'s', i:2 }; w.iotDel();
+  T(E.sensors.length === 11 && !E.sel, 'والحذفُ من المحرّر يشيله');
+  w.IOT.edit = null; w.M3 = M30; w.MAP_3D = d30; w.IOT.on = on0; w.IOT.edit = ed0; w.ROLE = role0; w.STATE.meta.role = role0; w.CUR = cur0;
+  w.siteOvSet(camp.id, { iot:null });
+}
+
+/* ── ٤٦ · (V39.11) «ما الجديد» بلغة الشاشة — لا سطرَ عربيًّا على شاشةٍ إنجليزية ── */
+console.log('\n══ ٤٦ · «ما الجديد» بلغة الشاشة ══');
+{
+  const role0 = w.ROLE, seen0 = w.localStorage.getItem('nsk14.seenVer'), L0 = w.LANG, wn0 = w.WN;
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
+  w.setLang('en'); await new Promise(r => setTimeout(r, 150));   /* the dictionary lands a tick later */
+  w.localStorage.setItem('nsk14.seenVer', 'V38.80'); w.WN = null;
+  const ok = w.whatsNewMaybe(), html = ok ? w.wnHtml() : '';
+  const body = html.replace(/<[^>]+>/g, ' ');
+  T(ok && w.WN && w.WN.list.length >= 10 && w.WN.list.every(r => /^V39\./.test(r.v)), 'على الشاشة الإنجليزية تظهر الإصداراتُ المترجَمةُ وحدَها (' + (w.WN ? w.WN.list.length : 0) + ')');
+  T(!/[\u0621-\u064A]/.test(body) && /Talk to the engineer/.test(body) && !/V39\.\d+/.test(body.replace(/Version/g, '')), 'ولا حرفَ عربيًّا في اللوح، والإصدارُ بأرقام اللغة');
+  w.setLang('ar'); await new Promise(r => setTimeout(r, 50)); w.localStorage.setItem('nsk14.seenVer', 'V38.80'); w.WN = null;
+  T(w.whatsNewMaybe() && w.WN.list.length > w.WN.list.filter(r => /^V39\./.test(r.v)).length, 'وبالعربية كلُّ الإصدارات كما كانت');
+  w.WN = wn0; w.setLang(L0); if (seen0 == null) w.localStorage.removeItem('nsk14.seenVer'); else w.localStorage.setItem('nsk14.seenVer', seen0); w.ROLE = role0; w.STATE.meta.role = role0;
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

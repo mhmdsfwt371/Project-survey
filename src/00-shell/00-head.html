@@ -50,6 +50,8 @@
   --sw:264px;
 }
 .pill.bad{background:var(--danger-bg);color:var(--danger)}.pill.wrn{background:var(--warn-bg);color:var(--warn)}   /* (V37.34) شاراتُ «بطيء» و«متوسط» — كانت تُرسَم رماديةً لأن الفئتين لم تُعرَّفا */
+/* (V39.11) the 3D twin's device card — the engine's popup in the app's colors */
+.maplibregl-popup-content{background:var(--surface,#13203a);color:var(--ink,#fff);border:1px solid var(--line,rgba(255,255,255,.14));border-radius:12px;padding:10px 12px;font:inherit;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.35)}.maplibregl-popup-anchor-bottom .maplibregl-popup-tip{border-top-color:var(--surface,#13203a)}.maplibregl-popup-anchor-top .maplibregl-popup-tip{border-bottom-color:var(--surface,#13203a)}.maplibregl-popup-close-button{color:var(--ink,#fff);font-size:18px;padding:2px 8px}
 #assistBtn.tb-assist,.tb-btn.tb-assist{width:auto !important;min-width:34px;padding:0 10px;gap:4px;display:inline-flex;align-items:center;position:relative;border:1px solid var(--acc,#1A5FA8);white-space:nowrap;flex:0 0 auto}.tb-assist-t{font-size:12px;font-weight:600}.tb-dot{position:absolute;top:2px;inset-inline-end:2px;width:9px;height:9px;border-radius:50%;background:#E05252;box-shadow:0 0 0 2px var(--bg,#fff)}@media (max-width:340px){.tb-assist-t{display:none}.tb-btn.tb-assist{padding:0 6px}}   /* (V37.30–V37.34) المساعدُ ظاهرٌ باسمه وشارتِه — خارجَ أيِّ وسائط */
 #assistBack[hidden]{display:none !important}   /* (V37.40) الزرُّ يحمل .btn فيغلب display:none الافتراضيّ */
 @media print{ html.print-pop body > *{display:none !important} html.print-pop body > #app, html.print-pop #content, html.print-pop #content > *{display:block !important} html.print-pop #content > :not(.svpop){display:none !important} html.print-pop .svpop{position:static !important;max-height:none !important;overflow:visible !important;box-shadow:none !important;border:none !important;inset:auto !important} html.print-pop .svpop-veil,html.print-pop .svpop .actions,html.print-pop .svpop .chips{display:none !important} }   /* (V37.45) طباعةُ اللوحة وحدَها */
@@ -1290,7 +1292,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V39.10</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V39.11</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>

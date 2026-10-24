@@ -19,6 +19,9 @@ function whatsNewMaybe(){
   /* (V38.51) the release-notes log lives in app-office.js (107 KB raw): if it has not landed yet, ask again when it does */
   if (typeof releaseNotesSince !== 'function'){ whatsNewMaybe.pending = true; return false; }
   var list = releaseNotesSince(seen, cur);
+  /* (V39.11) an English or Urdu screen shows only the notes that have their language — a release without any is left out,
+     and a sheet with nothing to say is not shown (the owner: no Arabic on the English screen) */
+  if (LANG !== 'ar') list = list.map(function(r){ return Object.assign({}, r, { notes:r.notes.filter(function(x){ return t(x) !== x; }) }); }).filter(function(r){ return r.notes.length; });
   /* لا سطورَ أحدثَ مما رآه: يُسجَّل بلا رسالة */
   if (!list.length){ lsSet('nsk14.seenVer', cur); return false; }
   WN = { v:cur, r:list[0], list:list, seen:seen };
@@ -29,13 +32,13 @@ function wnHtml(){
   if (!WN) return '';
   return '<div class="pop-wrap" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6);z-index:94">'
     + '<div class="pop" style="width:min(520px,94vw)">'
-    + '<div class="pop-head"><div><h3>\u2728 ' + esc(t('ما الجديد في هذا التحديث')) + ' \u2014 ' + esc(WN.v) + '</h3>'
+    + '<div class="pop-head"><div><h3>\u2728 ' + esc(t('ما الجديد في هذا التحديث')) + ' \u2014 ' + esc(typeof verShow === 'function' ? verShow(WN.v) : WN.v) + '</h3>'
     +   '<p class="hint" style="margin:2px 0 0">' + esc(WN.r.d) + ' \u00b7 ' + esc(t('تظهر مرةً واحدةً بعد التحديث')) + '</p></div>'
     +   btn('\u2715','btn-quiet btn-sm',' data-wnx="0" aria-label="' + esc(t('إغلاق')) + '"') + '</div>'
     + '<div class="pop-body">'
     +   (WN.list || [WN.r]).map(function(r, i){
-          return (i > 0 || (WN.list || []).length > 1 ? '<div class="hint" style="margin:' + (i ? '10px' : '0') + ' 0 4px;font-weight:700">' + esc(r.v) + ' \u00b7 ' + esc(r.d) + '</div>' : '')
-            + '<ul style="margin:0;padding:0 18px 0 0;line-height:1.8">' + r.notes.map(function(x){ return '<li dir="auto">' + esc(x) + '</li>'; }).join('') + '</ul>';
+          return (i > 0 || (WN.list || []).length > 1 ? '<div class="hint" style="margin:' + (i ? '10px' : '0') + ' 0 4px;font-weight:700">' + esc(typeof verShow === 'function' ? verShow(r.v) : r.v) + ' \u00b7 ' + esc(r.d) + '</div>' : '')
+            + '<ul style="margin:0;padding:0 18px 0 0;line-height:1.8">' + r.notes.map(function(x){ return '<li dir="auto">' + esc(t(x)) + '</li>'; }).join('') + '</ul>';   /* (V39.11) in the screen's language */
         }).join('')
     +   '<div class="actions" style="margin:12px 0 0">' + btn('\u2713 ' + t('فهمت'),'btn-primary',' data-wnx="1"') + '</div></div></div></div>';
 }

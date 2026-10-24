@@ -48,12 +48,12 @@ console.log('\n══ ٣ · بعد التحديث مرةٌ واحدة ══');
 {
   const { w, d, wait, dom } = await boot('V17.80');
   const wrap = d.getElementById('wnWrap');
-  T(!!wrap && wrap.innerHTML.includes('ما الجديد في هذا التحديث') && wrap.innerHTML.includes(ver), 'تظهر الرسالةُ بعد تحديثٍ من نسخةٍ أقدم — بعنوان آخر نسخة وسطورِ آخر نسخةٍ لها سطور');
+  T(!!wrap && wrap.innerHTML.includes('ما الجديد في هذا التحديث') && wrap.innerHTML.includes(w.verShow(ver)), 'تظهر الرسالةُ بعد تحديثٍ من نسخةٍ أقدم — بعنوان آخر نسخة وسطورِ آخر نسخةٍ لها سطور');   /* (V39.11) the version in the language's digits */
   T(wrap && !/<li >\s*<\/li>/.test(wrap.innerHTML) && (wrap.innerHTML.match(/<li /g) || []).length >= 1, 'وليست فارغة');
   /* (V17.97) مع القطار تصل نسخٌ عدّةٌ دفعةً: تُعرَض سطورُ كلِّ نسخةٍ منذ ما رآه الجهاز */
   const noted = (m[1].match(/v:'(V[\d.]+)'[^\n]*notes:\[\s*'/g) || []).map(x => /v:'(V[\d.]+)'/.exec(x)[1]);
   const since = noted.filter(v => w.verNum(v) > w.verNum('V17.80') && w.verNum(v) <= w.verNum(ver));
-  T(since.length >= 2 && since.every(v => wrap.innerHTML.includes(v)), 'وتحمل كلَّ النسخ منذ ما رآه الجهاز (' + since.length + ' نسخة) لا آخرَها وحدَها');
+  T(since.length >= 2 && since.every(v => wrap.innerHTML.includes(w.verShow(v))), 'وتحمل كلَّ النسخ منذ ما رآه الجهاز (' + since.length + ' نسخة) لا آخرَها وحدَها');
   T(wrap && (wrap.innerHTML.match(/<li /g) || []).length >= 1 && !wrap.innerHTML.includes('V17.80'), 'وبسطور آخر نسخةٍ لا القديمة');
   d.querySelector('[data-wnx]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(100);
   T(!d.getElementById('wnWrap') && w.localStorage.getItem('nsk14.seenVer') === ver, 'وبعد الإغلاق تُسجَّل النسخةُ ولا تعود');

@@ -45,7 +45,7 @@ w.CFG.w = { 'منى|كاميرات فالوزارة':1, 'عرفات|كاميرا
 T(w.cfgGet('w', 'منى|كاميرات المتابعة') === 1 && w.cfgGet('w', 'عرفات|مراكز التفويج') === 1, 'الوزنُ المكتوبُ بالتسمية القديمة يُقرأ للجديدة');
 w.POP_OPEN = false; w.POP_SITE = null; w.goPage('req'); w.render(1); await wait(60); const b = d.querySelector('[data-ptab="req:assign"]'); if (b){ b.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(150); }
 const tx = d.getElementById('content').textContent;
-T(/كاميرات المتابعة/.test(tx) && /ثابتة \(Bullet\)/.test(tx) && /متحرّكة \(PTZ\)/.test(tx), 'جدولُ المتاح يعرض الفرعين تحت كاميرات المتابعة');
+T(/كاميرات المتابعة/.test(tx) && /ثابتة/.test(tx) && /متحرّكة/.test(tx), 'جدولُ المتاح يعرض الفرعين تحت كاميرات المتابعة');   /* (V39.10) the glossary: no Latin names on the Arabic screen */
 const g = w.geoJsonBuild(), f = g.features.find(o => o.id === ptz[0].id);
 T(f && f.properties.camera_kind === 'PTZ' && g.features.find(o => o.properties.type === 'مخيم').properties.camera_kind === null, 'والتصديرُ يحمل camera_kind');
 

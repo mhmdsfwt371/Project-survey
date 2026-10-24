@@ -103,6 +103,8 @@ function mapUIHtml(){
     +   '<button type="button" class="map-chip'+(MAP_3D?' on':'')+'" data-m3="1" title="'
     +     esc(t(MAP_3D ? 'العودة إلى الخريطة المسطّحة' : 'الخريطة بالتضاريس والأعمدة'))+'">'
     +     (MAP_3D ? '\u25A6 ' : '\u26F0 ')+esc(t(MAP_3D ? '٢د' : '٣د'))+'</button>'
+    /* (V39.11) owner: the sensors and gateways layer up here with the other layers, not only inside the filter */
+    +   '<button type="button" class="map-chip'+(IOT.on?' on':'')+'" data-iot="1">\u{1F4E1} '+esc(t('الحساسات'))+(IOT.on ? (function(){ var k = iotCount(); return ' \u00b7 ' + nm(k.s); })() : '')+'</button>'
     +   '<button type="button" class="map-chip'+(filtOn()?' on':'')+'" data-mfilt="'
     +     (MAP_FILT_OPEN?'0':'1')+'">'
     +     '\u2261 '+esc(t('تصفية'))+(filtOn()?' \u00b7 '+nm(layerFiltered().length):'')+'</button>'

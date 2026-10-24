@@ -56,6 +56,16 @@ await docxSwap('docs/' + sysDocx[0], 'docs/nusuk-system-' + NEW + '.docx');
 /* (V33.2) دليلُ المستخدم يُولَّد كاملًا (الفصول + المسرد + ما الجديد) لا يُبدَّل رقمُه فقط — يُشغَّل بعد البناء أدناه */
 
 const run = c => execSync(c, { stdio:'pipe' }).toString().trim().split('\n').pop();
+/* (V39.11) the English and Urdu of each note (--note-en / --note-ur, in the same order as --note) go into the dictionary, so the
+   «what's new» sheet reads in the screen's language; a note without them is shown on Arabic screens only */
+{ const en = opt('--note-en'), ur = opt('--note-ur');
+  if (en.length || ur.length){
+    if (en.length !== notes.length || ur.length !== notes.length) die('--note-en و--note-ur بعدد --note وبترتيبه');
+    const f = readdirSync('i18n').find(x => x.startsWith('dict-')); let d = readFileSync('i18n/' + f, 'utf8');
+    const put = (lang, pairs) => { const mark = '\n' + lang + ':{\n'; const i = d.indexOf(mark); if (i < 0) die('القاموس بلا قسم ' + lang); d = d.slice(0, i + mark.length) + pairs.map(([k, v]) => ' ' + q(k) + ':' + q(v) + ',\n').join('') + d.slice(i + mark.length); };
+    put('en', notes.map((n, i) => [n, en[i]])); put('ur', notes.map((n, i) => [n, ur[i]]));
+    writeFileSync('i18n/' + f, d);
+  } }
 run('node scripts/build.mjs'); run('node scripts/role-manuals.mjs'); run('node scripts/user-manual.mjs'); run('node scripts/i18n-rehash.mjs');
 console.log(run('node scripts/build.mjs'));
 console.log('✓ ' + OLD + ' → ' + NEW + ' في الأماكن الستة — شغّل الآن: node scripts/fast-run.mjs');

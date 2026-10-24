@@ -110,6 +110,12 @@ function m3Layers(){
                 'circle-stroke-width':['case', ['==', ['get','sel'], 1], 2.5, 1],
                 'circle-stroke-color':['get','ring'] } });
     }
+    /* (V39.11) the sensors and gateways as small columns — the digital twin of the camps' plans */
+    if (!M3.getSource('nskiot')){
+      M3.addSource('nskiot', { type:'geojson', data:{ type:'FeatureCollection', features:(typeof m3IotFeatures === 'function' ? m3IotFeatures() : []) } });
+      M3.addLayer({ id:'nsk-iot', type:'fill-extrusion', source:'nskiot',
+        paint:{ 'fill-extrusion-color':['get','color'], 'fill-extrusion-height':['get','h'], 'fill-extrusion-base':0, 'fill-extrusion-opacity':0.96 } });
+    }
     /* مبانٍ ثلاثيةٌ من النمط نفسِه إن وُجدت — سياقٌ لا أكثر */
     var lyr = (M3.getStyle().layers || []).filter(function(l){ return /building/i.test(l.id) && l.type === 'fill-extrusion'; })[0];
     if (lyr) M3.setPaintProperty(lyr.id, 'fill-extrusion-opacity', 0.45);
@@ -141,8 +147,17 @@ function m3Init(){
   M3.on('error', function(ev){ if (ev && ev.error) LS_ERR = ev.error; });
   M3.on('style.load', m3Layers);
   M3.on('moveend', function(){ if (MAP_3D) m3Count(m3Points()); });
-  var hit = function(ev){ var f = ev.features && ev.features[0]; if (f && f.properties && f.properties.id) m3Click(f.properties.id, ev); };
+  var hit = function(ev){ if (ev.originalEvent && ev.originalEvent._nskIot) return; var f = ev.features && ev.features[0]; if (f && f.properties && f.properties.id) m3Click(f.properties.id, ev); };
   M3.on('click', 'nsk-pts', hit); M3.on('click', 'nsk-cols', hit);
+  /* (V39.11) the twin's devices take the tap first; a tap on the ground in the editor moves or adds the selected device */
+  M3.on('click', 'nsk-iot', function(ev){ var f = ev.features && ev.features[0]; if (f && typeof m3IotClick === 'function') m3IotClick(f, ev); });
+  M3.on('click', function(ev){
+    if (ev.originalEvent && ev.originalEvent._nskIot) return;
+    if (typeof IOT === 'object' && IOT.edit && ev.lngLat){ try { if (M3.queryRenderedFeatures(ev.point, { layers:['nsk-iot'] }).length) return; } catch (eQ){ LS_ERR = eQ; } iotMapClick({ lat:ev.lngLat.lat, lng:ev.lngLat.lng }); }
+  });
+  M3.on('moveend', function(){ if (MAP_3D && typeof IOT === 'object' && IOT.on && typeof m3IotPaint === 'function') m3IotPaint(); });
+  M3.on('mouseenter', 'nsk-iot', function(){ M3.getCanvas().style.cursor = 'pointer'; });
+  M3.on('mouseleave', 'nsk-iot', function(){ M3.getCanvas().style.cursor = ''; });
   M3.on('mouseenter', 'nsk-pts', function(){ M3.getCanvas().style.cursor = 'pointer'; });
   M3.on('mouseleave', 'nsk-pts', function(){ M3.getCanvas().style.cursor = ''; });
   return true;

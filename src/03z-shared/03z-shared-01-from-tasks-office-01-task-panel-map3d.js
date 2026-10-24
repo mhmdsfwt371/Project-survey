@@ -76,5 +76,6 @@ function m3Paint(){
     var s1 = M3.getSource('nsk');  if (s1) s1.setData({ type:'FeatureCollection', features:P });
     var s2 = M3.getSource('nskc'); if (s2) s2.setData({ type:'FeatureCollection', features:m3Cols(P) });
   } catch (e){ LS_ERR = e; }
+  try { if (typeof m3IotPaint === 'function') m3IotPaint(); } catch (e2){ LS_ERR = e2; }   /* (V39.11) */
   m3Count(P);
 }

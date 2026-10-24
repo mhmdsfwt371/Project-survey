@@ -2,11 +2,11 @@
 
 المصدرُ في `src/` مجلّداتٌ بالمجال، تُجمَّع بترتيب المسار الكامل إلى `index.html` (ملفٌّ واحدٌ عند النشر ليعمل بلا شبكة). سقفُ الملف **1500 سطر** — البوابةُ تقع فوقه.
 
-## `00-shell/` — الهيكل — رأسُ الصفحة والأنماط  (1 ملفات · 1325 سطر · 0 دالة)
+## `00-shell/` — الهيكل — رأسُ الصفحة والأنماط  (1 ملفات · 1327 سطر · 0 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
-| `00-head.html` | 1325 | 0 |  |
+| `00-head.html` | 1327 | 0 |  |
 
 ## `01-core/` — النواة — اللغة والمحرك والمزامنة والسجل  (8 ملفات · 2791 سطر · 126 دالة)
 
@@ -54,11 +54,11 @@
 | `03-survey-records-10-wbs-plan-trials.js` | 471 | 29 | Work breakdown structure, plan versus actual, plan export with formulas, item file and the trials page. |
 | `03-survey-records-11-weekly-tasks-paths.js` | 477 | 31 | Weekly tasks as sentence cards, meeting mode, the one filter for screen and paper, and path filtering with each path's status. |
 
-## `03z-shared/` — المشتركُ — تعريفاتٌ تحتاجها النواةُ قبل مجالات المكتب والوزارة والتقارير (نُقلت حرفيًّا، لا كودَ جديدًا هنا)  (63 ملفات · 7951 سطر · 443 دالة)
+## `03z-shared/` — المشتركُ — تعريفاتٌ تحتاجها النواةُ قبل مجالات المكتب والوزارة والتقارير (نُقلت حرفيًّا، لا كودَ جديدًا هنا)  (63 ملفات · 7955 سطر · 443 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
-| `03z-shared-01-from-tasks-office-01-task-panel-map3d.js` | 81 | 5 | Definitions moved verbatim from src/04-office/04-tasks-office-01-task-panel-map3d.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these n |
+| `03z-shared-01-from-tasks-office-01-task-panel-map3d.js` | 82 | 5 | Definitions moved verbatim from src/04-office/04-tasks-office-01-task-panel-map3d.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these n |
 | `03z-shared-02-from-tasks-office-02-newsite-schedule.js` | 92 | 5 | Definitions moved verbatim from src/04-office/04-tasks-office-02-newsite-schedule.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these n |
 | `03z-shared-03-from-tasks-office-03-photos-drive.js` | 306 | 16 | Definitions moved verbatim from src/04-office/04-tasks-office-03-photos-drive.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names |
 | `03z-shared-04-from-tasks-office-04-pmi-weekplan.js` | 73 | 6 | Definitions moved verbatim from src/04-office/04-tasks-office-04-pmi-weekplan.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names |
@@ -111,7 +111,7 @@
 | `03z-shared-b-15-from-ext-camps-03-nusuk-card-system.js` | 236 | 9 | Definitions moved verbatim from src/06-ministry/06-ext-camps-03-nusuk-card-system.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08) ref |
 | `03z-shared-b-16-from-ministry-alerts-06-followup-sources-daily.js` | 21 | 1 | Definitions moved verbatim from src/06-ministry/06-ministry-alerts-06-followup-sources-daily.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01– |
 | `03z-shared-b-17-from-ministry-alerts-10-season-start-invites.js` | 42 | 2 | Definitions moved verbatim from src/06-ministry/06-ministry-alerts-10-season-start-invites.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05 |
-| `03z-shared-b-18-from-ministry-alerts-11-whats-new.js` | 65 | 3 | What's-new sheet and the survey-edit panel wrapper: whatsNewMaybe decides once per update whether to show the release lines (engineer and up); the release-notes |
+| `03z-shared-b-18-from-ministry-alerts-11-whats-new.js` | 68 | 3 | What's-new sheet and the survey-edit panel wrapper: whatsNewMaybe decides once per update whether to show the release lines (engineer and up); the release-notes |
 | `03z-shared-b-19-from-approvals-reports-02-inventory-workshop.js` | 14 | 1 | Definitions moved verbatim from src/07-reports/07-approvals-reports-02-inventory-workshop.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, |
 | `03z-shared-b-20-from-approvals-reports-03-trials-invoices.js` | 50 | 6 | Definitions moved verbatim from src/07-reports/07-approvals-reports-03-trials-invoices.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08 |
 | `03z-shared-b-21-from-approvals-reports-04-devices-reset-pulse.js` | 21 | 1 | Definitions moved verbatim from src/07-reports/07-approvals-reports-04-devices-reset-pulse.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05 |
@@ -192,11 +192,11 @@
 | `08-events--08-data-events-boot-06-long-lists-storage-clicks.js` | 185 | 2 | Moved verbatim from src/08-events/08-data-events-boot-06-long-lists-storage-clicks.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or t |
 | `08-events--08-data-events-boot-13-toast-wheel-ios-boot.js` | 12 | 2 | Moved verbatim from src/08-events/08-data-events-boot-13-toast-wheel-ios-boot.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the of |
 
-## `04-office/` — المكتب — الصور والحوكمة والمساعد والتقارير بالكلام والرسم على الخريطة  (15 ملفات · 2253 سطر · 67 دالة)
+## `04-office/` — المكتب — الصور والحوكمة والمساعد والتقارير بالكلام والرسم على الخريطة  (15 ملفات · 2268 سطر · 67 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
-| `04-tasks-office-01-task-panel-map3d.js` | 341 | 15 | Task panel, challenge-point window, field/office work on a challenge, and the 3D map toggle. |
+| `04-tasks-office-01-task-panel-map3d.js` | 356 | 15 | Task panel, challenge-point window, field/office work on a challenge, and the 3D map toggle. |
 | `04-tasks-office-02-newsite-schedule.js` | 184 | 6 | Unregistered site added from the field, who decides what it becomes, visit recorded on add, and scheduling visits for office-added points. |
 | `04-tasks-office-03-photos-drive.js` | 64 | 4 | Photos: Google Drive bridge, naming, upload to the database then server move to Drive, who uploaded/viewed/deleted, open/download in app, and plain-language tra |
 | `04-tasks-office-04-pmi-weekplan.js` | 485 | 8 | Project governance per PMI and the engineer's week plan. |
@@ -212,7 +212,7 @@
 | `04-tasks-office-14-pull-scope-listen-map.js` | 26 | 0 | Pull scope per role, differential pulls, per-device read caps, change-pulse listening, and the Leaflet map with two layers and camp polygons. |
 | `04-tasks-office-15-handover-minutes.js` | 58 | 3 | Handover and official receipt minutes. |
 
-## `05-map/` — الخريطة ودورةُ الحياة — الطبقات والتصدير والاستيراد والدخول وشاشةُ الوزارة  (13 ملفات · 3865 سطر · 167 دالة)
+## `05-map/` — الخريطة ودورةُ الحياة — الطبقات والتصدير والاستيراد والدخول وشاشةُ الوزارة  (13 ملفات · 3921 سطر · 172 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -221,16 +221,16 @@
 | `05-lifecycle-map-03-export-import-docx.js` | 711 | 4 | Export/import with real data, ExcelJS for self-updating files, and Word export that stays inside the app. |
 | `05-lifecycle-map-04-excel-templates-kmz.js` | 197 | 10 | Current page to Excel, the tasks file from a template, and KMZ/KML import. |
 | `05-lifecycle-map-05-geojson-basemap-layers.js` | 111 | 8 | GeoJSON export, offline Makkah basemap, device map for outages, ministry buildings and tafweej places layers, Mina sensor planning and camp-boundary editing. |
-| `05-lifecycle-map-06-sensors-gateways-split.js` | 203 | 22 | Sensors and gateways as first-class points, and splitting a camp. |
+| `05-lifecycle-map-06-sensors-gateways-split.js` | 257 | 27 | Sensors and gateways as first-class points, and splitting a camp. |
 | `05-lifecycle-map-07-report-lines-hybrid-google.js` | 332 | 21 | Report lines (Abar Mid), hybrid map with street names over satellite, and Google Maps inside our map. |
 | `05-lifecycle-map-08-cameras-report-sw-update.js` | 316 | 21 | Ministry camera report, service worker registration, auto-update, version announcement, the epoch (no uploads from a pre-epoch device) and 'sync everyone now'. |
 | `05-lifecycle-map-09-role-switch-login-install.js` | 533 | 20 | Role switching, logout, add-to-home-screen prompts (incl. iPhone) and the login page. |
 | `05-lifecycle-map-10-field-companies.js` | 261 | 8 | Field map-first home, composite-name parsing, companies board and company camps classified. |
-| `05-lifecycle-map-11-drawing-board-modules.js` | 310 | 9 | Drawing board and its modules: survey details, single challenge key, rooms with sensors. |
+| `05-lifecycle-map-11-drawing-board-modules.js` | 312 | 9 | Drawing board and its modules: survey details, single challenge key, rooms with sensors. |
 | `05-lifecycle-map-12-ministry-screen-progress.js` | 119 | 5 | Ministry hall screen, completion forecast, progress map, far points, satellite in the ministry screen, week sentence and the hall view. |
 | `05-lifecycle-map-13-ministry-followup.js` | 184 | 15 | Ministry follow-up page: dynamic follow-up, season brief header, 'whose turn' groups, two modes, and the no-challenge camps card. |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4280 سطر · 158 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4283 سطر · 158 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -244,7 +244,7 @@
 | `06-ministry-alerts-08-pptx-template.js` | 1044 | 23 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 284 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 1099 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 1102 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
 
@@ -288,4 +288,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 226 ملفًّا · 45916 سطر · 2051 دالة.
+**الإجمالي:** 226 ملفًّا · 45996 سطر · 2056 دالة.

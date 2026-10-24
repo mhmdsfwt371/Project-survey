@@ -46,6 +46,7 @@ function iotDevHtml(id, kind, i){   /* نافذةُ الجهاز */
     + (mayIot() ? '<div style="margin-top:6px">' + btn('\u270E ' + t('عدّل'), 'btn-quiet btn-sm', ' data-iotdev="' + esc(id) + '|' + kind + '|' + i + '"') + '</div>' : '');
 }
 function iotPaint(){
+  try { if (typeof m3IotPaint === 'function') m3IotPaint(); } catch (e3){ LS_ERR = e3; }   /* (V39.11) the 3D twin follows */
   if (typeof MAP === 'undefined' || !MAP || typeof L === 'undefined') return;
   try {
     if (IOT.layer && IOT.layer._map !== MAP) IOT.layer = null;
@@ -77,6 +78,59 @@ function iotPaint(){
   });
 }
 
+/* (V39.11) owner: «الخريطة الـ3D محتاجها تكون digital twin، وطبقة الحساسات والجيت واي في الفلتر فوق، وأقدر أمسح وأشيل وأحرك
+   وأعدل وأضيف بيانات». The sensors and gateways stand in the 3D map as small columns in their camps — teal sensors, orange
+   gateways, red when faulty or outside the camp's boundary, lighter while only planned, and a red top while selected in the
+   editor — with the same taps as the flat map: a tap opens the device's card, and in the editor a tap selects it and the
+   next tap on the ground moves it (or adds one). Every device keeps its id, room, serial, status and note. */
+function iotSq(q, half){
+  var lat = +q[0], lng = +q[1], dy = half / 111320, dx = half / (111320 * Math.cos(lat * Math.PI / 180));
+  return [[[lng - dx, lat - dy], [lng + dx, lat - dy], [lng + dx, lat + dy], [lng - dx, lat + dy], [lng - dx, lat - dy]]];
+}
+function iotColor(kind, m, bad, sel){
+  if (sel) return '#E05252';
+  if (bad || (m && m.status === 'معطّل')) return '#E05252';
+  var base = kind === 's' ? IOT_C.sensor : IOT_C.gw;
+  return (m && m.status === 'مُركّب') ? base : (kind === 's' ? '#8FE3DB' : '#F8CF8F');   /* planned: lighter */
+}
+function m3IotFeatures(){
+  var F = [], E = IOT.edit;
+  var push = function(camp, kind, i, q, m, bad, sel){
+    F.push({ type:'Feature', properties:{ camp:camp, kind:kind, i:i, did:(m && m.id) || '', color:iotColor(kind, m, bad, sel), h:kind === 's' ? 1.8 : 4, sel:sel ? 1 : 0 },
+             geometry:{ type:'Polygon', coordinates:iotSq(q, kind === 's' ? 0.7 : 1.1) } });
+  };
+  if (E){
+    var R0 = iotRing(E.id);
+    E.sensors.forEach(function(q, i){ push(E.id, 's', i, q, E.sm[i], R0 && !polyIn(q, R0), E.sel && E.sel.k === 's' && E.sel.i === i); });
+    [E.gw].concat(E.gws).forEach(function(g, j){ push(E.id, 'g', j, g, E.gm[j], false, E.sel && E.sel.k === 'g' && E.sel.i === j); });
+    return F;
+  }
+  if (!IOT.on || !M3 || !M3.getBounds) return F;
+  var b, z; try { b = M3.getBounds(); z = M3.getZoom(); } catch (e){ LS_ERR = e; return F; }
+  if (z < IOT.Z - 1) return F;
+  var inB = function(q){ return b.contains([+q[1], +q[0]]); };
+  iotCampIds().forEach(function(id){
+    var c = iotOf(id); if (!c || !c.gw || !c.sensors) return; var G = iotAllGw(c);
+    if (!G.some(inB) && !c.sensors.some(inB)) return;
+    var out = iotOutside(id, c);
+    c.sensors.forEach(function(q, i){ push(id, 's', i, q, (c.sm || [])[i], out.indexOf(i) > -1, false); });
+    G.forEach(function(g, j){ push(id, 'g', j, g, (c.gm || [])[j], false, false); });
+  });
+  return F;
+}
+function m3IotPaint(){
+  if (!MAP_3D || !M3 || !M3.getSource) return;
+  try { var s3 = M3.getSource('nskiot'); if (s3) s3.setData({ type:'FeatureCollection', features:m3IotFeatures() }); } catch (e){ LS_ERR = e; }
+}
+/* a tap on a device in the 3D map: the editor selects it, otherwise its card opens on the map */
+function m3IotClick(f, ev){
+  var p = f && f.properties; if (!p) return;
+  if (ev && ev.originalEvent) ev.originalEvent._nskIot = true;
+  var E = IOT.edit;
+  if (E && E.id === p.camp){ E.sel = { k:p.kind, i:+p.i }; E.add = false; E.addGw = false; iotPaint(); render(1); return; }
+  var html = iotDevHtml(p.camp, p.kind, +p.i); if (!html || !window.maplibregl) return;
+  try { new maplibregl.Popup({ closeButton:true, maxWidth:'280px' }).setLngLat(ev.lngLat).setHTML('<div class="iot-pop" dir="auto">' + html + '</div>').addTo(M3); } catch (e){ LS_ERR = e; }
+}
 function iotNextId(E, pre){ var used = {}; (pre === 'S' ? E.sm : E.gm).forEach(function(m){ used[m.id] = 1; }); var n = 1; while (used[E.id + '-' + pre + (pre === 'S' ? iotPad(n) : n)]) n++; return E.id + '-' + pre + (pre === 'S' ? iotPad(n) : n); }
 function iotMapClick(ll){
   var E = IOT.edit; if (!E) return;
