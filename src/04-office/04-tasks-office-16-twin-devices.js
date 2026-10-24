@@ -54,6 +54,7 @@ function dtwFeatures(){
     var D = dtwOf(x.id); if (!D.length) return;
     D.forEach(function(dv, j){
       var K = dtwKinds(dv.code), p = dtwRing(+x.lat, +x.lng, j, D.length);
+      if (K.k === 'reader' && liveState().on) K = { k:K.k, h:K.h, color:liveColorOf(x) };   /* (V39.20) the reader column beats with its pulse */
       var base = typeof m3Base === 'function' ? m3Base(x) : 0;   /* (V39.15) a device on a floor stands on that floor */
       F.push({ type:'Feature', properties:{ site:x.id, code:dv.code, i:dv.i, serial:dv.serial, kind:K.k, color:K.color, h:base + K.h, base:base },
                geometry:{ type:'Polygon', coordinates:iotSq(p, 0.5) } });
@@ -85,6 +86,7 @@ function dtwCardHtml(p){
   return '<b>' + esc(t(itemName(p.code))) + '</b>' + (units > 1 ? ' <span class="hint" style="margin:0">' + nm(+p.i + 1) + ' / ' + nm(units) + '</span>' : '')
     + '<br><span class="hint">' + esc(x ? (x.name || x.id) : p.site) + '</span>'
     + row('السيريال', p.serial) + row('الحالة', r.status) + row('ركّبه', r.by) + (r.at ? row('بتاريخ', fmtDate(r.at)) : '')
+    + (liveState().on && p.kind === 'reader' && x ? '<div>' + esc(liveTextOf(x)) + '</div>' : '')   /* (V39.20) the reader's pulse on its card */
     + '<div class="actions" style="margin-top:6px">' + btn('\u{1F4C4} ' + t('صفحة النقطة'), 'btn-quiet btn-sm', ' data-site="' + esc(p.site) + '"')
     + (typeof insqMay === 'function' && insqMay(p.site) ? btn('\u270E ' + t('تعديل التركيب'), 'btn-quiet btn-sm', ' data-insq="' + esc(p.site) + '"') : '') + '</div>';
 }

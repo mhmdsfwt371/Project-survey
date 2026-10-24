@@ -1468,6 +1468,28 @@ console.log('\n══ ٥٣ · صورُ التركيب على المجسّم ═�
   delete w.STATE.photos[k]; w.phTouch(); w.M3 = M30; w.MAP_3D = d30; w.CUR = cur0;
 }
 
+/* ── ٥٤ · (V39.20) التوأمُ الحي: نبضُ القرّاء وإشغالُ المخيمات من جسر نظام البطاقات ── */
+console.log('\n══ ٥٤ · التوأم الحي ══');
+{
+  const LV = w.liveState(), on0 = LV.on, snap0 = w.STATE.extSnap, cur0 = w.CUR; w.CUR = 'map';
+  const camp = w.STATE.sites.find(x => x.type === 'مخيم' && +x.lat), pt = w.STATE.sites.find(x => x.type !== 'مخيم' && +x.lat);
+  const now = Date.now();
+  w.STATE.extSnap = { at:now, sites:{ [camp.id]:{ code:'C-1', ts:new Date(now - 5 * 60000).toISOString() }, [pt.id]:{ code:'P-1', ts:new Date(now - 3 * 3600000).toISOString() } }, camps:{ 'C-1':{ w:850, wo:50, ot:0, cap:1000 } } };
+  const occ = w.liveOcc(camp);
+  T(!!occ && occ.pct === 90 && occ.tot === 900 && occ.cap === 1000, 'إشغالُ المخيم من اللقطة: ٩٠٪ (' + (occ ? occ.pct : '—') + ')');
+  const p1 = w.liveOf(pt);
+  T(p1.link && !p1.on, 'ونقطةٌ قرأت قبل ثلاث ساعات مربوطةٌ وصامتة');
+  LV.on = true;
+  T(w.mapColorOf(camp) === '#E05252' && w.mapColorOf(pt) === '#E05252', 'وفي وضع «الحي» المخيمُ الممتلئُ أحمر والقارئُ الصامتُ أحمر');
+  const other = w.STATE.sites.find(x => x.type !== 'مخيم' && +x.lat && x.id !== pt.id);
+  T(w.mapColorOf(other) === '#5B6570', 'وغيرُ المربوط رمادي');
+  T(/٩٠/.test(w.liveTextOf(camp)) && /غير متصل/.test(w.liveTextOf(pt)), 'والتلميحُ يقول الإشغالَ ونبضَ القارئ');
+  const n = w.liveCounts(); T(n.camps >= 1 && n.off >= 1 && /data-live="1"/.test(w.mapUIHtml()), 'وزرُّ «الحي» بعدِّ المتصل من المربوط');
+  w.STATE.iotLive = { 'camp-x':{ at:now, s:{ S01:{ at:now - 60000, v:27.5 } } } };
+  const sv = w.liveSensor('camp-x', 'S01'); T(!!sv && sv.on && sv.v === 27.5 && w.liveSensor('camp-x', 'S09') === null, 'وبنيةُ نبض الحساسات جاهزةٌ لجسرٍ يكتبها');
+  delete w.STATE.iotLive; LV.on = on0; w.STATE.extSnap = snap0; w.CUR = cur0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

@@ -107,6 +107,7 @@ function lifeColor(x){ return (LIFE[lifeOf(x)] || LIFE.todo).c; }
 /* ألوانُ دورة الزيارة — تبقى لتلوينِ «نقاطي» في طبقة المسح */
 function mapColorOf(x){
   if (timeState().on) return timeColorOf(x);   /* (V39.17) the season replayed: the stage reached by the chosen day */
+  if (liveState().on) return liveColorOf(x);   /* (V39.20) the live twin: the reader's pulse, the camp's fullness */
   /* وضعُ الشركات: ما له شركةٌ يلبس لونَها، وما لا شركةَ له يبقى على لون
      طبقته. وكان كلُّ ما لا شركةَ له يُرمَّد — فتختفي الممراتُ والمحطاتُ
      والكاميراتُ تحت لونٍ واحدٍ باهت، ويظنُّ الناظرُ أنها خرجت من الطبقة.

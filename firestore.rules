@@ -289,6 +289,8 @@ service cloud.firestore {
     match /settings/pulse    { allow read: if ok(); allow create, update: if ok() && !viewer(); allow delete: if mgr(); }
     // ختمُ آخر تشغيلٍ للجسر (V17.39): يكتبه الخادمُ وحدَه (مفتاحُ الخدمة يتجاوز القواعد) ويقرؤه كلُّ فعّال
     match /settings/bridge   { allow read: if ok(); allow write: if false; }
+    /* (V39.20) the sensors' pulse — a future bridge writes it with the admin key (see docs/live.md); the app only reads */
+    match /iotlive/{camp}    { allow read: if ok(); allow write: if false; }
     // النبضُ والتقريرُ (V17.94): يكتبهما الخادمُ، ويقرؤهما المكتبُ والإدارةُ العليا — لا بلاغَ عامًّا
     match /settings/sysreport { allow read: if mgr() || (ok() && role() == 'exec'); allow write: if false; }
     // سجلاتُ الإدارة (V19.3): الدروسُ المستفادة والمراجعاتُ وأصحابُ المصلحة — للمكتب والإدارة العليا قراءةً، والمكتبُ كتابةً

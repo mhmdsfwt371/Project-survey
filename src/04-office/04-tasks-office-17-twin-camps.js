@@ -72,7 +72,10 @@ function tentFeatures(){
   Object.keys(M3_FOOT).forEach(function(id){
     var ring = M3_FOOT[id]; if (!ring || ring.length < 3) return;
     if (!ring.some(function(q){ return b.contains([+q[0], +q[1]]); })) return;
-    F = F.concat(tentFeaturesOf(id, ring));
+    var TF = tentFeaturesOf(id, ring);
+    /* (V39.20) in the live mode the roofs take the camp's fullness colour — a full camp reads red from above */
+    if (liveState().on){ var x = siteFind(id), lc = x && liveOcc(x) ? liveColorOf(x) : ''; if (lc) TF = TF.map(function(f){ return f.properties.k === 'roof' ? { type:'Feature', properties:Object.assign({}, f.properties, { color:lc }), geometry:f.geometry } : f; }); }
+    F = F.concat(TF);
   });
   return F;
 }

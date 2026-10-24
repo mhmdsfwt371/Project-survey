@@ -196,7 +196,8 @@ function m3HoverHtml(layer, p){
   }
   if (layer === 'nsk-twin') return '<b>' + esc(t(itemName(p.code))) + '</b>' + (p.serial ? ' \u00b7 <span class="num">' + esc(p.serial) + '</span>' : '') + '<br><span class="hint" style="margin:0">' + esc(p.site) + '</span>';
   var x = siteFind(p.id); if (!x) return '';
-  return '<b>' + esc(x.name || x.id) + '</b><br><span class="hint" style="margin:0">' + esc(typeof svLabel === 'function' ? svLabel(x) : '') + '</span>';
+  return '<b>' + esc(x.name || x.id) + '</b><br><span class="hint" style="margin:0">' + esc(typeof svLabel === 'function' ? svLabel(x) : '') + '</span>'
+    + (liveState().on ? '<br>' + esc(liveTextOf(x)) : '');   /* (V39.20) */
 }
 /* الكاميرا تنتقل حيث كان الناظر — لا تبدأ من مكانٍ آخر */
 function m3From2D(){

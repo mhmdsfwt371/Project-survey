@@ -108,6 +108,8 @@ function mapUIHtml(){
     /* (V39.15) the facility's floors as chips up here while the Jamarat (or a floor) is selected — the filter sheet's own switch */
     +   ((FILT.zone === 'كاميرات المتابعة' || (FILT.floor !== '' && FILT.floor != null)) ? '<span class="chip-pair">' + [['', 'كل الأدوار'], ['0', 'الأرضي'], ['1', 'الأول'], ['2', 'الثاني'], ['3', 'الثالث'], ['4', 'الرابع']].map(function(f){
           var on = String(FILT.floor) === f[0] && !(f[0] === '' && FILT.floor !== ''); return '<button type="button" class="map-chip' + (on ? ' on' : '') + '" data-ffl="' + f[0] + '">\u{1F3E2} ' + esc(t(f[1])) + '</button>'; }).join('') + '</span>' : '')
+    /* (V39.20) the live twin: readers' pulse and camps' fullness from the card system */
+    +   '<button type="button" class="map-chip'+(liveState().on?' on':'')+'" data-live="1">\u{1F493} '+esc(t('الحي'))+(liveState().on ? (function(){ var n = liveCounts(); return ' \u00b7 ' + nm(n.on) + ' / ' + nm(n.on + n.off); })() : '')+'</button>'
     /* (V39.17) the season replayed day by day */
     +   '<button type="button" class="map-chip'+(timeState().on?' on':'')+'" data-time="1">\u23F3 '+esc(t('الزمن'))+'</button>'
     /* (V39.16) the heat: challenges in survey mode, remaining work in installation and dismantling */
