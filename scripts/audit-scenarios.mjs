@@ -1821,6 +1821,34 @@ console.log('\n══ ٦٨ · الشكلُ الافتراضيّ عند التق�
   T(/if \(!IOT\.on && !IOT\.touched\)\{ IOT\.on = true;/.test(String(w.m3Toggle)), 'والحساساتُ تظهر مع الدخول إلى الثلاثيّ ما لم يُطفئها المستخدمُ بنفسه');
 }
 
+/* ── ٦٩ · (V39.37) نتائجُ المراجعة الشاملة: كلُّ حقلٍ باسمٍ يقرؤه قارئُ الشاشة، ولا معرّفَ مكرّر، ولا شريحةَ بلا فعل ── */
+console.log('\n══ ٦٩ · نتائجُ المراجعة الشاملة ══');
+{
+  const d = w.document, role0 = w.ROLE, cur0 = w.CUR, bad = [];
+  ['engineer', 'buyer', 'acct'].forEach(role => {
+    w.ROLE = role; w.STATE.meta.role = role;
+    w.NAV.forEach(n => [n.id].concat((n.items || []).map(it => it[0])).filter(Boolean).forEach(pg => {
+      try { w.goPage(pg); w.render(1); } catch (e){ return; }
+      if (w.CUR !== pg) return;
+      const root = d.querySelector('main.shell') || d.body;
+      root.querySelectorAll('input:not([type=hidden]),select,textarea').forEach(el => {
+        const ok = el.getAttribute('aria-label') || el.getAttribute('placeholder') || el.getAttribute('title') || (el.id && d.querySelector('label[for="' + el.id + '"]')) || el.closest('label');
+        if (!ok) bad.push(role + ':' + pg + ':' + el.tagName);
+      });
+    }));
+  });
+  T(bad.length === 0, 'كلُّ حقلٍ في صفحات المهندس والمشتريات والمالية له اسمٌ يقرؤه قارئُ الشاشة (كانت ٣٩٥)' + (bad.length ? ': ' + bad.slice(0, 5).join(' | ') : ''));
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
+  w.goPage('map'); w.HELP_OPEN = true; w.render(1); w.goPage('users'); w.render(1);
+  const ids = {}; d.querySelectorAll('[id]').forEach(el => { ids[el.id] = (ids[el.id] || 0) + 1; });
+  T(!Object.keys(ids).some(k => ids[k] > 1), 'والانتقالُ من الخريطة ونافذةُ المساعدة مفتوحةٌ لا يترك نافذتين بمعرّفٍ واحد');
+  w.HELP_OPEN = false;
+  w.goPage('mfu'); w.render(1);
+  const ch = [...d.querySelectorAll('.chip.on[aria-current="true"]')];
+  T(ch.length >= 1 && ch.every(c => c.disabled), 'وشريحةُ الوضع الحالي في متابعة الوزارة لا تُضغَط فتنطفئ بلا معنى');
+  w.ROLE = role0; w.STATE.meta.role = role0; w.goPage(cur0 || 'map'); w.render(1);
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

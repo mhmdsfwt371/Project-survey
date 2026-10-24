@@ -248,7 +248,7 @@ function mfuHeroHtml(){
 function mfuModeBar(){
   return '<div class="card mfu-mode" style="margin:0 0 12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">'
     + '<div><b>' + esc(t('متابعة الوزارة — الملخّص')) + '</b><div class="hint" style="margin:2px 0 0">' + esc(t('نفسُ الصفحة بوضعين: للاجتماع هنا، وللقاعة بملء الشاشة.')) + '</div></div>'
-    + '<div class="chips" style="margin:0"><button type="button" class="chip on" aria-pressed="true">\u{1F4CA} ' + esc(t('متابعة')) + '</button><button type="button" class="chip" data-kiosk="1" title="' + esc(t('يملأ الشاشةَ ويتنقّل بين الأقسام بنفسه كلَّ خمسَ عشرةَ ثانية')) + '">\u{1F5A5} ' + esc(t('عرض القاعة')) + '</button>' + '<button type="button" class="chip" data-hallcopy="1" title="' + esc(t('رابطٌ يفتح عرضَ القاعة وحدَه على جهاز القاعة')) + '">\u{1F517} ' + esc(t('رابط القاعة')) + '</button></div></div>';
+    + '<div class="chips" style="margin:0"><button type="button" class="chip on" aria-pressed="true" aria-current="true" disabled style="opacity:1;cursor:default">\u{1F4CA} ' + esc(t('متابعة')) + '</button><button type="button" class="chip" data-kiosk="1" title="' + esc(t('يملأ الشاشةَ ويتنقّل بين الأقسام بنفسه كلَّ خمسَ عشرةَ ثانية')) + '">\u{1F5A5} ' + esc(t('عرض القاعة')) + '</button>' + '<button type="button" class="chip" data-hallcopy="1" title="' + esc(t('رابطٌ يفتح عرضَ القاعة وحدَه على جهاز القاعة')) + '">\u{1F517} ' + esc(t('رابط القاعة')) + '</button></div></div>';
 }
 
 function mfuStoryCard(){

@@ -2,7 +2,7 @@
    FILE    : src/08-events/08-data-events-boot-06-long-lists-storage-clicks.js
    DOMAIN  : Data & events — settings, users, click handlers, boot
    PURPOSE : Long lists (100 first then 'show more'), persistent storage request, table and window clicks.
-   DEFINES : moreKey, capList, moreHtml, render, renderKeepGrab, renderKeepPut, render0, enterApp, enterShell, syncOnHide, storagePersistMaybe
+   DEFINES : moreKey, capList, moreHtml, render, renderKeepGrab, renderKeepPut, render0, enterApp, enterShell, syncOnHide, storagePersistMaybe, a11yFieldNames
    GLOBALS : MORE_SHOWN, PERSIST, ACTS_CACHE
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
@@ -30,7 +30,27 @@ function render(force){   /* (V31.8) ذاكرةُ الرسمة: تُفتَح ه�
      sync badge) rebuilt the field from the page's state and erased what was being typed and closed the keyboard. The field
      being typed in survives every redraw: same value, focus and caret. */
   var keep = renderKeepGrab();
-  try { return render0(force); } finally { DB.memoReset(); renderKeepPut(keep); }
+  try { return render0(force); } finally { DB.memoReset(); renderKeepPut(keep); a11yFieldNames(); }
+}
+/* (V39.37) the review sweep (13 roles × every page): 119 fields on the engineer's pages, 149 on the buyer's and 127 on the
+   accountant's had no name a screen reader could say — selects and inputs placed beside a text, not inside a <label>. After
+   every render each unnamed field takes the text beside it (its label, key or hint), or a select its first option. */
+function a11yFieldNames(){
+  try {
+    var root = document.querySelector('main.shell') || document.body;
+    var els = root.querySelectorAll('select:not([aria-label]):not([title]), input:not([type=hidden]):not([aria-label]):not([title]):not([placeholder]), textarea:not([aria-label]):not([title]):not([placeholder])');
+    for (var i = 0; i < els.length && i < 600; i++){
+      var el = els[i];
+      if ((el.id && document.querySelector('label[for="' + el.id + '"]')) || el.closest('label')) continue;
+      var txt = '', pv = el.previousElementSibling;
+      if (pv && !/^(SELECT|INPUT|TEXTAREA|BUTTON)$/.test(pv.tagName)) txt = pv.textContent;
+      if (!txt && el.parentElement){ var lb = el.parentElement.querySelector('label, .k, .hint, b, strong'); if (lb && lb !== el && !lb.contains(el)) txt = lb.textContent; }
+      if (!txt && el.tagName === 'SELECT' && el.options && el.options[0]) txt = el.options[0].textContent;
+      if (!txt && el.name) txt = el.name;
+      txt = String(txt || '').replace(/\s+/g, ' ').trim().slice(0, 60);
+      if (txt) el.setAttribute('aria-label', txt);
+    }
+  } catch (e){ LS_ERR = e; }
 }
 function renderKeepGrab(){
   try {
@@ -230,6 +250,7 @@ function render0(force){
   }
 
   if (mw) mw.hidden = true;
+  if (mu && mu.innerHTML) mu.innerHTML = '';   /* (V39.37) the review sweep: the map's layer kept its help and queue windows under other pages — two elements with one id */
   c.hidden = false;
   /* الصفحاتُ ذاتُ الجداول العريضة تُطلَق من حدِّ العرض (V17.16) — وغيرُها
      يبقى في عرضٍ مقروء. ويُكتَب الصنفُ هنا لأن السطرَ يُعيد بناءَ الأصناف
