@@ -1338,6 +1338,30 @@ console.log('\n══ ٤٧ · أجهزةُ النقطة في المجسّم ═�
   w.dtwPaint.on = true; w.M3 = M30; w.MAP_3D = d30; delete w.STATE.inss[x.id]; w.ROLE = role0; w.STATE.meta.role = role0; w.CUR = cur0;
 }
 
+/* ── ٤٨ · (V39.14) التغطية: مدى القارئ، ومخروط الكاميرا حين يُعرَف اتجاهها، ومدى الجيت واي ── */
+console.log('\n══ ٤٨ · طبقة التغطية ══');
+{
+  const role0 = w.ROLE, cur0 = w.CUR, on0 = w.covPaint.on;
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.CUR = 'map';
+  const x = w.STATE.sites.find(s => +s.lat && +s.lng && !(w.STATE.inss || {})[s.id]);
+  w.STATE.inss = w.STATE.inss || {};
+  w.STATE.inss[x.id] = { id:x.id, status:'مُركّب', parts:{ rdr8:1, cam_pe:1 }, serials:{} };
+  const all = () => true;
+  let S = w.covShapes(all).filter(s => s.site === x.id);
+  T(S.length === 2 && S.some(s => s.kind === 'reader' && s.ring.length === 36) && S.some(s => s.kind === 'camera-unaimed'), 'نقطةٌ بقارئٍ وكاميرا بلا اتجاه: دائرةُ القارئ ودائرةٌ باهتةٌ للكاميرا');
+  w.STATE.inss[x.id].cov = { dir:90, fov:60, rdr:20 };
+  S = w.covShapes(all).filter(s => s.site === x.id);
+  const cam = S.find(s => s.kind === 'camera'), rdr = S.find(s => s.kind === 'reader');
+  const east = cam && cam.ring[7], dLng = east ? east[1] - +x.lng : 0, dLat = east ? east[0] - +x.lat : 1;
+  T(!!cam && cam.ring.length === 15 && dLng > 0 && Math.abs(dLat) < Math.abs(dLng) / 8, 'وباتجاهٍ ٩٠ درجة يصير مخروطًا نحو الشرق');
+  const r20 = rdr && Math.hypot((rdr.ring[0][0] - +x.lat) * 111320, 0);
+  T(!!rdr && Math.abs(r20 - 20) < 0.5, 'ومدى القارئ المكتوبُ ٢٠ م يُرسم ٢٠ م: ' + (r20 || 0).toFixed(1));
+  T(/data-cov="1"/.test(w.mapUIHtml()) && /التغطية/.test(w.mapUIHtml()), 'وزرُّ «التغطية» في صفِّ أزرار الخريطة');
+  const sheetHtml = (() => { const S0 = w.insqState(); S0.id = x.id; const h = w.insqSheet(); S0.id = ''; return h; })();
+  T(/data-insqcov="dir"/.test(sheetHtml) && /data-insqcov="fov"/.test(sheetHtml) && /data-insqcov="rdr"/.test(sheetHtml) && /value="90"/.test(sheetHtml), 'وورقةُ تعديل التركيب فيها الاتجاهُ والزاويةُ والمدى بقيمها');
+  delete w.STATE.inss[x.id]; w.ROLE = role0; w.STATE.meta.role = role0; w.CUR = cur0; w.covPaint.on = on0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

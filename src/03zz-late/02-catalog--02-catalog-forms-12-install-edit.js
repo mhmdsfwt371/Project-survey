@@ -41,9 +41,13 @@ function insqSave(){
     if (o !== n) changes.push(itemName(k) + ' \u00d7' + nm(o) + ' \u2190 \u00d7' + nm(n));
     if (so !== sn) changes.push(itemName(k) + ' ' + t('سيريال') + ': ' + (so || '—') + ' \u2190 ' + (sn || '—'));
   });
+  /* (V39.14) the coverage fields — a change is a change like any other */
+  var cov = Object.assign({}, rec.cov || {});
+  document.querySelectorAll('#insqSheet [data-insqcov]').forEach(function(el){ var k = el.getAttribute('data-insqcov'), v = String(el.value || '').trim(); if (v === '') delete cov[k]; else cov[k] = Math.round(cfgN(v)); });
+  if (JSON.stringify(cov) !== JSON.stringify(rec.cov || {})) changes.push(t('التغطية') + ': ' + [cov.dir != null ? t('اتجاه') + ' ' + nm(cov.dir) : '', cov.fov ? t('زاوية') + ' ' + nm(cov.fov) : '', cov.rdr ? t('مدى') + ' ' + nm(cov.rdr) : ''].filter(Boolean).join(' \u00b7 '));
   if (!changes.length){ toast(t('لا تغييرَ')); return false; }
   var pts = 0; Object.keys(parts).forEach(function(k){ pts += parts[k] * itPts(k); });
-  var n2 = Object.assign({}, rec, { status:status, parts:parts, serials:serials, pts:pts, editAt:now, editBy:who });
+  var n2 = Object.assign({}, rec, { status:status, parts:parts, serials:serials, pts:pts, editAt:now, editBy:who, cov:cov });
   if (rec.approved && !may('approve')){ n2.approved = false; n2.why = 'عُدِّل بعد الاعتماد — يُراجَع ثانيةً'; changes.push(t('أُعيد إلى التدقيق')); }
   n2.edits = (Array.isArray(rec.edits) ? rec.edits : []).concat([{ what:changes.join(' \u00b7 '), by:who, at:now }]).slice(-30);
   CORE.set('inss', s.id, n2);

@@ -55,6 +55,11 @@ function insqSheet(){
     + '<p class="hint" style="margin:6px 0 10px">' + esc(t(rec.approved && !boss ? 'هذا التركيبُ معتمد — أيُّ تعديلٍ يعيده إلى تدقيق المهندس.' : 'عدّل الحالةَ أو الكمياتِ أو السيريالات ثم احفظ — والصورُ تُحذَف وتُضاف كلٌّ على حدة، ويُسجَّل كلُّ تعديلٍ باسمك.')) + '</p>'
     + '<div class="wp-sec">' + esc(t('حالة التركيب')) + '</div>' + chips
     + '<div class="wp-sec">' + esc(t('القطع والسيريالات')) + '</div>' + rows
+    /* (V39.14) the coverage the map draws: the camera's direction and view angle, the reader's range */
+    + '<div class="wp-sec">' + esc(t('التغطية على الخريطة')) + '</div>'
+    + '<div class="svq-row"><div class="svq-k" style="flex:1 1 40%">' + esc(t('اتجاه الكاميرا (درجة من الشمال)')) + '</div><input type="number" inputmode="numeric" min="0" max="359" class="in" style="width:84px" value="' + esc((rec.cov && rec.cov.dir != null) ? rec.cov.dir : '') + '" data-insqcov="dir" placeholder="—"></div>'
+    + '<div class="svq-row"><div class="svq-k" style="flex:1 1 40%">' + esc(t('زاوية الرؤية (درجة)')) + '</div><input type="number" inputmode="numeric" min="10" max="360" class="in" style="width:84px" value="' + esc((rec.cov && rec.cov.fov) || '') + '" data-insqcov="fov" placeholder="' + nm(covDefaults().fov) + '"></div>'
+    + '<div class="svq-row"><div class="svq-k" style="flex:1 1 40%">' + esc(t('مدى القارئ (م)')) + '</div><input type="number" inputmode="numeric" min="1" max="100" class="in" style="width:84px" value="' + esc((rec.cov && rec.cov.rdr) || '') + '" data-insqcov="rdr" placeholder="' + nm(covDefaults().rdr) + '"></div>'
     + '<div class="actions" style="margin:8px 0 0">' + btn('\u2713 ' + t('احفظ التعديل'), 'btn-primary btn-sm', ' data-insqsave="1"') + btn(t('إغلاق'), 'btn-quiet btn-sm', ' data-insqx="1"')
     + (boss ? btn('\u2716 ' + t('إلغاء تركيبٍ سُجِّل خطأً'), 'btn-sm', ' data-insqvoid="' + esc(rec.id) + '" style="color:var(--danger);border-color:var(--danger)"') : '') + '</div>'   /* (V38.68) */
     + insqPhotos(rec) + phDeletedHtml(rec.id, true)   /* (V38.74) */

@@ -91,6 +91,7 @@ function m3Layers(){
   } catch (e){ LS_ERR = e; }
   try {
     var P = m3Points();
+    covLayers3d();   /* (V39.14) the coverage lies on the ground, under the columns */
     if (!M3.getSource('nskc')){
       M3.addSource('nskc', { type:'geojson', data:{ type:'FeatureCollection', features:m3Cols(P) } });
       M3.addLayer({ id:'nsk-cols', type:'fill-extrusion', source:'nskc',
@@ -156,7 +157,7 @@ function m3Init(){
     if (ev.originalEvent && ev.originalEvent._nskIot) return;
     if (typeof IOT === 'object' && IOT.edit && ev.lngLat){ try { if (M3.queryRenderedFeatures(ev.point, { layers:['nsk-iot'] }).length) return; } catch (eQ){ LS_ERR = eQ; } iotMapClick({ lat:ev.lngLat.lat, lng:ev.lngLat.lng }); }
   });
-  M3.on('moveend', function(){ if (MAP_3D && typeof IOT === 'object' && IOT.on && typeof m3IotPaint === 'function') m3IotPaint(); if (MAP_3D && typeof dtwPaint === 'function') dtwPaint(); });
+  M3.on('moveend', function(){ if (MAP_3D && typeof IOT === 'object' && IOT.on && typeof m3IotPaint === 'function') m3IotPaint(); if (MAP_3D && typeof dtwPaint === 'function') dtwPaint(); if (MAP_3D) covPaint3d(); });
   M3.on('mouseenter', 'nsk-iot', function(){ M3.getCanvas().style.cursor = 'pointer'; });
   M3.on('mouseleave', 'nsk-iot', function(){ M3.getCanvas().style.cursor = ''; });
   M3.on('mouseenter', 'nsk-pts', function(){ M3.getCanvas().style.cursor = 'pointer'; });

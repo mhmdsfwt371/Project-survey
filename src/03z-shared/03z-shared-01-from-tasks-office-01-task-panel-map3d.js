@@ -78,5 +78,6 @@ function m3Paint(){
   } catch (e){ LS_ERR = e; }
   try { if (typeof m3IotPaint === 'function') m3IotPaint(); } catch (e2){ LS_ERR = e2; }   /* (V39.11) */
   try { if (typeof dtwPaint === 'function') dtwPaint(); } catch (e3){ LS_ERR = e3; }   /* (V39.13) */
+  try { covPaint3d(); } catch (e4){ LS_ERR = e4; }   /* (V39.14) */
   m3Count(P);
 }

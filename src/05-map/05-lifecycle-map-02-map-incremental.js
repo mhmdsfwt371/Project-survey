@@ -141,7 +141,8 @@ function mapPaintLight(z){
   MK.lifeMemo = null;
   mkSweep(want);
   mkCount(LIST, inView);
-  if (IOT.on) iotPaint();   /* (V25.7) طبقةُ الحساسات تتبع الإطار */
+  if (IOT.on) iotPaint();
+  if (covPaint.on) covPaint();   /* (V39.14) */   /* (V25.7) طبقةُ الحساسات تتبع الإطار */
 }
 /* ═══ (V30.9) فكرةُ المالك #٩ — أولُ فتحٍ أسرع: الرسمُ يُجمَّع ═══
    قياسُ الإقلاع على الجوال: الخريطةُ تُرسَم ثلاثًا وعشرين مرةً في أول ثانيتين (كلُّ رسمِ صفحةٍ يرسمها مرتين،
@@ -264,7 +265,8 @@ function mapPaint(light){
   } catch (e){ LS_ERR = e; }
 
   mkCount(LIST, inView);
-  if (IOT.on) iotPaint();   /* (V25.7) */
+  if (IOT.on) iotPaint();
+  if (covPaint.on) covPaint();   /* (V39.14) */   /* (V25.7) */
   /* (V38.34) train gates are registry points now — painted like any point */
 }
 
