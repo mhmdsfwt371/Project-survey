@@ -114,6 +114,7 @@ function m3Layers(){
     }
     /* (V39.11) the sensors and gateways as small columns — the digital twin of the camps' plans */
     tentLayers();   /* (V39.18) the tents stand on the plinth, above the columns' layer */
+    if (typeof iotFieldLoad === 'function') iotFieldLoad();   /* (V39.23) the camps' real gates and devices */
     if (!M3.getSource('nskiot')){
       M3.addSource('nskiot', { type:'geojson', data:{ type:'FeatureCollection', features:(typeof m3IotFeatures === 'function' ? m3IotFeatures() : []) } });
       /* (V39.17) owner: the sensors stay visible — a dot of fixed size at every zoom, and the column when close enough */

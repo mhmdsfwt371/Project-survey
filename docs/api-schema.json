@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V39.22",
+  "app_version": "V39.23",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2284,7 +2284,8 @@
   "V39.19": "04-tasks-office-18-twin-photos.js (الجزء المكتبي): phPinTargets() النقاط ذات الصور داخل الإطار من تقريب ١٦٫٥، الأقرب إلى المركز أوّلًا، حدٌّ ٦٠ · phPinEl عنصر .ph-pin بـdata-site (مسار النقر القائم) · phPinPaint: maplibregl.Marker مُخزَّن بالنقطة، يُضاف ويُزال مع الإطار · phPinClear عند m3Off · زرّ data-phpin وphPinPaint.on · CSS .ph-pin في الرأس · سيناريو ٥٣ (٢٨١ فحصًا)",
   "V39.20": "05-lifecycle-map-18-live.js (النواة): liveOf(x) من extLink/extRdState أو extSnap · liveOcc(x) من EXT.ov occupancyStatus أو extSnap.camps · liveColorOf (mapColorOf يعبر منها بعد الزمن) · liveTextOf في تلميح المجسّم وبطاقة الجهاز · liveCounts في الزرّ · liveKick يستدعي pilotKick · liveSensor(camp,id) يقرأ STATE.iotLive (مجموعة iotlive/{camp} — قراءة للكل وكتابة ممنوعة من التطبيق) · أسقف الخيام بلون الإشغال وعمود القارئ بلون النبض · docs/live.md البنية والمصادر · سيناريو ٥٤ (٢٨٨ فحصًا)",
   "V39.21": "m3IotFeatures: لكل جهاز مضلّع ثالث beacon (base ٤٫٨، h ٥٫٤ للحساس و٦٫٦ للجيت واي) وعمود الجيت واي ٦ م؛ طبقة nsk-iot: fill-extrusion-base من base · nsk-tent opacity ٠٫٧٢ · CSS: .maplibregl-popup .maplibregl-popup-content بـ!important فوق ورقة المحرّك (تُحمَّل بعد ورقتنا) + التلميح وزر الإغلاق · m3Enter(id): flyTo zoom ٢٠ pitch ٨٠ bearing نحو مركز الحدود، والثانية تدير ١٨٠° · زر data-m3enter في نافذة المخيم مع المجسّم + dblclick على nsk-cols · hostile-expect: iotlive office('AADDD') — سقوط بوابة V39.20 · سيناريو ٥٥ و٤٥ محدَّث (٢٩٣ فحصًا)",
-  "V39.22": "layers/iot-field-1448.json: مواقع الأجهزة الفعلية بالمخيم (spots → dev {model, tag, at}) — مخيم NSK-MIN-CMP-0449 من لقطة الفريق مطابَقةً بحدود poly.json (تطابق ٩٨٪) · 05-lifecycle-map-19-field-layouts.js: iotFieldLoad/iotFieldOf/iotFieldCount/iotFieldApply/iotFieldBanner — اللافتة في iotPanelHtml والتطبيق في المحرّر فقط والحفظ بـiotSave المعتاد · sm/gm: حقلا model وtag في المحرّر (datalist EM300/EM320/UG65/UG67) وiotMetaSet وبطاقة الجهاز وتلميح المجسّم وعمودان في إكسل الحساسات · data-iotfield · سيناريو ٥٦ (٣٠١ فحصًا)"
+  "V39.22": "layers/iot-field-1448.json: مواقع الأجهزة الفعلية بالمخيم (spots → dev {model, tag, at}) — مخيم NSK-MIN-CMP-0449 من لقطة الفريق مطابَقةً بحدود poly.json (تطابق ٩٨٪) · 05-lifecycle-map-19-field-layouts.js: iotFieldLoad/iotFieldOf/iotFieldCount/iotFieldApply/iotFieldBanner — اللافتة في iotPanelHtml والتطبيق في المحرّر فقط والحفظ بـiotSave المعتاد · sm/gm: حقلا model وtag في المحرّر (datalist EM300/EM320/UG65/UG67) وiotMetaSet وبطاقة الجهاز وتلميح المجسّم وعمودان في إكسل الحساسات · data-iotfield · سيناريو ٥٦ (٣٠١ فحصًا)",
+  "V39.23": "iot-field-1448.json: gate {at, box} وentrances [{at, main}] للمخيم 0449 (المدخل الجنوبي الشرقي على الشارع، من لقطة الفريق) · iotGateOf/iotEntrancesOf · iotFieldApply يضع gw عند البوابة وgm[0] مركّبًا بملاحظة الصندوق · اللافتة تعود إن حُفظت الخطّة والجيت واي أبعد من ١٫٥ م عن البوابة · dtwFeatures: حلقة الأجهزة حول البوابة إن وُجدت · m3Enter من البوابة · tentFence(ring, ents): فتحة ٤ م في أقرب ضلع لكل مدخل وإطار بوابة (عمودان وعتبة؛ الرئيسية ٣٫٦ م بالأخضر) · iotFieldLoad في المجسّم ويعيد رسم الخيام والأجهزة · t('عدّل الحساسات') · سيناريو ٥٧ (٣٠٨ فحوص)"
   },
   "map_and_geolocation": {
     "tile_layers": {

@@ -1526,7 +1526,7 @@ console.log('\n══ ٥٦ · الأجهزةُ الفعلية في مخيم ال
   w.iotEditStart('NSK-MIN-CMP-0449');
   T(w.IOT.edit && w.IOT.edit.sensors.length === 12 && /data-iotfield="1"/.test(w.iotPanelHtml()), 'المحرّرُ يفتح على الخطّة المبدئية (١٢) ويعرض «طبّق المواقع الفعلية»');
   w.iotFieldApply(); const E = w.IOT.edit;
-  T(E.sensors.length === 8 && E.sm.every(m => m.status === 'مُركّب' && m.field) && E.sm[1].model === 'EM300' && E.sm[1].tag === 'D4D2' && E.gw[0] === 21.40458 && !/data-iotfield/.test(w.iotPanelHtml()), 'وبعد التطبيق: ثمانيةُ أجهزةٍ مركّبة بطرازها وعلامتها، والجيت واي على حاله، واللافتةُ اختفت');
+  T(E.sensors.length === 8 && E.sm.every(m => m.status === 'مُركّب' && m.field) && E.sm[1].model === 'EM300' && E.sm[1].tag === 'D4D2' && Math.abs(E.gw[0] - F.gate.at[0]) < 1e-9 && !/data-iotfield/.test(w.iotPanelHtml()), 'وبعد التطبيق: ثمانيةُ أجهزةٍ مركّبة بطرازها وعلامتها، والجيت واي في صندوق المدخل (V39.23)، واللافتةُ اختفت');
   E.sel = { k:'s', i:2 }; const html = w.iotPanelHtml();
   T(/id="iotModel"/.test(html) && /id="iotTag"/.test(html) && /list="iotModels"/.test(html), 'وحقلا الطراز والعلامة في المحرّر لكلِّ جهاز');
   w.iotDel(); T(E.sensors.length === 7, 'ويُحذَف جهازٌ كما قبل');
@@ -1534,6 +1534,39 @@ console.log('\n══ ٥٦ · الأجهزةُ الفعلية في مخيم ال
   T(c && c.ov && c.sensors.length === 7 && c.sm.some(m => m.tag === 'D50A') && /طراز|الطراز/.test(w.iotDevHtml('NSK-MIN-CMP-0449', 's', 0)), 'والحفظُ يكتبها خطّةً للمخيم، وبطاقةُ الجهاز تقول طرازَه');
   if (had) w.IOT.data.camps['NSK-MIN-CMP-0449'] = had; else delete w.IOT.data.camps['NSK-MIN-CMP-0449'];
   if (w.STATE.siteOv['NSK-MIN-CMP-0449']) delete w.STATE.siteOv['NSK-MIN-CMP-0449'].iot; w.ROLE = role0; w.STATE.meta.role = role0;
+}
+
+/* ── ٥٧ · (V39.23) المدخلُ على الشارع: صندوقُ الجيت واي والراوتر والقارئ والكاميرا، والسورُ مفتوحٌ عند المداخل ── */
+console.log('\n══ ٥٧ · مداخلُ مخيم العرض وصندوقُ البوابة ══');
+{
+  const { readFileSync } = await import('fs');
+  const D = JSON.parse(readFileSync(new URL('../layers/iot-field-1448.json', import.meta.url), 'utf8'));
+  const id = 'NSK-MIN-CMP-0449', F = D.camps[id]; w.iotFieldLoad.d = D;
+  T(F.gate && F.entrances.length === 3 && F.entrances.filter(e => e.main).length === 1 && F.entrances.find(e => e.main).at[0] === F.gate.at[0], 'ثلاثةُ مداخل، والرئيسيُّ على الشارع هو صندوقُ البوابة');
+  const role0 = w.ROLE; w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
+  w.IOT.data = w.IOT.data || { camps:{} }; const had = w.IOT.data.camps[id];
+  w.IOT.data.camps[id] = { gw:[21.40458, 39.895378], at:'pin', maxM:41, sensors:Array.from({ length:12 }, (_, i) => [21.4045 + i * 1e-5, 39.8953]) };
+  w.iotEditStart(id); w.iotFieldApply(); const E = w.IOT.edit;
+  T(Math.abs(E.gw[0] - F.gate.at[0]) < 1e-9 && E.gm[0].status === 'مُركّب' && /الراوتر/.test(E.gm[0].note || ''), 'التطبيقُ يضع الجيت واي مركّبًا في صندوق المدخل');
+  E.gw = [21.40458, 39.895378];
+  T(/data-iotfield="1"/.test(w.iotPanelHtml()), 'وخطّةٌ حُفظت والجيت واي بعيدٌ عن البوابة تعرض اللافتةَ من جديد');
+  w.IOT.edit = null; if (had) w.IOT.data.camps[id] = had; else delete w.IOT.data.camps[id];
+  const ring = JSON.parse(readFileSync(new URL('../poly.json', import.meta.url), 'utf8'))[id];
+  w.tentPaint.cache = {}; const TF = w.tentFeaturesOf(id, ring);
+  const gates = TF.filter(f => f.properties.k === 'gate'), main = gates.filter(f => f.properties.color === '#2E9C6A');
+  T(gates.length === 9 && main.length === 3 && main.every(f => f.properties.h === 3.6), 'والسورُ مفتوحٌ عند المداخل الثلاثة بإطارِ بوابة، والرئيسيةُ أعلى وبالأخضر');
+  const fence = TF.filter(f => f.properties.k === 'fence');
+  T(fence.length > ring.length - 3, 'وأضلاعُ السور تنقسم عند الفتحات (' + fence.length + ')');
+  const M30 = w.M3, d30 = w.MAP_3D; let flown = null; w.M3 = { flyTo:o => { flown = o; } }; w.MAP_3D = true; w.m3Enter.last = null;
+  w.m3Enter(id); T(flown && Math.abs(flown.center[1] - F.gate.at[0]) < 1e-9 && Math.abs(flown.center[0] - F.gate.at[1]) < 1e-9, 'و«ادخل المخيم» يدخل من المدخل الذي على الشارع');
+  w.M3 = M30; w.MAP_3D = d30; w.m3Enter.last = null; w.tentPaint.cache = {};
+  const x = w.siteFind(id); w.STATE.inss = w.STATE.inss || {}; const ins0 = w.STATE.inss[id];
+  w.STATE.inss[id] = { id, status:'مُركّب', parts:{ rdr8:1, rtr:1, cam_pe:1 }, serials:{} };
+  let data = null; w.M3 = { getBounds:() => ({ contains:() => true }), getZoom:() => 17, getSource:() => ({ setData:v => { data = v; } }) }; w.MAP_3D = true; w.dtwPaint.on = true; w.dtwPaint();
+  const dv = data ? data.features.filter(f => f.properties.site === id) : [];
+  const near = dv.every(f => { const c = f.geometry.coordinates[0][0]; return Math.hypot((c[0] - F.gate.at[1]) * 103650, (c[1] - F.gate.at[0]) * 111320) < 3; });
+  T(dv.length === 3 && near, 'وأجهزةُ النقطة (القارئ والراوتر والكاميرا) تقف في المجسّم عند صندوق البوابة لا وسط المخيم');
+  w.M3 = M30; w.MAP_3D = d30; if (ins0) w.STATE.inss[id] = ins0; else delete w.STATE.inss[id]; w.ROLE = role0; w.STATE.meta.role = role0;
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

@@ -41,16 +41,35 @@ function tentCells(ring){
     }
   return out;
 }
-/* the fence: a thin quad along each side of the boundary */
-function tentFence(ring){
+/* the fence: a thin quad along each side of the boundary — (V39.23) open where the camp has an entrance: each entrance
+   cuts a 4 m gap in the side nearest to it and stands a gate frame there (two posts and a lintel), the main one
+   (the street entrance with the box) taller and in the accent colour */
+function tentFence(ring, ents){
   var T_ = tentCfg();
-  var out = [], lat0 = +ring[0][1], kx = 111320 * Math.cos(lat0 * Math.PI / 180), ky = 111320, w = T_.fenceW / 2;
+  var out = [], gates = [], lat0 = +ring[0][1], kx = 111320 * Math.cos(lat0 * Math.PI / 180), ky = 111320, w = T_.fenceW / 2;
+  var toM = function(q){ return [(+q[0] - +ring[0][0]) * kx, (+q[1] - lat0) * ky]; }, toLL = function(m){ return [+ring[0][0] + m[0] / kx, lat0 + m[1] / ky]; };
+  var E = (ents || []).map(function(e){ return { m:toM([e.at[1], e.at[0]]), main:!!e.main, best:Infinity, edge:-1, t:0 }; });
+  var edges = [];
   for (var i = 0; i < ring.length; i++){
-    var a = ring[i], b = ring[(i + 1) % ring.length]; if (a[0] === b[0] && a[1] === b[1]) continue;
-    var dx = (b[0] - a[0]) * kx, dy = (b[1] - a[1]) * ky, L = Math.hypot(dx, dy); if (L < 1) continue;
-    var nx = -dy / L * w / kx, ny = dx / L * w / ky;
-    out.push([[a[0] + nx, a[1] + ny], [b[0] + nx, b[1] + ny], [b[0] - nx, b[1] - ny], [a[0] - nx, a[1] - ny], [a[0] + nx, a[1] + ny]]);
+    var a = toM(ring[i]), b = toM(ring[(i + 1) % ring.length]), L = Math.hypot(b[0] - a[0], b[1] - a[1]); if (L < 1) continue;
+    var ux = (b[0] - a[0]) / L, uy = (b[1] - a[1]) / L, k = edges.length;
+    edges.push({ a:a, ux:ux, uy:uy, L:L, cuts:[] });
+    E.forEach(function(e){ var dx = e.m[0] - a[0], dy = e.m[1] - a[1], tt = dx * ux + dy * uy; if (tt < 0 || tt > L) return; var d = Math.abs(dx * uy - dy * ux); if (d < e.best && d < 12){ e.best = d; e.edge = k; e.t = tt; } });
   }
+  E.forEach(function(e){ if (e.edge > -1) edges[e.edge].cuts.push({ t:e.t, main:e.main }); });
+  var quad = function(ed, t0, t1, hw){ var nx = -ed.uy * hw, ny = ed.ux * hw, p0 = [ed.a[0] + ed.ux * t0, ed.a[1] + ed.uy * t0], p1 = [ed.a[0] + ed.ux * t1, ed.a[1] + ed.uy * t1];
+    return [toLL([p0[0] + nx, p0[1] + ny]), toLL([p1[0] + nx, p1[1] + ny]), toLL([p1[0] - nx, p1[1] - ny]), toLL([p0[0] - nx, p0[1] - ny]), toLL([p0[0] + nx, p0[1] + ny])]; };
+  edges.forEach(function(ed){
+    var C = ed.cuts.slice().sort(function(x, y){ return x.t - y.t; }), t0 = 0;
+    C.forEach(function(c){
+      var g0 = Math.max(0, c.t - 2), g1 = Math.min(ed.L, c.t + 2);
+      if (g0 - t0 > 0.3) out.push(quad(ed, t0, g0, w));
+      gates.push({ main:c.main, posts:[quad(ed, g0 - 0.25, g0 + 0.25, 0.25), quad(ed, g1 - 0.25, g1 + 0.25, 0.25)], lintel:quad(ed, g0 - 0.25, g1 + 0.25, 0.25) });
+      t0 = g1;
+    });
+    if (ed.L - t0 > 0.3) out.push(quad(ed, t0, ed.L, w));
+  });
+  tentFence.gates = gates;
   return out;
 }
 function tentFeaturesOf(id, ring){
@@ -61,7 +80,15 @@ function tentFeaturesOf(id, ring){
     F.push({ type:'Feature', properties:{ camp:id, k:'body', color:T_.fabric, base:T_.plinth, h:T_.plinth + T_.body }, geometry:{ type:'Polygon', coordinates:[c.body] } });
     F.push({ type:'Feature', properties:{ camp:id, k:'roof', color:T_.roofC, base:T_.plinth + T_.body - 0.05, h:T_.plinth + T_.roof }, geometry:{ type:'Polygon', coordinates:[c.roof] } });
   });
-  if (cells.length) tentFence(ring).forEach(function(q){ F.push({ type:'Feature', properties:{ camp:id, k:'fence', color:T_.fence, base:0, h:T_.fenceH }, geometry:{ type:'Polygon', coordinates:[q] } }); });
+  if (cells.length){
+    var ents = typeof iotEntrancesOf === 'function' ? iotEntrancesOf(id) : [];
+    tentFence(ring, ents).forEach(function(q){ F.push({ type:'Feature', properties:{ camp:id, k:'fence', color:T_.fence, base:0, h:T_.fenceH }, geometry:{ type:'Polygon', coordinates:[q] } }); });
+    (tentFence.gates || []).forEach(function(g){
+      var top = g.main ? 3.6 : 2.8, col = g.main ? '#2E9C6A' : '#8A8F98';
+      g.posts.forEach(function(q){ F.push({ type:'Feature', properties:{ camp:id, k:'gate', color:col, base:0, h:top }, geometry:{ type:'Polygon', coordinates:[q] } }); });
+      F.push({ type:'Feature', properties:{ camp:id, k:'gate', color:col, base:top - 0.45, h:top }, geometry:{ type:'Polygon', coordinates:[g.lintel] } });
+    });
+  }
   C[id] = F; return F;
 }
 /* the camps in the frame, from the footprints the points layer already resolved (M3_FOOT) */

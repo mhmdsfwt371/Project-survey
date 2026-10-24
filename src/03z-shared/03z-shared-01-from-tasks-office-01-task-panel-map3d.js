@@ -26,10 +26,11 @@ function m3Enter(id){
   var x = siteFind(id); if (!x || !(+x.lat && +x.lng)) return false;
   var ring = campFoot(x), cy = +x.lat, cx = +x.lng;
   if (ring && ring.length >= 3){ cy = 0; cx = 0; ring.forEach(function(q){ cx += +q[0]; cy += +q[1]; }); cx /= ring.length; cy /= ring.length; }
-  var bearing = Math.atan2((cx - +x.lng) * Math.cos(+x.lat * Math.PI / 180), cy - +x.lat) * 180 / Math.PI;
+  var g0 = typeof iotGateOf === 'function' ? iotGateOf(id) : null, at = g0 ? { lat:g0[0], lng:g0[1] } : { lat:+x.lat, lng:+x.lng };   /* (V39.23) the real street entrance */
+  var bearing = Math.atan2((cx - at.lng) * Math.cos(at.lat * Math.PI / 180), cy - at.lat) * 180 / Math.PI;
   if (m3Enter.last === id) bearing += 180;   /* turn around */
   m3Enter.last = id;
-  try { M3.flyTo({ center:[+x.lng, +x.lat], zoom:20, pitch:80, bearing:bearing, duration:1600, essential:true }); } catch (e){ LS_ERR = e; return false; }
+  try { M3.flyTo({ center:[at.lng, at.lat], zoom:20, pitch:80, bearing:bearing, duration:1600, essential:true }); } catch (e){ LS_ERR = e; return false; }
   return true;
 }
 /* (V39.18) the measures of a Mina tent module and its colours, in metres — a function, not a new global; the points layer
