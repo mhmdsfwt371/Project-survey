@@ -97,9 +97,13 @@ function m3IotFeatures(){
   var F = [], E = IOT.edit;
   /* (V39.17) each device twice: a polygon for the column (drawn from zoom 15) and a point for the dot at every zoom —
      and every camp with a plan whatever the view: the owner wants them always there, never lost on a zoom */
+  /* (V39.21) owner: «مش كل الحساسات بتظهر»: inside a tent the column and the dot were behind the tent's walls. Each
+     device now also carries a beacon above the roof line (a small block from 4.8 m) in its colour, so it is seen
+     from outside the camp wherever it stands; the gateway's column rises above the roofs as well. */
   var push = function(camp, kind, i, q, m, bad, sel){
-    var P = { camp:camp, kind:kind, i:i, did:(m && m.id) || '', color:iotColor(kind, m, bad, sel), h:kind === 's' ? 1.8 : 4, sel:sel ? 1 : 0 };
+    var P = { camp:camp, kind:kind, i:i, did:(m && m.id) || '', color:iotColor(kind, m, bad, sel), h:kind === 's' ? 1.8 : 6, sel:sel ? 1 : 0 };
     F.push({ type:'Feature', properties:P, geometry:{ type:'Polygon', coordinates:iotSq(q, kind === 's' ? 0.7 : 1.1) } });
+    F.push({ type:'Feature', properties:Object.assign({}, P, { beacon:1, base:4.8, h:kind === 's' ? 5.4 : 6.6 }), geometry:{ type:'Polygon', coordinates:iotSq(q, kind === 's' ? 0.45 : 0.8) } });
     F.push({ type:'Feature', properties:P, geometry:{ type:'Point', coordinates:[+q[1], +q[0]] } });
   };
   if (E){

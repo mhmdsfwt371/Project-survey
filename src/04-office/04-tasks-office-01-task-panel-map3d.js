@@ -121,7 +121,7 @@ function m3Layers(){
         paint:{ 'circle-radius':['interpolate', ['linear'], ['zoom'], 11, 2.5, 15, 6], 'circle-color':['get','color'],
                 'circle-stroke-width':['case', ['==', ['get','kind'], 'g'], 1.5, 0.8], 'circle-stroke-color':'#ffffff', 'circle-opacity':0.95 } });
       M3.addLayer({ id:'nsk-iot', type:'fill-extrusion', source:'nskiot', filter:['==', ['geometry-type'], 'Polygon'], minzoom:15,
-        paint:{ 'fill-extrusion-color':['get','color'], 'fill-extrusion-height':['get','h'], 'fill-extrusion-base':0, 'fill-extrusion-opacity':0.96 } });
+        paint:{ 'fill-extrusion-color':['get','color'], 'fill-extrusion-height':['get','h'], 'fill-extrusion-base':['coalesce', ['get','base'], 0], 'fill-extrusion-opacity':0.96 } });   /* (V39.21) beacons above the roofs carry their own base */
     }
     if (typeof dtwLayers === 'function') dtwLayers();   /* (V39.13) the points' devices */
     /* مبانٍ ثلاثيةٌ من النمط نفسِه إن وُجدت — سياقٌ لا أكثر */
@@ -157,6 +157,8 @@ function m3Init(){
   M3.on('moveend', function(){ if (MAP_3D) m3Count(m3Points()); });
   var hit = function(ev){ if (ev.originalEvent && ev.originalEvent._nskIot) return; var f = ev.features && ev.features[0]; if (f && f.properties && f.properties.id) m3Click(f.properties.id, ev); };
   M3.on('click', 'nsk-pts', hit); M3.on('click', 'nsk-cols', hit);
+  /* (V39.21) a double tap on a camp walks the camera in */
+  M3.on('dblclick', 'nsk-cols', function(ev){ var f = ev.features && ev.features[0]; if (f && f.properties && f.properties.id && f.properties.foot){ ev.preventDefault(); m3Enter(f.properties.id); } });
   /* (V39.11) the twin's devices take the tap first; a tap on the ground in the editor moves or adds the selected device */
   M3.on('click', 'nsk-iot', function(ev){ var f = ev.features && ev.features[0]; if (f && typeof m3IotClick === 'function') m3IotClick(f, ev); });
   M3.on('click', 'nsk-iot-pt', function(ev){ var f = ev.features && ev.features[0]; if (f && typeof m3IotClick === 'function') m3IotClick(f, ev); });

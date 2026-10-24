@@ -1284,8 +1284,8 @@ console.log('\n══ ٤٥ · التوأم الرقمي في الخريطة ال
   w.MAP_3D = true; w.IOT.on = true; w.IOT.edit = null;
   w.m3IotPaint();
   const F = data ? data.features.filter(f => f.properties.camp === camp.id) : [];
-  const col = k => F.filter(f => f.properties.kind === k && f.geometry.type === 'Polygon').map(f => f.properties.color);   /* (V39.17) the columns; the dots repeat them */
-  T(F.length === 26 && col('s').length === 12 && col('g').length === 1 && F.filter(f => f.geometry.type === 'Point').length === 13, 'المخيمُ في المجسّم: اثنا عشر حساسًا وجيت واي، كلٌّ عمودٌ صغيرٌ ونقطةٌ تبقى في كلِّ تقريب (' + F.length + ')');   /* (V39.17) */
+  const col = k => F.filter(f => f.properties.kind === k && f.geometry.type === 'Polygon' && !f.properties.beacon).map(f => f.properties.color);   /* (V39.17/V39.21) the columns; the dots and beacons repeat them */
+  T(F.length === 39 && col('s').length === 12 && col('g').length === 1 && F.filter(f => f.geometry.type === 'Point').length === 13 && F.filter(f => f.properties.beacon).length === 13, 'المخيمُ في المجسّم: اثنا عشر حساسًا وجيت واي، كلٌّ عمودٌ صغيرٌ ونقطةٌ تبقى في كلِّ تقريب (' + F.length + ')');   /* (V39.17) */
   T(col('s')[3] === '#E05252' && col('s')[0] === w.IOT_C.sensor && col('s')[9] !== w.IOT_C.sensor && col('g')[0] === w.IOT_C.gw && F.every(f => (f.geometry.type === 'Polygon' || f.geometry.type === 'Point') && f.properties.h > 0),
     'ولونُه بحالته: المعطّلُ أحمر، والمركّبُ بلونه، والمخطَّطُ أفتح — والجيت واي أطول');
   /* the editor: a tap selects, the next tap on the ground moves */
@@ -1488,6 +1488,25 @@ console.log('\n══ ٥٤ · التوأم الحي ══');
   w.STATE.iotLive = { 'camp-x':{ at:now, s:{ S01:{ at:now - 60000, v:27.5 } } } };
   const sv = w.liveSensor('camp-x', 'S01'); T(!!sv && sv.on && sv.v === 27.5 && w.liveSensor('camp-x', 'S09') === null, 'وبنيةُ نبض الحساسات جاهزةٌ لجسرٍ يكتبها');
   delete w.STATE.iotLive; LV.on = on0; w.STATE.extSnap = snap0; w.CUR = cur0;
+}
+
+/* ── ٥٥ · (V39.21) الحساساتُ تُرى من خارج الخيمة، والكاميرا تدخل المخيم ── */
+console.log('\n══ ٥٥ · منارات الحساسات ودخول المخيم ══');
+{
+  const camp = w.STATE.sites.find(x => x.type === 'مخيم' && +x.lat && +x.lng);
+  const sensors = Array.from({ length:12 }, (_, i) => [+camp.lat + i * 0.00002, +camp.lng + i * 0.00002]);
+  w.siteOvSet(camp.id, { iot:{ gw:[+camp.lat, +camp.lng], gws:[], sensors, sm:sensors.map((_, i) => ({ id:camp.id + '-S' + (i + 1), status:'مُركّب' })), gm:[{ id:camp.id + '-GW1', status:'مُركّب' }], maxM:40, at:Date.now() } });
+  const on0 = w.IOT.on; w.IOT.on = true; const F = w.m3IotFeatures().filter(f => f.properties.camp === camp.id); w.IOT.on = on0;
+  const beacons = F.filter(f => f.properties.beacon), cols = F.filter(f => !f.properties.beacon && f.geometry.type === 'Polygon');
+  T(beacons.length > 0 && beacons.length === cols.length && beacons.every(f => f.properties.base === 4.8 && f.properties.h > 4.8), 'لكلِّ حساسٍ وجيت واي منارةٌ فوق سقف الخيمة (' + beacons.length + ')');
+  T(cols.filter(f => f.properties.kind === 'g').every(f => f.properties.h === 6), 'وعمودُ الجيت واي يعلو الأسقف');
+  const M30 = w.M3, d30 = w.MAP_3D; let flown = null; w.M3 = { flyTo:o => { flown = o; } }; w.MAP_3D = true; w.m3Enter.last = null;
+  T(w.m3Enter(camp.id) && flown && flown.zoom === 20 && flown.pitch === 80 && Math.abs(flown.center[0] - +camp.lng) < 1e-9, 'و«ادخل المخيم» يقف بالكاميرا على البوابة مائلةً إلى الحدّ');
+  const b1 = flown.bearing; w.m3Enter(camp.id); T(Math.abs(((flown.bearing - b1) % 360 + 360) % 360 - 180) < 1e-6, 'والثانيةُ تدير الكاميرا لتنظر إلى أجهزة البوابة');
+  w.M3 = M30; w.MAP_3D = d30; w.m3Enter.last = null;
+  const d31 = w.MAP_3D, ps0 = w.POP_SITE; w.MAP_3D = true; w.POP_SITE = camp.id; const html = w.popHtml(); w.MAP_3D = d31; w.POP_SITE = ps0;
+  T(/data-m3enter="/.test(html), 'وزرُّ «ادخل المخيم» في نافذة المخيم مع المجسّم');
+  w.siteOvSet(camp.id, { iot:null });
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

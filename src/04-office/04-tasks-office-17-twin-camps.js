@@ -84,7 +84,7 @@ function tentLayers(){
   M3.addSource('nsktent', { type:'geojson', data:{ type:'FeatureCollection', features:tentFeatures() } });
   M3.addLayer({ id:'nsk-tent', type:'fill-extrusion', source:'nsktent', minzoom:15,
     paint:{ 'fill-extrusion-color':['get','color'], 'fill-extrusion-height':['get','h'], 'fill-extrusion-base':['get','base'],
-            'fill-extrusion-opacity':0.9, 'fill-extrusion-vertical-gradient':true } });
+            'fill-extrusion-opacity':0.72, 'fill-extrusion-vertical-gradient':true } });   /* (V39.21) translucent: what stands inside the tent shows through */
 }
 function tentPaint(){
   if (!MAP_3D || !M3 || !M3.getSource) return;

@@ -17,6 +17,21 @@
 var MAP_3D = false, M3 = null, M3_READY = false, M3_LOADING = null, M3_ERR = '';
 
 /* ارتفاعُ العمود: ما سجّله المسحُ، وإلا افتراضٌ بحسب النوع */
+/* (V39.21) owner: «أقدر بالماوس أدخل جوّه المكان» — the camera walks into the camp: it stands at the gate (the point),
+   two metres from the ground, looking along the camp (towards the boundary's centre), tilted to the engine's limit; a
+   second call on the same camp turns it to look back at the gate's devices. The gateway and sensors inside show through
+   the translucent tents, and the tooltip names each one under the mouse. */
+function m3Enter(id){
+  if (!MAP_3D || !M3) return false;
+  var x = siteFind(id); if (!x || !(+x.lat && +x.lng)) return false;
+  var ring = campFoot(x), cy = +x.lat, cx = +x.lng;
+  if (ring && ring.length >= 3){ cy = 0; cx = 0; ring.forEach(function(q){ cx += +q[0]; cy += +q[1]; }); cx /= ring.length; cy /= ring.length; }
+  var bearing = Math.atan2((cx - +x.lng) * Math.cos(+x.lat * Math.PI / 180), cy - +x.lat) * 180 / Math.PI;
+  if (m3Enter.last === id) bearing += 180;   /* turn around */
+  m3Enter.last = id;
+  try { M3.flyTo({ center:[+x.lng, +x.lat], zoom:20, pitch:80, bearing:bearing, duration:1600, essential:true }); } catch (e){ LS_ERR = e; return false; }
+  return true;
+}
 /* (V39.18) the measures of a Mina tent module and its colours, in metres — a function, not a new global; the points layer
    needs the plinth height here, the tents module (office chunk) needs the rest */
 function tentCfg(){ return { size:8, aisle:1.5, body:3.2, roof:4.4, fenceH:2.2, fenceW:0.3, max:400, fabric:'#F3F0E7', roofC:'#E4DFD1', fence:'#B4AD9E', plinth:0.5 }; }

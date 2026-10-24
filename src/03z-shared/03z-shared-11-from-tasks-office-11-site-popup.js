@@ -316,6 +316,7 @@ function popHtml(){
     +   '<a class="btn btn-primary btn-sm" target="_blank" rel="noopener" '
     +   'href="https://www.google.com/maps/dir/?api=1&destination=' + s.lat + ',' + s.lng + '">'
     +   '↗ ' + esc(t('اتجاهات')) + '</a>'
+    +   (MAP_3D && s.type === 'مخيم' ? btn('\u{1F6AA} ' + t('ادخل المخيم'),'btn-secondary btn-sm',' data-m3enter="' + esc(s.id) + '"') : '')   /* (V39.21) the camera walks in through the gate */
     +   (may('edit') ? btn('⇱ ' + t('تحريك'),'btn-secondary btn-sm',' data-move="' + esc(s.id) + '"') : '')
     +   btn(may('edit') ? '✎ ' + t('تعديل البيانات') : '\u25C8 ' + t('التفاصيل'),'btn-secondary btn-sm',' data-site="' + esc(s.id) + '"')
     +   (seesPage('ev') ? btn('\u{1F4DC} ' + t('سجل النقطة'),'btn-quiet btn-sm',' data-evsite="' + esc(s.id) + '"') : '')   /* (V30.8) */
