@@ -10,12 +10,15 @@
              event log — the point through the same move as «⇱ تحريك», a unit in its installation (inss.pos), a sensor
              or gateway in the camp's plan — and «↶ تراجع» puts the last one back. Rights: the point and the units for
              whoever may edit, the sensors and gateways for whoever may edit the plan.
-   DEFINES : mvdState, mvdRing, mvdItems, mvdStart, mvdStop, mvdIcon, mvdPaint, mvdSet, mvdUndo, mvdBarHtml
+   DEFINES : mvdState, mvdShown, mvdRing, mvdItems, mvdIcon, mvdStart, mvdStop, mvdPaint, mvdSet, mvdUndo, mvdBarHtml
    PREFIX  : mvd   (every function here starts with it — scripts/audit-names.mjs)
    STATE   : mvdState() — the point being edited, the live pins, the last move — on the function, no new global.
    ============================================================================ */
 
-function mvdState(){ return mvdState.s || (mvdState.s = { id:'', marks:[], lg:null, last:null }); }
+function mvdState(){ return mvdState.s || (mvdState.s = { id:'', only:'', marks:[], lg:null, last:null }); }
+/* (V39.35) owner: «ممكن نعمل هنا حرّك — على أي حساس أو جيت واي» — «✥ حرّك» on a sensor's, gateway's or device's own card shows
+   that one pin alone; the bar offers «كل أجهزة النقطة» to see the rest */
+function mvdShown(){ var S = mvdState(); var all = S.id ? mvdItems(S.id) : []; return S.only ? all.filter(function(it){ return it.key === S.only; }) : all; }
 
 /* the default place of the installation's units: the twin's ring, 1.6 m around the street gate (or the point) */
 function mvdRing(lat, lng, idx, total){
@@ -46,15 +49,16 @@ function mvdIcon(code){
   var c = String(code || '');
   return /^rdr/.test(c) ? '\u{1F4DF}' : /^cam/.test(c) ? '\u{1F4F7}' : /^rtr/.test(c) ? '\u{1F4E1}' : /^ant/.test(c) ? '\u{1F4F6}' : /^sol/.test(c) ? '\u2600\uFE0F' : /^bat/.test(c) ? '\u{1F50B}' : /^box/.test(c) ? '\u{1F5C4}' : '\u2699\uFE0F';
 }
-function mvdStart(id){
-  var S = mvdState(); S.id = id; S.last = null; POP_OPEN = false;
+function mvdStart(id, only){
+  var S = mvdState(); S.id = id; S.only = only || ''; S.last = null; POP_OPEN = false;
+  if (typeof m3PopClose === 'function') m3PopClose();   /* the card that asked for it steps aside */
   render(1); mvdPaint();
   toast(t('اسحب أي جهاز لمكانه — كل سحبة تُحفظ'));
 }
 function mvdStop(){
   var S = mvdState(); S.marks.forEach(function(m){ try { m.remove(); } catch (e){ LS_ERR = e; } }); S.marks = [];
   if (S.lg){ try { S.lg.clearLayers(); } catch (e2){ LS_ERR = e2; } }
-  S.id = ''; S.last = null; render(1);
+  S.id = ''; S.only = ''; S.last = null; render(1);
 }
 /* the pins: draggable markers on whichever map is shown */
 function mvdPaint(){
@@ -62,7 +66,7 @@ function mvdPaint(){
   S.marks.forEach(function(m){ try { m.remove(); } catch (e){ LS_ERR = e; } }); S.marks = [];
   if (S.lg){ try { S.lg.clearLayers(); } catch (e2){ LS_ERR = e2; } }
   if (!S.id) return;
-  var items = mvdItems(S.id);
+  var items = mvdShown();
   var html = function(it){ return '<div class="mvd-pin" title="' + esc(it.lab) + '"><span>' + it.ic + '</span><b>' + esc(it.lab) + '</b></div>'; };
   if (MAP_3D && typeof M3 !== 'undefined' && M3 && window.maplibregl){
     items.forEach(function(it){
@@ -114,7 +118,9 @@ function mvdBarHtml(){
   var S = mvdState(); if (!S.id) return '';
   var x = siteFind(S.id);
   return '<div class="map-route-box" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'
-    + '<b>\u2725 ' + esc(t('تحريك الأجهزة')) + '</b><span class="hint" style="margin:0">' + esc(x ? (x.sign || x.name || x.id) : S.id) + ' \u00b7 ' + esc(t('اسحب أي جهاز لمكانه — كل سحبة تُحفظ')) + '</span>'
+    + '<b>\u2725 ' + esc(t('تحريك الأجهزة')) + '</b><span class="hint" style="margin:0">' + esc(x ? (x.sign || x.name || x.id) : S.id)
+    + (S.only ? ' \u00b7 ' + esc((mvdShown()[0] || {}).lab || S.only) + ' \u00b7 ' + esc(t('اسحب الدبّوس لمكانه')) : ' \u00b7 ' + esc(t('اسحب أي جهاز لمكانه — كل سحبة تُحفظ'))) + '</span>'
+    + (S.only ? btn('\u2725 ' + t('كل أجهزة النقطة'), 'btn-quiet btn-sm', ' data-mvd="' + esc(S.id) + '"') : '')
     + (S.last ? btn('\u21B6 ' + t('تراجع'), 'btn-quiet btn-sm', ' data-mvdundo="1"') : '')
     + btn('\u2713 ' + t('تم'), 'btn-primary btn-sm', ' data-mvdx="1"') + '</div>';
 }

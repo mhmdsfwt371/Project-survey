@@ -91,7 +91,8 @@ function dtwCardHtml(p){
     + row('السيريال', p.serial) + row('الحالة', r.status) + row('ركّبه', r.by) + (r.at ? row('بتاريخ', fmtDate(r.at)) : '')
     + (liveState().on && p.kind === 'reader' && x ? '<div>' + esc(liveTextOf(x)) + '</div>' : '')   /* (V39.20) the reader's pulse on its card */
     + '<div class="actions" style="margin-top:6px">' + btn('\u{1F4C4} ' + t('صفحة النقطة'), 'btn-quiet btn-sm', ' data-site="' + esc(p.site) + '"')
-    + (typeof insqMay === 'function' && insqMay(p.site) ? btn('\u270E ' + t('تعديل التركيب'), 'btn-quiet btn-sm', ' data-insq="' + esc(p.site) + '"') : '') + '</div>';
+    + (typeof insqMay === 'function' && insqMay(p.site) ? btn('\u270E ' + t('تعديل التركيب'), 'btn-quiet btn-sm', ' data-insq="' + esc(p.site) + '"') : '')
+    + (may('edit') && typeof mvdStart === 'function' ? btn('\u2725 ' + t('حرّك'), 'btn-quiet btn-sm', ' data-mvd="' + esc(p.site) + '" data-mvdk="' + esc(p.code + '#' + (+p.i || 0)) + '"') : '') + '</div>';   /* (V39.35) move this unit alone */
 }
 function dtwClick(f, ev){
   var p = f && f.properties; if (!p || !window.maplibregl) return;

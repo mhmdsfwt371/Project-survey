@@ -1794,6 +1794,23 @@ console.log('\n══ ٦٦ · كلُّ زرٍّ موصول ══');
   w.goPage(cur0 || 'map'); w.render(1);
 }
 
+/* ── ٦٧ · (V39.35) «حرّك» على بطاقة كلِّ حساسٍ وجيت واي وجهاز: دبّوسُه وحده ── */
+console.log('\n══ ٦٧ · حرّك من بطاقة الجهاز ══');
+{
+  const d = w.document, role0 = w.ROLE; w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
+  const x = w.STATE.sites.find(q => q.type === 'مخيم' && +q.lat && +q.lng && !(w.STATE.inss || {})[q.id]);
+  w.siteOvSet(x.id, { iot:{ gw:[+x.lat, +x.lng + 1e-4], gws:[], sensors:[[+x.lat + 1e-4, +x.lng], [+x.lat + 2e-4, +x.lng]], sm:[{ id:'S1', status:'مخطط' }, { id:'S2', status:'مخطط' }], gm:[{ id:'G1', status:'مخطط' }], maxM:30, at:1 } });
+  const hs = w.iotDevHtml(x.id, 's', 1), hg = w.iotDevHtml(x.id, 'g', 0);
+  T(/data-mvd="[^"]+" data-mvdk="s1"/.test(hs) && /data-mvdk="g0"/.test(hg), 'بطاقةُ الحساس وبطاقةُ الجيت واي فيهما «حرّك»');
+  w.STATE.inss[x.id] = { id:x.id, status:'مُركّب', parts:{ ant:2 }, serials:{} };
+  T(/data-mvdk="ant#1"/.test(w.dtwCardHtml({ site:x.id, code:'ant', i:1, serial:'' })), 'وبطاقةُ وحدة التركيب (الهوائي الثاني) فيها «حرّك»');
+  w.mvdStart(x.id, 's1');
+  T(w.mvdShown().length === 1 && w.mvdShown()[0].key === 's1', 'و«حرّك» تُظهر دبّوسَ ذلك الحساس وحده');
+  T(/data-mvd="/.test(w.mvdBarHtml()) && /كل أجهزة النقطة/.test(w.mvdBarHtml()), 'والشريطُ يعرض «كل أجهزة النقطة» لمن أراد الباقي');
+  w.ACTS_CACHE = null; T(w.actList().indexOf('data-mvd') > -1, 'والزرُّ موصولٌ بحارس الأزرار');
+  w.mvdStop(); delete w.STATE.inss[x.id]; if (w.STATE.siteOv[x.id]) delete w.STATE.siteOv[x.id].iot; w.ROLE = role0; w.STATE.meta.role = role0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

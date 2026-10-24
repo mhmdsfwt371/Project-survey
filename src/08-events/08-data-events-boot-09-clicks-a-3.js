@@ -272,7 +272,7 @@ function clickAPart7(e){
    legend filter and dragging a point's devices — split out of clickAPart7 to keep it under 150 lines (audit-health) */
 function clickAMapViews(e){
   /* (V39.31) drag the devices of a point */
-  var mvb = e.target.closest('[data-mvd]'); if (mvb){ mvdStart(mvb.getAttribute('data-mvd')); return true; }
+  var mvb = e.target.closest('[data-mvd]'); if (mvb){ mvdStart(mvb.getAttribute('data-mvd'), mvb.getAttribute('data-mvdk') || ''); return true; }   /* (V39.35) one device, or all of the point */
   if (e.target.closest('[data-mvdx]')){ mvdStop(); return true; }
   if (e.target.closest('[data-mvdundo]')){ mvdUndo(); return true; }
   /* (V39.28) the 3D map's own controls */

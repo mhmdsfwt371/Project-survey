@@ -192,7 +192,7 @@
 | `08-events--08-data-events-boot-06-long-lists-storage-clicks.js` | 194 | 2 | Moved verbatim from src/08-events/08-data-events-boot-06-long-lists-storage-clicks.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or t |
 | `08-events--08-data-events-boot-13-toast-wheel-ios-boot.js` | 12 | 2 | Moved verbatim from src/08-events/08-data-events-boot-13-toast-wheel-ios-boot.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the of |
 
-## `04-office/` — المكتب — الصور والحوكمة والمساعد والتقارير بالكلام والرسم على الخريطة  (20 ملفات · 2929 سطر · 112 دالة)
+## `04-office/` — المكتب — الصور والحوكمة والمساعد والتقارير بالكلام والرسم على الخريطة  (20 ملفات · 2930 سطر · 112 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -211,13 +211,13 @@
 | `04-tasks-office-13-perf-distribution-cameras.js` | 50 | 3 | Performance for 150 concurrent users, distribution by zone and type, survey progress per zone, ministry cameras (Bullet/PTZ/LPR) and hierarchy views. |
 | `04-tasks-office-14-pull-scope-listen-map.js` | 26 | 0 | Pull scope per role, differential pulls, per-device read caps, change-pulse listening, and the Leaflet map with two layers and camp polygons. |
 | `04-tasks-office-15-handover-minutes.js` | 58 | 3 | Handover and official receipt minutes. |
-| `04-tasks-office-16-twin-devices.js` | 101 | 8 | (V39.13) owner: «الخريطة المجسّمة محتاجها تكون digital twin». The sensors and gateways stand in the 3D map |
+| `04-tasks-office-16-twin-devices.js` | 102 | 8 | (V39.13) owner: «الخريطة المجسّمة محتاجها تكون digital twin». The sensors and gateways stand in the 3D map |
 | `04-tasks-office-17-twin-camps.js` | 121 | 7 | (V39.18) owner: «المخيمات في التوأم الرقمي عاوزها واقعية لمخيمات منى». A Mina camp is rows of white |
 | `04-tasks-office-18-twin-photos.js` | 50 | 5 | (V39.19) owner: the installation photos on the 3D map. Every point with photos gets a small pin at its |
 | `04-tasks-office-19-twin-engine.js` | 250 | 17 | (V39.24) owner: «الديجيتال توين حاجة دايناميك: أدخل بالماوس جوّه المكان، أشوف الأجهزة المتركّبة بمواقعها |
 | `04-tasks-office-20-map3d-overview.js` | 83 | 6 | (V39.29) the second step of the GIS review. From afar a monitoring map shows groups, not dust: below zoom |
 
-## `05-map/` — الخريطة ودورةُ الحياة — الطبقات والتصدير والاستيراد والدخول وشاشةُ الوزارة  (20 ملفات · 4540 سطر · 231 دالة)
+## `05-map/` — الخريطة ودورةُ الحياة — الطبقات والتصدير والاستيراد والدخول وشاشةُ الوزارة  (20 ملفات · 4547 سطر · 232 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -226,7 +226,7 @@
 | `05-lifecycle-map-03-export-import-docx.js` | 711 | 4 | Export/import with real data, ExcelJS for self-updating files, and Word export that stays inside the app. |
 | `05-lifecycle-map-04-excel-templates-kmz.js` | 197 | 10 | Current page to Excel, the tasks file from a template, and KMZ/KML import. |
 | `05-lifecycle-map-05-geojson-basemap-layers.js` | 111 | 8 | GeoJSON export, offline Makkah basemap, device map for outages, ministry buildings and tafweej places layers, Mina sensor planning and camp-boundary editing. |
-| `05-lifecycle-map-06-sensors-gateways-split.js` | 264 | 27 | Sensors and gateways as first-class points, and splitting a camp. |
+| `05-lifecycle-map-06-sensors-gateways-split.js` | 265 | 27 | Sensors and gateways as first-class points, and splitting a camp. |
 | `05-lifecycle-map-07-report-lines-hybrid-google.js` | 332 | 21 | Report lines (Abar Mid), hybrid map with street names over satellite, and Google Maps inside our map. |
 | `05-lifecycle-map-08-cameras-report-sw-update.js` | 316 | 21 | Ministry camera report, service worker registration, auto-update, version announcement, the epoch (no uploads from a pre-epoch device) and 'sync everyone now'. |
 | `05-lifecycle-map-09-role-switch-login-install.js` | 533 | 20 | Role switching, logout, add-to-home-screen prompts (incl. iPhone) and the login page. |
@@ -240,9 +240,9 @@
 | `05-lifecycle-map-18-live.js` | 69 | 8 | (V39.20) owner: the twin must live, not only record. The Nusuk card system bridge already brings two |
 | `05-lifecycle-map-19-field-layouts.js` | 58 | 7 | (V39.22) owner, with the R&D team's photos of the demo camp (Mina 74B, signpost 38/56): «دول فعليًّا اللي |
 | `05-lifecycle-map-20-map3d-ui.js` | 111 | 10 | (V39.28) owner: «الخريطة الـ3D مش حلوة وفيها حاجات كتير مخلياها صعبة — فكّر كمهندس GIS: نضيف وسهل المراقبة |
-| `05-lifecycle-map-21-move-devices.js` | 121 | 10 | (V39.31) owner: «عاوز أي نقطة، من أقل نقطة، أقدر أحرّكها: كاميرا وأنتنات وريدر وحساسات وجيت واي وخلافه». A point |
+| `05-lifecycle-map-21-move-devices.js` | 127 | 11 | (V39.31) owner: «عاوز أي نقطة، من أقل نقطة، أقدر أحرّكها: كاميرا وأنتنات وريدر وحساسات وجيت واي وخلافه». A point |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4339 سطر · 158 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4341 سطر · 158 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -256,7 +256,7 @@
 | `06-ministry-alerts-08-pptx-template.js` | 1044 | 23 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 284 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 1158 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 1160 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
 
@@ -300,4 +300,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 238 ملفًّا · 47452 سطر · 2170 دالة.
+**الإجمالي:** 238 ملفًّا · 47462 سطر · 2171 دالة.

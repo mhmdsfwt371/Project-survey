@@ -43,7 +43,8 @@ function iotDevHtml(id, kind, i){   /* نافذةُ الجهاز */
   return '<b>' + esc(ttl) + '</b> <span class="num">' + esc(did) + '</span><br><span class="hint">' + esc(nm0) + '</span>'
     + row('الطراز', m.model) + row('العلامة على الجهاز', m.tag) + row('الغرفة', m.room) + row('السيريال', m.serial) + row('الحالة', m.status || 'مخطط') + row('ملاحظة', m.note) + cov
     + (out ? '<div style="color:#E05252">\u26A0 ' + esc(t('خارج حدود المخيم')) + '</div>' : '')
-    + (mayIot() ? '<div style="margin-top:6px">' + btn('\u270E ' + t('عدّل'), 'btn-quiet btn-sm', ' data-iotdev="' + esc(id) + '|' + kind + '|' + i + '"') + '</div>' : '');
+    + (mayIot() ? '<div style="margin-top:6px">' + btn('\u270E ' + t('عدّل'), 'btn-quiet btn-sm', ' data-iotdev="' + esc(id) + '|' + kind + '|' + i + '"')
+        + (typeof mvdStart === 'function' ? btn('\u2725 ' + t('حرّك'), 'btn-quiet btn-sm', ' data-mvd="' + esc(id) + '" data-mvdk="' + (kind === 's' ? 's' : 'g') + i + '"') : '') + '</div>' : '');
 }
 function iotPaint(){
   try { if (typeof m3IotPaint === 'function') m3IotPaint(); } catch (e3){ LS_ERR = e3; }   /* (V39.11) the 3D twin follows */
