@@ -113,10 +113,11 @@ function m3Layers(){
                 'circle-stroke-color':['get','ring'] } });
     }
     /* (V39.11) the sensors and gateways as small columns — the digital twin of the camps' plans */
+    tentLayers();   /* (V39.18) the tents stand on the plinth, above the columns' layer */
     if (!M3.getSource('nskiot')){
       M3.addSource('nskiot', { type:'geojson', data:{ type:'FeatureCollection', features:(typeof m3IotFeatures === 'function' ? m3IotFeatures() : []) } });
       /* (V39.17) owner: the sensors stay visible — a dot of fixed size at every zoom, and the column when close enough */
-      M3.addLayer({ id:'nsk-iot-pt', type:'circle', source:'nskiot', filter:['==', ['geometry-type'], 'Point'], maxzoom:15.5,
+      M3.addLayer({ id:'nsk-iot-pt', type:'circle', source:'nskiot', filter:['==', ['geometry-type'], 'Point'],   /* (V39.18) at every zoom: inside a tent the dot still marks the sensor */
         paint:{ 'circle-radius':['interpolate', ['linear'], ['zoom'], 11, 2.5, 15, 6], 'circle-color':['get','color'],
                 'circle-stroke-width':['case', ['==', ['get','kind'], 'g'], 1.5, 0.8], 'circle-stroke-color':'#ffffff', 'circle-opacity':0.95 } });
       M3.addLayer({ id:'nsk-iot', type:'fill-extrusion', source:'nskiot', filter:['==', ['geometry-type'], 'Polygon'], minzoom:15,
@@ -169,7 +170,7 @@ function m3Init(){
     if (typeof IOT === 'object' && IOT.edit && ev.lngLat){ try { if (M3.queryRenderedFeatures(ev.point, { layers:['nsk-iot'] }).length) return; } catch (eQ){ LS_ERR = eQ; } iotMapClick({ lat:ev.lngLat.lat, lng:ev.lngLat.lng }); }
   });
   /* (V39.17) the sensors no longer depend on the view, so a move does not rebuild them — the devices, coverage and heat still follow the frame */
-  M3.on('moveend', function(){ if (MAP_3D && typeof dtwPaint === 'function') dtwPaint(); if (MAP_3D){ covPaint3d(); heatPaint3d(); } });
+  M3.on('moveend', function(){ if (MAP_3D && typeof dtwPaint === 'function') dtwPaint(); if (MAP_3D){ covPaint3d(); heatPaint3d(); tentPaint(); } });
   M3.on('mouseenter', 'nsk-iot', function(){ M3.getCanvas().style.cursor = 'pointer'; });
   M3.on('mouseleave', 'nsk-iot', function(){ M3.getCanvas().style.cursor = ''; });
   M3.on('mouseenter', 'nsk-pts', function(){ M3.getCanvas().style.cursor = 'pointer'; });

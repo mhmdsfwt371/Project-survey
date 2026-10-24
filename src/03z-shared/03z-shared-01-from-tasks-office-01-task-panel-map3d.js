@@ -17,6 +17,9 @@
 var MAP_3D = false, M3 = null, M3_READY = false, M3_LOADING = null, M3_ERR = '';
 
 /* ارتفاعُ العمود: ما سجّله المسحُ، وإلا افتراضٌ بحسب النوع */
+/* (V39.18) the measures of a Mina tent module and its colours, in metres — a function, not a new global; the points layer
+   needs the plinth height here, the tents module (office chunk) needs the rest */
+function tentCfg(){ return { size:8, aisle:1.5, body:3.2, roof:4.4, fenceH:2.2, fenceW:0.3, max:400, fabric:'#F3F0E7', roofC:'#E4DFD1', fence:'#B4AD9E', plinth:0.5 }; }
 /* (V39.15) owner: «طوابق منشأة الجمرات» — a point on a floor stands on that floor: 4.2 m per floor, from the name's «الدور …»
    (siteFloor), so the facility's cameras stack instead of piling on one spot. Ground and the unknown stay at 0. */
 function m3Base(x){ var f = typeof siteFloor === 'function' ? siteFloor(x) : null; return f != null && f > 0 ? f * 4.2 : 0; }
@@ -40,7 +43,7 @@ function m3Points(){
     if (ring) M3_FOOT[x.id] = ring;
     var foot = ring ? 1 : 0;
     return { type:'Feature', geometry:{ type:'Point', coordinates:[+x.lng, +x.lat] },
-      properties:{ id:x.id, color:mapColorOf(x), h:m3Height(x), base:m3Base(x), sel:picked ? 1 : 0,
+      properties:{ id:x.id, color:mapColorOf(x), h:(ring && typeof tentOn === 'function' && tentOn()) ? tentCfg().plinth : m3Height(x), base:m3Base(x), sel:picked ? 1 : 0,   /* (V39.18) under the tents the camp is a thin plinth in its colour */
         ring:picked ? '#ffffff' : ((FIELD_MODE === 'brief' && briefRing(x.id)) || '#0b1220'), foot:foot } };
   });
 }
@@ -83,5 +86,6 @@ function m3Paint(){
   try { if (typeof dtwPaint === 'function') dtwPaint(); } catch (e3){ LS_ERR = e3; }   /* (V39.13) */
   try { covPaint3d(); } catch (e4){ LS_ERR = e4; }   /* (V39.14) */
   try { heatPaint3d(); } catch (e5){ LS_ERR = e5; }   /* (V39.16) */
+  try { if (typeof tentPaint === 'function') tentPaint(); } catch (e6){ LS_ERR = e6; }   /* (V39.18) */
   m3Count(P);
 }

@@ -1426,6 +1426,30 @@ console.log('\n══ ٥١ · شريط الزمن ══');
   delete w.STATE.recs[x.id]; delete w.STATE.inss[x.id]; S.on = on0; w.CUR = cur0;
 }
 
+/* ── ٥٢ · (V39.18) مخيماتُ منى واقعية: صفوفُ خيامٍ ٨ م بسقفٍ هرميٍّ وممرّاتٍ وسورٍ داخل حدود كلِّ مخيم ── */
+console.log('\n══ ٥٢ · خيامُ منى في المجسّم ══');
+{
+  const lat = 21.413, lng = 39.893, kx = 111320 * Math.cos(lat * Math.PI / 180), ky = 111320;
+  const rect = (w0, h0) => [[lng, lat], [lng + w0 / kx, lat], [lng + w0 / kx, lat + h0 / ky], [lng, lat + h0 / ky]];
+  const cells = w.tentCells(rect(60, 40));
+  T(cells.length === 24 && cells.every(c => c.body.length === 5 && c.roof.length === 5), 'مخيمٌ ٦٠×٤٠ م يحوي ٢٤ خيمةً في ٦ أعمدةٍ و٤ صفوف: ' + cells.length);
+  const bodyW = Math.hypot((cells[0].body[1][0] - cells[0].body[0][0]) * kx, (cells[0].body[1][1] - cells[0].body[0][1]) * ky);
+  T(Math.abs(bodyW - 7.6) < 0.05, 'والخيمةُ ٧٫٦ م (٨ م بممرٍّ): ' + bodyW.toFixed(2));
+  const small = w.tentCells(rect(6, 6));
+  T(small.length === 0, 'وحدودٌ أصغرُ من خيمةٍ لا تُملأ');
+  w.tentPaint.cache = {};
+  const F = w.tentFeaturesOf('camp-test', rect(60, 40));
+  const bodies = F.filter(f => f.properties.k === 'body'), roofs = F.filter(f => f.properties.k === 'roof'), fence = F.filter(f => f.properties.k === 'fence');
+  T(bodies.length === 24 && roofs.length === 24 && fence.length === 4 && roofs[0].properties.base > bodies[0].properties.base && roofs[0].properties.h > bodies[0].properties.h, 'الخيامُ أجسامٌ وأسقفٌ فوقها وسورٌ من أربعة أضلاع');
+  T(w.tentFeaturesOf('camp-test', rect(60, 40)) === F, 'والمخيمُ يُحسَب مرةً ويُخزَّن');
+  const d30 = w.MAP_3D; w.MAP_3D = true; const ui = w.mapUIHtml(); w.MAP_3D = d30;
+  T(/data-tent="1"/.test(ui) && /الخيام/.test(ui), 'وزرُّ «الخيام» مع المجسّم');
+  const camp = w.STATE.sites.find(x => x.type === 'مخيم' && w.campFoot(x));
+  if (camp){ w.tentPaint.on = true; const P = w.m3Points().find(f => f.properties.id === camp.id); T(!!P && P.properties.h === 0.5, 'وتحت الخيام يصير المخيمُ قاعدةً ٠٫٥ م بلونه'); w.tentPaint.on = false; const P2 = w.m3Points().find(f => f.properties.id === camp.id); T(!!P2 && P2.properties.h === 4, 'وبلا خيامٍ يعود كتلةً ٤ م'); w.tentPaint.on = true; }
+  else T(true, '(لا مخيمَ بحدودٍ في البذرة)');
+  delete w.tentPaint.cache['camp-test'];
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

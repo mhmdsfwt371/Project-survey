@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V39.17",
+  "app_version": "V39.18",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2279,7 +2279,8 @@
   "V39.14": "05-lifecycle-map-15-coverage.js (النواة): covDefaults {rdr:12, camR:25, fov:90, gw:150} · covOf(id) يقرأ inss.cov · covCircle/covSector هندسة · covShapes(inBox) القوارئ والكاميرات والجيت واي · covPaint (Leaflet، من تقريب ١٥، يتبع الإطار) · covLayers3d/covPaint3d (مصدر nskcov، fill وline) مع m3Paint وmoveend · زرّ data-cov وcovPaint.on · ورقة تعديل التركيب: ثلاثة حقول data-insqcov (dir/fov/rdr) تُحفظ في inss.cov وتُسجَّل في التغييرات · سيناريو ٤٨ (٢٥١ فحصًا)",
   "V39.15": "m3Base(x) = siteFloor(x) × ٤٫٢ م (الأرضي والمجهول ٠) في خصائص m3Points (base) ونقاط التوأم (dtwFeatures) · طبقتا nsk-cols وnsk-twin: fill-extrusion-base من base والارتفاع base+h · أزرار data-ffl الستة في صفّ الخريطة حين FILT.zone = كاميرات المتابعة أو FILT.floor مختار — معالجُ المرشِّح نفسه (V22.2) · سيناريو ٤٩ (٢٥٦ فحصًا)",
   "V39.16": "05-lifecycle-map-16-heat.js (النواة): heatWeight(x) بوضع الخريطة (المسح: تحدٍّ أو تعذّر؛ التركيب والفك: المتبقّي) · heatPoints(inBox) من layerFiltered · heatPaint: خلايا ١٢٠ م على Leaflet بين تقريب ١١ و١٧ ولون heatColor من الأصفر إلى الأحمر بالكثافة · heatLayers3d/heatPaint3d: طبقة heatmap للمحرّك من النقاط نفسها (مصدر nskheat) · زرّ data-heat وheatPaint.on · سيناريو ٥٠ (٢٦١ فحصًا)",
-  "V39.17": "المجسّم: مصدر nskiot يحمل كل مخيم له خطة في كل تقريب (بلا تصفية بالإطار) وكل جهاز مضلّعًا ونقطة؛ طبقة circle «nsk-iot-pt» حتى ١٥٫٥ وطبقة fill-extrusion «nsk-iot» من ١٥ · m3IotPaint لا يُستدعى في moveend · m3Hover/m3HoverHtml: Popup يتبع الماوس على nsk-iot-pt/nsk-iot/nsk-twin/nsk-pts/nsk-cols · مصدر sat maxzoom:18 وLeaflet maxNativeZoom:18 · 05-lifecycle-map-17-timeline.js: timeState/timeRange/timeStageAt/timeColorOf (mapColorOf يعبر منها حين on)/timeBarHtml/timeSet/timeStep/timePlayToggle، data-time/data-timeslide/data-timestep/data-timeplay · سيناريو ٥١ و٤٥ محدَّث (٢٦٩ فحصًا)"
+  "V39.17": "المجسّم: مصدر nskiot يحمل كل مخيم له خطة في كل تقريب (بلا تصفية بالإطار) وكل جهاز مضلّعًا ونقطة؛ طبقة circle «nsk-iot-pt» حتى ١٥٫٥ وطبقة fill-extrusion «nsk-iot» من ١٥ · m3IotPaint لا يُستدعى في moveend · m3Hover/m3HoverHtml: Popup يتبع الماوس على nsk-iot-pt/nsk-iot/nsk-twin/nsk-pts/nsk-cols · مصدر sat maxzoom:18 وLeaflet maxNativeZoom:18 · 05-lifecycle-map-17-timeline.js: timeState/timeRange/timeStageAt/timeColorOf (mapColorOf يعبر منها حين on)/timeBarHtml/timeSet/timeStep/timePlayToggle، data-time/data-timeslide/data-timestep/data-timeplay · سيناريو ٥١ و٤٥ محدَّث (٢٦٩ فحصًا)",
+  "V39.18": "04-tasks-office-17-twin-camps.js (الجزء المكتبي): tentCells(ring) شبكةُ وحدات ٨ م بممرّ ١٫٥ م موجَّهةٌ على أطول ضلع، الوحدةُ كلُّها داخل الحدود (point-in-polygon)، حدٌّ ٤٠٠ خيمة · tentFence(ring) رباعياتٌ ٠٫٣ م × ٢٫٢ م على الأضلاع · tentFeaturesOf مُخزَّن بالمخيم · tentFeatures من M3_FOOT داخل الإطار من تقريب ١٥ · طبقة nsk-tent fill-extrusion بـvertical-gradient · tentCfg() في ملف المجسّم بالنواة (القاعدة ٠٫٥ م) · m3Points: المخيم بحدوده قاعدةٌ ٠٫٥ م حين الخيام شغّالة · زرّ data-tent وtentPaint.on · نقاط الحساسات (nsk-iot-pt) في كل تقريب · سيناريو ٥٢ (٢٧٦ فحصًا)"
   },
   "map_and_geolocation": {
     "tile_layers": {

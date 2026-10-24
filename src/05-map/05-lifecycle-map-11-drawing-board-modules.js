@@ -114,6 +114,8 @@ function mapUIHtml(){
     +   '<button type="button" class="map-chip'+(heatPaint.on?' on':'')+'" data-heat="1">\u{1F525} '+esc(t('الحرارة'))+'</button>'
     /* (V39.14) the coverage: reader ranges, camera view sectors and gateway reach */
     +   '<button type="button" class="map-chip'+(covPaint.on?' on':'')+'" data-cov="1">\u{1F4F6} '+esc(t('التغطية'))+'</button>'
+    /* (V39.18) Mina's camps as tents — a 3D layer, so its chip shows with the 3D map */
+    +   (MAP_3D ? '<button type="button" class="map-chip'+((typeof tentOn !== 'function' || tentOn())?' on':'')+'" data-tent="1">\u26FA '+esc(t('الخيام'))+'</button>' : '')
     /* (V39.13) the points' devices — a 3D layer, so its chip shows with the 3D map */
     +   (MAP_3D ? '<button type="button" class="map-chip'+((typeof dtwPaint !== 'function' || dtwPaint.on !== false)?' on':'')+'" data-twin="1">\u{1F9E9} '+esc(t('الأجهزة'))+'</button>' : '')
     +   '<button type="button" class="map-chip'+(filtOn()?' on':'')+'" data-mfilt="'
