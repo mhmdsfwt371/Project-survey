@@ -106,6 +106,7 @@ function lifeOfRaw(x){
 function lifeColor(x){ return (LIFE[lifeOf(x)] || LIFE.todo).c; }
 /* ألوانُ دورة الزيارة — تبقى لتلوينِ «نقاطي» في طبقة المسح */
 function mapColorOf(x){
+  if (timeState().on) return timeColorOf(x);   /* (V39.17) the season replayed: the stage reached by the chosen day */
   /* وضعُ الشركات: ما له شركةٌ يلبس لونَها، وما لا شركةَ له يبقى على لون
      طبقته. وكان كلُّ ما لا شركةَ له يُرمَّد — فتختفي الممراتُ والمحطاتُ
      والكاميراتُ تحت لونٍ واحدٍ باهت، ويظنُّ الناظرُ أنها خرجت من الطبقة.
@@ -196,7 +197,7 @@ function mapInit(){
   L.control.zoom({ position:'topleft' }).addTo(MAP);
 
   MAP_BASE = L.tileLayer(MAP_SAT ? TILES.esri : TILES.osm, {
-    maxZoom:19, className:'nskBase', crossOrigin:true, keepBuffer:1, updateWhenIdle:true, updateWhenZooming:false,   /* (V34.2) ذاكرةٌ أقلّ على الآيفون */
+    maxZoom:19, maxNativeZoom:18, className:'nskBase', crossOrigin:true, keepBuffer:1, updateWhenIdle:true, updateWhenZooming:false,   /* (V39.17) maxNativeZoom: the 19th zoom stretches the 18th — the imagery has no 19th here, it sent grey «no data» tiles */   /* (V34.2) ذاكرةٌ أقلّ على الآيفون */
     attribution: MAP_SAT ? '&copy; Esri' : '&copy; OpenStreetMap'
   }).addTo(MAP);
 

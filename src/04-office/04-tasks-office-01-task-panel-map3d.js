@@ -73,7 +73,7 @@ function m3Load(){
 /* القمرُ الصناعيُّ نفسُه الذي تعرفه الخريطة المسطّحة — وإلا نمطٌ مفتوحٌ بلا مفتاح */
 function m3Style(){
   if (MAP_SAT) return { version:8,
-    sources:{ sat:{ type:'raster', tiles:[TILES.esri], tileSize:256, attribution:'&copy; Esri' } },
+    sources:{ sat:{ type:'raster', tiles:[TILES.esri], tileSize:256, maxzoom:18, attribution:'&copy; Esri' } },   /* (V39.17) beyond 18 the imagery is stretched, not requested: no grey «no data» tiles */
     layers:[{ id:'sat', type:'raster', source:'sat' }] };
   return 'https://tiles.openfreemap.org/styles/liberty';
 }
@@ -115,7 +115,11 @@ function m3Layers(){
     /* (V39.11) the sensors and gateways as small columns — the digital twin of the camps' plans */
     if (!M3.getSource('nskiot')){
       M3.addSource('nskiot', { type:'geojson', data:{ type:'FeatureCollection', features:(typeof m3IotFeatures === 'function' ? m3IotFeatures() : []) } });
-      M3.addLayer({ id:'nsk-iot', type:'fill-extrusion', source:'nskiot',
+      /* (V39.17) owner: the sensors stay visible — a dot of fixed size at every zoom, and the column when close enough */
+      M3.addLayer({ id:'nsk-iot-pt', type:'circle', source:'nskiot', filter:['==', ['geometry-type'], 'Point'], maxzoom:15.5,
+        paint:{ 'circle-radius':['interpolate', ['linear'], ['zoom'], 11, 2.5, 15, 6], 'circle-color':['get','color'],
+                'circle-stroke-width':['case', ['==', ['get','kind'], 'g'], 1.5, 0.8], 'circle-stroke-color':'#ffffff', 'circle-opacity':0.95 } });
+      M3.addLayer({ id:'nsk-iot', type:'fill-extrusion', source:'nskiot', filter:['==', ['geometry-type'], 'Polygon'], minzoom:15,
         paint:{ 'fill-extrusion-color':['get','color'], 'fill-extrusion-height':['get','h'], 'fill-extrusion-base':0, 'fill-extrusion-opacity':0.96 } });
     }
     if (typeof dtwLayers === 'function') dtwLayers();   /* (V39.13) the points' devices */
@@ -154,16 +158,44 @@ function m3Init(){
   M3.on('click', 'nsk-pts', hit); M3.on('click', 'nsk-cols', hit);
   /* (V39.11) the twin's devices take the tap first; a tap on the ground in the editor moves or adds the selected device */
   M3.on('click', 'nsk-iot', function(ev){ var f = ev.features && ev.features[0]; if (f && typeof m3IotClick === 'function') m3IotClick(f, ev); });
+  M3.on('click', 'nsk-iot-pt', function(ev){ var f = ev.features && ev.features[0]; if (f && typeof m3IotClick === 'function') m3IotClick(f, ev); });
+  /* (V39.17) owner: hovering the mouse shows the value — a tooltip follows the mouse over sensors, gateways, devices and points */
+  ['nsk-iot-pt', 'nsk-iot', 'nsk-twin', 'nsk-pts', 'nsk-cols'].forEach(function(ly){
+    M3.on('mousemove', ly, function(ev){ var f = ev.features && ev.features[0]; if (f) m3Hover(ev, m3HoverHtml(ly, f.properties)); });
+    M3.on('mouseleave', ly, function(){ m3Hover(null); });
+  });
   M3.on('click', function(ev){
     if (ev.originalEvent && ev.originalEvent._nskIot) return;
     if (typeof IOT === 'object' && IOT.edit && ev.lngLat){ try { if (M3.queryRenderedFeatures(ev.point, { layers:['nsk-iot'] }).length) return; } catch (eQ){ LS_ERR = eQ; } iotMapClick({ lat:ev.lngLat.lat, lng:ev.lngLat.lng }); }
   });
-  M3.on('moveend', function(){ if (MAP_3D && typeof IOT === 'object' && IOT.on && typeof m3IotPaint === 'function') m3IotPaint(); if (MAP_3D && typeof dtwPaint === 'function') dtwPaint(); if (MAP_3D){ covPaint3d(); heatPaint3d(); } });
+  /* (V39.17) the sensors no longer depend on the view, so a move does not rebuild them — the devices, coverage and heat still follow the frame */
+  M3.on('moveend', function(){ if (MAP_3D && typeof dtwPaint === 'function') dtwPaint(); if (MAP_3D){ covPaint3d(); heatPaint3d(); } });
   M3.on('mouseenter', 'nsk-iot', function(){ M3.getCanvas().style.cursor = 'pointer'; });
   M3.on('mouseleave', 'nsk-iot', function(){ M3.getCanvas().style.cursor = ''; });
   M3.on('mouseenter', 'nsk-pts', function(){ M3.getCanvas().style.cursor = 'pointer'; });
   M3.on('mouseleave', 'nsk-pts', function(){ M3.getCanvas().style.cursor = ''; });
   return true;
+}
+/* (V39.17) the hover tooltip: one small popup, moved with the mouse, gone when it leaves */
+function m3Hover(ev, html){
+  if (!ev || !html){ if (m3Hover.p){ try { m3Hover.p.remove(); } catch (e){ LS_ERR = e; } m3Hover.p = null; } if (M3) M3.getCanvas().style.cursor = ''; return; }
+  try {
+    if (!m3Hover.p) m3Hover.p = new maplibregl.Popup({ closeButton:false, closeOnClick:false, maxWidth:'260px', offset:10 });
+    m3Hover.p.setLngLat(ev.lngLat).setHTML('<div class="iot-pop" dir="auto" style="font-size:12.5px">' + html + '</div>').addTo(M3);
+    M3.getCanvas().style.cursor = 'pointer';
+  } catch (e){ LS_ERR = e; }
+}
+/* what the tooltip says: a sensor or gateway by id, room, status and serial; a device by name and serial; a point by name and status */
+function m3HoverHtml(layer, p){
+  if (!p) return '';
+  if (layer === 'nsk-iot-pt' || layer === 'nsk-iot'){
+    var c = typeof iotOf === 'function' ? iotOf(p.camp) : null, m = c ? ((p.kind === 's' ? c.sm : c.gm) || [])[+p.i] || {} : {};
+    return '<b>' + esc(p.kind === 's' ? t('حساس') : t('جيت واي')) + ' <span class="num">' + esc(p.did || m.id || '') + '</span></b>'
+      + (m.room ? ' \u00b7 ' + esc(t('الغرفة')) + ' ' + esc(m.room) : '') + ' \u00b7 ' + esc(t(m.status || 'مخطط')) + (m.serial ? '<br><span class="num">' + esc(m.serial) + '</span>' : '');
+  }
+  if (layer === 'nsk-twin') return '<b>' + esc(t(itemName(p.code))) + '</b>' + (p.serial ? ' \u00b7 <span class="num">' + esc(p.serial) + '</span>' : '') + '<br><span class="hint" style="margin:0">' + esc(p.site) + '</span>';
+  var x = siteFind(p.id); if (!x) return '';
+  return '<b>' + esc(x.name || x.id) + '</b><br><span class="hint" style="margin:0">' + esc(typeof svLabel === 'function' ? svLabel(x) : '') + '</span>';
 }
 /* الكاميرا تنتقل حيث كان الناظر — لا تبدأ من مكانٍ آخر */
 function m3From2D(){

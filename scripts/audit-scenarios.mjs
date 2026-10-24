@@ -1273,6 +1273,7 @@ console.log('\n══ ٤٥ · التوأم الرقمي في الخريطة ال
   const M30 = w.M3, d30 = w.MAP_3D, on0 = w.IOT.on, ed0 = w.IOT.edit, role0 = w.ROLE, cur0 = w.CUR;
   w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.CUR = 'map';
   T(/data-iot="1"/.test(w.mapUIHtml()) && /الحساسات/.test(w.mapUIHtml()), 'زرُّ «الحساسات» في صفِّ أزرار الخريطة فوق، لا داخل التصفية وحدَها');
+  T(/data-iot="1"/.test(w.mapUIHtml()) && typeof w.m3HoverHtml === 'function' && /حساس/.test(w.m3HoverHtml('nsk-iot-pt', { camp:'x', kind:'s', i:0, did:'S01' })) && /S01/.test(w.m3HoverHtml('nsk-iot-pt', { camp:'x', kind:'s', i:0, did:'S01' })), 'ومرورُ الماوس على الحساس يقول رقمَه وحالتَه');   /* (V39.17) */
   /* a camp with a plan: twelve sensors and a gateway, one sensor faulty */
   const camp = w.STATE.sites.find(x => x.type === 'مخيم' && +x.lat && +x.lng);
   const sensors = Array.from({ length:12 }, (_, i) => [+camp.lat + i * 0.00002, +camp.lng + i * 0.00002]);
@@ -1283,9 +1284,9 @@ console.log('\n══ ٤٥ · التوأم الرقمي في الخريطة ال
   w.MAP_3D = true; w.IOT.on = true; w.IOT.edit = null;
   w.m3IotPaint();
   const F = data ? data.features.filter(f => f.properties.camp === camp.id) : [];
-  const col = k => F.filter(f => f.properties.kind === k).map(f => f.properties.color);
-  T(F.length === 13 && col('s').length === 12 && col('g').length === 1, 'المخيمُ في المجسّم: اثنا عشر حساسًا وجيت واي، كلٌّ عمودٌ صغير (' + F.length + ')');
-  T(col('s')[3] === '#E05252' && col('s')[0] === w.IOT_C.sensor && col('s')[9] !== w.IOT_C.sensor && col('g')[0] === w.IOT_C.gw && F.every(f => f.geometry.type === 'Polygon' && f.properties.h > 0),
+  const col = k => F.filter(f => f.properties.kind === k && f.geometry.type === 'Polygon').map(f => f.properties.color);   /* (V39.17) the columns; the dots repeat them */
+  T(F.length === 26 && col('s').length === 12 && col('g').length === 1 && F.filter(f => f.geometry.type === 'Point').length === 13, 'المخيمُ في المجسّم: اثنا عشر حساسًا وجيت واي، كلٌّ عمودٌ صغيرٌ ونقطةٌ تبقى في كلِّ تقريب (' + F.length + ')');   /* (V39.17) */
+  T(col('s')[3] === '#E05252' && col('s')[0] === w.IOT_C.sensor && col('s')[9] !== w.IOT_C.sensor && col('g')[0] === w.IOT_C.gw && F.every(f => (f.geometry.type === 'Polygon' || f.geometry.type === 'Point') && f.properties.h > 0),
     'ولونُه بحالته: المعطّلُ أحمر، والمركّبُ بلونه، والمخطَّطُ أفتح — والجيت واي أطول');
   /* the editor: a tap selects, the next tap on the ground moves */
   w.iotEditStart(camp.id);
@@ -1403,6 +1404,26 @@ console.log('\n══ ٥٠ · الخريطة الحرارية ══');
   T(/data-heat="1"/.test(w.mapUIHtml()) && /الحرارة/.test(w.mapUIHtml()), 'وزرُّ «الحرارة» في صفِّ أزرار الخريطة');
   T(w.heatColor(0) !== w.heatColor(1) && /^rgb\(255,/.test(w.heatColor(0.5)), 'واللونُ من الأصفر إلى الأحمر');
   w.FIELD_MODE = m0; w.heatPaint.on = on0; w.CUR = cur0;
+}
+
+/* ── ٥١ · (V39.17) شريطُ الزمن: الموسمُ يُعاد يومًا بيوم ── */
+console.log('\n══ ٥١ · شريط الزمن ══');
+{
+  const S = w.timeState(), on0 = S.on, cur0 = w.CUR; w.CUR = 'map';
+  const x = w.STATE.sites.find(q => +q.lat && +q.lng && !(w.STATE.recs || {})[q.id] && !(w.STATE.inss || {})[q.id]);
+  const d0 = Date.UTC(2026, 8, 10), d1 = Date.UTC(2026, 9, 1);
+  w.STATE.recs[x.id] = { id:x.id, at:d0, access:'تم الوصول', chals:['لا توجد تحديات'] };
+  w.STATE.inss = w.STATE.inss || {}; w.STATE.inss[x.id] = { id:x.id, status:'مُركّب', parts:{ rdr8:1 }, at:d1 };
+  T(w.timeStageAt(x, d0 - 864e5) === '' && w.timeStageAt(x, d0) === 'visited' && w.timeStageAt(x, d1 - 864e5) === 'visited' && w.timeStageAt(x, d1) === 'installed', 'قبل الزيارة لا شيء، بعدها «تمت الزيارة»، وبعد التركيب «مُركّب»');
+  S.on = true; S.day = d0;
+  T(w.mapColorOf(x) === w.LAYERS.survey.c, 'ولونُ النقطة على الخريطة يوم الزيارة لونُ المسح');
+  S.day = d1; T(w.mapColorOf(x) === w.LAYERS.install.c, 'ويوم التركيب لونُ التركيب');
+  S.day = d0 - 5 * 864e5; T(w.mapColorOf(x) === '#5B6570', 'وقبلهما رمادية');
+  const bar = w.timeBarHtml();
+  T(/data-timeslide/.test(bar) && /data-timeplay/.test(bar) && /data-timestep="-1"/.test(bar) && /data-timestep="1"/.test(bar), 'والشريطُ: منزلقٌ ويومٌ قبل وبعد وتشغيل');
+  T(/data-time="1"/.test(w.mapUIHtml()) && /الزمن/.test(w.mapUIHtml()), 'وزرُّ «الزمن» في صفِّ أزرار الخريطة');
+  S.on = false; w.timeSet(0); const R = w.timeRange(); T(R.min <= d0 && R.max >= Date.now() - 864e5, 'والمدى من أوّل سجلٍّ إلى اليوم');
+  delete w.STATE.recs[x.id]; delete w.STATE.inss[x.id]; S.on = on0; w.CUR = cur0;
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

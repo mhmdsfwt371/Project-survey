@@ -95,9 +95,12 @@ function iotColor(kind, m, bad, sel){
 }
 function m3IotFeatures(){
   var F = [], E = IOT.edit;
+  /* (V39.17) each device twice: a polygon for the column (drawn from zoom 15) and a point for the dot at every zoom —
+     and every camp with a plan whatever the view: the owner wants them always there, never lost on a zoom */
   var push = function(camp, kind, i, q, m, bad, sel){
-    F.push({ type:'Feature', properties:{ camp:camp, kind:kind, i:i, did:(m && m.id) || '', color:iotColor(kind, m, bad, sel), h:kind === 's' ? 1.8 : 4, sel:sel ? 1 : 0 },
-             geometry:{ type:'Polygon', coordinates:iotSq(q, kind === 's' ? 0.7 : 1.1) } });
+    var P = { camp:camp, kind:kind, i:i, did:(m && m.id) || '', color:iotColor(kind, m, bad, sel), h:kind === 's' ? 1.8 : 4, sel:sel ? 1 : 0 };
+    F.push({ type:'Feature', properties:P, geometry:{ type:'Polygon', coordinates:iotSq(q, kind === 's' ? 0.7 : 1.1) } });
+    F.push({ type:'Feature', properties:P, geometry:{ type:'Point', coordinates:[+q[1], +q[0]] } });
   };
   if (E){
     var R0 = iotRing(E.id);
@@ -105,13 +108,9 @@ function m3IotFeatures(){
     [E.gw].concat(E.gws).forEach(function(g, j){ push(E.id, 'g', j, g, E.gm[j], false, E.sel && E.sel.k === 'g' && E.sel.i === j); });
     return F;
   }
-  if (!IOT.on || !M3 || !M3.getBounds) return F;
-  var b, z; try { b = M3.getBounds(); z = M3.getZoom(); } catch (e){ LS_ERR = e; return F; }
-  if (z < IOT.Z - 1) return F;
-  var inB = function(q){ return b.contains([+q[1], +q[0]]); };
+  if (!IOT.on) return F;
   iotCampIds().forEach(function(id){
     var c = iotOf(id); if (!c || !c.gw || !c.sensors) return; var G = iotAllGw(c);
-    if (!G.some(inB) && !c.sensors.some(inB)) return;
     var out = iotOutside(id, c);
     c.sensors.forEach(function(q, i){ push(id, 's', i, q, (c.sm || [])[i], out.indexOf(i) > -1, false); });
     G.forEach(function(g, j){ push(id, 'g', j, g, (c.gm || [])[j], false, false); });
