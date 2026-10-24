@@ -24,6 +24,15 @@ function actList(){
       if (typeof window['onDocClickPart' + pi + 'b'] === 'function') src += String(window['onDocClickPart' + pi + 'b']);   /* (V38.97) a part cut in two */
       if (typeof window['clickAPart' + pi] === 'function') src += String(window['clickAPart' + pi]);
     }
+    /* (V39.34) owner's screenshot: the X of the 3D «الطبقات» sheet did nothing and a toast «✕» appeared — its handler had moved
+       into clickAMapViews (V39.31, to keep clickAPart7 under 150 lines) and this scan did not read it, so the guard swallowed
+       every .btn whose action lived there (the X, «احفظ المنظر», «تحريك الأجهزة», «تم», «تراجع», «الشمال»). Now every global
+       click handler is read by its name — a handler split out tomorrow is read too. */
+    Object.keys(window).forEach(function(k){
+      if (/^(click|onDocClick)[A-Z0-9]/.test(k) && !/^clickAPart[0-9]+$|^onDocClickPart[0-9]+b?$/.test(k)){
+        try { if (typeof window[k] === 'function') src += String(window[k]); } catch (e2){ LS_ERR = e2; }
+      }
+    });
   } catch (e){ LS_ERR = e; }
   var found = src.match(/data-[\w-]+/g) || [];
   ACTS_CACHE = found.length >= 20 ? found.filter(function(v, i){ return found.indexOf(v) === i; })

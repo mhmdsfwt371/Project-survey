@@ -105,7 +105,10 @@ function clickAPart1(e){
     { on:function(){ return ASN_PICK; },       off:function(){ ASN_PICK = false; },       sel:'#asnPick',         btn:'[data-apick]' },
     { on:function(){ return ASN_OPEN; },       off:function(){ ASN_OPEN = false; },       sel:'#asnPop',          btn:'[data-asn]' },
     { on:function(){ return CO_OPEN; },        off:function(){ CO_OPEN = false; },        sel:'#coFilt',          btn:'[data-co],[data-cofilt],[data-comode]' },
-    { on:function(){ return MAP_FILT_OPEN; },  off:function(){ MAP_FILT_OPEN = false; },  sel:'.map-sheet',       btn:'[data-mfilt]' }
+    { on:function(){ return MAP_FILT_OPEN; },  off:function(){ MAP_FILT_OPEN = false; },  sel:'.map-sheet',       btn:'[data-mfilt]' },
+    /* (V39.34) the 3D map's «الطبقات» and «المناظر» sheets close on a tap outside them, as every sheet does */
+    { on:function(){ return typeof m3uiState === 'function' && (m3uiState().sheet || m3uiState().views); },
+      off:function(){ m3uiState().sheet = false; m3uiState().views = false; }, sel:'.map-sheet', btn:'[data-m3ui]', pass:true }   /* closes and lets the tap act: «٢د» or a mode works at once */
   ];
   /* الحدثُ الذي فتح النافذةَ لا يُغلقها — بهويته، مهما استغرق الرسمُ */
   var justOpened = (POP_EV && POP_EV === e) || (Date.now() - POP_JUST <= 300);
@@ -116,7 +119,9 @@ function clickAPart1(e){
       if (!sh.on()) continue;
       if (e.target.closest(sh.sel)) break;          /* النقرُ داخله شأنُه */
       if (sh.btn && e.target.closest(sh.btn)) break; /* وزرُّه يتولّاه بنفسه */
-      sh.off(); render(); return true;
+      sh.off();
+      if (sh.pass){ render(); break; }   /* (V39.34) the tap that closed it still does what it pressed */
+      render(); return true;
     }
   }
   return CLICK_NEXT;

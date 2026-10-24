@@ -1764,6 +1764,36 @@ console.log('\n══ ٦٥ · إغلاقُ النوافذ ══');
   T(/maplibregl-popup-close-button\{width:36px;height:36px/.test(css), 'وإكسُ النافذة ٣٦ بكسل — هدفٌ للإصبع لا رمزٌ ١٤ بكسل');
 }
 
+/* ── ٦٦ · (V39.34) كلُّ زرٍّ له فعلٌ يصله: لا يبتلعه حارسُ الأزرار — في كلِّ صفحة، وفي الخريطة المسطّحة والثلاثية ولوحاتها ── */
+console.log('\n══ ٦٦ · كلُّ زرٍّ موصول ══');
+{
+  const d = w.document;
+  w.ACTS_CACHE = null; const acts = w.actList();
+  T(acts && acts.indexOf('data-m3ui') > -1 && acts.indexOf('data-mvd') > -1 && acts.indexOf('data-m3viewsave') > -1 && acts.indexOf('data-m3reset') > -1, 'حارسُ الأزرار يقرأ معالجات الخريطة المفصولة (clickAMapViews)');
+  const cur0 = w.CUR, d30 = w.MAP_3D, bad = [];
+  const scan = where => d.querySelectorAll('.btn, .chip').forEach(b => {
+    if (b.closest('#nav') || b.hasAttribute('href') || b.disabled) return;
+    const da = [...b.attributes].map(a => a.name).filter(n => /^data-/.test(n) && !/^data-(i18n|tip|label|title|state)/.test(n));   /* translation and tooltip attributes are not actions */
+    if (da.length && !da.some(n => acts.indexOf(n) > -1)) bad.push(where + ': ' + (b.textContent || '').trim().slice(0, 24) + ' [' + da.join(' ') + ']');
+  });
+  w.NAV.forEach(n => [n.id].concat((n.items || []).map(it => it[0])).filter(Boolean).forEach(pg => { try { w.goPage(pg); w.render(1); scan(pg); } catch (e){} }));
+  w.goPage('map'); w.MAP_3D = true; w.m3uiState().sheet = true; w.render(1); scan('3d-layers'); w.m3uiState().sheet = false; w.m3uiState().views = true; w.render(1); scan('3d-views'); w.m3uiState().views = false;
+  const x = w.STATE.sites.find(q => q.type === 'مخيم' && +q.lat); w.POP_SITE = x.id; w.POP_OPEN = true; w.render(1); scan('popup'); w.POP_OPEN = false;
+  w.mvdState().id = x.id; w.mvdState().last = { it:{}, prev:[0, 0] }; w.render(1); scan('move-bar'); w.mvdState().id = ''; w.mvdState().last = null;
+  w.MAP_3D = d30; w.goPage(cur0 || 'map'); w.render(1);
+  T(bad.length === 0, 'ولا زرَّ بفعلٍ لا يصله في الصفحات الثلاث والثلاثين ولوحات الخريطة' + (bad.length ? ': ' + bad.slice(0, 6).join(' | ') : ''));
+  const d31 = w.MAP_3D; w.MAP_3D = true; w.goPage('map'); w.m3uiState().sheet = true; w.render(1);
+  d.querySelector('.map-sheet [data-m3ui="close"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true, cancelable:true }));
+  T(w.m3uiState().sheet === false, 'وإكسُ لوح «الطبقات» تُغلقه فعلًا (بالنقر الحقيقي)');
+  w.m3uiState().sheet = true; w.render(1);
+  (d.querySelector('.map-stack') || d.body).dispatchEvent(new w.MouseEvent('click', { bubbles:true, cancelable:true }));
+  T(w.m3uiState().sheet === false, 'ولمسةٌ خارجه تُغلقه');
+  w.MAP_3D = d31;
+  const ids = {}; w.goPage('acct'); w.render(1); d.querySelectorAll('[id]').forEach(el => { ids[el.id] = (ids[el.id] || 0) + 1; });
+  T(!Object.keys(ids).some(k => ids[k] > 1), 'ولا معرّفَ مكرّرَ في «حسابي» (زرُّ التثبيت كان بمعرّف الشريط)');
+  w.goPage(cur0 || 'map'); w.render(1);
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

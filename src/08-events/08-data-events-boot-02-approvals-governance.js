@@ -103,7 +103,7 @@ PAGE.acct = { m:'المساعدة', t:'حسابي', l:'دورك وصلاحيات
           + '<div class="actions">'
           /* كان مخفيًّا حتى يقع حدثُ التثبيت — وآيفونُ لا يقع فيه حدثٌ أبدًا،
              فيبقى مخفيًّا على نصف أجهزة الميدان. */
-          + '<button type="button" class="btn btn-primary" id="pwaBtn" data-pwa="1">'
+          + '<button type="button" class="btn btn-primary" data-pwa="1">'   /* (V39.34) the review sweep: «pwaBtn» is the top bar's id — two elements had it */
           +   '⬇ ' + esc(t('ثبّت التطبيق')) + '</button>'
           + btn('أفرغ الكاش','btn-danger',' data-swclear="1"')
 
