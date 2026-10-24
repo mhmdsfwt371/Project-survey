@@ -103,7 +103,10 @@ function m3IotFeatures(){
   var push = function(camp, kind, i, q, m, bad, sel){
     var P = { camp:camp, kind:kind, i:i, did:(m && m.id) || '', color:iotColor(kind, m, bad, sel), h:kind === 's' ? 1.8 : 6, sel:sel ? 1 : 0 };
     F.push({ type:'Feature', properties:P, geometry:{ type:'Polygon', coordinates:iotSq(q, kind === 's' ? 0.7 : 1.1) } });
-    F.push({ type:'Feature', properties:Object.assign({}, P, { beacon:1, base:4.8, h:kind === 's' ? 5.4 : 6.6 }), geometry:{ type:'Polygon', coordinates:iotSq(q, kind === 's' ? 0.45 : 0.8) } });
+    /* (V39.32) owner: «الزوم أوي مش مبيّن الحساسات» — the beacon was 0.9 m: a speck at zoom 19. Now 1.6 m for a sensor and 2.2 m
+       for a gateway, a metre and more above the roofs, on a thin stem from the sensor so it reads as «this sensor, here» */
+    F.push({ type:'Feature', properties:Object.assign({}, P, { beacon:1, base:4.8, h:kind === 's' ? 6 : 7.2 }), geometry:{ type:'Polygon', coordinates:iotSq(q, kind === 's' ? 0.8 : 1.1) } });
+    if (kind === 's') F.push({ type:'Feature', properties:Object.assign({}, P, { stem:1, base:P.h, h:4.8 }), geometry:{ type:'Polygon', coordinates:iotSq(q, 0.12) } });   /* the gateway's own column already rises above the roofs */
     F.push({ type:'Feature', properties:P, geometry:{ type:'Point', coordinates:[+q[1], +q[0]] } });
   };
   if (E){

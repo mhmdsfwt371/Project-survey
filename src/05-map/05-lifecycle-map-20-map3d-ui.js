@@ -12,7 +12,10 @@
    STATE   : m3uiState() — the sheet, the folded legend, the terrain switch — on the function, no new global.
    ============================================================================ */
 
-function m3uiState(){ return m3uiState.s || (m3uiState.s = { sheet:false, views:false, lg:false, terrain:true }); }
+/* (V39.32) owner: «اللون الأخضر مش كامل ليه؟» — the terrain model (10 m cells, interpolated) rose above the camps' 0.5–1.2 m
+   plinths on Mina's slopes and buried part of them along a curved contour. A flat base keeps every camp whole and the tents,
+   sensors and labels at true heights; the terrain stays one switch away in «الطبقات». */
+function m3uiState(){ return m3uiState.s || (m3uiState.s = { sheet:false, views:false, lg:false, terrain:false }); }
 
 /* how many optional layers are on — the number on «الطبقات» */
 function m3uiOn(){
