@@ -51,7 +51,7 @@ function iotSplit(orig, parts){   /* (V37.70) تقسيمُ المخيم يوزّ
 function iotEditStart(id, sel){
   if (!mayIot()){ toast(t('تعديلُ الحساسات للمهندس فما فوق والمشرف')); return false; }
   var c = iotOf(id); if (!c){ toast(t('لا خطّةَ حساساتٍ لهذا المخيم')); return false; }
-  IOT.on = true; iotLoad();
+  IOT.on = true; iotLoad(); if (typeof iotFieldLoad === 'function') iotFieldLoad();   /* (V39.22) */
   var cp = function(q){ return [+q[0], +q[1]]; };
   IOT.edit = { id:id, gw:cp(c.gw), gws:(c.gws || []).map(cp), sensors:c.sensors.map(cp), sm:c.sensors.map(function(_, i){ return Object.assign({ id:iotSid(id, c, i), status:'مخطط' }, (c.sm || [])[i] || {}); }),
     gm:[c.gw].concat(c.gws || []).map(function(_, j){ return Object.assign({ id:iotGid(id, c, j), status:'مخطط' }, (c.gm || [])[j] || {}); }), sel:sel || null, add:false, addGw:false };
@@ -72,6 +72,7 @@ function iotMetaSet(){   /* بياناتُ المحدَّد من اللوحة */
   var m = E.sel.k === 's' ? E.sm[E.sel.i] : E.gm[E.sel.i]; if (!m) return;
   var v = function(k){ var el = document.getElementById(k); return el ? String(el.value || '').trim() : ''; };
   if (E.sel.k === 's') m.room = v('iotRoom'); m.serial = v('iotSerial'); m.status = v('iotStatus') || 'مخطط'; m.note = v('iotNote');
+  m.model = v('iotModel'); m.tag = v('iotTag');   /* (V39.22) */
   toast(t('حُفظت بياناتُ الجهاز — اضغط «احفظ» للخطّة كلِّها')); render(1);
 }
 
@@ -89,9 +90,9 @@ function iotSave(){
 
 function iotXlsx(){   /* إكسلُ الحساسات — للمشتريات والتركيب */
   var rows = []; iotCampIds().forEach(function(id){ var c = iotOf(id); if (!c) return; var x = siteFind(id), nm0 = x ? (x.name || id) : id, out = iotOutside(id, c);
-    iotAllGw(c).forEach(function(g, j){ var m = c.gm[j] || {}; rows.push([nm0, id, iotGid(id, c, j), t('جيت واي'), '', m.serial || '', m.status || 'مخطط', +g[0], +g[1], m.note || '']); });
-    c.sensors.forEach(function(q, i){ var m = c.sm[i] || {}; rows.push([nm0, id, iotSid(id, c, i), t('حساس حرارة ورطوبة'), m.room || '', m.serial || '', m.status || 'مخطط', +q[0], +q[1], (out.indexOf(i) > -1 ? t('خارج حدود المخيم') + ' — ' : '') + (m.note || '')]); }); });
-  if (typeof mtXlsx === 'function') return mtXlsx('حساسات منى', ['المخيم', 'رقم المخيم', 'رقم الجهاز', 'النوع', 'الغرفة', 'السيريال', 'الحالة', 'خط العرض', 'خط الطول', 'ملاحظة'], rows);
+    iotAllGw(c).forEach(function(g, j){ var m = c.gm[j] || {}; rows.push([nm0, id, iotGid(id, c, j), t('جيت واي'), '', m.serial || '', m.status || 'مخطط', +g[0], +g[1], m.note || '', m.model || '', m.tag || '']); });
+    c.sensors.forEach(function(q, i){ var m = c.sm[i] || {}; rows.push([nm0, id, iotSid(id, c, i), t('حساس حرارة ورطوبة'), m.room || '', m.serial || '', m.status || 'مخطط', +q[0], +q[1], (out.indexOf(i) > -1 ? t('خارج حدود المخيم') + ' — ' : '') + (m.note || ''), m.model || '', m.tag || '']); }); });
+  if (typeof mtXlsx === 'function') return mtXlsx('حساسات منى', ['المخيم', 'رقم المخيم', 'رقم الجهاز', 'النوع', 'الغرفة', 'السيريال', 'الحالة', 'خط العرض', 'خط الطول', 'ملاحظة', 'الطراز', 'العلامة على الجهاز'], rows);   /* (V39.22) */
   return false;
 }
 

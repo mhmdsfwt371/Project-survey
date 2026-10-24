@@ -194,6 +194,7 @@ function m3HoverHtml(layer, p){
   if (layer === 'nsk-iot-pt' || layer === 'nsk-iot'){
     var c = typeof iotOf === 'function' ? iotOf(p.camp) : null, m = c ? ((p.kind === 's' ? c.sm : c.gm) || [])[+p.i] || {} : {};
     return '<b>' + esc(p.kind === 's' ? t('حساس') : t('جيت واي')) + ' <span class="num">' + esc(p.did || m.id || '') + '</span></b>'
+      + (m.model ? ' \u00b7 ' + esc(m.model) : '') + (m.tag ? ' \u00b7 ' + esc(t('العلامة')) + ' ' + esc(m.tag) : '')   /* (V39.22) */
       + (m.room ? ' \u00b7 ' + esc(t('الغرفة')) + ' ' + esc(m.room) : '') + ' \u00b7 ' + esc(t(m.status || 'مخطط')) + (m.serial ? '<br><span class="num">' + esc(m.serial) + '</span>' : '');
   }
   if (layer === 'nsk-twin') return '<b>' + esc(t(itemName(p.code))) + '</b>' + (p.serial ? ' \u00b7 <span class="num">' + esc(p.serial) + '</span>' : '') + '<br><span class="hint" style="margin:0">' + esc(p.site) + '</span>';

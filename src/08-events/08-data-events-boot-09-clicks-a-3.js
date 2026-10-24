@@ -112,6 +112,7 @@ function clickAPart6(e){
   if (e.target.closest('[data-iotx]')){ iotXlsx(); return true; }
   if (e.target.closest('[data-iotdel]')){ iotDel(); return true; }
   if (e.target.closest('[data-iotsave]')){ iotSave(); return true; }
+  if (e.target.closest('[data-iotfield]')){ iotFieldApply(); return true; }   /* (V39.22) the real positions from the field */
   if (e.target.closest('[data-iotcancel]')){ IOT.edit = null; iotPaint(); render(1); return true; }
   if (e.target.closest('[data-iot]')){   /* (V25.7) طبقةُ تخطيط الحساسات */
     IOT.on = !IOT.on; iotLoad(); iotPaint(); render(1);

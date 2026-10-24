@@ -1509,6 +1509,33 @@ console.log('\n══ ٥٥ · منارات الحساسات ودخول المخ�
   w.siteOvSet(camp.id, { iot:null });
 }
 
+/* ── ٥٦ · (V39.22) مخيمُ العرض (منى ٧٤B — شاخص 38/56): الأجهزةُ الفعليةُ من الميدان تُطبَّق في المحرّر وتُحفَظ ── */
+console.log('\n══ ٥٦ · الأجهزةُ الفعلية في مخيم العرض ══');
+{
+  const { readFileSync } = await import('fs');
+  const D = JSON.parse(readFileSync(new URL('../layers/iot-field-1448.json', import.meta.url), 'utf8'));
+  const F = D.camps['NSK-MIN-CMP-0449'];
+  T(F && F.spots.length === 4 && F.spots.every(s => s.dev.length === 2 && s.dev[0].model === 'EM320' && s.dev[1].model === 'EM300'), 'ملفُّ الميدان: أربعةُ مواقع، في كلٍّ EM320 وبجواره EM300');
+  T(F.spots.find(s => s.n === 1).dev[1].tag === 'D4D2' && F.spots.find(s => s.n === 2).dev[1].tag === 'D50A' && F.spots.every(s => s.dev[0].tag === String(s.n)), 'وعلاماتُ الأجهزة كما في صور الفريق: EM320 برقم موقعه، وD4D2 وD50A');
+  const ring = JSON.parse(readFileSync(new URL('../poly.json', import.meta.url), 'utf8'))['NSK-MIN-CMP-0449'].map(p => [p[1], p[0]]);
+  T(F.spots.every(s => s.dev.every(d => w.polyIn(d.at, ring))), 'وكلُّ جهازٍ داخل حدود المخيم');
+  const role0 = w.ROLE; w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
+  w.iotFieldLoad.d = D;
+  w.IOT.data = w.IOT.data || { camps:{} }; const had = w.IOT.data.camps['NSK-MIN-CMP-0449'];
+  w.IOT.data.camps['NSK-MIN-CMP-0449'] = { gw:[21.40458, 39.895378], at:'pin', maxM:41, sensors:Array.from({ length:12 }, (_, i) => [21.4045 + i * 1e-5, 39.8953]) };
+  w.iotEditStart('NSK-MIN-CMP-0449');
+  T(w.IOT.edit && w.IOT.edit.sensors.length === 12 && /data-iotfield="1"/.test(w.iotPanelHtml()), 'المحرّرُ يفتح على الخطّة المبدئية (١٢) ويعرض «طبّق المواقع الفعلية»');
+  w.iotFieldApply(); const E = w.IOT.edit;
+  T(E.sensors.length === 8 && E.sm.every(m => m.status === 'مُركّب' && m.field) && E.sm[1].model === 'EM300' && E.sm[1].tag === 'D4D2' && E.gw[0] === 21.40458 && !/data-iotfield/.test(w.iotPanelHtml()), 'وبعد التطبيق: ثمانيةُ أجهزةٍ مركّبة بطرازها وعلامتها، والجيت واي على حاله، واللافتةُ اختفت');
+  E.sel = { k:'s', i:2 }; const html = w.iotPanelHtml();
+  T(/id="iotModel"/.test(html) && /id="iotTag"/.test(html) && /list="iotModels"/.test(html), 'وحقلا الطراز والعلامة في المحرّر لكلِّ جهاز');
+  w.iotDel(); T(E.sensors.length === 7, 'ويُحذَف جهازٌ كما قبل');
+  w.iotSave(); const c = w.iotOf('NSK-MIN-CMP-0449');
+  T(c && c.ov && c.sensors.length === 7 && c.sm.some(m => m.tag === 'D50A') && /طراز|الطراز/.test(w.iotDevHtml('NSK-MIN-CMP-0449', 's', 0)), 'والحفظُ يكتبها خطّةً للمخيم، وبطاقةُ الجهاز تقول طرازَه');
+  if (had) w.IOT.data.camps['NSK-MIN-CMP-0449'] = had; else delete w.IOT.data.camps['NSK-MIN-CMP-0449'];
+  if (w.STATE.siteOv['NSK-MIN-CMP-0449']) delete w.STATE.siteOv['NSK-MIN-CMP-0449'].iot; w.ROLE = role0; w.STATE.meta.role = role0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);
