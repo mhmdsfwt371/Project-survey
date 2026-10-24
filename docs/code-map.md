@@ -38,11 +38,11 @@
 | `02-definitions-08-definitions.js` | 563 | 83 | Canonical definitions used everywhere: visit/survey/installation states, challenge categories (chalCats), location choices (locOpts/locApplies), helper predicat |
 | `02-edit-09-edit-requests.js` | 185 | 11 | Data-correction requests from the field (fixreqs) and their review. |
 
-## `03-survey/` — المسح والتركيب — النماذج والنقاط والإسناد والخطة  (11 ملفات · 4043 سطر · 180 دالة)
+## `03-survey/` — المسح والتركيب — النماذج والنقاط والإسناد والخطة  (11 ملفات · 4012 سطر · 178 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
-| `03-survey-records-01-labels-colors.js` | 256 | 16 | Human-readable labels for recorded data, texts written about a point, layer colour by approval stage, field names and company names per UI language. |
+| `03-survey-records-01-labels-colors.js` | 225 | 14 | Human-readable labels for recorded data, texts written about a point, layer colour by approval stage, field names and company names per UI language. |
 | `03-survey-records-02-install-points.js` | 896 | 7 | Installation points for a given type read from one place (what gets installed where). |
 | `03-survey-records-03-assign-solutions.js` | 439 | 21 | Assignment from list or map, request codes, and the proposed device solution for a point before an installation request. |
 | `03-survey-records-04-readiness-conditions.js` | 384 | 9 | What is ready per request type and the condition chain explaining why a point cannot be assigned. |
@@ -297,4 +297,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 235 ملفًّا · 47027 سطر · 2141 دالة.
+**الإجمالي:** 235 ملفًّا · 46996 سطر · 2139 دالة.
