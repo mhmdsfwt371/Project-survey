@@ -175,7 +175,7 @@ function m3Init(){
     if (typeof IOT === 'object' && IOT.edit && ev.lngLat){ try { if (M3.queryRenderedFeatures(ev.point, { layers:['nsk-iot'] }).length) return; } catch (eQ){ LS_ERR = eQ; } iotMapClick({ lat:ev.lngLat.lat, lng:ev.lngLat.lng }); }
   });
   /* (V39.17) the sensors no longer depend on the view, so a move does not rebuild them — the devices, coverage and heat still follow the frame */
-  M3.on('moveend', function(){ if (MAP_3D && typeof dtwPaint === 'function') dtwPaint(); if (MAP_3D){ covPaint3d(); heatPaint3d(); tentPaint(); phPinPaint(); teMaybe();
+  M3.on('moveend', function(){ if (MAP_3D && typeof dtwPaint === 'function') dtwPaint(); if (MAP_3D){ covPaint3d(); heatPaint3d(); tentPaint(); phPinPaint(); teMaybe(); m3ovPaint();
     /* (V39.28) crossing zoom 18 the camps change between their status plinth and the tents' base */
     var zb = M3.getZoom() >= 18, U = m3uiState(); if (zb !== U.band){ U.band = zb; if (typeof m3Paint === 'function') m3Paint(); } } });
   /* (V39.24) the twin engine's models: hover anywhere (a device by the entrance may stand outside every layer), tap outside the layers */
@@ -231,6 +231,7 @@ function m3Off(){
   var was = MAP_3D; MAP_3D = false;
   if (typeof phPinClear === 'function') phPinClear();   /* (V39.19) the photo pins are HTML markers — they do not hide with the box */
   if (typeof teClear === 'function') teClear();   /* (V39.24) */
+  if (typeof m3ovClear === 'function') m3ovClear();   /* (V39.29) */
   if (typeof teWalkOff === 'function' && teState().walk) teWalkOff();   /* (V39.25) */
   var b3 = document.getElementById('m3Box'); if (b3) b3.hidden = true;
   if (was && MAP && M3){ try { var c = M3.getCenter(); MAP.setView([c.lat, c.lng], Math.round(M3.getZoom() + 1)); } catch (e){ LS_ERR = e; } }

@@ -145,7 +145,7 @@ function mapUIHtml(){
     + propChip()   /* (V37.69) مقترحاتُ الوزارة */
     + '</div>'
 
-    + (MAP_3D ? m3uiSheet() : '')   /* (V39.28) */
+    + (MAP_3D ? m3uiSheet() + m3uiViews() : '')   /* (V39.28/V39.29) */
     + (MAP_FILT_OPEN ? '<div class="map-sheet">'
         + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'
         +   '<p class="hint" style="margin:0 0 9px;flex:1">'

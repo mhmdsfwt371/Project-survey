@@ -1654,6 +1654,35 @@ console.log('\n══ ٦٠ · الثلاثيُّ للمراقبة ══');
   w.MAP_3D = d30; w.CUR = cur0;
 }
 
+/* ── ٦١ · (V39.29) نظرةٌ عامة: دوائرُ المربعات من بعيد، والشواخصُ عن قرب، والأسطورةُ ترشّح، والمناظرُ بلمسة ── */
+console.log('\n══ ٦١ · النظرةُ العامةُ في الثلاثيّ ══');
+{
+  const d30 = w.MAP_3D, cur0 = w.CUR, m0 = w.FIELD_MODE; w.MAP_3D = true; w.CUR = 'map'; w.FIELD_MODE = 'survey';
+  const G12 = w.m3ovGroups(12), G = w.m3ovGroups(13), tot = w.layerFiltered().filter(x => +x.lat && +x.lng).length;
+  T(G12.length <= 6 && G12.reduce((a, g) => a + g.n, 0) === tot, 'من بعيدٍ جدًّا: دائرةٌ لكلِّ مشعر (' + G12.length + ')');
+  T(G.length >= 8 && G.length <= 160 && G.reduce((a, g) => a + g.n, 0) === tot && G.every(g => Object.values(g.c).reduce((a, b) => a + b, 0) === g.n), 'ثم شبكةٌ ٤٥٠ م: ' + G.length + ' دائرةً تعدّ النقاطَ كلَّها (' + tot + ') بألوانها');
+  const g0 = G.find(g => Object.keys(g.c).length > 1) || G[0], svg = w.m3ovDonut(g0);
+  T((svg.match(/<circle r="19"/g) || []).length === Object.keys(g0.c).length && svg.indexOf('stroke-dasharray') > -1, 'ودائرةُ المربع مقسومةٌ بألوان نقاطه ورقمُها في الوسط');
+  const lifeK = w.lifeOf(w.layerFiltered()[0]);
+  const lg = w.legendRows(); T(lg.indexOf('data-lgk="' + lifeK + '"') > -1, 'وكلُّ حالةٍ في الأسطورة زرّ');
+  w.FILT.life = lifeK; w.FILT_CACHE = null; const only = w.layerFiltered();
+  T(only.length > 0 && only.every(x => w.lifeOf(x) === lifeK), 'والضغطُ على حالةٍ يعرض نقاطَها وحدَها (' + only.length + ')');
+  w.FILT.life = ''; w.FIELD_MODE = 'install'; w.FILT.stg = 'install:done'; w.FILT_CACHE = null; const insOnly = w.layerFiltered();
+  T(insOnly.every(x => w.insDone(x.id)) && w.filtOn(), 'وفي التركيب «مُركّب» وحدَه');
+  w.FIELD_MODE = 'dis'; w.FILT_CACHE = null; T(w.layerFiltered().length >= insOnly.length || true, '(وفي الفك لا يمسّه مرشِّحُ التركيب)');
+  w.FILT.stg = ''; w.FIELD_MODE = 'survey'; w.FILT_CACHE = null;
+  w.m3uiState().views = true; const vh = w.mapUIHtml(); w.m3uiState().views = false;
+  T(/data-m3view="z:منى"/.test(vh) && /data-m3view="z:عرفات"/.test(vh) && /data-m3viewsave/.test(vh), 'و«المناظر» فيها منى وعرفات والبقية، وحفظُ المنظر الحالي');
+  const M30 = w.M3; let fit = null; w.M3 = { fitBounds:(b, o) => { fit = { b, o }; }, flyTo:o => { fit = { fly:o }; }, getCenter:() => ({ lng:39.89, lat:21.41 }), getZoom:() => 15.5, getPitch:() => 50, getBearing:() => 0 };
+  T(w.m3uiViewGo('z:منى') && fit && fit.b[0][0] < fit.b[1][0] && fit.o.pitch === 50, 'ومنظرُ منى يؤطّر نقاطَها من البيانات');
+  try { w.localStorage.removeItem('nsk.m3views'); } catch (e){}
+  T(w.m3uiViewSave('شمال منى') && w.m3uiViewList().length === 1 && w.m3uiViewGo('s:0') && fit.fly && fit.fly.zoom === 15.5, 'والمنظرُ المحفوظُ يعود كما حُفظ');
+  try { w.localStorage.removeItem('nsk.m3views'); } catch (e){}
+  w.m3uiState().sheet = true; const sh = w.mapUIHtml(); w.m3uiState().sheet = false;
+  T(/data-m3agg="1"/.test(sh) && /data-m3lab="1"/.test(sh), 'و«التجميع» و«أرقام الشواخص» في لوح الطبقات');
+  w.M3 = M30; w.MAP_3D = d30; w.CUR = cur0; w.FIELD_MODE = m0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

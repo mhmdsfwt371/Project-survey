@@ -145,7 +145,9 @@ function routesList(){
 }
 
 
-function filtOn(){ return !!(FILT.zone || FILT.type || FILT.work || FILT.life || FILT.exec || FILT.ccg || FILT.route || (FILT.floor !== '' && FILT.floor != null) || CO_SEL.length); }
+function filtOn(){ return !!(FILT.zone || FILT.type || FILT.work || FILT.life || FILT.stg || FILT.exec || FILT.ccg || FILT.route || (FILT.floor !== '' && FILT.floor != null) || CO_SEL.length); }
+/* (V39.29) the stage of a point in the installation or dismantling legend — the same rule the legend counts by */
+function modeStageOf(x, mode){ return (mode === 'dis' ? disDone(x.id) : insDone(x.id)) ? 'done' : (asnOf(x.id) ? 'asn' : 'wait'); }
 
 function filtPass(x){
   if (FILT.zone && taxOf(x).g !== FILT.zone) return false;   /* (V27.2) بتصنيف المالك */
@@ -156,6 +158,7 @@ function filtPass(x){
   /* بالحالة: ما لم يُزَر، ما زير وينتظر الاعتماد، المعتمدُ الجاهز، المُسند، المُركّب… —
      كان المرشِّحُ يجيب النقاطَ بلا ما حدث لها، فلا يُعرَف من الخريطة ما تمّ وما بقي */
   if (FILT.life && typeof lifeOf === 'function' && lifeOf(x) !== FILT.life) return false;
+  if (FILT.stg){ var sp = String(FILT.stg).split(':'); if (sp[0] === FIELD_MODE && modeStageOf(x, sp[0]) !== sp[1]) return false; }   /* (V39.29) from the legend */
   if (FILT.exec && typeof execStatusMemo === 'function' && execLabelOf(execStatusMemo(x)) !== FILT.exec) return false;   /* (V37.52→V37.53) بالتسمية الظاهرة */
   if (FILT.ccg && typeof ccGroupsOfSite === 'function' && ccGroupsOfSite(x).indexOf(FILT.ccg) < 0) return false;
   /* الشركةُ ترشيحٌ لا تلوينٌ فحسب: من اختار شركةً أراد نقاطَها وحدها */
@@ -469,7 +472,7 @@ function catBar(withWork){
 var FILT_CACHE = null, FILT_KEY = '';
 
 function filtered(){
-  var k = FILT.zone + '|' + FILT.type + '|' + FILT.work + '|' + FILT.life + '|' + STAT_VER
+  var k = FILT.zone + '|' + FILT.type + '|' + FILT.work + '|' + FILT.life + '|' + (FILT.stg ? FILT.stg + '@' + FIELD_MODE : '') + '|' + FILT.route + '|' + FILT.floor + '|' + STAT_VER
         + '|' + CO_SEL.join(',');
   /* (V38.70) the cache follows the registry list too — a replaced or grown list is filtered anew (as siteIndex) */
   if (FILT_CACHE && FILT_KEY === k && filtered.of === STATE.sites && filtered.n === STATE.sites.length) return FILT_CACHE;

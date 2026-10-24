@@ -210,7 +210,7 @@ function onDocClickPart9(e){
   if (e.target.closest('[data-mclear]')){
     /* كلُّ المرشِّحات تُمسَح — كان يسقط منها «الحالة» فتبقى الخريطةُ مرشَّحةً
        بعد «مسح التصفية»، ومعها الآن «المسار» (V17.51) */
-    FILT = { zone:'', type:'', work:'', life:'', route:'' }; MAP_FILT_OPEN = false;
+    FILT = { zone:'', type:'', work:'', life:'', route:'', stg:'' }; MAP_FILT_OPEN = false;
     render(1); if (MAP) mapPaint(); return;
   }
 

@@ -108,6 +108,7 @@ function m3Paint(){
   try { heatPaint3d(); } catch (e5){ LS_ERR = e5; }   /* (V39.16) */
   try { if (typeof tentPaint === 'function') tentPaint(); } catch (e6){ LS_ERR = e6; }   /* (V39.18) */
   try { if (typeof phPinPaint === 'function') phPinPaint(); } catch (e7){ LS_ERR = e7; }   /* (V39.19) */
-  try { if (typeof teMaybe === 'function') teMaybe(true); } catch (e8){ LS_ERR = e8; }   /* (V39.24) the models follow the data — and appear on entering 3D already close */
+  try { if (typeof teMaybe === 'function') teMaybe(true); } catch (e8){ LS_ERR = e8; }
+  try { if (typeof m3ovPaint === 'function') m3ovPaint(); } catch (e9){ LS_ERR = e9; }   /* (V39.29) the groups and labels follow the data */   /* (V39.24) the models follow the data — and appear on entering 3D already close */
   m3Count(P);
 }

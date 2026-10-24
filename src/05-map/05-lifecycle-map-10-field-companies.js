@@ -198,7 +198,8 @@ function legendRows(){
   out = rows.map(function(r){   /* (V31.4) `out` مُعلَنٌ أعلى الدالة */
     var n = CNT[r[2]] || 0;
     /* الحالةُ الخاليةُ تخفت ولا تختفي — فيُعرَف أنها حالةٌ قائمةٌ لا شيءَ فيها */
-    return '<div class="lg-row' + (n ? '' : ' lg-off') + '">'
+    var act = FIELD_MODE === 'survey' ? FILT.life === r[2] : FILT.stg === FIELD_MODE + ':' + r[2];   /* (V39.29) the legend filters */
+    return '<div class="lg-row' + (n ? '' : ' lg-off') + (act ? ' on' : '') + '" data-lgk="' + esc(r[2]) + '" role="button" tabindex="0" style="cursor:pointer' + (act ? ';outline:2px solid var(--brand);border-radius:6px' : '') + '">'
       + '<i class="lg-dot" style="background:' + r[0] + '"></i>'
       + '<span class="lg-n">' + esc(t(r[1])) + '</span>'
       + '<b class="num lg-c">' + nm(n) + '</b></div>';
