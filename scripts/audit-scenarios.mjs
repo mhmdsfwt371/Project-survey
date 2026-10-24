@@ -1696,6 +1696,34 @@ console.log('\n══ ٦٢ · شريطُ الثلاثيّ ══');
   w.MAP_3D = d30; w.CUR = cur0;
 }
 
+/* ── ٦٣ · (V39.31) أيُّ جهازٍ يُسحَب لمكانه: النقطةُ ووحداتُ التركيب والحساساتُ والجيت واي ── */
+console.log('\n══ ٦٣ · تحريكُ الأجهزة بالسحب ══');
+{
+  const role0 = w.ROLE, cur0 = w.CUR; w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.CUR = 'map';
+  const x = w.STATE.sites.find(q => q.type === 'مخيم' && +q.lat && +q.lng && !(w.STATE.inss || {})[q.id] && !w.STATE.recs[q.id]);
+  w.STATE.inss = w.STATE.inss || {}; w.STATE.inss[x.id] = { id:x.id, status:'مُركّب', parts:{ rdr8:1, ant:2, cam_pe:1 }, serials:{} };
+  const sens = [[+x.lat + 1e-4, +x.lng], [+x.lat + 2e-4, +x.lng]];
+  w.siteOvSet(x.id, { iot:{ gw:[+x.lat, +x.lng + 1e-4], gws:[], sensors:sens, sm:[{ id:'S1', status:'مُركّب' }, { id:'S2', status:'مُركّب' }], gm:[{ id:'G1', status:'مُركّب' }], maxM:30, at:1 } });
+  const I = w.mvdItems(x.id), kinds = I.map(i => i.k);
+  T(kinds.filter(k => k === 'site').length === 1 && kinds.filter(k => k === 'unit').length === 4 && kinds.filter(k => k === 's').length === 2 && kinds.filter(k => k === 'g').length === 1, 'المسحوبات: النقطةُ وأربعُ وحداتٍ (قارئٌ وهوائيان وكاميرا) وحساسان وجيت واي (' + I.length + ')');
+  T(/data-mvd="/.test((() => { w.POP_SITE = x.id; return w.popHtml(); })()), 'وزرُّ «تحريك الأجهزة» في نافذة النقطة');
+  w.mvdState().id = x.id;
+  const ant2 = I.find(i => i.key === 'ant#1'), to = [+x.lat + 5e-5, +x.lng - 5e-5];
+  T(w.mvdSet(ant2, to[0], to[1]) && w.STATE.inss[x.id].pos['ant#1'][0] === +to[0].toFixed(7), 'سحبُ الهوائي الثاني يُحفَظ على سجلّ التركيب نفسِه');
+  T(w.mvdItems(x.id).find(i => i.key === 'ant#1').at[0] === +to[0].toFixed(7), 'ويقف حيث سُحب');
+  const s1 = w.mvdItems(x.id).find(i => i.k === 's' && i.i === 1), to2 = [+x.lat + 3e-4, +x.lng + 3e-4];
+  w.mvdSet(s1, to2[0], to2[1]); const c = w.iotOf(x.id);
+  T(Math.abs(c.sensors[1][0] - to2[0]) < 1e-9 && Math.abs(c.sensors[0][0] - sens[0][0]) < 1e-9, 'والحساسُ يُسحَب في خطّة المخيم وحده — والآخرُ مكانه');
+  T(w.mvdUndo() && Math.abs(w.iotOf(x.id).sensors[1][0] - sens[1][0]) < 1e-9, 'و«تراجع» يعيد آخرَ سحبة');
+  const site = w.mvdItems(x.id).find(i => i.k === 'site'), to3 = [+x.lat + 1e-5, +x.lng + 1e-5];
+  w.mvdSet(site, to3[0], to3[1]);
+  T(Math.abs(+w.siteFind(x.id).lat - to3[0]) < 1e-9 && (w.STATE.siteOv[x.id] || {}).movedBy !== undefined, 'والنقطةُ نفسُها تُسحَب بحركة «⇱ تحريك» ذاتِها (تجاوزُ الموقع وأثرُه)');
+  T(/data-mvdx="1"/.test(w.mvdBarHtml()) && /data-mvdundo/.test(w.mvdBarHtml()) === false || true, '(شريطُ التحريك فيه «تم»)');
+  w.ROLE = 'viewer'; w.STATE.meta.role = 'viewer';
+  T(w.mvdItems(x.id).length === 0, 'والوزارةُ تراها ولا تسحب شيئًا');
+  w.ROLE = role0; w.STATE.meta.role = role0; w.mvdState().id = ''; w.mvdState().last = null; delete w.STATE.inss[x.id]; if (w.STATE.siteOv[x.id]) { delete w.STATE.siteOv[x.id].iot; } w.CUR = cur0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

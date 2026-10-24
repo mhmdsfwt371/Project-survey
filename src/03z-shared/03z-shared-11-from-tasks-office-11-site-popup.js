@@ -201,6 +201,7 @@ function popHtml(){
     +   '↗ ' + esc(t('اتجاهات')) + '</a>'
     +   (MAP_3D && s.type === 'مخيم' ? btn('\u{1F6AA} ' + t('ادخل المخيم'),'btn-secondary btn-sm',' data-m3enter="' + esc(s.id) + '"') : '')   /* (V39.21) the camera walks in through the gate */
     +   (may('edit') ? btn('⇱ ' + t('تحريك'),'btn-secondary btn-sm',' data-move="' + esc(s.id) + '"') : '')
+    +   (typeof mvdItems === 'function' && mvdItems(s.id).length > 1 ? btn('\u2725 ' + t('تحريك الأجهزة'),'btn-secondary btn-sm',' data-mvd="' + esc(s.id) + '"') : '')   /* (V39.31) drag every device of the point */
     +   btn(may('edit') ? '✎ ' + t('تعديل البيانات') : '\u25C8 ' + t('التفاصيل'),'btn-secondary btn-sm',' data-site="' + esc(s.id) + '"')
     +   (seesPage('ev') ? btn('\u{1F4DC} ' + t('سجل النقطة'),'btn-quiet btn-sm',' data-evsite="' + esc(s.id) + '"') : '')   /* (V30.8) */
     /* نموذجُ التركيب لا يُفتَح لنقطةٍ لم تصر جاهزةً — وإلا رُكّبت قبل اعتمادها */

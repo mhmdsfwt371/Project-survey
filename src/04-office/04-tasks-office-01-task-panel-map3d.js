@@ -223,6 +223,7 @@ function m3Toggle(){
   m3Load().then(function(ok){
     if (!ok || !m3Init()){ toast(t(M3_ERR || 'تعذّر تحميلُ محرّك العرض الثلاثي')); m3Off(); return; }
     m3From2D(); m3Paint();
+    if (mvdState().id) mvdPaint();   /* (V39.31) the pins move to the 3D map */
     /* حدودُ المخيمات تُطلَب مع الثلاثيِّ لا مع التقريب وحده — فتُرفَع كما تُرسَم */
     if (!POLY && typeof polyLoad === 'function') polyLoad().then(function(ok2){ if (ok2 && MAP_3D) m3Paint(); });
   });
@@ -232,6 +233,7 @@ function m3Off(){
   if (typeof phPinClear === 'function') phPinClear();   /* (V39.19) the photo pins are HTML markers — they do not hide with the box */
   if (typeof teClear === 'function') teClear();   /* (V39.24) */
   if (typeof m3ovClear === 'function') m3ovClear();   /* (V39.29) */
+  if (mvdState().id) setTimeout(mvdPaint, 120);   /* (V39.31) the pins move to the flat map */
   if (typeof teWalkOff === 'function' && teState().walk) teWalkOff();   /* (V39.25) */
   var b3 = document.getElementById('m3Box'); if (b3) b3.hidden = true;
   if (was && MAP && M3){ try { var c = M3.getCenter(); MAP.setView([c.lat, c.lng], Math.round(M3.getZoom() + 1)); } catch (e){ LS_ERR = e; } }

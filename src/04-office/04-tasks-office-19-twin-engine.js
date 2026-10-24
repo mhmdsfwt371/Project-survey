@@ -136,12 +136,14 @@ function teBuild(force){
     if (r && r.parts && gate){
       var has = function(re){ return Object.keys(r.parts).filter(function(k){ return re.test(k) && +r.parts[k] > 0; })[0] || ''; };
       var gx = X(+gate[1]) + 1.4, gz = Zc(+gate[0]), gy = y0 - T_.plinth;
-      var pole = function(h, dx){ var p = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, h, 8), new THREE.MeshLambertMaterial({ color:0x9AA3AD })); p.position.set(gx + dx, gy + h / 2, gz); L.root.add(p); };
-      var dev = function(code, geo, color, px, py){ if (!code) return; var mm = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color:new THREE.Color(color) })); mm.position.set(gx + px, gy + py, gz);
+      /* (V39.31) a unit dragged to its place stands there; the others keep their spot by the gate */
+      var at = function(code, dx){ var q = code && r.pos && r.pos[code + '#0']; return q ? { x:X(+q[1]), z:Zc(+q[0]) } : { x:gx + dx, z:gz }; };
+      var pole = function(h, dx, code){ var a0 = at(code, dx), p = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, h, 8), new THREE.MeshLambertMaterial({ color:0x9AA3AD })); p.position.set(a0.x, gy + h / 2, a0.z); L.root.add(p); };
+      var dev = function(code, geo, color, px, py){ if (!code) return; var a1 = at(code, px), mm = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color:new THREE.Color(color) })); mm.position.set(a1.x, gy + py, a1.z);
         mm.userData = { kind:'d', site:id, code:code, serial:((r.serials || {})[code] || '') }; L.root.add(mm); };
       var rd = has(/^rdr/), cm = has(/^cam/), rt = has(/^rtr/);
-      if (rd){ pole(3, 0); dev(rd, new THREE.BoxGeometry(0.55, 0.55, 0.14), '#7C4DFF', 0, 2.6); }
-      if (cm){ pole(3.6, 1.2); dev(cm, new THREE.CylinderGeometry(0.12, 0.12, 0.42, 12).rotateZ(Math.PI / 2), '#2D7DD2', 1.2, 3.5); }
+      if (rd){ pole(3, 0, rd); dev(rd, new THREE.BoxGeometry(0.55, 0.55, 0.14), '#7C4DFF', 0, 2.6); }
+      if (cm){ pole(3.6, 1.2, cm); dev(cm, new THREE.CylinderGeometry(0.12, 0.12, 0.42, 12).rotateZ(Math.PI / 2), '#2D7DD2', 1.2, 3.5); }
       if (rt) dev(rt, new THREE.BoxGeometry(0.4, 0.1, 0.28), '#F5A623', -0.6, 1.0);
     }
   });

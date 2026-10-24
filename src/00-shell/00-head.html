@@ -1270,6 +1270,11 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 /* the map engine's own zoom and compass buttons: above the status bar on a desk, gone on a phone (pinch and «الشمال» do it) */
 #m3Box .maplibregl-ctrl-bottom-right{bottom:96px}
 @media (max-width:760px){ #m3Box .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group{display:none} }
+/* (V39.31) a device pin to drag */
+.mvd-pin{display:inline-flex;align-items:center;gap:4px;padding:3px 7px 3px 5px;border-radius:999px;background:rgba(11,18,32,.9);color:#fff;border:2px solid var(--brand);font-size:11px;line-height:1.2;white-space:nowrap;cursor:grab;box-shadow:0 2px 8px rgba(0,0,0,.45);transform:translate(-50%,-100%)}
+.maplibregl-marker .mvd-pin{transform:none}
+.mvd-pin span{font-size:14px}
+.mvd-pin:active{cursor:grabbing}
 /* (V39.29) the 3D overview: a square's donut from afar, a camp's sign up close */
 .m3-agg{cursor:pointer;filter:drop-shadow(0 2px 6px rgba(0,0,0,.45));line-height:0}
 .m3-agg:hover{transform:scale(1.08)}
@@ -1320,7 +1325,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V39.30</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V39.31</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>

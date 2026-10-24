@@ -55,7 +55,8 @@ function dtwFeatures(){
     var D = dtwOf(x.id); if (!D.length) return;
     D.forEach(function(dv, j){
       var g0 = typeof iotFieldGate === 'function' ? iotFieldGate(x.id) : null;   /* (V39.23) the box stands at the camp's street entrance when the field says where */
-      var K = dtwKinds(dv.code), p = g0 ? dtwRing(g0[0], g0[1], j, D.length) : dtwRing(+x.lat, +x.lng, j, D.length);
+      var r0 = (STATE.inss || {})[x.id], pp = r0 && r0.pos && r0.pos[dv.code + '#' + dv.i];   /* (V39.31) where it was dragged */
+      var K = dtwKinds(dv.code), p = pp ? [+pp[0], +pp[1]] : (g0 ? dtwRing(g0[0], g0[1], j, D.length) : dtwRing(+x.lat, +x.lng, j, D.length));
       if (K.k === 'reader' && liveState().on) K = { k:K.k, h:K.h, color:liveColorOf(x) };   /* (V39.20) the reader column beats with its pulse */
       var base = typeof m3Base === 'function' ? m3Base(x) : 0;   /* (V39.15) a device on a floor stands on that floor */
       F.push({ type:'Feature', properties:{ site:x.id, code:dv.code, i:dv.i, serial:dv.serial, kind:K.k, color:K.color, h:base + K.h, base:base },

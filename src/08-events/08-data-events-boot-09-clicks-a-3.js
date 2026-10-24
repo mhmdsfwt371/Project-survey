@@ -2,7 +2,7 @@
    FILE    : src/08-events/08-data-events-boot-09-clicks-a-3.js
    DOMAIN  : Data & events — settings, users, click handlers, boot
    PURPOSE : Delegated click handlers, group A part 3.
-   DEFINES : clickAPart6, clickAPart7
+   DEFINES : clickAPart6, clickAPart7, clickAMapViews
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
    ============================================================================ */
@@ -155,20 +155,7 @@ function clickAPart7(e){
   if (e.target.closest('[data-time]')){ var TS = timeState(); TS.on = !TS.on; if (!TS.on && TS.timer){ clearInterval(TS.timer); TS.timer = null; } render(); if (typeof mapPaint === 'function') mapPaint(); if (MAP_3D && typeof m3Paint === 'function') m3Paint(); return true; }   /* (V39.17) */
   var tst = e.target.closest('[data-timestep]'); if (tst){ timeStep(+tst.getAttribute('data-timestep')); return true; }
   if (e.target.closest('[data-timeplay]')){ timePlayToggle(); return true; }
-  /* (V39.28) the 3D map's own controls */
-  var m3u = e.target.closest('[data-m3ui]'); if (m3u){ var a3 = m3u.getAttribute('data-m3ui'); m3uiState().sheet = a3 === 'sheet'; m3uiState().views = a3 === 'views'; if (a3 !== 'close') MAP_FILT_OPEN = false; render(); return true; }
-  var m3v = e.target.closest('[data-m3view]'); if (m3v){ m3uiViewGo(m3v.getAttribute('data-m3view')); m3uiState().views = false; render(); return true; }   /* (V39.29) */
-  var m3vd = e.target.closest('[data-m3viewdel]'); if (m3vd){ var VL = m3uiViewList(); VL.splice(+m3vd.getAttribute('data-m3viewdel'), 1); try { localStorage.setItem('nsk.m3views', JSON.stringify(VL)); } catch (e5){ LS_ERR = e5; } render(); return true; }
-  if (e.target.closest('[data-m3viewsave]')){ var nmv = prompt(t('اسم المنظر')); if (nmv && m3uiViewSave(nmv)) toast(t('حُفظ المنظر')); render(); return true; }
-  if (e.target.closest('[data-m3agg]') && typeof m3ovState === 'function'){ m3ovState().agg = !m3ovState().agg; m3ovPaint(); render(); return true; }
-  if (e.target.closest('[data-m3lab]') && typeof m3ovState === 'function'){ m3ovState().lab = !m3ovState().lab; m3ovPaint(); render(); return true; }
-  /* (V39.29) a status in the legend shows its points alone; a second tap shows all */
-  var lgk = e.target.closest('[data-lgk]'); if (lgk){ var kk = lgk.getAttribute('data-lgk');
-    if (FIELD_MODE === 'survey') FILT.life = FILT.life === kk ? '' : kk; else { var vv = FIELD_MODE + ':' + kk; FILT.stg = FILT.stg === vv ? '' : vv; }
-    FILT_CACHE = null; render(1); if (MAP) mapPaint(); if (MAP_3D && typeof m3Paint === 'function') m3Paint(); return true; }
-  var m3l = e.target.closest('[data-m3lg]'); if (m3l){ m3uiState().lg = m3l.getAttribute('data-m3lg') === '1'; render(); return true; }
-  if (e.target.closest('[data-m3terrain]')){ var TS3 = m3uiState(); TS3.terrain = !TS3.terrain; try { if (M3) M3.setTerrain(TS3.terrain && M3.getSource('dem') ? { source:'dem', exaggeration:1 } : null); } catch (e3){ LS_ERR = e3; } render(); return true; }
-  if (e.target.closest('[data-m3reset]')){ try { if (M3) M3.easeTo({ bearing:0, pitch:50, duration:600 }); } catch (e4){ LS_ERR = e4; } return true; }
+  if (clickAMapViews(e)) return true;   /* (V39.31) the 3D controls, views, legend filter and device dragging — their own function */
   if (e.target.closest('[data-heat]')){ heatPaint.on = !heatPaint.on; heatPaint(); heatPaint3d(); render(); return true; }   /* (V39.16) */
   if (e.target.closest('[data-cov]')){ covPaint.on = !covPaint.on; covPaint(); covPaint3d(); render(); return true; }   /* (V39.14) */
   if (e.target.closest('[data-phpin]') && typeof phPinPaint === 'function'){ phPinPaint.on = phPinPaint.on !== true; if (phPinPaint.on) phPinPaint(); else phPinClear(); render(); return true; }   /* (V39.19) */
@@ -281,3 +268,26 @@ function clickAPart7(e){
   return false;
 }
 
+/* (V39.31) the map's own controls added in V39.28–V39.31: the 3D bar and sheets, the views, the overview switches, the
+   legend filter and dragging a point's devices — split out of clickAPart7 to keep it under 150 lines (audit-health) */
+function clickAMapViews(e){
+  /* (V39.31) drag the devices of a point */
+  var mvb = e.target.closest('[data-mvd]'); if (mvb){ mvdStart(mvb.getAttribute('data-mvd')); return true; }
+  if (e.target.closest('[data-mvdx]')){ mvdStop(); return true; }
+  if (e.target.closest('[data-mvdundo]')){ mvdUndo(); return true; }
+  /* (V39.28) the 3D map's own controls */
+  var m3u = e.target.closest('[data-m3ui]'); if (m3u){ var a3 = m3u.getAttribute('data-m3ui'); m3uiState().sheet = a3 === 'sheet'; m3uiState().views = a3 === 'views'; if (a3 !== 'close') MAP_FILT_OPEN = false; render(); return true; }
+  var m3v = e.target.closest('[data-m3view]'); if (m3v){ m3uiViewGo(m3v.getAttribute('data-m3view')); m3uiState().views = false; render(); return true; }   /* (V39.29) */
+  var m3vd = e.target.closest('[data-m3viewdel]'); if (m3vd){ var VL = m3uiViewList(); VL.splice(+m3vd.getAttribute('data-m3viewdel'), 1); try { localStorage.setItem('nsk.m3views', JSON.stringify(VL)); } catch (e5){ LS_ERR = e5; } render(); return true; }
+  if (e.target.closest('[data-m3viewsave]')){ var nmv = prompt(t('اسم المنظر')); if (nmv && m3uiViewSave(nmv)) toast(t('حُفظ المنظر')); render(); return true; }
+  if (e.target.closest('[data-m3agg]') && typeof m3ovState === 'function'){ m3ovState().agg = !m3ovState().agg; m3ovPaint(); render(); return true; }
+  if (e.target.closest('[data-m3lab]') && typeof m3ovState === 'function'){ m3ovState().lab = !m3ovState().lab; m3ovPaint(); render(); return true; }
+  /* (V39.29) a status in the legend shows its points alone; a second tap shows all */
+  var lgk = e.target.closest('[data-lgk]'); if (lgk){ var kk = lgk.getAttribute('data-lgk');
+    if (FIELD_MODE === 'survey') FILT.life = FILT.life === kk ? '' : kk; else { var vv = FIELD_MODE + ':' + kk; FILT.stg = FILT.stg === vv ? '' : vv; }
+    FILT_CACHE = null; render(1); if (MAP) mapPaint(); if (MAP_3D && typeof m3Paint === 'function') m3Paint(); return true; }
+  var m3l = e.target.closest('[data-m3lg]'); if (m3l){ m3uiState().lg = m3l.getAttribute('data-m3lg') === '1'; render(); return true; }
+  if (e.target.closest('[data-m3terrain]')){ var TS3 = m3uiState(); TS3.terrain = !TS3.terrain; try { if (M3) M3.setTerrain(TS3.terrain && M3.getSource('dem') ? { source:'dem', exaggeration:1 } : null); } catch (e3){ LS_ERR = e3; } render(); return true; }
+  if (e.target.closest('[data-m3reset]')){ try { if (M3) M3.easeTo({ bearing:0, pitch:50, duration:600 }); } catch (e4){ LS_ERR = e4; } return true; }
+  return false;
+}

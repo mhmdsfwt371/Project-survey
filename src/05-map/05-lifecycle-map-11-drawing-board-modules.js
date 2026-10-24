@@ -177,6 +177,7 @@ function mapUIHtml(){
     + tfdPanelHtml()   /* (V28.0) */
     + (IOT.edit ? iotPanelHtml() : '')   /* (V25.8) */
     + timeBarHtml()   /* (V39.17) */
+    + mvdBarHtml()   /* (V39.31) moving the devices of a point */
     + (typeof teWalkHtml === 'function' ? teWalkHtml() : '')   /* (V39.25) walking inside a camp */
     + (BED ? bedPanelHtml() : '')   /* (V25.9) */
     + (SPLIT ? splitPanelHtml() : '')   /* (V37.67) */
