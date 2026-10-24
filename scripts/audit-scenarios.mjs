@@ -1569,6 +1569,52 @@ console.log('\n══ ٥٧ · مداخلُ مخيم العرض وصندوقُ ا
   w.M3 = M30; w.MAP_3D = d30; if (ins0) w.STATE.inss[id] = ins0; else delete w.STATE.inss[id]; w.ROLE = role0; w.STATE.meta.role = role0;
 }
 
+/* ── ٥٨ · (V39.24) محرّكُ التوأم: خيامٌ حقيقيةٌ بأسقفٍ هرمية، وحساساتٌ على الأعمدة، وأجهزةُ المدخل، والماوسُ يقول القيمة ── */
+console.log('\n══ ٥٨ · محرّك التوأم الرقمي ══');
+{
+  const { readFileSync } = await import('fs');
+  if (!w.THREE) w.eval(readFileSync(new URL('../vendor/three/0.149.0/three.min.js', import.meta.url), 'utf8'));
+  const THREE = w.THREE;
+  T(!!THREE && THREE.REVISION === '149', 'المكتبةُ الثلاثيةُ محلّيةٌ في vendor (الإصدار ١٤٩)');
+  const id = 'NSK-MIN-CMP-0449', D = JSON.parse(readFileSync(new URL('../layers/iot-field-1448.json', import.meta.url), 'utf8')); w.iotFieldLoad.d = D;
+  const ring = JSON.parse(readFileSync(new URL('../poly.json', import.meta.url), 'utf8'))[id];
+  const M30 = w.M3, d30 = w.MAP_3D, foot0 = w.M3_FOOT, ins0 = (w.STATE.inss || {})[id];
+  w.M3_FOOT = { [id]:ring }; w.MAP_3D = true;
+  const cen = { lng:39.89530, lat:21.40458 };
+  let zoom = 18.5, filters = {};
+  w.M3 = { getCenter:() => cen, getZoom:() => zoom, queryTerrainElevation:() => 410, getLayer:() => true, setFilter:(l, f) => { filters[l] = f; }, triggerRepaint:() => {}, getCanvas:() => ({ clientWidth:800, clientHeight:600 }) };
+  w.maplibregl = w.maplibregl || {}; w.maplibregl.MercatorCoordinate = w.maplibregl.MercatorCoordinate || { fromLngLat:(ll, alt) => ({ x:(ll[0] + 180) / 360, y:0.43, z:alt / 4e7, meterInMercatorCoordinateUnits:() => 1 / 4e7 }) };
+  w.IOT.data = w.IOT.data || { camps:{} }; const had = w.IOT.data.camps[id];
+  const F = D.camps[id], dev = []; F.spots.forEach(sp => sp.dev.forEach(d => dev.push(d)));
+  w.siteOvSet(id, { iot:{ gw:F.gate.at, gws:[], sensors:dev.map(d => d.at), sm:dev.map((d, i) => ({ id:id + '-S0' + (i + 1), status:'مُركّب', model:d.model, tag:d.tag || '' })), gm:[{ id:id + '-GW1', status:'مُركّب' }], maxM:40, at:1 } });
+  w.STATE.inss = w.STATE.inss || {}; w.STATE.inss[id] = { id, status:'مُركّب', parts:{ rdr8:1, rtr:1, cam_pe:1 }, serials:{ rdr8:'RDR-0449' } };
+  const S = w.teState(); S.layer = { root:new THREE.Group(), camera:new THREE.Camera() }; S.key = '';
+  w.teBuild(true);
+  const kids = S.layer.root.children, inst = kids.filter(o => o.isInstancedMesh), sens = kids.filter(o => o.userData.kind === 's'), gws = kids.filter(o => o.userData.kind === 'g'), devs = kids.filter(o => o.userData.kind === 'd');
+  const cells = w.tentCells(ring).length;
+  T(inst.length === 2 && inst[0].count === cells && inst[1].count === cells && inst[1].geometry.type === 'ConeGeometry' && inst[1].geometry.parameters.radialSegments === 4, 'خيامُ المخيم كلُّها (' + cells + ') أجسامٌ وأسقفٌ هرميةٌ رباعية');
+  T(sens.length === 8 && gws.length === 1 && devs.length === 3, 'والحساساتُ الثمانية والجيت واي وأجهزةُ المدخل الثلاثة (القارئ والكاميرا والراوتر) نماذجُ في المشهد');
+  const sy = sens[0].position.y; T(Math.abs(sy - (0.5 + 2.4)) < 1e-6, 'والحساسُ على عمود الخيمة ٢٫٤ م فوق القاعدة');
+  T(filters['nsk-tent'] && JSON.stringify(filters['nsk-tent']).indexOf(id) > -1, 'وكتلُ الخيام المسطّحة لنفس المخيم تختفي ما دامت النماذجُ قائمة');
+  zoom = 19.6; w.teBuild(false);
+  T(S.layer.root.children.filter(o => o.isInstancedMesh).length === 1 && S.layer.root.children.find(o => o.isInstancedMesh).material.opacity < 0.5, 'وعن قربٍ تُرفَع الأسقفُ وتشفّ الخيامُ فيُرى ما بداخلها');
+  /* the mouse: a camera above the scene, the sensor projected to its pixel, the ray finds it */
+  const cam = new THREE.PerspectiveCamera(50, 800 / 600, 0.5, 2000); cam.position.set(sens[0].position.x, sens[0].position.y + 40, sens[0].position.z + 25); cam.lookAt(sens[0].position); cam.updateMatrixWorld();
+  S.layer.camera.projectionMatrix = cam.projectionMatrix.clone().multiply(cam.matrixWorldInverse);
+  S.layer.root.updateMatrixWorld(true);
+  const v = sens[0].position.clone().project(cam), px = { x:(v.x + 1) / 2 * 800, y:(1 - v.y) / 2 * 600 };
+  const u = w.teRay(px);
+  T(u && u.kind === 's' && u.i === 0, 'والماوسُ فوق الحساس يجده بالشعاع');
+  const html = w.teHoverHtml(u);
+  T(/EM320/.test(html) && /لا قراءة بعد/.test(html), 'ويقول طرازَه، والقراءةَ حين تصل ومن غير ادّعاءٍ قبلها');
+  w.STATE.iotLive = { [id]:{ at:Date.now(), s:{ [id + '-S01']:{ at:Date.now() - 60000, v:27.4 } } } };
+  T(/27\.4/.test(w.teHoverHtml(u)), 'ومع مصدر القراءات يقول القيمة: ٢٧٫٤');
+  const ud = devs.find(o => /^rdr/.test(o.userData.code)).userData; T(/RDR-0449/.test(w.teHoverHtml(ud)), 'والقارئُ عند المدخل يقول سيرياله');
+  zoom = 16; w.teMaybe(); T(S.layer.root.children.length === 0 && filters['nsk-tent'] === null, 'وبالابتعاد تُزال النماذجُ وتعود الكتل');
+  delete w.STATE.iotLive; S.layer = null; S.key = ''; S.ids = [];
+  w.M3 = M30; w.MAP_3D = d30; w.M3_FOOT = foot0; if (ins0) w.STATE.inss[id] = ins0; else delete w.STATE.inss[id]; if (w.STATE.siteOv[id]) delete w.STATE.siteOv[id].iot; if (had) w.IOT.data.camps[id] = had;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

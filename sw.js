@@ -1,9 +1,9 @@
 /* Nusuk Survey — offline shell cache */
-const CACHE = 'nusuk-survey-v39.23';
+const CACHE = 'nusuk-survey-v39.24';
 const SHELL = [
   './',
   './index.html',
-  './app-office.js?v=39.23',   /* (V38.39) المجالاتُ المؤجَّلة — تُثبَّت مع الهيكل فتعمل بلا شبكة؛ الرقمُ يُحدَّث مع كلِّ نسخة */
+  './app-office.js?v=39.24',   /* (V38.39) المجالاتُ المؤجَّلة — تُثبَّت مع الهيكل فتعمل بلا شبكة؛ الرقمُ يُحدَّث مع كلِّ نسخة */
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png',
@@ -39,7 +39,7 @@ const LIB_ALL = LIB_BOOT.concat([
 const LIB_PATHS = ['/vendor/firebase/', '/vendor/xlsx/', '/vendor/exceljs/', '/vendor/jszip/', '/vendor/fonts/'];
 function libMissing(c, list){ return Promise.all(list.map(function (u) { return c.match(u).then(function (h) { return h ? null : u; }); })).then(function (L) { return L.filter(Boolean); }); }
 
-const LAZY = ['/vendor/maplibre/', '/vendor/protomaps/', '/templates/', '/i18n/', '/layers/'];   /* والقاموسُ باسمه المبصوم (V21.6) */   /* وعارضُ خريطة المشاعر بلا شبكة (V18.0) */
+const LAZY = ['/vendor/maplibre/', '/vendor/three/', '/vendor/protomaps/', '/templates/', '/i18n/', '/layers/'];   /* والقاموسُ باسمه المبصوم (V21.6) */   /* وعارضُ خريطة المشاعر بلا شبكة (V18.0) */
 
 self.addEventListener('install', function (e) {
   e.waitUntil(

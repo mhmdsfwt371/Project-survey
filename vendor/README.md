@@ -12,6 +12,7 @@ persistent cache `nusuk-lib` (kept across app updates), so the app signs in and 
 | ExcelJS | 4.4.0 | `exceljs/4.4.0/exceljs.min.js` | npm `exceljs@4.4.0` (same as cdnjs) | MIT |
 | JSZip | 3.10.1 | `jszip/3.10.1/jszip.min.js` | npm `jszip@3.10.1` (same as cdnjs) | MIT or GPLv3 (dual) |
 | Readex Pro | Fontsource 5.3.0 | `fonts/readex-pro/*.woff2` (Arabic + Latin, 400/600/700) | npm `@fontsource/readex-pro` | SIL OFL 1.1 |
+| three.js | 0.149.0 | `three/0.149.0/three.min.js` (+ `SHA256`, `LICENSE`) — the last release with a browser build; loaded only by the 3D map's twin engine, cached on first use | npm `three@0.149.0` | MIT |
 | Leaflet, MapLibre, Protomaps | — | `leaflet/`, `maplibre/`, `protomaps/` | earlier releases | see each folder |
 
 ## Updating a library
