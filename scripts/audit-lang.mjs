@@ -236,7 +236,7 @@ check(spaced.length <= CAP_SPACED,
    عربيةٍ فيها يجب أن يكون لها مفتاحٌ في القاموسين. ومن أضاف جدولًا جديدًا
    من هذا النوع أضاف اسمَه إلى هذه القائمة — وإلا فحصَه أحدٌ بالعين. */
 const TABLES = ['SV_LABELS', 'CH_CAMP', 'CH_PATH', 'CH_STN', 'CH_CAM', 'CH_GEN',
-                'BRIEF_ST', 'WT_ST', 'BRIEF_STAGE'];
+                'BRIEF_ST', 'WT_ST'];   /* (V39.27) BRIEF_STAGE left with the fourth layer */
 {
   const vals = new Set();
   for (const name of TABLES){

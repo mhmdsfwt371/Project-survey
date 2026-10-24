@@ -2,8 +2,8 @@
    FILE    : src/03-survey/03-survey-records-01-labels-colors.js
    DOMAIN  : Survey & installation — forms, points, assignment, plan
    PURPOSE : Human-readable labels for recorded data, texts written about a point, layer colour by approval stage, field names and company names per UI language.
-   DEFINES : svTexts, svFieldRows, briefPhase, briefRec, briefOf, briefStage, briefColor, briefRing, briefMay, translitWord, coName, dispName, catLabel, typeLabel … (+2 more)
-   GLOBALS : SV_LABELS, SV_ORDER, BRIEF_C, BRIEF_STAGE, BRIEF_STAGE_ORDER, NAME_FIX, TRANSLIT
+   DEFINES : svTexts, svFieldRows, briefPhase, briefRec, briefOf, briefRing, briefMay, translitWord, coName, dispName, catLabel, typeLabel … (+2 more)
+   GLOBALS : SV_LABELS, SV_ORDER, BRIEF_C, NAME_FIX, TRANSLIT
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
    ============================================================================ */
@@ -75,38 +75,7 @@ function briefOf(id, ph){
   if (!st && !d) return null;
   return { st:st || 'ملاحظة', d:d, by:r.briefBy || r.by || '', at:r.briefAt || r.at || 0 };
 }
-/* ═══ لونُ الطبقة = مرحلةُ الاعتماد (V16.90) ═══
-   كانت النقاطُ تُلوَّن بحالة السطر المكتوب — وأكثرُها بلا سطرٍ بعد، فصارت
-   الشاشةُ رماديةً كلَّها ولا يُرى فيها ما اعتُمد تقنيًّا وينتظر الوزارةَ من
-   غيره. والوزارةُ تفتح هذه الطبقةَ لتعرف **أين تقف كلُّ نقطةٍ من الاعتماد**
-   لا لتعرف من كتب سطرًا. فصار اللونُ للمرحلة، والسطرُ المكتوبُ يُقرأ في
-   إطار النقطة: حافّةٌ حمراءُ لما فيه تحدٍّ وخضراءُ لما هو تمام — فيُقرأ
-   الخبران معًا بلا لبس. */
-var BRIEF_STAGE = {
-  none:    { c:'#6B7A87', n:'لم تُزر بعد' },
-  blocked: { c:'#E07B39', n:'تعذّر الوصول' },
-  revisit: { c:'#C77DFF', n:'رُدّت لزيارةٍ أخرى' },
-  tech:    { c:'#4FA3FF', n:'تنتظر الاعتمادَ التقني' },
-  ret:     { c:'#E05252', n:'أعادتها الوزارةُ بملاحظة' },
-  min:     { c:'#E8C34B', n:'اعتُمدت تقنيًّا — تنتظر الوزارة' },
-  ok:      { c:'#3AD6A0', n:'اعتمدتها الوزارة' }
-};
-var BRIEF_STAGE_ORDER = ['none','blocked','revisit','tech','ret','min','ok'];
-function briefStage(id){
-  var r = STATE.recs[id];
-  if (!r) return 'none';
-  if (svReview(r) === 'revisit') return 'revisit';
-  /* نزل إليها ولم يصل: خبرٌ يُرى بلونه لا نقطةٌ غائبة */
-  if (r.access && r.access !== 'تم الوصول') return 'blocked';
-  if (!svDone(r)) return 'none';
-  var rv = svReview(r);
-  if (rv !== 'approved') return 'tech';
-  var ms = minState(r);
-  if (ms === 'returned') return 'ret';
-  return ms === 'approved' ? 'ok' : 'min';
-}
-function briefColor(id){ return (BRIEF_STAGE[briefStage(id)] || BRIEF_STAGE.none).c; }
-/* الإطار: خبرُ السطر المكتوب — ولا إطارَ مميّزًا لمن لم يُكتَب له */
+/* (V39.27) the stage colouring of the fourth layer (V16.90) is gone with the layer: the survey colours carry every approval stage. */
 function briefRing(id, ph){
   var b = briefOf(id, ph);
   return b ? (BRIEF_C[b.st] || '#E8C34B') : '';
