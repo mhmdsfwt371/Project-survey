@@ -1251,6 +1251,11 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 .rb-f{margin:0}.rb-f label{font-size:11px;margin:0 0 2px;opacity:.85}
 .rb-f select,.rb-f input{padding:6px 8px;min-height:36px;font-size:13px}
 .rb-more summary::-webkit-details-marker{display:none}
+/* (V39.19) the installation photo of a point as a pin on the 3D map */
+.ph-pin{width:52px;height:52px;border-radius:10px;border:2px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.45);overflow:hidden;background:#0b1220;cursor:pointer;transform:translateY(-30px)}
+.ph-pin img{width:100%;height:100%;object-fit:cover;display:block}
+.ph-pin::after{content:"";position:absolute;left:50%;bottom:-8px;width:2px;height:8px;margin-left:-1px;background:#fff;opacity:.8}
+.ph-pin{position:relative}
 </style>
 </head>
 <body>
@@ -1292,7 +1297,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V39.18</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V39.19</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>

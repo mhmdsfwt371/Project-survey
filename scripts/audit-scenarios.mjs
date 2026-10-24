@@ -1450,6 +1450,24 @@ console.log('\n══ ٥٢ · خيامُ منى في المجسّم ══');
   delete w.tentPaint.cache['camp-test'];
 }
 
+/* ── ٥٣ · (V39.19) صورُ التركيب دبابيسُ في المجسّم ── */
+console.log('\n══ ٥٣ · صورُ التركيب على المجسّم ══');
+{
+  const M30 = w.M3, d30 = w.MAP_3D, cur0 = w.CUR; w.CUR = 'map';
+  const x = w.STATE.sites.find(q => +q.lat && +q.lng);
+  w.STATE.photos = w.STATE.photos || {}; const k = 'ph-test-' + x.id;
+  w.STATE.photos[k] = { site:x.id, at:Date.now(), driveId:'DRIVE-TEST-1' }; w.phTouch();
+  w.M3 = { getZoom:() => 17, getBounds:() => ({ contains:() => true }), getCenter:() => ({ lat:+x.lat, lng:+x.lng }) }; w.MAP_3D = true; w.phPinPaint.on = true;
+  const T0 = w.phPinTargets();
+  T(T0.length >= 1 && T0[0].site.id === x.id && /DRIVE-TEST-1/.test(T0[0].src), 'النقطةُ ذاتُ الصورة هدفٌ أوّلُ (الأقربُ إلى المركز) بمصغّرةِ درايف');
+  w.M3.getZoom = () => 15; T(w.phPinTargets().length === 0, 'ولا دبابيسَ قبل التقريب ١٦٫٥'); w.M3.getZoom = () => 17;
+  const el = w.phPinEl(x, T0[0].src);
+  T(el.className === 'ph-pin' && el.getAttribute('data-site') === x.id && el.querySelector('img') && el.querySelector('img').getAttribute('src') === T0[0].src, 'والدبّوسُ صورةٌ تفتح نقطتَها بـdata-site');
+  T(w.phPinTargets().length <= 60, 'وستّون دبّوسًا على الأكثر');
+  const ui = w.mapUIHtml(); T(/data-phpin="1"/.test(ui) && /الصور/.test(ui), 'وزرُّ «الصور» مع المجسّم');
+  delete w.STATE.photos[k]; w.phTouch(); w.M3 = M30; w.MAP_3D = d30; w.CUR = cur0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

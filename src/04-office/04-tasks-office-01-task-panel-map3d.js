@@ -170,7 +170,7 @@ function m3Init(){
     if (typeof IOT === 'object' && IOT.edit && ev.lngLat){ try { if (M3.queryRenderedFeatures(ev.point, { layers:['nsk-iot'] }).length) return; } catch (eQ){ LS_ERR = eQ; } iotMapClick({ lat:ev.lngLat.lat, lng:ev.lngLat.lng }); }
   });
   /* (V39.17) the sensors no longer depend on the view, so a move does not rebuild them — the devices, coverage and heat still follow the frame */
-  M3.on('moveend', function(){ if (MAP_3D && typeof dtwPaint === 'function') dtwPaint(); if (MAP_3D){ covPaint3d(); heatPaint3d(); tentPaint(); } });
+  M3.on('moveend', function(){ if (MAP_3D && typeof dtwPaint === 'function') dtwPaint(); if (MAP_3D){ covPaint3d(); heatPaint3d(); tentPaint(); phPinPaint(); } });
   M3.on('mouseenter', 'nsk-iot', function(){ M3.getCanvas().style.cursor = 'pointer'; });
   M3.on('mouseleave', 'nsk-iot', function(){ M3.getCanvas().style.cursor = ''; });
   M3.on('mouseenter', 'nsk-pts', function(){ M3.getCanvas().style.cursor = 'pointer'; });
@@ -217,6 +217,7 @@ function m3Toggle(){
 }
 function m3Off(){
   var was = MAP_3D; MAP_3D = false;
+  if (typeof phPinClear === 'function') phPinClear();   /* (V39.19) the photo pins are HTML markers — they do not hide with the box */
   var b3 = document.getElementById('m3Box'); if (b3) b3.hidden = true;
   if (was && MAP && M3){ try { var c = M3.getCenter(); MAP.setView([c.lat, c.lng], Math.round(M3.getZoom() + 1)); } catch (e){ LS_ERR = e; } }
   render(1);

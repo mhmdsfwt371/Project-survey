@@ -155,6 +155,7 @@ function clickAPart7(e){
   if (e.target.closest('[data-timeplay]')){ timePlayToggle(); return true; }
   if (e.target.closest('[data-heat]')){ heatPaint.on = !heatPaint.on; heatPaint(); heatPaint3d(); render(); return true; }   /* (V39.16) */
   if (e.target.closest('[data-cov]')){ covPaint.on = !covPaint.on; covPaint(); covPaint3d(); render(); return true; }   /* (V39.14) */
+  if (e.target.closest('[data-phpin]') && typeof phPinPaint === 'function'){ phPinPaint.on = phPinPaint.on === false; if (phPinPaint.on) phPinPaint(); else phPinClear(); render(); return true; }   /* (V39.19) */
   if (e.target.closest('[data-tent]') && typeof tentPaint === 'function'){ tentPaint.on = tentPaint.on === false; if (typeof m3Paint === 'function') m3Paint(); render(); return true; }   /* (V39.18) */
   if (e.target.closest('[data-twin]') && typeof dtwPaint === 'function'){ dtwPaint.on = dtwPaint.on === false; dtwPaint(); render(); return true; }   /* (V39.13) */
   var mqb = e.target.closest('[data-mapq]');   /* (V39.4) the map search box opens and closes */
