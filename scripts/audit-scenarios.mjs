@@ -1615,6 +1615,23 @@ console.log('\n══ ٥٨ · محرّك التوأم الرقمي ══');
   w.M3 = M30; w.MAP_3D = d30; w.M3_FOOT = foot0; if (ins0) w.STATE.inss[id] = ins0; else delete w.STATE.inss[id]; if (w.STATE.siteOv[id]) delete w.STATE.siteOv[id].iot; if (had) w.IOT.data.camps[id] = had;
 }
 
+/* ── ٥٩ · (V39.25) المشي داخل المخيم بعد «ادخل المخيم»: أسهمٌ تخطو وتستدير، ولوحةٌ للهاتف ── */
+console.log('\n══ ٥٩ · المشي داخل المخيم ══');
+{
+  const M30 = w.M3, d30 = w.MAP_3D; let eased = null, kb = 'on';
+  const cen = { lng:39.8955, lat:21.4042 };
+  w.M3 = { getCenter:() => cen, getBearing:() => 0, easeTo:o => { eased = o; }, keyboard:{ disable:() => { kb = 'off'; }, enable:() => { kb = 'on'; } } }; w.MAP_3D = true;
+  w.teWalkOn();
+  T(w.teState().walk && kb === 'off' && /data-tewalk="f"/.test(w.mapUIHtml()) && /data-tewalk="x"/.test(w.mapUIHtml()), 'بعد الدخول: لوحةُ المشي فوق الخريطة، ومفاتيحُ الخريطة الأصلية موقوفة');
+  w.teWalkDo('f'); const dN = (eased.center[1] - cen.lat) * 111320, dE = (eased.center[0] - cen.lng) * 103650;
+  T(Math.abs(dN - 2.5) < 0.01 && Math.abs(dE) < 0.01, 'خطوةٌ إلى الأمام ٢٫٥ م في اتجاه النظر: ' + dN.toFixed(2));
+  w.teWalkDo('l'); T(eased.bearing === -15, 'والاستدارةُ ١٥ درجة');
+  const ev = new w.KeyboardEvent('keydown', { key:'ArrowDown', bubbles:true }); w.document.dispatchEvent(ev);
+  T(eased.center && (eased.center[1] - cen.lat) * 111320 < -2.4, 'والسهمُ لأسفل يخطو إلى الخلف');
+  w.teWalkDo('x'); T(!w.teState().walk && kb === 'on' && !/data-tewalk/.test(w.mapUIHtml()), 'و«اخرج» تنهي المشي وتعيد مفاتيحَ الخريطة');
+  w.M3 = M30; w.MAP_3D = d30;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

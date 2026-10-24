@@ -7,6 +7,7 @@
              the sixty nearest the centre so a camp full of points stays readable; they appear from zoom 16.5 and
              follow the frame. The chip «الصور» with the 3D map switches them. Reads photosOf/phSrc; writes nothing.
    DEFINES : phPinOn, phPinTargets, phPinEl, phPinPaint, phPinClear
+   PREFIX  : phPin   (every function here starts with it — scripts/audit-names.mjs)
    STATE   : phPinPaint.on (default on), phPinPaint.m (the live markers by site id) — on the function, no new global.
    ============================================================================ */
 

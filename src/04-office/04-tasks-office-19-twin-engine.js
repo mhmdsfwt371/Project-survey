@@ -12,7 +12,8 @@
              Closer still (zoom 19.2+) the roofs lift off and the tents turn see-through, so the rooms and what is in
              them are seen from inside. The mouse over anything says its value; a tap opens its card. The flat
              blocks of the same camps hide while the models stand. Reads the same records; writes nothing.
-   DEFINES : teOn, teLoad, teState, teLayer, teMaybe, teKey, teBuild, teClear, teRay, teHit, teHoverHtml, teClick, teFilters
+   DEFINES : teState, teOn, teLoad, teLayer, teMaybe, teKey, teBuild, teClear, teFilters, teRay, teHoverHtml, teHit, teClick, teWalkOn, teWalkOff, teWalkDo, teWalkHtml
+   PREFIX  : te   (every function here starts with it — scripts/audit-names.mjs)
    STATE   : teState() — the library, the layer, the scene's camps and origin — on the function, no new global.
    ============================================================================ */
 
@@ -69,7 +70,7 @@ function teMaybe(force){
 function teKey(ids){
   var z = 0; try { z = M3.getZoom(); } catch (e){ LS_ERR = e; }
   return ids.join(',') + '|' + (z >= 19.2 ? 'open' : 'roof') + '|' + (liveState().on ? 'live' : '') + '|' + ids.map(function(id){
-    var c = iotOf(id), r = (STATE.inss || {})[id]; return (c ? c.sensors.length + ':' + (c.at || '') + ':' + c.gw.join(',') : '-') + '/' + (r ? JSON.stringify(r.parts || {}) + (r.status || '') : '-') + '/' + (typeof iotGateOf === 'function' && iotGateOf(id) ? 'g' : '');
+    var c = iotOf(id), r = (STATE.inss || {})[id]; return (c ? c.sensors.length + ':' + (c.at || '') + ':' + c.gw.join(',') : '-') + '/' + (r ? JSON.stringify(r.parts || {}) + (r.status || '') : '-') + '/' + (typeof iotFieldGate === 'function' && iotFieldGate(id) ? 'g' : '');
   }).join(';');
 }
 function teBuild(force){
@@ -131,7 +132,7 @@ function teBuild(force){
       });
     }
     /* the point's own devices at the street entrance: reader on its pole, camera on its pole, router beside the cabinet */
-    var r = (STATE.inss || {})[id], gate = (typeof iotGateOf === 'function' && iotGateOf(id)) || (x ? [+x.lat, +x.lng] : null);
+    var r = (STATE.inss || {})[id], gate = (typeof iotFieldGate === 'function' && iotFieldGate(id)) || (x ? [+x.lat, +x.lng] : null);
     if (r && r.parts && gate){
       var has = function(re){ return Object.keys(r.parts).filter(function(k){ return re.test(k) && +r.parts[k] > 0; })[0] || ''; };
       var gx = X(+gate[1]) + 1.4, gz = Zc(+gate[0]), gy = y0 - T_.plinth;
@@ -204,4 +205,44 @@ function teClick(ev){
   var html = u.kind === 's' || u.kind === 'g' ? iotDevHtml(u.camp, u.kind, u.i) : dtwCardHtml({ site:u.site, code:u.code, i:0, serial:u.serial });
   try { new maplibregl.Popup({ closeButton:true, maxWidth:'290px' }).setLngLat(ev.lngLat).setHTML('<div class="iot-pop" dir="auto">' + html + '</div>').addTo(M3); } catch (e){ LS_ERR = e; }
   return true;
+}
+
+/* (V39.25) owner: «أقدر بالماوس أدخل جوّه المكان» — after «ادخل المخيم» the camera walks: ↑/W forward and ↓/S back by
+   2.5 m along the view, ←/A and →/D turn 15°, Esc leaves; on a phone the same four arrows stand at the bottom of the map.
+   The map's own keyboard (which pans by screens) is off while walking and back when the walk ends. */
+function teWalkOn(){
+  var S = teState(); S.walk = true;
+  try { if (M3 && M3.keyboard) M3.keyboard.disable(); } catch (e){ LS_ERR = e; }
+  if (!teWalkOn.bound){
+    teWalkOn.bound = true;
+    document.addEventListener('keydown', function(ev){
+      if (!teState().walk || !MAP_3D) return;
+      var tg = ev.target && ev.target.tagName; if (tg === 'INPUT' || tg === 'TEXTAREA' || tg === 'SELECT') return;
+      var k = ev.key, act = (k === 'ArrowUp' || k === 'w' || k === 'W') ? 'f' : (k === 'ArrowDown' || k === 's' || k === 'S') ? 'b' : (k === 'ArrowLeft' || k === 'a' || k === 'A') ? 'l' : (k === 'ArrowRight' || k === 'd' || k === 'D') ? 'r' : k === 'Escape' ? 'x' : '';
+      if (!act) return; ev.preventDefault(); teWalkDo(act);
+    });
+  }
+  render(1);
+}
+function teWalkOff(){
+  var S = teState(); S.walk = false;
+  try { if (M3 && M3.keyboard) M3.keyboard.enable(); } catch (e){ LS_ERR = e; }
+  render(1);
+}
+function teWalkDo(act){
+  if (act === 'x'){ teWalkOff(); return; }
+  if (!M3) return;
+  var c = M3.getCenter(), b = M3.getBearing();
+  if (act === 'l' || act === 'r'){ try { M3.easeTo({ bearing:b + (act === 'l' ? -15 : 15), duration:220 }); } catch (e){ LS_ERR = e; } return; }
+  var d = act === 'f' ? 2.5 : -2.5, r = b * Math.PI / 180, kx = 111320 * Math.cos(c.lat * Math.PI / 180);
+  try { M3.easeTo({ center:[c.lng + Math.sin(r) * d / kx, c.lat + Math.cos(r) * d / 111320], duration:220 }); } catch (e2){ LS_ERR = e2; }
+}
+/* the walking pad over the map */
+function teWalkHtml(){
+  if (!teState().walk || !MAP_3D) return '';
+  var b = function(a, ic, lab){ return '<button type="button" class="map-chip" data-tewalk="' + a + '" aria-label="' + esc(t(lab)) + '" style="min-width:44px;justify-content:center">' + ic + '</button>'; };
+  return '<div class="map-route-box" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center">'
+    + '<span class="hint" style="margin:0">\u{1F6B6} ' + esc(t('المشي داخل المخيم')) + '</span>'
+    + b('l', '\u21BA', 'استدر يسارًا') + b('f', '\u25B2', 'إلى الأمام') + b('b', '\u25BC', 'إلى الخلف') + b('r', '\u21BB', 'استدر يمينًا')
+    + '<button type="button" class="map-chip" data-tewalk="x">\u2716 ' + esc(t('اخرج')) + '</button></div>';
 }

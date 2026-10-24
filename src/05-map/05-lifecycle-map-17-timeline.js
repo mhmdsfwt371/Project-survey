@@ -8,6 +8,7 @@
              installation colour installed, the dismantling colour dismantled. It overrides the point colour alone,
              on both maps, while it is on; the points, counts and filters stay as they are. It reads and never writes.
    DEFINES : timeDay, timeState, timeRange, timeStageAt, timeColorOf, timeBarHtml, timeSet, timeStep, timePlayToggle
+   PREFIX  : time   (every function here starts with it — scripts/audit-names.mjs)
    STATE   : timeState() — the switch, the chosen day and the player — on the function, no new global.
    ============================================================================ */
 

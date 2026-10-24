@@ -8,6 +8,7 @@
              many such points they hold; the 3D map draws the engine's own heat layer from the same points. The chip
              «الحرارة» switches it on both; it reads the records and writes nothing.
    DEFINES : heatWeight, heatPoints, heatColor, heatPaint, heatLayers3d, heatPaint3d
+   PREFIX  : heat   (every function here starts with it — scripts/audit-names.mjs)
    STATE   : heatPaint.on, heatPaint.layer — on the function, no new global.
    ============================================================================ */
 

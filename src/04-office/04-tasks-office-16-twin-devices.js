@@ -8,7 +8,8 @@
              التركيب» from the card edits serials and parts through the existing install-edit sheet, so there is
              one place that writes the installation record. The twin reads STATE.inss and DATA/catalog only —
              it never writes.
-   DEFINES : dtwKinds, dtwRing, dtwFeatures, dtwLayers, dtwPaint, dtwClick, dtwCardHtml, dtwOf
+   DEFINES : dtwKinds, dtwOf, dtwRing, dtwFeatures, dtwLayers, dtwPaint, dtwCardHtml, dtwClick
+   PREFIX  : dtw   (every function here starts with it — scripts/audit-names.mjs)
    STATE   : dtwPaint.on (the layer switch, on by default) — on the function, no new global.
    ============================================================================ */
 
@@ -53,7 +54,7 @@ function dtwFeatures(){
     if (!(+x.lat && +x.lng) || !b.contains([+x.lng, +x.lat])) return;
     var D = dtwOf(x.id); if (!D.length) return;
     D.forEach(function(dv, j){
-      var g0 = typeof iotGateOf === 'function' ? iotGateOf(x.id) : null;   /* (V39.23) the box stands at the camp's street entrance when the field says where */
+      var g0 = typeof iotFieldGate === 'function' ? iotFieldGate(x.id) : null;   /* (V39.23) the box stands at the camp's street entrance when the field says where */
       var K = dtwKinds(dv.code), p = g0 ? dtwRing(g0[0], g0[1], j, D.length) : dtwRing(+x.lat, +x.lng, j, D.length);
       if (K.k === 'reader' && liveState().on) K = { k:K.k, h:K.h, color:liveColorOf(x) };   /* (V39.20) the reader column beats with its pulse */
       var base = typeof m3Base === 'function' ? m3Base(x) : 0;   /* (V39.15) a device on a floor stands on that floor */

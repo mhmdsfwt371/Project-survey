@@ -163,7 +163,8 @@ function clickAPart7(e){
   var mqb = e.target.closest('[data-mapq]');   /* (V39.4) the map search box opens and closes */
   if (mqb){ var mqs = mapUIHtml.s || (mapUIHtml.s = { open:false, q:'' }); mqs.open = mqb.getAttribute('data-mapq') === '1'; render();
     if (mqs.open) setTimeout(function(){ var mi = document.getElementById('mapQ'); if (mi) mi.focus(); }, 0); return true; }
-  var m3e = e.target.closest('[data-m3enter]'); if (m3e){ POP_OPEN = false; render(); m3Enter(m3e.getAttribute('data-m3enter')); return true; }   /* (V39.21) */
+  var m3e = e.target.closest('[data-m3enter]'); if (m3e){ POP_OPEN = false; render(); if (m3Enter(m3e.getAttribute('data-m3enter')) && typeof teWalkOn === 'function') teWalkOn(); return true; }   /* (V39.21/V39.25) enter, then walk */
+  var twk = e.target.closest('[data-tewalk]'); if (twk && typeof teWalkDo === 'function'){ teWalkDo(twk.getAttribute('data-tewalk')); return true; }
   var fl = e.target.closest('[data-fly]');
   if (fl){ if (mapUIHtml.s) mapUIHtml.s.open = false; POP_SITE = fl.getAttribute('data-fly'); POP_OPEN = true; if (typeof SV_POP !== 'undefined'){ SV_POP = ''; SV_PHO = ''; } CUR = 'map'; render();   /* (V38.75) the list window closes — it would cover the map */
            if (typeof MAP === 'undefined' || !MAP) toast('\u23F3 ' + t('تُفتَح الخريطةُ على النقطة…'));   /* (V38.21) يرى أن الضغطة وصلت */

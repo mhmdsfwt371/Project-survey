@@ -7,7 +7,8 @@
              circle when it does not yet), and the camps' gateways draw their 150 m reach. The layer is a chip
              («التغطية») in the map's top row, drawn on the flat map and the 3D one alike, from zoom 15 up. It reads
              the installation record's `cov` {dir, fov, rdr} written from the install-edit sheet — nothing else.
-   DEFINES : covDefaults, covOf, covSector, covCircle, covShapes, covPaint, covPaint3d, covLayers3d
+   DEFINES : covDefaults, covOf, covCircle, covSector, covShapes, covPaint, covLayers3d, covPaint3d
+   PREFIX  : cov   (every function here starts with it — scripts/audit-names.mjs)
    STATE   : covPaint.on (the switch), covPaint.layer (the flat map's layer group) — on the function, no new global.
    ============================================================================ */
 

@@ -159,7 +159,7 @@ function m3Init(){
   var hit = function(ev){ if (ev.originalEvent && ev.originalEvent._nskIot) return; if (typeof teClick === 'function' && teClick(ev)) return;   /* (V39.24) the model under the tap first */ var f = ev.features && ev.features[0]; if (f && f.properties && f.properties.id) m3Click(f.properties.id, ev); };
   M3.on('click', 'nsk-pts', hit); M3.on('click', 'nsk-cols', hit);
   /* (V39.21) a double tap on a camp walks the camera in */
-  M3.on('dblclick', 'nsk-cols', function(ev){ var f = ev.features && ev.features[0]; if (f && f.properties && f.properties.id && f.properties.foot){ ev.preventDefault(); m3Enter(f.properties.id); } });
+  M3.on('dblclick', 'nsk-cols', function(ev){ var f = ev.features && ev.features[0]; if (f && f.properties && f.properties.id && f.properties.foot){ ev.preventDefault(); if (m3Enter(f.properties.id) && typeof teWalkOn === 'function') teWalkOn(); } });
   /* (V39.11) the twin's devices take the tap first; a tap on the ground in the editor moves or adds the selected device */
   M3.on('click', 'nsk-iot', function(ev){ var f = ev.features && ev.features[0]; if (f && typeof m3IotClick === 'function') m3IotClick(f, ev); });
   M3.on('click', 'nsk-iot-pt', function(ev){ var f = ev.features && ev.features[0]; if (f && typeof m3IotClick === 'function') m3IotClick(f, ev); });
@@ -227,6 +227,7 @@ function m3Off(){
   var was = MAP_3D; MAP_3D = false;
   if (typeof phPinClear === 'function') phPinClear();   /* (V39.19) the photo pins are HTML markers — they do not hide with the box */
   if (typeof teClear === 'function') teClear();   /* (V39.24) */
+  if (typeof teWalkOff === 'function' && teState().walk) teWalkOff();   /* (V39.25) */
   var b3 = document.getElementById('m3Box'); if (b3) b3.hidden = true;
   if (was && MAP && M3){ try { var c = M3.getCenter(); MAP.setView([c.lat, c.lng], Math.round(M3.getZoom() + 1)); } catch (e){ LS_ERR = e; } }
   render(1);

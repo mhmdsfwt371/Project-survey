@@ -9,6 +9,7 @@
              status stays visible as a thin coloured plinth under the tents. Camps without a boundary keep their
              column. It reads campFoot() only and writes nothing; «خيام» in the map's top row switches it.
    DEFINES : tentOn, tentCells, tentFence, tentFeaturesOf, tentFeatures, tentLayers, tentPaint
+   PREFIX  : tent   (every function here starts with it — scripts/audit-names.mjs)
    STATE   : tentPaint.on (default on), tentPaint.cache (per camp id) — on the function, no new global.
    ============================================================================ */
 
@@ -81,7 +82,7 @@ function tentFeaturesOf(id, ring){
     F.push({ type:'Feature', properties:{ camp:id, k:'roof', color:T_.roofC, base:T_.plinth + T_.body - 0.05, h:T_.plinth + T_.roof }, geometry:{ type:'Polygon', coordinates:[c.roof] } });
   });
   if (cells.length){
-    var ents = typeof iotEntrancesOf === 'function' ? iotEntrancesOf(id) : [];
+    var ents = typeof iotFieldEntrances === 'function' ? iotFieldEntrances(id) : [];
     tentFence(ring, ents).forEach(function(q){ F.push({ type:'Feature', properties:{ camp:id, k:'fence', color:T_.fence, base:0, h:T_.fenceH }, geometry:{ type:'Polygon', coordinates:[q] } }); });
     (tentFence.gates || []).forEach(function(g){
       var top = g.main ? 3.6 : 2.8, col = g.main ? '#2E9C6A' : '#8A8F98';

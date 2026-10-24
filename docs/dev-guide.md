@@ -101,6 +101,23 @@ firestore.rules  database security rules (frozen by owner decision — do not ed
   `LS_ERR` is an accessor that records each one (per function, rate-limited) into the soft-error log shown in
   «المزامنة والتعارض» and attached to bug reports. Use `softErr('where', e, 'message to the user')` when the user must be told.
 
+### 5c. New features — one module, one prefix (V39.25)
+
+The rules the twin modules of V39.13–V39.24 proved, now guarded by `scripts/audit-names.mjs`:
+
+1. **One feature, one file, one prefix.** A new feature lives in its own file (`src/<zone>/<zone>-NN-<name>.js`) whose header
+   declares `PREFIX : <p>`; every function in it starts with `p` followed by a capital letter or a digit (`dtwPaint`, `covShapes`,
+   `teBuild`). The audit fails the gate for a file dated V39.13 or later without a PREFIX, or with a function off it.
+2. **No name is defined twice** in the global scope (the audit fails it): a later definition silently replaces the earlier one
+   and breaks a screen that has nothing to do with the change. This happened twice while building the twin (`twinOf`, `dayStart`).
+3. **State on the function, not in a new global** — `dtwPaint.on`, `teState()`, `iotFieldLoad.d`. The health audit holds the
+   number of globals at its baseline.
+4. **Read in one place, write in one place.** A view (the twin, the heat, the timeline) reads the records and never writes;
+   changes go through the screen that already owns them (the install-edit sheet, the sensors editor) so the event log stays whole.
+5. **The core never calls the office chunk unguarded** — `typeof fn === 'function'` first; `audit-core-alone` fails otherwise.
+6. **A scenario for every feature, the same day** (`scripts/audit-scenarios.mjs`, one numbered block), and **the release note in
+   three languages** in the same bump (`--note --note-en --note-ur`).
+
 ## 6. How to add a field to the survey
 
 1. **Define** the field label in `SV_LABELS` and its position in `SV_ORDER` (`03-survey/…05-forms-approvals.js`, `…06-survey-form.js`). Add it to `SV_EXTRA_KEYS` so it is saved and reset with the form.

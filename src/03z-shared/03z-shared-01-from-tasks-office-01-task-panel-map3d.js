@@ -26,7 +26,7 @@ function m3Enter(id){
   var x = siteFind(id); if (!x || !(+x.lat && +x.lng)) return false;
   var ring = campFoot(x), cy = +x.lat, cx = +x.lng;
   if (ring && ring.length >= 3){ cy = 0; cx = 0; ring.forEach(function(q){ cx += +q[0]; cy += +q[1]; }); cx /= ring.length; cy /= ring.length; }
-  var g0 = typeof iotGateOf === 'function' ? iotGateOf(id) : null, at = g0 ? { lat:g0[0], lng:g0[1] } : { lat:+x.lat, lng:+x.lng };   /* (V39.23) the real street entrance */
+  var g0 = typeof iotFieldGate === 'function' ? iotFieldGate(id) : null, at = g0 ? { lat:g0[0], lng:g0[1] } : { lat:+x.lat, lng:+x.lng };   /* (V39.23) the real street entrance */
   var bearing = Math.atan2((cx - at.lng) * Math.cos(at.lat * Math.PI / 180), cy - at.lat) * 180 / Math.PI;
   if (m3Enter.last === id) bearing += 180;   /* turn around */
   m3Enter.last = id;

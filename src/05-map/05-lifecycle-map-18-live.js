@@ -10,6 +10,7 @@
              yet: liveSensor() reads STATE.iotLive (a `iotlive/{camp}` document a future bridge writes, shape in
              docs/live.md) and colours them the same way when it exists. Reads the bridge's state; writes nothing.
    DEFINES : liveState, liveOf, liveOcc, liveColorOf, liveSensor, liveCounts, liveTextOf, liveKick
+   PREFIX  : live   (every function here starts with it — scripts/audit-names.mjs)
    STATE   : liveState() — on/off and the last refresh — on the function, no new global.
    ============================================================================ */
 

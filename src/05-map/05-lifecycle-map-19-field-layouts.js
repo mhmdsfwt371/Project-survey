@@ -8,7 +8,8 @@
              editor a banner offers «طبّق المواقع الفعلية»: the field devices replace the planned sensors in the
              editor (the gateway stays as it is), then the normal «احفظ» writes them with the event log — the app
              never writes them by itself. After that every device is added, moved, edited or deleted as before.
-   DEFINES : iotFieldLoad, iotFieldOf, iotGateOf, iotEntrancesOf, iotFieldCount, iotFieldApply, iotFieldBanner
+   DEFINES : iotFieldLoad, iotFieldOf, iotFieldGate, iotFieldEntrances, iotFieldCount, iotFieldApply, iotFieldBanner
+   PREFIX  : iotField   (every function here starts with it — scripts/audit-names.mjs)
    STATE   : iotFieldLoad.d (the file once loaded) — on the function, no new global.
    ============================================================================ */
 
@@ -21,8 +22,8 @@ function iotFieldLoad(){
 }
 function iotFieldOf(id){ var d = iotFieldLoad.d; return (d && d.camps && d.camps[id]) || null; }
 /* (V39.23) the camp's main entrance (the box with the gateway, router, reader and camera) and all its entrances */
-function iotGateOf(id){ var F = iotFieldOf(id); return F && F.gate && F.gate.at ? [+F.gate.at[0], +F.gate.at[1]] : null; }
-function iotEntrancesOf(id){ var F = iotFieldOf(id); return (F && F.entrances || []).filter(function(e){ return e && e.at; }); }
+function iotFieldGate(id){ var F = iotFieldOf(id); return F && F.gate && F.gate.at ? [+F.gate.at[0], +F.gate.at[1]] : null; }
+function iotFieldEntrances(id){ var F = iotFieldOf(id); return (F && F.entrances || []).filter(function(e){ return e && e.at; }); }
 function iotFieldCount(F){ var n = 0; (F && F.spots || []).forEach(function(s){ n += (s.dev || []).length; }); return n; }
 
 /* the field devices replace the editor's sensors — ids by position (S01, S02 … in position order), status installed */
