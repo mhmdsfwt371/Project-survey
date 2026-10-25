@@ -184,7 +184,7 @@ function teHoverHtml(u){
   if (u.kind === 's' || u.kind === 'g'){
     var c = iotOf(u.camp); if (!c) return '';
     var did = u.kind === 's' ? iotSid(u.camp, c, u.i) : iotGid(u.camp, c, u.i), h = m3HoverHtml('nsk-iot-pt', { camp:u.camp, kind:u.kind, i:u.i, did:did });
-    if (u.kind === 's'){ var lv = liveSensor(u.camp, did); h += '<br>' + (lv ? esc(t('القراءة')) + ' <b class="num">' + esc(String(lv.v)) + '</b> \u00b7 ' + esc(pilotAgo(lv.at)) : '<span class="hint" style="margin:0">' + esc(t('لا قراءة بعد — بانتظار مصدر القراءات')) + '</span>'); }
+    /* (V39.51) the sensor's temperature and humidity come with m3HoverHtml (iotValHtml) — the same block as the pins */
     return h;
   }
   if (u.kind === 'd') return '<b>' + esc(t(itemName(u.code))) + '</b>' + (u.serial ? ' \u00b7 <span class="num">' + esc(u.serial) + '</span>' : '') + (u.code && /^rdr/.test(u.code) && liveState().on ? '<br>' + esc(liveTextOf(siteFind(u.site))) : '');

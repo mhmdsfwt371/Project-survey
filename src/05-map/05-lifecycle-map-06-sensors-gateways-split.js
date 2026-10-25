@@ -54,6 +54,25 @@ function liveIotLine(serial){
   return '<div style="margin-top:4px"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + col + '"></span> <b>' + esc(t('القراءة الحية')) + ':</b> '
     + (parts.length ? esc(parts.join(' \u00B7 ')) : esc(t('لا قيم'))) + ' <span class="hint" style="margin:0">' + esc(age === Infinity ? t('بلا وقت') : age < 7200000 ? t('منذ') + ' ' + nm(Math.max(1, Math.round(age / 60000))) + ' ' + t('د') : t('غير متصل')) + '</span></div>';
 }
+/* (V39.51) owner: «الحساس تظهر قيمته لما أهوفر بالماوس عليه — حرارة ورطوبة». One block for every place a sensor is
+   described (the 3D hover, the models' hover, its card): temperature and humidity always have their place — the values from
+   the AFAQY PRO bridge (by the sensor's serial, else by its id), with their age and a freshness dot; and when there is no
+   reading yet the place says why (no serial to bind it, or the bridge has not brought a reading) — never an invented number. */
+function iotValHtml(camp, i){
+  var c = iotOf(camp); if (!c) return '';
+  var m = (c.sm || [])[i] || {}, did = iotSid(camp, c, i), x = liveIotOf(m.serial), v = null, at = 0;
+  if (x){ v = x.v || {}; at = +x.t || 0; }
+  else if (typeof liveSensor === 'function'){ var ls = liveSensor(camp, did); if (ls){ v = (ls.v && typeof ls.v === 'object') ? ls.v : { temp:ls.v }; at = +ls.at || 0; } }
+  liveIotLoad();   /* the first hover brings the snapshot (at most every ten minutes) */
+  var big = function(ic, val, unit){ return '<span style="display:inline-flex;align-items:baseline;gap:3px;margin-inline-end:12px"><span>' + ic + '</span><b class="num" style="font-size:16px">' + (val != null && val !== '' ? esc(nm(+val)) + unit : '\u2014') + '</b></span>'; };
+  var vals = '<div style="margin:5px 0 2px" dir="rtl">' + big('\u{1F321}', v && v.temp, '\u00B0') + big('\u{1F4A7}', v && v.hum, '\u066A') + '</div>';
+  if (v){
+    var age = at ? Date.now() - at : Infinity, col = age < 1200000 ? '#3FB27F' : age < 7200000 ? '#E0A100' : '#E05252';
+    return vals + '<div class="hint" style="margin:0"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + col + '"></span> '
+      + esc(age === Infinity ? t('بلا وقت') : age < 7200000 ? t('منذ') + ' ' + nm(Math.max(1, Math.round(age / 60000))) + ' ' + t('د') : t('غير متصل')) + (v.bat != null ? ' \u00b7 \u{1F50B} ' + esc(nm(+v.bat)) : '') + '</div>';
+  }
+  return vals + '<div class="hint" style="margin:0">' + esc(m.serial ? t('لا قراءة بعد — بانتظار الجسر') : t('سجّل سيريال الحساس ليُربط بأفاقي برو')) + '</div>';
+}
 function iotDevHtml(id, kind, i){   /* نافذةُ الجهاز */
   var c = iotOf(id); if (!c) return ''; var x = siteFind(id), nm0 = x ? (x.name || id) : id, m = kind === 's' ? (c.sm[i] || {}) : (c.gm[i] || {});
   var did = kind === 's' ? iotSid(id, c, i) : iotGid(id, c, i), ttl = kind === 's' ? t('حساس حرارة ورطوبة') : t('جيت واي'), out = kind === 's' && iotOutside(id, c).indexOf(i) > -1;
@@ -61,7 +80,7 @@ function iotDevHtml(id, kind, i){   /* نافذةُ الجهاز */
   var cov = kind !== 's' ? '<div class="hint" style="margin:0">' + esc(t('يغطي')) + ' ' + nm(c.sensors.length) + ' ' + esc(t('حساسًا، أبعدها')) + ' ' + nm(iotMax(c.gw, c.sensors, c.gws)) + ' ' + esc(t('م')) + '</div>' : '';
   return '<b>' + esc(ttl) + '</b> <span class="num">' + esc(did) + '</span><br><span class="hint">' + esc(nm0) + '</span>'
     + row('الطراز', m.model) + row('العلامة على الجهاز', m.tag) + row('الغرفة', m.room) + row('السيريال', m.serial) + row('الحالة', m.status || 'مخطط') + row('ملاحظة', m.note) + cov
-    + liveIotLine(m.serial)   /* (V39.47) */
+    + (kind === 's' ? iotValHtml(id, i) : liveIotLine(m.serial))   /* (V39.51) temperature and humidity on the card */
     + (out ? '<div style="color:#E05252">\u26A0 ' + esc(t('خارج حدود المخيم')) + '</div>' : '')
     + (mayIot() ? '<div style="margin-top:6px">' + btn('\u270E ' + t('عدّل'), 'btn-quiet btn-sm', ' data-iotdev="' + esc(id) + '|' + kind + '|' + i + '"')
         + (typeof mvdStart === 'function' ? btn('\u2725 ' + t('حرّك'), 'btn-quiet btn-sm', ' data-mvd="' + esc(id) + '" data-mvdk="' + (kind === 's' ? 's' : 'g') + i + '"') : '') + '</div>' : '');
@@ -124,6 +143,7 @@ function m3IotFeatures(){
      from outside the camp wherever it stands; the gateway's column rises above the roofs as well. */
   var push = function(camp, kind, i, q, m, bad, sel){
     var P = { camp:camp, kind:kind, i:i, did:(m && m.id) || '', color:iotColor(kind, m, bad, sel), h:kind === 's' ? 1.8 : 6, sel:sel ? 1 : 0 };
+    if (kind === 'g' && i === 0 && typeof dtwGwAtGate === 'function' && dtwGwAtGate(camp)){ F.push({ type:'Feature', properties:P, geometry:{ type:'Point', coordinates:[+q[1], +q[0]] } }); return; }   /* (V39.50) the camp's gateway stands with the entrance devices */
     if (kind === 'g'){   /* (V39.48) owner: «خلّي أشكالها متناسبة وواقعية» — the gateway is a cabinet on its pole with an antenna, its status colour on the antenna's tip */
       var rect = function(w, d, x, y){ var lat = +q[0], lng = +q[1], mLat = 1 / 111320, mLng = 1 / (111320 * Math.cos(lat * Math.PI / 180)), cx = lng + x * mLng, cy = lat + y * mLat, hw = w / 2 * mLng, hd = d / 2 * mLat;
         return [[[cx - hw, cy - hd], [cx + hw, cy - hd], [cx + hw, cy + hd], [cx - hw, cy + hd], [cx - hw, cy - hd]]]; };

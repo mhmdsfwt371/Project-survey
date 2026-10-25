@@ -10,8 +10,8 @@
 function ipClear(id){
   if (!may('edit')){ toast(t('التحريرُ ليس من صلاحيتك')); return; }
   var x = siteFind(id); if (!x) return;
-  x.net = ''; x.ipRtr = ''; x.ipRdr = ''; x.ipCam = '';
-  CORE.set('sites', id, { net:'', ipRtr:'', ipRdr:'', ipCam:'' });
+  x.net = ''; x.ipRtr = ''; x.ipRdr = ''; x.ipCam = ''; x.ipGw = '';
+  CORE.set('sites', id, { net:'', ipRtr:'', ipRdr:'', ipCam:'', ipGw:'' });
   logEvent('مسح عناوين — ' + id, id);
   toast(t('مُسحت العناوين')); statBump(); render(1);
 }

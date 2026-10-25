@@ -8,7 +8,7 @@
              التركيب» from the card edits serials and parts through the existing install-edit sheet, so there is
              one place that writes the installation record. The twin reads STATE.inss and DATA/catalog only —
              it never writes.
-   DEFINES : dtwKinds, dtwOf, dtwRing, dtwFeatures, dtwLayers, dtwPaint, dtwCardHtml, dtwClick
+   DEFINES : dtwKinds, dtwOf, dtwUnits, dtwSpot, dtwIp, dtwIpText, dtwChipsPaint, dtwFeatures, dtwLayers, dtwPaint, dtwCardHtml, dtwClick
    PREFIX  : dtw   (every function here starts with it — scripts/audit-names.mjs)
    STATE   : dtwPaint.on (the layer switch, on by default) — on the function, no new global.
    ============================================================================ */
@@ -17,6 +17,7 @@
 function dtwKinds(code){
   var c = String(code || '');
   if (/^rdr/.test(c)) return { k:'reader',  color:'#7C4DFF', h:2.6 };
+  if (c === 'gw') return { k:'gateway', color:'#DADFE3', h:2.1 };   /* (V39.50) the camp's gateway in the entrance box */
   if (/^cam/.test(c)) return { k:'camera',  color:'#2D7DD2', h:3.0 };
   if (/^rtr/.test(c)) return { k:'router',  color:'#F5A623', h:2.0 };
   if (/^ant/.test(c)) return { k:'antenna', color:'#9AA7B2', h:3.4 };
@@ -38,12 +39,6 @@ function dtwOf(id){
   return out;
 }
 
-/* the units stand on a ring around the point, 1.6 m out, evenly spaced — the same spot on every device, every day */
-function dtwRing(lat, lng, idx, total){
-  var a = (idx / Math.max(1, total)) * Math.PI * 2, R = 1.6;
-  var dy = R * Math.cos(a) / 111320, dx = R * Math.sin(a) / (111320 * Math.cos(lat * Math.PI / 180));
-  return [lat + dy, lng + dx];
-}
 
 /* (V39.48) a rectangle w × d metres centred (x, y) metres east/north of p — the device's parts stand on real proportions */
 function dtwRect(p, w, d, x, y){
@@ -70,21 +65,49 @@ function dtwParts(K, p){
     default:        return [{ p:'unit', w:.4, d:.4, b:0, t:.8, c:K.color }];
   }
 }
+/* (V39.50) owner: «أنا عاوز كاميرا، قارئ، جيت واي، راوتر فقط … بعيد عن بعض شوية … واضحين مهما عملت زوم».
+   The entrance shows only those four kinds; they stand in a row 2.4 m apart at the camp's street entrance (or the point),
+   unless dragged; the camp's gateway joins them when the field has placed the entrance (it lives in the same box). */
+function dtwShow(k){ return k === 'reader' || k === 'camera' || k === 'router' || k === 'gateway'; }
+function dtwUnits(x){
+  var D = dtwOf(x.id).filter(function(dv){ return dtwShow(dtwKinds(dv.code).k); });
+  var c = typeof iotOf === 'function' ? iotOf(x.id) : null, g0 = typeof iotFieldGate === 'function' ? iotFieldGate(x.id) : null;
+  if (c && g0) D.push({ code:'gw', i:0, n:1, serial:((c.gm || [])[0] || {}).serial || '', gw:1 });
+  return D;
+}
+function dtwSpot(x, dv, j, n){
+  var r0 = (STATE.inss || {})[x.id], pp = r0 && r0.pos && r0.pos[dv.code + '#' + dv.i];
+  if (pp) return [+pp[0], +pp[1]];
+  var g0 = typeof iotFieldGate === 'function' ? iotFieldGate(x.id) : null, o = g0 ? [+g0[0], +g0[1]] : [+x.lat, +x.lng];
+  var off = (j - (n - 1) / 2) * 2.4;   /* metres east of the entrance, centred */
+  return [o[0], o[1] + off / (111320 * Math.cos(o[0] * Math.PI / 180))];
+}
+function dtwGwAtGate(camp){ return !!(typeof iotFieldGate === 'function' && iotFieldGate(camp) && (STATE.sites || []).some(function(x){ return x.id === camp; })); }
+/* each device's address: what the point records (site edit form / IP plan), else the network's convention (.1 router, .2
+   reader, .3 camera) marked as derived; the gateway has no convention — recorded or «not recorded» */
+function dtwIp(x, kind, i){
+  if (!x) return { ip:'', how:'' };
+  var f = { router:'ipRtr', reader:'ipRdr', camera:'ipCam', gateway:'ipGw' }[kind], v = f && (+i || 0) === 0 ? String(x[f] || '').trim() : '';
+  if (v) return { ip:v, how:'' };
+  var base = typeof siteNetBase === 'function' ? siteNetBase(x) : '', suf = { router:'.1', reader:'.2', camera:'.3' }[kind];
+  return base && suf && (+i || 0) === 0 ? { ip:base + suf, how:'derived' } : { ip:'', how:'none' };
+}
+function dtwIpText(x, kind, i){ var q = dtwIp(x, kind, i); return q.ip ? 'IP ' + q.ip + (q.how === 'derived' ? ' (' + t('مشتق من الشبكة') + ')' : '') : 'IP \u2014 ' + t('لم يُسجَّل'); }
+
 function dtwFeatures(){
   var F = [];
   if (!MAP_3D || !M3 || !M3.getBounds || !(dtwPaint.on !== false)) return F;
   var b, z; try { b = M3.getBounds(); z = M3.getZoom(); } catch (e){ LS_ERR = e; return F; }
-  if (z < 18.5) return F;   /* the columns are a metre wide — only when the camp fills the screen (V39.28: 17.5) */
+  if (z < 18) return F;   /* the parts are tens of centimetres — the chips carry them below this */
   (STATE.sites || []).forEach(function(x){
     if (!(+x.lat && +x.lng) || !b.contains([+x.lng, +x.lat])) return;
-    var D = dtwOf(x.id); if (!D.length) return;
+    var D = dtwUnits(x); if (!D.length) return;
     D.forEach(function(dv, j){
-      var g0 = typeof iotFieldGate === 'function' ? iotFieldGate(x.id) : null;   /* (V39.23) the box stands at the camp's street entrance when the field says where */
-      var r0 = (STATE.inss || {})[x.id], pp = r0 && r0.pos && r0.pos[dv.code + '#' + dv.i];   /* (V39.31) where it was dragged */
-      var K = dtwKinds(dv.code), p = pp ? [+pp[0], +pp[1]] : (g0 ? dtwRing(g0[0], g0[1], j, D.length) : dtwRing(+x.lat, +x.lng, j, D.length));
-      if (K.k === 'reader' && liveState().on) K = { k:K.k, h:K.h, color:liveColorOf(x), live:true };   /* (V39.20) the reader column beats with its pulse */
+      var K = dtwKinds(dv.code), p = dtwSpot(x, dv, j, D.length);
+      if (K.k === 'reader' && liveState().on) K = { k:K.k, h:K.h, color:liveColorOf(x), live:true };   /* (V39.20) the reader beats with its pulse */
+      if (K.k === 'gateway'){ var gm = ((iotOf(x.id) || {}).gm || [])[0] || {}; K = { k:'gateway', h:K.h, color:iotColor('g', gm, false, false), live:true }; }
       var base = typeof m3Base === 'function' ? m3Base(x) : 0;   /* (V39.15) a device on a floor stands on that floor */
-      dtwParts(K, p).forEach(function(q){   /* (V39.48) owner: «خلّي أشكالها متناسبة وواقعية» — a pole, a head, a lens, an antenna */
+      dtwParts(K, p).forEach(function(q){
         F.push({ type:'Feature', properties:{ site:x.id, code:dv.code, i:dv.i, serial:dv.serial, kind:K.k, color:q.c, h:base + q.t, base:base + q.b, part:q.p },
                  geometry:{ type:'Polygon', coordinates:dtwRect(p, q.w, q.d, q.x, q.y) } });
       });
@@ -93,17 +116,48 @@ function dtwFeatures(){
   return F;
 }
 
+/* (V39.50) the chips: one small row of the four at each entrance, a fixed size on screen — seen at every zoom from 16,
+   each with its own hover (name, IP, serial) and its own tap (that device's card only, nothing under it) */
+function dtwChipsPaint(){
+  var S = dtwChipsPaint, old = S.mk || []; old.forEach(function(m){ try { m.remove(); } catch (e){ LS_ERR = e; } }); S.mk = [];
+  if (!MAP_3D || !M3 || !M3.getBounds || !window.maplibregl || dtwPaint.on === false) return;
+  var b, z, c0; try { b = M3.getBounds(); z = M3.getZoom(); c0 = M3.getCenter(); } catch (e){ LS_ERR = e; return; }
+  if (z < 16) return;
+  var ICON = { camera:'\u{1F4F7}', reader:'\u{1F4E1}', gateway:'\u{1F4F6}', router:'\u{1F310}' };
+  var list = (STATE.sites || []).filter(function(x){ return +x.lat && +x.lng && b.contains([+x.lng, +x.lat]); }).map(function(x){ return { x:x, D:dtwUnits(x) }; })
+    .filter(function(o){ return o.D.length; }).sort(function(a, q){ return Math.hypot(a.x.lat - c0.lat, a.x.lng - c0.lng) - Math.hypot(q.x.lat - c0.lat, q.x.lng - c0.lng); }).slice(0, 40);
+  list.forEach(function(o){
+    var x = o.x, g0 = typeof iotFieldGate === 'function' ? iotFieldGate(x.id) : null, at = g0 ? [+g0[1], +g0[0]] : [+x.lng, +x.lat];
+    var el = document.createElement('div'); el.className = 'dtw-chips'; el.setAttribute('dir', 'ltr');
+    el.style.cssText = 'display:flex;gap:4px;padding:2px;transform:translateY(-6px);pointer-events:auto';
+    o.D.forEach(function(dv){
+      var k = dtwKinds(dv.code).k, sp = document.createElement('span');
+      sp.textContent = ICON[k] || '\u25A0'; sp.setAttribute('role', 'button'); sp.setAttribute('tabindex', '0'); sp.setAttribute('aria-label', t(itemName(dv.code)) + ' \u00b7 ' + dtwIpText(x, k, dv.i));
+      sp.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:7px;background:rgba(15,23,42,.88);border:1px solid rgba(255,255,255,.35);font-size:14px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.4)';
+      var props = { site:x.id, code:dv.code, i:dv.i, serial:dv.serial, kind:k };
+      sp.addEventListener('mouseenter', function(){ m3Hover({ lngLat:{ lng:at[0], lat:at[1] } }, m3HoverHtml('nsk-twin', props)); });
+      sp.addEventListener('mouseleave', function(){ m3Hover(null); });
+      var open = function(ev){ ev.stopPropagation(); ev.preventDefault(); m3Hover(null); m3PopOpen({ lng:at[0], lat:at[1] }, dtwCardHtml(props), '280px'); };
+      sp.addEventListener('click', open); sp.addEventListener('keydown', function(ev){ if (ev.key === 'Enter' || ev.key === ' ') open(ev); });
+      el.appendChild(sp);
+    });
+    ['mousedown', 'pointerdown', 'touchstart', 'dblclick'].forEach(function(n){ el.addEventListener(n, function(ev){ ev.stopPropagation(); }, { passive:true }); });
+    try { S.mk.push(new maplibregl.Marker({ element:el, anchor:'bottom' }).setLngLat(at).addTo(M3)); } catch (e){ LS_ERR = e; }
+  });
+}
+
 /* the source and the layer — added once with the other 3D layers */
 function dtwLayers(){
   if (!M3 || M3.getSource('nsktwin')) return;
   M3.addSource('nsktwin', { type:'geojson', data:{ type:'FeatureCollection', features:dtwFeatures() } });
   M3.addLayer({ id:'nsk-twin', type:'fill-extrusion', source:'nsktwin',
     paint:{ 'fill-extrusion-color':['get','color'], 'fill-extrusion-height':['get','h'], 'fill-extrusion-base':['coalesce', ['get','base'], 0], 'fill-extrusion-opacity':0.95 } });
-  M3.on('click', 'nsk-twin', function(ev){ var f = ev.features && ev.features[0]; if (f) dtwClick(f, ev); });
+  /* (V39.50) the tap is decided by m3ClickPick in the map file — the device only, nothing under it */
   M3.on('mouseenter', 'nsk-twin', function(){ M3.getCanvas().style.cursor = 'pointer'; });
   M3.on('mouseleave', 'nsk-twin', function(){ M3.getCanvas().style.cursor = ''; });
 }
 function dtwPaint(){
+  try { dtwChipsPaint(); } catch (eC){ LS_ERR = eC; }   /* (V39.50) */
   if (!MAP_3D || !M3 || !M3.getSource) return;
   try { var s = M3.getSource('nsktwin'); if (s) s.setData({ type:'FeatureCollection', features:dtwFeatures() }); } catch (e){ LS_ERR = e; }
 }
@@ -115,7 +169,8 @@ function dtwCardHtml(p){
   var units = dtwOf(p.site).filter(function(d){ return d.code === p.code; }).length;
   return '<b>' + esc(t(itemName(p.code))) + '</b>' + (units > 1 ? ' <span class="hint" style="margin:0">' + nm(+p.i + 1) + ' / ' + nm(units) + '</span>' : '')
     + '<br><span class="hint">' + esc(x ? (x.name || x.id) : p.site) + '</span>'
-    + row('السيريال', p.serial) + row('الحالة', r.status) + row('ركّبه', r.by) + (r.at ? row('بتاريخ', fmtDate(r.at)) : '')
+    + '<div class="num" dir="ltr" style="margin:2px 0">' + esc(dtwIpText(x, p.kind || dtwKinds(p.code).k, p.i)) + '</div>'   /* (V39.50) its own address */
+    + row('السيريال', p.serial) + (p.code === 'gw' ? row('الحالة', ((((typeof iotOf === 'function' ? iotOf(p.site) : null) || {}).gm || [])[0] || {}).status || 'مخطط') : row('الحالة', r.status) + row('ركّبه', r.by) + (r.at ? row('بتاريخ', fmtDate(r.at)) : ''))
     + (liveState().on && p.kind === 'reader' && x ? '<div>' + esc(liveTextOf(x)) + '</div>' : '')   /* (V39.20) the reader's pulse on its card */
     + '<div class="actions" style="margin-top:6px">' + btn('\u{1F4C4} ' + t('صفحة النقطة'), 'btn-quiet btn-sm', ' data-site="' + esc(p.site) + '"')
     + (typeof insqMay === 'function' && insqMay(p.site) ? btn('\u270E ' + t('تعديل التركيب'), 'btn-quiet btn-sm', ' data-insq="' + esc(p.site) + '"') : '')

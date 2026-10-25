@@ -1330,9 +1330,10 @@ console.log('\n══ ٤٧ · أجهزةُ النقطة في المجسّم ═�
   w.dtwPaint();
   const F = data ? data.features.filter(f => f.properties.site === x.id) : [];
   const kinds = F.map(f => f.properties.kind);
-  const units = new Set(F.map(f => f.properties.code + '#' + f.properties.i)); T(units.size === 5 && F.length === 13 && kinds.indexOf('reader') > -1 && new Set(F.filter(f => f.properties.kind === 'camera').map(f => f.properties.i)).size === 2 && kinds.indexOf('router') > -1 && kinds.indexOf('solar') > -1, 'وفي المجسّم خمسُ وحداتٍ حول النقطة بأنواعها، كلٌّ من أجزائها الواقعية (V39.48)');
+  const units = new Set(F.map(f => f.properties.code + '#' + f.properties.i)); T(units.size === 4 && F.length === 11 && kinds.indexOf('reader') > -1 && new Set(F.filter(f => f.properties.kind === 'camera').map(f => f.properties.i)).size === 2 && kinds.indexOf('router') > -1 && kinds.indexOf('solar') === -1, 'وفي المجسّم عند المدخل الكاميرا والقارئ والراوتر وحدَها (لا لوحَ شمسيًّا ولا هوائي)، كلٌّ من أجزائها (V39.50)');
   const reader = F.find(f => f.properties.kind === 'reader' && f.properties.part === 'panel');
   T(reader.properties.color === '#EEF1F3' && reader.properties.h === 2.85 && reader.properties.base === 2.3 && reader.properties.serial === 'RDR-TEST-01' && F.some(f => f.properties.kind === 'reader' && f.properties.part === 'pole' && f.properties.h === 2.9) && F.every(f => f.geometry.type === 'Polygon'), 'القارئُ لوحةٌ على عمودٍ بسيرياله (V39.48)');
+  { const hv = w.m3HoverHtml('nsk-twin', reader.properties); T(/IP /.test(hv) && /IP /.test(w.dtwCardHtml(reader.properties)), 'وعلى القارئ عنوانُه في التلميح والبطاقة (V39.50): ' + hv.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').slice(0, 80)); }
   const card = w.dtwCardHtml(reader.properties);
   T(/RDR-TEST-01/.test(card) && /مُركّب/.test(card) && /فني التجربة/.test(card) && /data-site="/.test(card) && /data-insq="/.test(card), 'وبطاقةُ الجهاز: السيريال والحالة ومن ركّبه، وزرّا صفحة النقطة وتعديل التركيب');
   w.dtwPaint.on = false; w.dtwPaint(); T(data.features.length === 0, 'وزرُّ «الأجهزة» يطفئ الطبقة');
@@ -1607,9 +1608,9 @@ console.log('\n══ ٥٨ · محرّك التوأم الرقمي ══');
   const u = w.teRay(px);
   T(u && u.kind === 's' && u.i === 0, 'والماوسُ فوق الحساس يجده بالشعاع');
   const html = w.teHoverHtml(u);
-  T(/EM320/.test(html) && /لا قراءة بعد/.test(html), 'ويقول طرازَه، والقراءةَ حين تصل ومن غير ادّعاءٍ قبلها');
+  T(/EM320/.test(html) && /🌡/.test(html) && /💧/.test(html) && /(لا قراءة بعد|سجّل سيريال الحساس)/.test(html), 'ويقول طرازَه، ومكانَي الحرارة والرطوبة، والقراءةَ حين تصل ومن غير ادّعاءٍ قبلها (V39.51)');
   w.STATE.iotLive = { [id]:{ at:Date.now(), s:{ [id + '-S01']:{ at:Date.now() - 60000, v:27.4 } } } };
-  T(/27\.4/.test(w.teHoverHtml(u)), 'ومع مصدر القراءات يقول القيمة: ٢٧٫٤');
+  T(/٢٧[٫.]٤°/.test(w.teHoverHtml(u)), 'ومع مصدر القراءات يقول الحرارة: ٢٧٫٤°');
   const ud = devs.find(o => /^rdr/.test(o.userData.code)).userData; T(/RDR-0449/.test(w.teHoverHtml(ud)), 'والقارئُ عند المدخل يقول سيرياله');
   zoom = 16; w.teMaybe(); T(S.layer.root.children.length === 0 && filters['nsk-tent'] === null, 'وبالابتعاد تُزال النماذجُ وتعود الكتل');
   delete w.STATE.iotLive; S.layer = null; S.key = ''; S.ids = [];
@@ -1856,6 +1857,37 @@ console.log('\n══ ٧٠ · المزايا الجديدة في الأدلة �
   T(['sop-move', 'sop-summary', 'sop-3d'].every(k => ids.indexOf(k) > -1), 'إجراءاتُ «تحريك نقطة أو جهاز» و«خلاصة النقطة» و«مراقبة الثلاثي» في الأدلة');
   const mv = w.SOPS.find(s => s.id === 'sop-move'), actors = mv.steps.map(st => st[0]);
   T(actors.indexOf('المهندس') > -1 && actors.indexOf('المشرف') > -1 && actors.indexOf('الفني') > -1 && /الوزارة/.test(mv.rules.join(' ')), 'وكلُّ دورٍ يجد خطوتَه: المهندسُ والمشرفُ والفني، والوزارةُ في القواعد');
+}
+
+/* ── ٧١ · (V39.49) لوحةٌ حيّةٌ واحدة في نافذة النقطة: القارئ من نُسُك، والحساسات والجيت واي من أفاقي برو ── */
+console.log('\n══ ٧١ · اللوحة الحية في نافذة النقطة ══');
+{
+  const camp = w.STATE.sites.find(q => q.type === 'مخيم' && +q.lat && +q.lng && !w.iotOf(q.id));
+  const sensors = [[+camp.lat + 1e-4, +camp.lng], [+camp.lat - 1e-4, +camp.lng]];
+  w.siteOvSet(camp.id, { iot:{ gw:[+camp.lat, +camp.lng], gws:[], sensors, sm:sensors.map((_, i) => ({ id:camp.id + '-S' + (i + 1), status:'مُركّب', serial:'EM' + i })), gm:[{ id:camp.id + '-GW1', status:'مُركّب', serial:'GW0' }], maxM:40, at:Date.now() } });
+  w.STATE.inss[camp.id] = { id:camp.id, status:'مُركّب', parts:{ rdr8:1, cam_pe:2 }, serials:{} };
+  w.IOT.live = { at:Date.now(), v:null, busy:true };   /* no snapshot yet: the rows say so instead of guessing */
+  let h = w.popLiveHtml(camp);
+  T(/الحالة الحية/.test(h) && /الكاميرا/.test(h) && /لا مصدر لحالتها بعد/.test(h) && /بانتظار الجسر/.test(h) && /أفاقي برو/.test(h), 'بلا جسرٍ بعد: الكاميرا «لا مصدر لحالتها بعد» والحساسات «بانتظار الجسر» — لا تخمين');
+  const now = Date.now(); w.IOT.live.v = { at:now, camps:{ [camp.id]:{ at:now, s:{ [camp.id + '-S1']:{ at:now - 60000, v:{ temp:31.5, hum:40 } }, [camp.id + '-S2']:{ at:now - 3 * 3600000, v:{ temp:29 } } }, g:{ [camp.id + '-GW1']:{ at:now - 120000, v:{} } } } } };
+  h = w.popLiveHtml(camp);
+  T(/١ متصل (\/|&#47;) ٢/.test(h) && /٢٩–٣١[٫.]٥°/.test(h) && /١ صامت/.test(h) && /الجيت واي/.test(h) && /🟢 متصل/.test(h), 'ومع الجسر: حساسٌ متصلٌ من اثنين، ومدى الحرارة، وحساسٌ صامت، والجيت واي متصل: ' + h.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').slice(0, 160));
+  T(/data-site|pop-rows/.test(w.popHtml()) || true, 'والنافذةُ تبنيها بلا خطأ');
+}
+
+/* ── ٧٢ · (V39.51) الوقوفُ على الحساس: الحرارةُ والرطوبةُ دائمًا، بقيمتهما أو بسبب غيابهما ── */
+console.log('\n══ ٧٢ · قيمةُ الحساس في التلميح ══');
+{
+  const camp = w.STATE.sites.find(q => q.type === 'مخيم' && +q.lat && +q.lng && !w.iotOf(q.id));
+  const sensors = [[+camp.lat + 1e-4, +camp.lng], [+camp.lat - 1e-4, +camp.lng]];
+  w.siteOvSet(camp.id, { iot:{ gw:[+camp.lat, +camp.lng], gws:[], sensors, sm:[{ id:camp.id + '-S1', status:'مُركّب', serial:'EM320-AAA1' }, { id:camp.id + '-S2', status:'مُركّب' }], gm:[{ id:camp.id + '-GW1', status:'مُركّب' }], maxM:40, at:Date.now() } });
+  w.IOT.live = { at:Date.now(), busy:true, v:null };
+  let h0 = w.m3HoverHtml('nsk-iot-pt', { camp:camp.id, kind:'s', i:0, did:camp.id + '-S1' }), h1 = w.m3HoverHtml('nsk-iot-pt', { camp:camp.id, kind:'s', i:1, did:camp.id + '-S2' });
+  T(/🌡/.test(h0) && /💧/.test(h0) && /بانتظار الجسر/.test(h0) && /سجّل سيريال الحساس/.test(h1), 'بلا قراءة: مكانا الحرارة والرطوبة قائمان، والسببُ مكتوب (بانتظار الجسر · سجّل السيريال)');
+  w.IOT.live.v = { at:Date.now(), units:{ 'em320-aaa1':{ site:camp.id, k:'s', i:0, t:Date.now() - 120000, v:{ temp:33.4, hum:41 } } }, camps:{} };
+  h0 = w.m3HoverHtml('nsk-iot-pt', { camp:camp.id, kind:'s', i:0, did:camp.id + '-S1' });
+  T(/٣٣[٫.]٤°/.test(h0) && /٤١٪/.test(h0) && /منذ ٢ د/.test(h0), 'ومع القراءة: ٣٣٫٤° و٤١٪ ومنذ دقيقتين: ' + h0.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').slice(0, 120));
+  T(/٣٣[٫.]٤°/.test(w.iotDevHtml(camp.id, 's', 0)), 'وبطاقةُ الحساس تقول القيمتين نفسَيهما');
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

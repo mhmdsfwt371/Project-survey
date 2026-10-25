@@ -159,12 +159,25 @@ function m3Init(){
   M3.on('style.load', m3Layers);
   M3.on('moveend', function(){ if (MAP_3D) m3Count(m3Points()); });
   var hit = function(ev){ if (ev.originalEvent && ev.originalEvent._nskIot) return; if (typeof teClick === 'function' && teClick(ev)) return;   /* (V39.24) the model under the tap first */ var f = ev.features && ev.features[0]; if (f && f.properties && f.properties.id) m3Click(f.properties.id, ev); };
-  M3.on('click', 'nsk-pts', hit); M3.on('click', 'nsk-cols', hit);
+  /* (V39.50) owner: «لما باضغط على حساس بيفتحلي بوب أب المخيم معاه — أنا عاوز الحاجة بس اللي باضغط عليها». Every layer had
+     its own click, so one tap opened the sensor and the camp (or a neighbouring camp) under it. One handler now picks, like
+     the hover: a model under the tap, else a sensor or gateway, else a device, else the point, else the camp — and only it. */
+  M3.on('click', function(ev){
+    if (!MAP_3D || (ev.originalEvent && ev.originalEvent._nskIot)) return;
+    if (typeof teClick === 'function' && teClick(ev)) return;
+    var lys = ['nsk-iot-pt', 'nsk-iot', 'nsk-twin', 'nsk-pts', 'nsk-cols'].filter(function(l){ return M3.getLayer(l); }), fs = [];
+    try { fs = M3.queryRenderedFeatures([[ev.point.x - 4, ev.point.y - 4], [ev.point.x + 4, ev.point.y + 4]], { layers:lys }); } catch (eQ){ LS_ERR = eQ; }
+    var best = null; lys.some(function(l){ best = fs.filter(function(f){ return f.layer && f.layer.id === l; })[0]; return !!best; });
+    if (!best) return;
+    var L0 = best.layer.id;
+    if (L0 === 'nsk-iot' || L0 === 'nsk-iot-pt'){ if (typeof m3IotClick === 'function') m3IotClick(best, ev); }
+    else if (L0 === 'nsk-twin'){ if (typeof dtwClick === 'function') dtwClick(best, ev); }
+    else hit({ features:[best], lngLat:ev.lngLat, point:ev.point, originalEvent:ev.originalEvent, preventDefault:function(){ try { ev.preventDefault(); } catch (e){ LS_ERR = e; } } });
+    if (ev.originalEvent) ev.originalEvent._nskIot = true;
+  });
   /* (V39.21) a double tap on a camp walks the camera in */
   M3.on('dblclick', 'nsk-cols', function(ev){ var f = ev.features && ev.features[0]; if (f && f.properties && f.properties.id && f.properties.foot){ ev.preventDefault(); if (m3Enter(f.properties.id) && typeof teWalkOn === 'function') teWalkOn(); } });
   /* (V39.11) the twin's devices take the tap first; a tap on the ground in the editor moves or adds the selected device */
-  M3.on('click', 'nsk-iot', function(ev){ var f = ev.features && ev.features[0]; if (f && typeof m3IotClick === 'function') m3IotClick(f, ev); });
-  M3.on('click', 'nsk-iot-pt', function(ev){ var f = ev.features && ev.features[0]; if (f && typeof m3IotClick === 'function') m3IotClick(f, ev); });
   /* (V39.17) owner: hovering the mouse shows the value — a tooltip follows the mouse over sensors, gateways, devices and points */
   /* (V39.48) owner: «لما أقف على الدبوس ألاقي الحساس هو اللي يظهر» — one handler for all layers, by priority: a sensor pin,
      then a device at the entrance, then the point, and the camp only when the mouse is on none of them. (Per-layer handlers
@@ -188,7 +201,6 @@ function m3Init(){
     var zb = M3.getZoom() >= 18, U = m3uiState(); if (zb !== U.band){ U.band = zb; if (typeof m3Paint === 'function') m3Paint(); } } });
   /* (V39.24) the twin engine's models: hover anywhere (a device by the entrance may stand outside every layer), tap outside the layers */
   M3.on('mousemove', function(ev){ if (MAP_3D) teHit(ev); });
-  M3.on('click', function(ev){ if (MAP_3D) teClick(ev); });
   M3.on('mouseenter', 'nsk-iot', function(){ M3.getCanvas().style.cursor = 'pointer'; });
   M3.on('mouseleave', 'nsk-iot', function(){ M3.getCanvas().style.cursor = ''; });
   M3.on('mouseenter', 'nsk-pts', function(){ M3.getCanvas().style.cursor = 'pointer'; });
@@ -214,9 +226,10 @@ function m3HoverHtml(layer, p){
     return '<b>' + esc(p.kind === 's' ? t('حساس') : t('جيت واي')) + ' <span class="num">' + esc(p.did || m.id || '') + '</span></b>'
       + (m.model ? ' \u00b7 ' + esc(m.model) : '') + (m.tag ? ' \u00b7 ' + esc(t('العلامة')) + ' ' + esc(m.tag) : '')   /* (V39.22) */
       + (m.room ? ' \u00b7 ' + esc(t('الغرفة')) + ' ' + esc(m.room) : '') + ' \u00b7 ' + esc(t(m.status || 'مخطط')) + (m.serial ? '<br><span class="num">' + esc(m.serial) + '</span>' : '')
-      + (typeof liveIotLine === 'function' ? liveIotLine(m.serial) : '');   /* (V39.48) the live reading, when the bridge has one */
+      + (p.kind === 's' && typeof iotValHtml === 'function' ? iotValHtml(p.camp, +p.i) : (typeof liveIotLine === 'function' ? liveIotLine(m.serial) : ''));   /* (V39.51) a sensor: temperature and humidity */
   }
-  if (layer === 'nsk-twin') return '<b>' + esc(t(itemName(p.code))) + '</b>' + (p.serial ? ' \u00b7 <span class="num">' + esc(p.serial) + '</span>' : '') + '<br><span class="hint" style="margin:0">' + esc(p.site) + '</span>';
+  if (layer === 'nsk-twin'){ var xs = siteFind(p.site), kk = p.kind || (typeof dtwKinds === 'function' ? dtwKinds(p.code).k : '');   /* (V39.50) each device with its own address */
+    return '<b>' + esc(t(p.code === 'gw' ? 'جيت واي' : itemName(p.code))) + '</b><br><span class="num" dir="ltr">' + esc(typeof dtwIpText === 'function' ? dtwIpText(xs, kk, p.i) : '') + '</span>' + (p.serial ? '<br><span class="num">' + esc(p.serial) + '</span>' : '') + '<br><span class="hint" style="margin:0">' + esc(xs ? (xs.name || xs.id) : p.site) + '</span>'; }
   var x = siteFind(p.id); if (!x) return '';
   return '<b>' + esc(x.name || x.id) + '</b><br><span class="hint" style="margin:0">' + esc(typeof svLabel === 'function' ? svLabel(x) : '') + '</span>'
     + (liveState().on ? '<br>' + esc(liveTextOf(x)) : '');   /* (V39.20) */

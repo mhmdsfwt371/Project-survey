@@ -40,9 +40,10 @@ const T = (c, n) => { console.log((c ? '  ✓ ' : '  ✗ ') + n);
  const chip=d.querySelector('[data-m3]'); T(!!chip && chip.textContent.includes('٣د'), 'زرُّ «٣د» على شريط الخريطة: '+(chip&&chip.textContent.trim()));
  T(!!d.getElementById('m3Box') && d.getElementById('m3Box').hidden, 'حاويةُ الثلاثي موجودةٌ ومخفيةٌ في المسطّح');
  // محرّك زائف
- const calls={sources:{},layers:[],events:{},jump:null,style:0};
+ const calls={ all:{},sources:{},layers:[],events:{},jump:null,style:0};
  w.maplibregl={ Map:function(o){ this.o=o; calls.style++; const self=this;
-    this.on=(ev,a,b)=>{ const fn=b||a; calls.events[ev+(b?':'+a:'')]=fn; if(ev==='style.load') setTimeout(()=>fn(),0); };
+    this.on=(ev,a,b)=>{ const fn=b||a, k=ev+(b?':'+a:''); calls.events[k]=fn; (calls.all[k]=calls.all[k]||[]).push(fn); if(ev==='style.load') setTimeout(()=>fn(),0); };
+    this.getLayer=id=>calls.layers.indexOf(id)>-1?{id}:null; this.queryRenderedFeatures=()=>calls.qrf||[];   /* (V39.50) the one priority click asks the layers */
     this.addControl=()=>{}; this.getSource=id=>calls.sources[id]; this.addSource=(id,src)=>{ calls.sources[id]={ data:src.data, setData:(x)=>{calls.sources[id].data=x;} }; };
     this.addLayer=l=>calls.layers.push(l.id); this.getStyle=()=>({layers:[]}); this.setPaintProperty=()=>{}; this.setTerrain=()=>{}; this.resize=()=>{};
     this.jumpTo=x=>calls.jump=x; this.flyTo=x=>calls.jump=x; this.getCenter=()=>({lng:39.9,lat:21.4}); this.getZoom=()=>15; this.getBounds=()=>({contains:()=>true}); this.getCanvas=()=>({style:{}}); this.setStyle=()=>{calls.style++; setTimeout(()=>calls.events['style.load'](),0);}; },
@@ -78,7 +79,7 @@ T(other && !calls.sources.nskc.data.features.some(f=>f.properties.id===other.pro
  const BY2={}; w.layerFiltered().forEach(x=>BY2[x.id]=x); T(calls.sources.nsk.data.features.every(f=>f.properties.color===w.mapColorOf(BY2[f.properties.id])), 'وألوانُ طبقة التركيب تُطابق ('+calls.sources.nsk.data.features.length+')');
  w.FIELD_MODE='survey'; w.mapPaint();
  // النقرة تفتح البطاقةَ نفسَها
- const anyId=calls.sources.nsk.data.features[0].properties.id; calls.events['click:nsk-pts']({features:[{properties:{id:anyId}}]}); await new Promise(r=>setTimeout(r,100));
+ const anyId=calls.sources.nsk.data.features[0].properties.id; calls.qrf=[{ layer:{ id:'nsk-pts' }, properties:{ id:anyId } }]; const was3d=w.MAP_3D; w.MAP_3D=true; (calls.all['click']||[]).forEach(fn=>fn({ point:{ x:10, y:10 }, lngLat:{ lng:39.9, lat:21.4 }, originalEvent:{} })); w.MAP_3D=was3d; calls.qrf=null; await new Promise(r=>setTimeout(r,100));   /* (V39.50) one click handler, by priority */
  T(w.POP_OPEN===true && w.POP_SITE===anyId, 'النقرةُ في الثلاثيّ تفتح بطاقةَ النقطة: '+w.POP_SITE);
  w.POP_OPEN=false;
  // القمر الصناعي يتبع

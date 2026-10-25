@@ -199,6 +199,7 @@ function siteEditHtml(x){
     + fld('عنوان الراوتر', '<input id="seIpRtr" dir="ltr" inputmode="decimal" placeholder="' + esc(siteNetBase(x) ? siteNetBase(x) + '.1' : '') + '" value="' + esc(x.ipRtr || '') + '">')
     + fld('عنوان القارئ', '<input id="seIpRdr" dir="ltr" inputmode="decimal" placeholder="' + esc(siteNetBase(x) ? siteNetBase(x) + '.2' : '') + '" value="' + esc(x.ipRdr || '') + '">')
     + fld('عنوان الكاميرا', '<input id="seIpCam" dir="ltr" inputmode="decimal" placeholder="' + esc(siteNetBase(x) ? siteNetBase(x) + '.3' : '') + '" value="' + esc(x.ipCam || '') + '">')
+    + fld('عنوان الجيت واي', '<input id="seIpGw" dir="ltr" inputmode="decimal" value="' + esc(x.ipGw || '') + '">')   /* (V39.50) */
     + '</div>'
     + '<p class="hint" style="margin:0 0 8px">' + esc(t('عنوانٌ فارغٌ يُشتقّ من الشبكة: ‎.1 راوتر و‎.2 قارئ و‎.3 كاميرا.')) + '</p>'
     + (function(){

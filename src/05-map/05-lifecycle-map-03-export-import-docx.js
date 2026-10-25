@@ -508,10 +508,10 @@ var SHEETS = {
     return out;
   },
   ips: function(){
-    var out = [['رقم الشاخص / الاسم','معرّف الموقع','الموقع','المشعر','بادئة الشبكة','الراوتر','القارئ','الكاميرا']];
+    var out = [['رقم الشاخص / الاسم','معرّف الموقع','الموقع','المشعر','بادئة الشبكة','الراوتر','القارئ','الكاميرا','الجيت واي']];
     (STATE.sites || []).forEach(function(x){
-      if (!x.net && !x.ipRtr && !x.ipRdr && !x.ipCam) return;
-      out.push([siteKey(x), x.id, x.name, x.zone, x.net || '', x.ipRtr || '', x.ipRdr || '', x.ipCam || '']);
+      if (!x.net && !x.ipRtr && !x.ipRdr && !x.ipCam && !x.ipGw) return;
+      out.push([siteKey(x), x.id, x.name, x.zone, x.net || '', x.ipRtr || '', x.ipRdr || '', x.ipCam || '', x.ipGw || '']);
     });
     return out;
   },

@@ -85,9 +85,9 @@ function siteEditSave(id){
   var ipOk = function(v){ return !v || /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.test(v) && v.split('.').every(function(q){ return +q <= 255; }); };
   var net = g('seNet').replace(/\/\d+$/, '').replace(/\.0$/, '').replace(/\.+$/, '');
   if (net && !(/^\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(net) && net.split('.').every(function(q){ return +q <= 255; }))){ toast(t('الشبكةُ بصيغة 172.16.230 — ثلاثة أجزاء')); return false; }
-  var ips = { ipRtr:g('seIpRtr'), ipRdr:g('seIpRdr'), ipCam:g('seIpCam') };
-  if (!ipOk(ips.ipRtr) || !ipOk(ips.ipRdr) || !ipOk(ips.ipCam)){ toast(t('عنوانٌ بصيغةٍ غيرِ صحيحة — مثال 172.16.230.2')); return false; }
-  if (document.getElementById('seNet')){ patch.net = net; patch.ipRtr = ips.ipRtr; patch.ipRdr = ips.ipRdr; patch.ipCam = ips.ipCam; }
+  var ips = { ipRtr:g('seIpRtr'), ipRdr:g('seIpRdr'), ipCam:g('seIpCam'), ipGw:document.getElementById('seIpGw') ? g('seIpGw') : null };
+  if (!ipOk(ips.ipRtr) || !ipOk(ips.ipRdr) || !ipOk(ips.ipCam) || (ips.ipGw !== null && !ipOk(ips.ipGw))){ toast(t('عنوانٌ بصيغةٍ غيرِ صحيحة — مثال 172.16.230.2')); return false; }
+  if (document.getElementById('seNet')){ patch.net = net; patch.ipRtr = ips.ipRtr; patch.ipRdr = ips.ipRdr; patch.ipCam = ips.ipCam; if (ips.ipGw !== null) patch.ipGw = ips.ipGw; }
   if (document.getElementById('seS47' + s47Fields()[0][0])){
     var base47 = s47Of(x.id) || {}, o47 = {}, any = false;
     s47Fields().forEach(function(f){ var v = g('seS47' + f[0]); if (v !== String(base47[f[0]] == null ? '' : base47[f[0]])){ o47[f[0]] = v; any = true; } });

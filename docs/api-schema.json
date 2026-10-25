@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V39.48",
+  "app_version": "V39.51",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2310,7 +2310,10 @@
   "V39.45": "rules-live: zz-rulecheck بدل المعرّف المحجوز (__…__)، وتجهيز السجلين في try/catch بتحذير وتخطّي صفّيهما (RC_OK)",
   "V39.46": "rules-live: قسم التشخيص أُزيل بعد الحكم (لا NaN في ٢٠١٣ زيارة و٦٥ تركيبًا؛ الطريقتان على zz-rulecheck: الشرط المستحيل منع والكتابة الحقيقية سماح) · القواعد القارئة للسجل المخزَّن تُختبَر بكتابة حقيقية على سجلي الاختبار · docs/review-1448.md وdocs/runbooks.md محدّثان",
   "V39.47": "scripts/afaqy-pro.mjs + .github/workflows/afaqy-pro.yml (كل ١٠ دقائق ويدوي): auth/login ثم units/lists بإسقاط basic وlast_update وsensors بصفحات ١٠٠٠ — قراءة فقط · الربط: sites/<id>.iot.sm|gm[i].serial مع imei أو device_serial أو device_gateway أو الاسم · المخرَج live/iot {at,n,total,planned,units:{<serial>:{site,k,i,u,nm,t,v:{temp,hum,bat,rssi}}}} · القواعد: iotlive/{camp} القائمة منذ V39.20 (قراءة لـok() وكتابة false) — بلا قاعدة جديدة · التطبيق: liveIotLoad (عند ظهور طبقة الحساسات، ذاكرة ١٠ دقائق، الحالة على IOT.live) وliveIotLine في بطاقة الحساس · بلا أسرار يخرج بهدوء، وأول تشغيل يكتب أسماء الحقول فقط في الملخص",
-  "V39.48": "map3d: معالج mousemove واحد بأولوية nsk-iot-pt > nsk-iot > nsk-twin > nsk-pts > nsk-cols عبر queryRenderedFeatures بمربع ٦ بكسل، ولا يمسّ تلميح نماذج three.js (teState().hover) · m3HoverHtml للحساس يضمّ liveIotLine · dtwRect/dtwParts: أجزاء بأبعاد حقيقية (base/h/color/part) لكل وحدة؛ لون القارئ الحي على لوحته (K.live) · m3IotFeatures: الجيت واي عمود+كابينة+هوائي+رأس بلون الحالة ومنارة ٠٫٥ م فوق الأسقف · السيناريوهات ٥٤ وdtw والمنارات محدّثة"
+  "V39.48": "map3d: معالج mousemove واحد بأولوية nsk-iot-pt > nsk-iot > nsk-twin > nsk-pts > nsk-cols عبر queryRenderedFeatures بمربع ٦ بكسل، ولا يمسّ تلميح نماذج three.js (teState().hover) · m3HoverHtml للحساس يضمّ liveIotLine · dtwRect/dtwParts: أجزاء بأبعاد حقيقية (base/h/color/part) لكل وحدة؛ لون القارئ الحي على لوحته (K.live) · m3IotFeatures: الجيت واي عمود+كابينة+هوائي+رأس بلون الحالة ومنارة ٠٫٥ م فوق الأسقف · السيناريوهات ٥٤ وdtw والمنارات محدّثة",
+  "V39.49": "popLiveHtml(s) بعد popFieldHtml في نافذة النقطة: liveOf(x) للقارئ (نُسُك)، عدّ cam* من inss.parts للكاميرا مع نص «لا مصدر لحالتها بعد»، IOT.live.v.camps[s.id] من iotlive/_all للحساسات (متصل < ٢٠ دقيقة، مدى temp، الصامت) والجيت واي؛ liveIotLoad عند فتح نافذة مخيم له خطة · سيناريو ٧١ · ١٢ ترجمة",
+  "V39.50": "dtwUnits (reader/camera/router + بوابة المخيم gw من خطة الحساسات حين يُعرَف المدخل) وdtwSpot (صف ٢٫٤ م شرق المدخل ما لم يُسحب) وdtwIp/dtwIpText (ipRtr/ipRdr/ipCam/ipGw، وإلا المشتق .1/.2/.3 بعلامة «مشتق»، والجيت واي «لم يُسجَّل») · dtwChipsPaint: علامات HTML ثابتة الحجم من تقريب ١٦ لأقرب ٤٠ مدخلًا، لكل أيقونة تلميحها ونقرها · m3IotFeatures: الجيت واي الأول يقف مع المدخل (dtwGwAtGate) · معالج نقر واحد في المجسّم بالأولوية (نموذج three.js ← حساس/جيت واي ← جهاز ← نقطة ← مخيم) بدل معالجات الطبقات · ipGw في نموذج تعديل الموقع وحفظه وتصدير العناوين ومسحها · السيناريوهات محدّثة",
+  "V39.51": "iotValHtml(camp, i): الحرارة والرطوبة دائمًا — من liveIotOf(serial) وإلا liveSensor(camp, did) (كائن أو رقم قديم)، بعمرها ونقطة الحداثة والبطارية، أو سبب الغياب؛ يستدعي liveIotLoad · مستعمَل في m3HoverHtml للحساس وفي تلميح نماذج three.js (عبر m3HoverHtml) وفي بطاقة الحساس · سيناريو ٧٢ وسيناريو التوأم محدّثان"
   },
   "map_and_geolocation": {
     "tile_layers": {

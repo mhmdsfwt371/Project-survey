@@ -104,7 +104,7 @@ function popHtml(){
     +   '</div>'
 
     /* (V39.27) the mode's summary first — then what the field recorded, folded, in the mode's own form */
-    + popSumHtml(s) + popFieldHtml(s)
+    + popSumHtml(s) + popFieldHtml(s) + popLiveHtml(s)   /* (V39.49) one live panel per point: Nusuk and AFAQY PRO */
 
     + '<div class="pop-rows">'
     +   kv('الشاخص', s.sign ? '<span class="num">' + esc(s.sign) + '</span>' : '')
@@ -322,6 +322,28 @@ function popSumHtml(s){
 /* (V39.27) what the field recorded for the mode, folded under the summary: the visit's answers, its challenges and photos in
    survey; the installation's parts, serials and photos in installation; the dismantling's state in dismantling — and every
    text written about the point, by its source and writer, in all three. */
+/* ═══ (V39.49) owner: «لوحة حية واحدة لكل نقطة» — the reader's pulse from the Nusuk card system, the camera (no status
+   source yet — said plainly, not guessed), and the sensors and gateway from the AFAQY PRO bridge (iotlive/_all). ═══ */
+function popLiveHtml(s){
+  var rows = [], p = typeof liveOf === 'function' ? liveOf(s) : null, ins = STATE.inss && STATE.inss[s.id];
+  var nCam = ins && ins.parts ? Object.keys(ins.parts).filter(function(c){ return /^cam/.test(c); }).reduce(function(a, c){ return a + (+ins.parts[c] || 0); }, 0) : 0;
+  if (p && p.link) rows.push(['\u{1F4E1} ' + t('القارئ'), (p.on ? '\u{1F7E2} ' + t('متصل') : '\u{1F534} ' + t('غير متصل')) + (p.at ? ' \u00b7 ' + t('آخر قراءة') + ' ' + pilotAgo(p.at) : ''), t('نظام البطاقات')]);
+  if (nCam) rows.push(['\u{1F4F7} ' + t('الكاميرا'), nm(nCam) + ' \u00b7 ' + t('لا مصدر لحالتها بعد'), t('نظام البطاقات')]);
+  var c = typeof iotOf === 'function' ? iotOf(s.id) : null;
+  if (c){
+    if (typeof liveIotLoad === 'function') liveIotLoad();   /* at most once every ten minutes */
+    var L = typeof IOT === 'object' && IOT.live && IOT.live.v, C = L && L.camps && L.camps[s.id], now = Date.now();
+    var tot = (c.sensors || []).length, on = 0, off = 0, temps = [];
+    if (C && C.s) Object.keys(C.s).forEach(function(k){ var r = C.s[k] || {}; if (r.at && now - r.at < 1200000) on++; else off++; if (r.v && r.v.temp != null) temps.push(+r.v.temp); });
+    var gw = C && C.g ? Object.keys(C.g).map(function(k){ return C.g[k] || {}; }) : [], gwOn = gw.filter(function(r){ return r.at && now - r.at < 1200000; }).length;
+    rows.push(['\u{1F321} ' + t('الحساسات'), C ? nm(on) + ' ' + t('متصل') + ' / ' + nm(tot) + (temps.length ? ' \u00b7 ' + nm(Math.min.apply(null, temps)) + '\u2013' + nm(Math.max.apply(null, temps)) + '\u00b0' : '') + (off ? ' \u00b7 ' + nm(off) + ' ' + t('صامت') : '')
+      : nm(tot) + ' ' + t('مخطَّطة') + ' \u00b7 ' + t('بانتظار الجسر'), t('أفاقي برو')]);
+    rows.push(['\u{1F4F6} ' + t('الجيت واي'), C ? (gwOn ? '\u{1F7E2} ' + t('متصل') : '\u{1F534} ' + t('غير متصل')) : t('بانتظار الجسر'), t('أفاقي برو')]);
+  }
+  if (!rows.length) return '';
+  return '<div class="hint" style="margin:10px 0 4px;font-weight:700">\u26A1 ' + esc(t('الحالة الحية')) + '</div><div class="pop-rows">'
+    + rows.map(function(r){ return '<div><span class="k">' + esc(r[0]) + '</span><span>' + esc(r[1]) + ' <span class="hint" style="margin:0">' + esc(r[2]) + '</span></span></div>'; }).join('') + '</div>';
+}
 function popFieldHtml(s){
   var ph = briefPhase(), r = briefRec(s.id, ph); if (!r) return '';
   var row = function(k, v){ return v ? '<div><span class="k">' + esc(t(k)) + '</span><span>' + v + '</span></div>' : ''; };
