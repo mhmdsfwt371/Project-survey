@@ -64,13 +64,15 @@ async function readProbe(role, col){
   const j = await r.json().catch(() => ({})); const e = Array.isArray(j) ? j.find(x => x.error) : j.error ? j : null;
   return e ? ((e.error || {}).status === 'PERMISSION_DENIED' ? 'منع' : (e.error || {}).status) : 'سماح';
 }
-/* (V39.44) سجلّا اختبارٍ مخصّصان (recs/__rulecheck__ وinss/__rulecheck__) — محذوفان دائمًا (deleted:true) فلا يظهران في أي شاشة.
+/* (V39.44) سجلّا اختبارٍ مخصّصان (recs/zz-rulecheck وinss/zz-rulecheck — المعرّفاتُ بين شرطتين سفليتين محجوزةٌ في القاعدة، V39.45) — محذوفان دائمًا (deleted:true) فلا يظهران في أي شاشة.
    التشخيص أثبت أن الحقول كلها سليمة (لا NaN) والوزارة تقرأ — والقاعدة التي تقرأ السجلَّ المخزَّن (الخلاصة وحدها) هي وحدها
    ما يخالف؛ فتُختبَر بكتابةٍ حقيقيةٍ على سجلّ الاختبار بشرط «موجود» بدل الشرط المستحيل: إن سُمح كُتب حقلُ الخلاصة على سجلّ
    الاختبار وحده، وإن مُنع فالمنعُ حقيقيٌّ يلقاه مندوبُ الوزارة في التطبيق. */
-const RC_DOC = { site:'__rulecheck__', test:true, deleted:true, review:'pending', bst:'', brief:'', _at:Date.now() };
-await db.collection('recs').doc('__rulecheck__').set(RC_DOC, { merge:true });
-await db.collection('inss').doc('__rulecheck__').set(Object.assign({}, RC_DOC, { status:'مُركّب' }), { merge:true });
+const RC_DOC = { site:'zz-rulecheck', test:true, deleted:true, review:'pending', bst:'', brief:'', _at:Date.now() };
+let RC_OK = true;   /* (V39.45) preparing the test records is not a rules verdict: a failure here is a warning and their rows are skipped */
+try { await db.collection('recs').doc('zz-rulecheck').set(RC_DOC, { merge:true });
+      await db.collection('inss').doc('zz-rulecheck').set(Object.assign({}, RC_DOC, { status:'مُركّب' }), { merge:true }); }
+catch (e){ RC_OK = false; console.log('::warning title=rules-live::تعذّر تجهيزُ سجلَّي الاختبار — ' + String(e.message).slice(0, 160)); }
 async function realProbe(role, path, fields){
   const qs = Object.keys(fields).map(k => 'updateMask.fieldPaths=' + encodeURIComponent(k)).join('&') + '&currentDocument.exists=true';
   const r = await fetch('https://firestore.googleapis.com/v1/projects/' + PROJECT + '/databases/(default)/documents/' + path + '?' + qs, { method:'PATCH',
@@ -85,8 +87,8 @@ if (ctl !== 'منع'){ say('⚠ الطريقةُ لا تميّز السماحَ 
 else {
   const CASES = [
     ['تعديلُ زيارةٍ تنتظر الاعتماد', r => writeProbe(r, 'recs/' + recPending, { note:'فحص' }), { engineer:'سماح', supervisor:'سماح', tech:'سماح', viewer:'منع', exec:'منع' }, recPending],
-    ['خلاصةُ الزيارة — كتابةٌ حقيقيةٌ على سجلّ الاختبار', r => realProbe(r, 'recs/__rulecheck__', { bst:'ملاحظة' }), { viewer:'سماح', exec:'منع' }, 'x'],
-    ['خلاصةُ التركيب — كتابةٌ حقيقيةٌ على سجلّ الاختبار', r => realProbe(r, 'inss/__rulecheck__', { bst:'ملاحظة' }), { viewer:'سماح', exec:'منع' }, 'x'],
+    ['خلاصةُ الزيارة — كتابةٌ حقيقيةٌ على سجلّ الاختبار', r => realProbe(r, 'recs/zz-rulecheck', { bst:'ملاحظة' }), { viewer:'سماح', exec:'منع' }, RC_OK ? 'x' : ''],
+    ['خلاصةُ التركيب — كتابةٌ حقيقيةٌ على سجلّ الاختبار', r => realProbe(r, 'inss/zz-rulecheck', { bst:'ملاحظة' }), { viewer:'سماح', exec:'منع' }, RC_OK ? 'x' : ''],
     ['نقلُ موقعٍ (تجاوز السجل)', r => writeProbe(r, 'sites/' + siteAny, { movedBy:'فحص' }), { engineer:'سماح', supervisor:'سماح', tech:'سماح', viewer:'منع', exec:'منع' }, siteAny],
     ['قراءةُ المشتريات', r => readProbe(r, 'purchases'), { engineer:'سماح', supervisor:'منع', tech:'منع', viewer:'منع', exec:'منع' }, 'x']
   ];
@@ -127,7 +129,7 @@ try {
     diag('الزيارةُ المختبَرة: حقولٌ غيرُ منتهية = ' + (nonFinite(rd).join('، ') || 'لا شيء') + ' · قراءةُ الوزارة لها: ' + await getProbe('viewer', 'recs/' + recPending));
   }
   if (insAny){ const idoc = (await db.collection('inss').doc(insAny).get()).data() || {}; diag('التركيبُ المختبَر: حقولٌ غيرُ منتهية = ' + (nonFinite(idoc).join('، ') || 'لا شيء')); }
-  diag('الطريقةُ نفسُها على سجلّ الاختبار (شرطٌ مستحيل): خلاصةُ الوزارة ← ' + await writeProbe('viewer', 'recs/__rulecheck__', { bst:'ملاحظة' }) + ' — إن كانت «منع» والكتابةُ الحقيقيةُ «سماح» فالشرطُ المستحيلُ لا يصلح للقواعد التي تقرأ السجلّ المخزَّن');
+  if (RC_OK) diag('الطريقةُ نفسُها على سجلّ الاختبار (شرطٌ مستحيل): خلاصةُ الوزارة ← ' + await writeProbe('viewer', 'recs/zz-rulecheck', { bst:'ملاحظة' }) + ' — إن كانت «منع» والكتابةُ الحقيقيةُ «سماح» فالشرطُ المستحيلُ لا يصلح للقواعد التي تقرأ السجلّ المخزَّن');
   for (const col of ['recs', 'inss']){
     const snap = await db.collection(col).get(); let dirty = 0, clean = ''; const keys = {};
     snap.forEach(d => { const nf = nonFinite(d.data()); if (nf.length){ dirty++; nf.forEach(k => { const kk = k.replace(/\[\d+\]/g, '[]'); keys[kk] = (keys[kk] || 0) + 1; }); } else if (!clean) clean = d.id; });
@@ -137,7 +139,7 @@ try {
   }
 } catch (e){ diag('تعذّر التشخيص: ' + String(e.message).slice(0, 150)); }
 
-await db.collection('recs').doc('__rulecheck__').set(RC_DOC, { merge:true }); await db.collection('inss').doc('__rulecheck__').set(Object.assign({}, RC_DOC, { status:'مُركّب' }), { merge:true });
+if (RC_OK) try { await db.collection('recs').doc('zz-rulecheck').set(RC_DOC, { merge:true }); await db.collection('inss').doc('zz-rulecheck').set(Object.assign({}, RC_DOC, { status:'مُركّب' }), { merge:true }); } catch (e){}
 /* ٤) تعطيلُ الحسابات المؤقّتة */
 for (const r of ROLES){
   try { await auth.updateUser('rc-' + r, { disabled:true }); } catch (e){}
