@@ -395,7 +395,8 @@ jobs:
   shards:
     # (خطةُ التسليم) الكاملُ ليلًا أو عند الطلب — وعلى الدفعة تعمل الطبقةُ السريعة
     # (V31.7) الجدولةُ في GitHub تعمل على الفرع الافتراضيِّ (main) لا التجربة — فالليليُّ يفحص ما على الأجهزة فعلًا
-    if: github.event_name == 'schedule' || (github.ref == 'refs/heads/staging' && github.event_name == 'workflow_dispatch')
+    # (V39.42) the full list runs on every staging push too: an audit outside the fast tier let V39.40 reach production red
+    if: github.event_name == 'schedule' || (github.ref == 'refs/heads/staging' && (github.event_name == 'workflow_dispatch' || github.event_name == 'push'))
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -497,7 +498,7 @@ jobs:
           name: gate-fast
           path: gate/fast.txt
   real:
-    needs: [check, shards, fast]
+    needs: [check, fast]   # (V39.42) in parallel with the shards — promote waits for both
     if: ${{ !failure() && !cancelled() }}
     permissions:
       contents: write
@@ -523,7 +524,7 @@ jobs:
           merge-multiple: true
       - name: البوابة — ستُّ علاماتٍ خضراء أو لا ترقية
         run: |
-          need="fast browser rules"; bad=""   # (خطةُ التسليم) الطبقةُ السريعةُ والمتصفّحُ والمحاكي على الدفعة — والشرائحُ الأربعُ ليلًا
+          need="fast browser rules shard-1 shard-2 shard-3 shard-4"; bad=""   # (V39.42) and the four shards: the whole list before any promotion   # (خطةُ التسليم) الطبقةُ السريعةُ والمتصفّحُ والمحاكي على الدفعة — والشرائحُ الأربعُ ليلًا
           for n in $need; do
             f="gates/$n.txt"
             if [ ! -f "$f" ] || [ "$(head -1 "$f")" != "PASS" ]; then bad="$bad $n"; fi

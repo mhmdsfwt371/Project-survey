@@ -107,7 +107,7 @@ console.log('\n══ ٤ · السيرُ يربط النبضَ بالبريد ب
   T(!/issues: write/.test(ry) && /sysreport-write\.mjs report/.test(ry) && !/PUBLISH/.test(ry) && !/\/issues`/.test(rs),
     'وتقريرُ النظام كذلك: إلى القاعدة لا إلى بلاغ');
   const sw = readFileSync('scripts/sysreport-write.mjs', 'utf8');
-  T(/doc\('sysreport'\)\.set\(/.test(sw) && /merge: true/.test(sw) && /\['pulse', 'report'\]/.test(sw), 'والكاتبُ واحدٌ للاثنين بدمجٍ لا كتابةٍ فوق');
+  T(/doc\('sysreport'\)\.set\(/.test(sw) && /merge: true/.test(sw) && /\['pulse', 'report'(, 'rules')?\]/.test(sw), 'والكاتبُ واحدٌ للاثنين بدمجٍ لا كتابةٍ فوق');
   const rl = readFileSync('firestore.rules', 'utf8');
   T(/match \/settings\/sysreport \{ allow read: if mgr\(\) \|\| \(ok\(\) && role\(\) == 'exec'\); allow write: if false; \}/.test(rl)
     && /id != 'contacts' && id != 'cotel' && id != 'sysreport'( && id != '\w+')*;/.test(rl) && /pm\('settings', 'w', mgr\(\)\) && id != 'sysreport'/.test(rl),
