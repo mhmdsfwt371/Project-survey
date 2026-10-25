@@ -1936,8 +1936,27 @@ console.log('\n══ ٧٥ · التعارضات والترددية ══');
   T(!!nb && nb.d < 25, 'ونقطةٌ جديدةٌ على مخيمٍ مسجَّلٍ يُسأل عنها قبل الحفظ: ' + (nb ? nb.x.id + ' · ' + Math.round(nb.d) + ' م' : '—'));
   const nT = w.STATE.sites.filter(w.siteTard).length, aT = w.STATE.sites.filter(x => w.siteTard(x) && x.zone === 'عرفات' && x.type === 'مخيم').length;
   T(nT === 191 && aT === 191, 'والترددية: ١٩١ مخيمًا كلُّها في عرفات (' + nT + ')');
-  w.FILT.tard = 'tard'; const pass1 = w.STATE.sites.filter(x => w.filtPass(x)).length; w.FILT.tard = 'norm'; const pass2 = w.STATE.sites.filter(x => w.filtPass(x)).length; w.FILT.tard = '';
-  T(pass1 === 191 && pass2 === w.STATE.sites.length - 191 && w.filtOn() === false, 'وفلترُها: «ترددي» ١٩١ و«عادي» الباقي');
+  const camps = w.STATE.sites.filter(x => /^مخيمات/.test(w.taxOf(x).t)).length;
+  w.FILT.type = 'مخيمات ترددية'; const pass1 = w.STATE.sites.filter(x => w.filtPass(x)).length; w.FILT.type = 'مخيمات'; const pass2 = w.STATE.sites.filter(x => w.filtPass(x)).length; w.FILT.type = '';
+  const fh = w.catBar(true);
+  T(/نوع النقطة/.test(fh) && /مخيمات عادية/.test(fh) && /مخيمات ترددية/.test(fh) && !/الترددية/.test(fh.replace(/مخيمات ترددية/g, '')), 'وفي التصفية قسمُ «نوع النقطة» فيه «مخيمات عادية» و«مخيمات ترددية» — بلا قسم «الترددية» (V39.57)');
+  T(pass1 === 191 && pass2 === camps - 191 && w.TAX_T.indexOf('مخيمات ترددية') === 1, 'و«مخيمات ترددية» نوعٌ في فلتر النوع بجوار «مخيمات» (V39.55): ١٩١ ترددي و' + pass2 + ' عادي');
+}
+
+/* ── ٧٦ · (V39.56) نوعُ المخيم في نموذج المسح: ترددي أو عادي، والحاجزُ التنظيميُّ بعدده ── */
+console.log('\n══ ٧٦ · نوعُ المخيم في نموذج المسح ══');
+{
+  const camp = w.STATE.sites.find(x => w.siteTard(x)), norm = w.STATE.sites.find(x => x.type === 'مخيم' && !w.siteTard(x));
+  w.formReset(); let h = w.svExtra(camp);
+  T(/نوع المخيم/.test(h) && w.FORM.ctype === 'ترددي' && /الحاجز التنظيمي للتفويج/.test(h) && /data-form="tbar"/.test(h), 'مخيمٌ من محطات الإركاب: النوعُ «ترددي» مسبقًا، وتحته «الحاجز التنظيمي للتفويج» وخانةُ العدد');
+  w.formReset(); h = w.svExtra(norm);
+  T(w.FORM.ctype === 'عادي' && !/الحاجز التنظيمي للتفويج/.test(h), 'ومخيمٌ عاديّ: «عادي» بلا سطر الحاجز');
+  w.FORM.ctype = 'ترددي'; h = w.svExtra(norm);
+  T(/الحاجز التنظيمي للتفويج/.test(h), 'واختيارُ «ترددي» يُظهر السطرَ والعدد');
+  w.STATE.recs[norm.id] = Object.assign({}, w.STATE.recs[norm.id] || {}, { id:norm.id, ctype:'ترددي', tbar:4 }); delete norm._tax;
+  T(w.siteTard(norm) === true && w.taxOf(norm).t === 'مخيمات ترددية', 'واختيارُ المسح يجعل نوعَه «مخيمات ترددية» في الفلتر');
+  w.STATE.recs[norm.id].ctype = 'عادي'; delete norm._tax; T(w.siteTard(norm) === false, 'ويُعاد «عادي» باختيار المسح');
+  delete w.STATE.recs[norm.id].ctype; delete w.STATE.recs[norm.id].tbar; delete norm._tax; w.formReset();
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

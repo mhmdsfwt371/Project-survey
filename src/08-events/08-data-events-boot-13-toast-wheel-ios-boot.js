@@ -222,7 +222,7 @@ document.addEventListener('change', function(e){
       });
       return;
     }
-    if (el.hasAttribute('data-form')){ FORM[el.getAttribute('data-form')] = el.value; SVD.dirty = true; svDraftSoon(); return; }
+    if (el.hasAttribute('data-form')){ FORM[el.getAttribute('data-form')] = el.value; SVD.dirty = true; svDraftSoon(); if (el.getAttribute('data-form') === 'ctype') render(1); return; }   /* (V39.56) the barrier line follows the camp type */
     if (el.hasAttribute('data-part')){ FORM.parts[el.getAttribute('data-part')] = el.value; render(); return; }
     if (el.hasAttribute('data-simw')){ simState().w[el.getAttribute('data-simw')] = +el.value || 0; simSave(); render(1); return; }
     if (el.hasAttribute('data-simt')){ simState()[el.getAttribute('data-simt')] = +el.value || 0; simSave(); render(1); return; }

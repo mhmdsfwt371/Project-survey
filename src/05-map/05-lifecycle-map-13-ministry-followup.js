@@ -156,7 +156,7 @@ var SV_LISTS = {
   corins:  ['الممرات وحالةُ تركيبها',     function(x, r){ return x.type === 'ممر'; }],
   chal:    ['نقاط بعوائق', function(x, r){ return svObstacle(r); }],   /* (V33.0) تمت الزيارة وفيها تحدٍّ أو تحتاج زيارة أخرى */
   unreach: ['تعذّر الوصول',            function(x, r){ return !!(r && r.access && r.access !== 'تم الوصول'); }],
-  campok:  ['مخيمات بلا تحديات', function(x, r){ return taxOf(x).t === 'مخيمات' && svClean(r); }],   /* (V33.4) بالتعريف الواحد — والزيارةُ بقرار المهندس بلا تحدٍّ بلا عائق */
+  campok:  ['مخيمات بلا تحديات', function(x, r){ return /^مخيمات/.test(taxOf(x).t) && svClean(r); }],   /* (V33.4) بالتعريف الواحد — والزيارةُ بقرار المهندس بلا تحدٍّ بلا عائق */
   nophoto: ['زيارات بلا صور',          function(x, r){ return !!(r && svDone(r)) && !recIsQuick(r) && !!svPhotoState(x, r); }],   /* (V33.5) الزيارةُ بقرار المهندس بلا نموذجٍ ولا صورٍ أصلًا — ليست «بلا صور» */
   insd:    ['تم التركيب',               function(x, r){ return insDone(x.id); }],   /* (V33.5) حلقاتُ القاعة الأربع */
   insr:    ['المتبقي — لم يُركَّب',      function(x, r){ return !insDone(x.id); }],
@@ -169,7 +169,7 @@ var SV_LISTS = {
   permit:  ['تحتاج تصريح دخول',          function(x, r){ return !!(r && r.access === 'يحتاج تصريح'); }],
   denied:  ['منع دخول — تنسيق',          function(x, r){ return !!(r && r.access === 'منع دخول'); }],
   missing: ['غير موجودة ميدانيًا — تصحيح السجل', function(x, r){ return !!(r && r.access === 'غير موجود'); }],
-  noalloc: ['مخيمات بلا تخصيص',          function(x, r){ return taxOf(x).t === 'مخيمات' && (x.reason === 'عدم وجود تخصيص' || !String(x.co || '').trim()); }],
+  noalloc: ['مخيمات بلا تخصيص',          function(x, r){ return /^مخيمات/.test(taxOf(x).t) && (x.reason === 'عدم وجود تخصيص' || !String(x.co || '').trim()); }],
   minwait: ['بانتظار اعتماد الوزارة',     function(x, r){ return lifeOf(x) === 'minwait'; }],
   /* (V37.0) قرارُ المالك: الزيارةُ غيرُ المسح */
   srv:     ['تم المسح',                    function(x, r){ return svDone(r); }],

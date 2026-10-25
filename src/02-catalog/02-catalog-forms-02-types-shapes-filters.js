@@ -77,13 +77,14 @@ function shapeSvg(shape, col){
    المفاتيحُ القديمةُ المحفوظةُ في تعديلات النقاط تُقرأ بأسمائها الجديدة (TAX_ALIAS). */
 var TAX_ALIAS = { 'كاميرات الرصد':'كاميرات المتابعة', 'المتابعة':'كاميرات المتابعة', 'محطات التفويج':'مراكز التفويج', 'كاميرات رصد':'كاميرات المتابعة' };   /* (V30.0) المشعرُ «المتابعة» صار «كاميرات المتابعة» */
 var TAX_G = ['منى', 'عرفات', 'المزدلفة', 'مراكز التفويج', 'كاميرات المتابعة'];
-var TAX_T = ['مخيمات', 'ممرات', 'محطات قطار', 'كاميرات المتابعة', 'منشأة الجمرات', 'مسجد نمرة', 'النورية', 'محطات طريق الهجرة', 'الزايدي'];
-var TAX_V = 2;   /* يُرفَع عند أيِّ تعديلٍ يدويّ فتُعاد قراءةُ الذاكرة */
+var TAX_T = ['مخيمات', 'مخيمات ترددية', 'ممرات', 'محطات قطار', 'كاميرات المتابعة', 'منشأة الجمرات', 'مسجد نمرة', 'النورية', 'محطات طريق الهجرة', 'الزايدي'];
+var TAX_V = 3;   /* (V39.55) «مخيمات ترددية» */   /* يُرفَع عند أيِّ تعديلٍ يدويّ فتُعاد قراءةُ الذاكرة */
 function taxCalc(x){
   var z = String(x.zone || ''), ty = String(x.type || ''), nm0 = String(x.name || ''), cam = (ty === 'كاميرا' || ty === 'LPR');
   var t = { 'مخيم':'مخيمات', 'ممر':'ممرات', 'محطة':'محطات قطار', 'جسر':'منشأة الجمرات', 'بوابة':'مسجد نمرة', 'كاميرا':'كاميرات المتابعة', 'LPR':'كاميرات المتابعة', 'مبنى':'مخيمات' }[ty] || (TAX_T.indexOf(ty) > -1 ? ty : 'مخيمات');
   /* (V38.34) a train E-GATE is a gate point of the train zone: owner category "train stations", not the Namirah mosque gates */
   if (ty === 'بوابة' && /^NSK-TRN-/.test(String(x.id || ''))) t = 'محطات قطار';
+  if (t === 'مخيمات' && siteTard(x)) t = 'مخيمات ترددية';   /* (V39.55) owner: «يكون لنقاط المخيمات نوع ترددي أو عادي» — the camp's own type, like ممرات */
   var g;
   if (/النوري|النوار/.test(z + ' ' + nm0)){ g = 'مراكز التفويج'; t = 'النورية'; }
   else if (/الهجرة/.test(z + ' ' + nm0)){ g = 'مراكز التفويج'; t = 'محطات طريق الهجرة'; }
@@ -107,6 +108,7 @@ function taxOf(x){
   x._tax = r; x._taxV = TAX_V; return r;
 }
 var TAX_DEF = { 'مخيمات':{ l:'مخيمات', i:'\u26FA', c:'#3ED598' }, 'ممرات':{ l:'ممرات', i:'\u{1F6E3}', c:'#4FA3FF' }, 'محطات قطار':{ l:'محطات قطار', i:'\u{1F686}', c:'#F2C960' }, 'كاميرات المتابعة':{ l:'كاميرات المتابعة', i:'\u{1F4F7}', c:'#C77DFF' }, 'منشأة الجمرات':{ l:'منشأة الجمرات', i:'\u{1F309}', c:'#E8873A' }, 'مسجد نمرة':{ l:'مسجد نمرة', i:'\u{1F54C}', c:'#38B2AC' }, 'النورية':{ l:'النورية', i:'\u{1F693}', c:'#FF6B6B' }, 'محطات طريق الهجرة':{ l:'محطات طريق الهجرة', i:'\u{1F693}', c:'#FF8E53' }, 'الزايدي':{ l:'الزايدي', i:'\u{1F693}', c:'#FFB347' } };
+TAX_DEF['مخيمات ترددية'] = { l:'مخيمات ترددية', i:'\u26FA', c:'#F59E0B' };   /* (V39.55) amber beside the camps' green */
 /* (V38.34) the category badge of a point: train E-GATEs are gates of the train, not Namirah mosque gates */
 function catDefOf(x){ var d = CAT_DEF[x && x.type] || { l:(x && x.type) || '', i:'\u25CF', c:'#8A939D' }; return (typeof egIsGate === 'function' && egIsGate(x)) ? { l:'بوابات القطار', i:'\u{1F6AA}', c:'#F2C960' } : d; }
 var CAT_DEF = {
@@ -155,8 +157,9 @@ function tardSet(){
   tardSet.edge = {}; ['0083','0085','0100','0107','0123','0137','0148','0165','0166','0167','0172','0186','0203','0211','0405','0420','0479'].forEach(function(n){ tardSet.edge['NSK-ARF-CMP-' + n] = 1; });
   return (tardSet.m = m);
 }
-function siteTard(x){ if (!x) return false; var ov = STATE.siteOv && STATE.siteOv[x.id]; if (ov && typeof ov.tard === 'boolean') return ov.tard; return !!tardSet()[x.id]; }
-function filtOn(){ return !!(FILT.zone || FILT.type || FILT.work || FILT.life || FILT.stg || FILT.exec || FILT.ccg || FILT.route || FILT.tard || (FILT.floor !== '' && FILT.floor != null) || CO_SEL.length); }
+function siteTard(x){ if (!x) return false; var rc = STATE.recs && STATE.recs[x.id]; if (rc && (rc.ctype === 'ترددي' || rc.ctype === 'عادي')) return rc.ctype === 'ترددي';   /* (V39.56) the survey's choice first */
+  var ov = STATE.siteOv && STATE.siteOv[x.id]; if (ov && typeof ov.tard === 'boolean') return ov.tard; return !!tardSet()[x.id]; }
+function filtOn(){ return !!(FILT.zone || FILT.type || FILT.work || FILT.life || FILT.stg || FILT.exec || FILT.ccg || FILT.route || (FILT.floor !== '' && FILT.floor != null) || CO_SEL.length); }
 /* (V39.29) the stage of a point in the installation or dismantling legend — the same rule the legend counts by */
 function modeStageOf(x, mode){ return (mode === 'dis' ? disDone(x.id) : insDone(x.id)) ? 'done' : (asnOf(x.id) ? 'asn' : 'wait'); }
 
@@ -164,7 +167,6 @@ function filtPass(x){
   if (FILT.zone && taxOf(x).g !== FILT.zone) return false;   /* (V27.2) بتصنيف المالك */
   if (FILT.type && taxOf(x).t !== FILT.type) return false;
   if (FILT.work && x.work !== FILT.work) return false;
-  if (FILT.tard && (FILT.tard === 'tard') !== siteTard(x)) return false;   /* (V39.54) ترددي · عادي */
   if (FILT.route && x.route !== FILT.route) return false;   /* بالمسار (V17.51) */
   if (FILT.floor !== '' && FILT.floor != null && siteFloor(x) !== +FILT.floor) return false;   /* بالدور (V22.2) */
   /* بالحالة: ما لم يُزَر، ما زير وينتظر الاعتماد، المعتمدُ الجاهز، المُسند، المُركّب… —
@@ -411,8 +413,9 @@ function catBar(withWork){
   /* ─ النوع ─ */
   var typeRow = types.length > 1 || FILT.type ? '<div class="catrow">' + types.map(function(ty){
       var d = TAX_DEF[ty] || { l:ty, i:'\u25CF', c:'#8A939D' }, on = FILT.type === ty;
+      if (ty === 'مخيمات' && C.type['مخيمات ترددية']) d = { l:'مخيمات عادية', i:d.i, c:d.c };   /* (V39.57) owner: «تقسيم المخيمات: عادي وترددي» */
       return '<button type="button" class="cat' + (on?' on':'') + '" data-ft="' + esc(ty) + '" style="border-color:' + d.c + (on ? ';background:' + d.c + '22;color:' + d.c : '') + '">' + d.i + ' ' + esc(t(d.l)) + ' <span class="n">' + nm(C.type[ty]) + '</span></button>'; }).join('') + '</div>' : '';
-  var typeSel = FILT.type ? esc(t((TAX_DEF[FILT.type] || { l:FILT.type }).l)) : '';
+  var typeSel = FILT.type ? esc(t(FILT.type === 'مخيمات' && C.type['مخيمات ترددية'] ? 'مخيمات عادية' : (TAX_DEF[FILT.type] || { l:FILT.type }).l)) : '';
   /* ─ المسارات ─ */
   var routeRow = '', routeSel = '';
   { var RT = routesList(), rks = Object.keys(RT).sort(function(a, b){ return RT[b] - RT[a]; });
@@ -462,16 +465,13 @@ function catBar(withWork){
   var act = [];
   if (FILT.zone) act.push(['zone', esc(FILT.zone)]); if (FILT.type) act.push(['type', typeSel]); if (FILT.route) act.push(['route', routeSel]);
   if (FILT.floor !== '' && FILT.floor != null) act.push(['floor', floorSel]); if (FILT.work) act.push(['work', workSel]);
-  if (FILT.tard) act.push(['tard', esc(t(FILT.tard === 'tard' ? 'ترددي' : 'عادي'))]);   /* (V39.54) */
   if (FILT.life) act.push(['life', esc(t((LIFE[FILT.life] || { n:FILT.life }).n))]); if (FILT.exec) act.push(['exec', esc(t(FILT.exec))]); if (FILT.ccg) act.push(['ccg', grpSel.replace(/ <b>.*$/, '')]);
   var passN = act.length ? STATE.sites.filter(function(x){ return filtPass(x); }).length : S.total;
   var sum = act.length ? '<div class="fsum"><span class="hint" style="margin:0">' + esc(t('المختار')) + '</span>'
     + act.map(function(a){ return '<button type="button" class="chip on fsum-x" data-fclr="' + a[0] + '" title="' + esc(t('أزل هذا المرشّح')) + '">' + a[1] + ' \u2715</button>'; }).join('')
     + '<span class="pill acc">' + nm(passN) + ' ' + esc(t('نقطة')) + '</span>' + btn(t('امسح الكل'), 'btn-quiet btn-sm', ' data-fclr="all"') + '</div>' : '';
   return '<div class="catbar">' + sum + zoneRow
-    + fsec('type', 'النوع', typeSel, typeRow, !!FILT.type)
-    + fsec('tard', 'الترددية', FILT.tard ? esc(t(FILT.tard === 'tard' ? 'ترددي' : 'عادي')) : '', '<div class="catrow">' + [['', 'الكل'], ['tard', 'ترددي'], ['norm', 'عادي']].map(function(o){
-        return '<button type="button" class="cat' + (FILT.tard === o[0] ? ' on' : '') + '" data-ftard="' + o[0] + '">' + esc(t(o[1])) + (o[0] === 'tard' ? ' <span class="num">' + nm(STATE.sites.filter(siteTard).length) + '</span>' : '') + '</button>'; }).join('') + '</div>', !!FILT.tard)   /* (V39.54) */
+    + fsec('type', 'نوع النقطة', typeSel, typeRow, !!FILT.type)   /* (V39.57) owner: «اعمل واحدة اسمها نوع النقطة» */
     + fsec('life', 'الحالة', lifeSel, lifeRow, !!FILT.life)
     /* (V37.55) تسمياتُ المالك: «التحديات» و«معالجة التحديات» و«أدوار منشأة الجمرات» */
     + fsec('exec', 'التحديات', execSel, execRow, !!FILT.exec)

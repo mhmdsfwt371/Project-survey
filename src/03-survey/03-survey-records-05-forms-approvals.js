@@ -21,7 +21,7 @@ var FORM = { site:'', mount:'', power:'', height:'', cable:'', chals:[], note:''
              cam_ok:'', router_sp:'', power_src:'', pdist:'', p24:'', power_note:'',
              n_ant:'', n_rdr:'', n_cam:'', n_sens:'', metal:'',
              chal_note:'', civil:'', equip:'', hours:'', crew_n:'', power_yn:'', kits_done:'' };
-var SV_EXTRA_KEYS = ['loc','len_m','wid_m','hgt_m','fit','tents','gates','corr_w','kits','jam_pos','power_yn','kits_done',
+var SV_EXTRA_KEYS = ['loc','len_m','wid_m','hgt_m','fit','tents','gates','ctype','tbar','corr_w','kits','jam_pos','power_yn','kits_done',
                      'old_base','old_cable','old_net','cam_ok','router_sp','power_src','pdist','p24',
                      'power_note','n_ant','n_rdr','n_cam','n_sens','metal','chal_note',
                      'civil','equip','hours','crew_n'];
