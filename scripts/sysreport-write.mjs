@@ -9,7 +9,7 @@ import { countReads } from './lib/reads.mjs';   /* (V38.84) this job's reads, by
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync } from 'fs';
 const kind = process.argv[2], file = process.argv[3];
-if (!['pulse', 'report'].includes(kind) || !file){ console.log('::notice::sysreport-write: نوعٌ أو ملفٌّ ناقص'); process.exit(0); }
+if (!['pulse', 'report', 'rules'].includes(kind) || !file){   /* (V39.40) rules: the live rules check */ console.log('::notice::sysreport-write: نوعٌ أو ملفٌّ ناقص'); process.exit(0); }
 let text = '';
 try { text = readFileSync(file, 'utf8'); } catch { console.log('::notice::لا نصَّ لـ' + kind); process.exit(0); }
 if (!text.trim()){ console.log('::notice::' + kind + ' فارغ'); process.exit(0); }

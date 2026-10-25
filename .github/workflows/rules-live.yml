@@ -1,0 +1,37 @@
+# ═══ اختبارُ القواعد الحيّ (V39.40) ═══
+# بندُ التسليم «اختبارُ كتابةٍ حقيقيٌّ على القواعد»: حساباتٌ مؤقّتةٌ لكل دورٍ تحاول على القاعدة الحيّة بشرطٍ مسبقٍ لا يتحقّق —
+# فيُعرَف حكمُ القاعدة ولا يُكتب شيء. أسبوعيًّا، ويدويًّا متى شاء المالك. النتيجةُ في ملخّص السير وفي «صحة النظام».
+name: Live rules check
+on:
+  schedule:
+    - cron: '0 2 * * 6'        # السبت ٥:٠٠ صباحًا بتوقيت مكة
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  rules-live:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+      - name: الحزم
+        run: |
+          for i in 1 2 3; do
+            npm i --no-save --no-audit --no-fund firebase-admin@^12 && exit 0
+            sleep $((i*15))
+          done
+          exit 1
+      - name: الاختبارُ على القاعدة الحيّة
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          RULES_OUT: /tmp/rules-live.md
+        run: node scripts/rules-live.mjs
+      - name: النتيجةُ في «صحة النظام»
+        if: always()
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          [ -s /tmp/rules-live.md ] || exit 0
+          node scripts/sysreport-write.mjs rules /tmp/rules-live.md
