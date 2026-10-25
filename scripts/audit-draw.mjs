@@ -63,8 +63,8 @@ console.log('\n══ ١ · نقطةُ المكتب: بلا صور، لا زيا
   w.nsSave(); await wait(60);
   const s = newest();
   T(w.STATE.sites.length === before + 1 && !toasts.some(x => /صورة/.test(x)), 'تُحفَظ بلا صورةٍ واحدة');
-  T(s && s.origin === 'office' && s.type === 'جيت واي' && /-GTW-N\d{3}$/.test(s.id), 'بأصلها ورمز نوعها: ' + (s && s.id));
-  T(s && /^جيت واي - منى - N\d{3}$/.test(s.name), 'واسمُها بنوعها ومشعرها لا بخانتين فارغتين: ' + (s && s.name));
+  T(s && s.origin === 'office' && s.type === 'جيت واي' && /-GTW-N\d{3}[A-Z]{2}$/.test(s.id), 'بأصلها ورمز نوعها: ' + (s && s.id));
+  T(s && /^جيت واي - منى - N\d{3}[A-Z]{2}$/.test(s.name), 'واسمُها بنوعها ومشعرها لا بخانتين فارغتين: ' + (s && s.name));
   T(!w.STATE.recs[s.id] && !wrote.some(x => x.k === 'recs'), 'ولا يُكتَب لها سجلُّ زيارة');
   T(w.lifeOf(s) === 'todo', 'فتبقى «لم تُزر»');
   T(w.CUR === 'map' && w.ASN_OPEN === true && w.selHas(s.id) && w.ASN_KIND === 'visit' && w.FIELD_MODE === 'survey',
@@ -97,7 +97,7 @@ console.log('\n══ ٢ · نقطةُ الميدان: صورةٌ إلزامية
   w.NEWSITE.photos[1] = { size:1024, d:'data:image/jpeg;base64,yy' };
   w.nsSave(); await wait(60);
   const s = newest(), r = w.STATE.recs[s.id];
-  T(w.STATE.sites.length === before + 1 && s.origin === 'field' && /-THS-N\d{3}$/.test(s.id) && s.name === 'حساس — مخيم المعالم', 'وبصورتيها واسمِها تُحفَظ ميدانيّةً: ' + s.id);
+  T(w.STATE.sites.length === before + 1 && s.origin === 'field' && /-THS-N\d{3}[A-Z]{2}$/.test(s.id) && s.name === 'حساس — مخيم المعالم', 'وبصورتيها واسمِها تُحفَظ ميدانيّةً: ' + s.id);
   T(!!r && r.src === 'newsite' && r.review === 'pending' && r.access === 'تم الوصول' && r.phN === 2 && r.photos[0] === 'new_0' && (r.chals || [])[0] === 'لا توجد تحديات',
     'ويُكتَب لها سجلُّ زيارةٍ بانتظار الاعتماد يحمل صورتيها وتحدياتها');
   T(w.svDone(r) && w.lifeOf(s) === 'visited', 'فتُحتسَب زيارةً: «زيارةٌ تمّت — تنتظر الاعتماد»');

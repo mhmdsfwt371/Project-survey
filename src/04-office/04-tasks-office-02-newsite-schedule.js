@@ -89,6 +89,31 @@ function visitAsnOpen(ids, quiet){
   return true;
 }
 
+/* (V39.54) the next new-point id: never a number seen before (any list), plus two letters from this account */
+function nsNextId(pre, tp){
+  var rx = new RegExp('^NSK-' + pre + '-' + tp + '-N(\\d+)'), maxN = 0, seen = function(id){ var m = rx.exec(String(id || '')); if (m) maxN = Math.max(maxN, +m[1]); };
+  (STATE.sites || []).concat(STATE.hiddenSites || []).forEach(function(x){ seen(x.id); });
+  Object.keys(STATE.newsites || {}).forEach(seen); Object.keys(STATE.siteOv || {}).forEach(seen);
+  (STATE.props || []).forEach(function(x){ seen(x && x.id); });
+  var u = String(STATE.meta.uid || STATE.meta.name || 'x'), h = 0; for (var i = 0; i < u.length; i++) h = (h * 31 + u.charCodeAt(i)) >>> 0;
+  var L = 'ABCDEFGHJKLMNPQRSTUVWXYZ', tag = L[h % L.length] + L[Math.floor(h / L.length) % L.length];
+  return 'NSK-' + pre + '-' + tp + '-N' + String(maxN + 1).padStart(3, '0') + tag;
+}
+/* a registered point at the spot: inside a camp's footprint, or within 25 m of a point of the same kind (camps: any camp) */
+function nsDupNear(lat, lng, type){
+  var best = null, k = 111320, cl = Math.cos(lat * Math.PI / 180);
+  (STATE.sites || []).forEach(function(x){
+    if (!(+x.lat && +x.lng) || x.deleted) return;
+    if (type === 'مخيم' && x.type === 'مخيم' && typeof campFoot === 'function'){
+      var r = campFoot(x); if (r && r.length > 2){ var c = false; for (var i = 0, j = r.length - 1; i < r.length; j = i++){ var yi = r[i][1], yj = r[j][1], xi = r[i][0], xj = r[j][0]; if (((yi > lat) !== (yj > lat)) && (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi)) c = !c; }
+        if (c){ best = { x:x, d:Math.hypot((x.lat - lat) * k, (x.lng - lng) * k * cl) }; return; } }
+    }
+    if (x.type !== type) return;
+    var d = Math.hypot((x.lat - lat) * k, (x.lng - lng) * k * cl);
+    if (d <= 25 && (!best || d < best.d)) best = { x:x, d:d };
+  });
+  return best;
+}
 function nsSave(){
   var minProp = ROLE === 'viewer', office = nsOffice() || minProp;   /* (V37.68) قرارُ المالك: نقطةُ الوزارة «مقترحة» يعتمدها المهندس — بلا صورٍ إلزاميةٍ ولا زيارة */
   var lat = NEWSITE.lat || (MYPOS && MYPOS.lat), lng = NEWSITE.lng || (MYPOS && MYPOS.lng);
@@ -128,8 +153,14 @@ function nsSave(){
 
   var pre = zoneCode(NEWSITE.zone);
   var tp  = typeCode(NEWSITE.type);
-  var n = STATE.sites.filter(function(x){ return x.id.indexOf('NSK-' + pre + '-' + tp + '-N') === 0; }).length + 1;
-  var id = 'NSK-' + pre + '-' + tp + '-N' + String(n).padStart(3, '0');
+  /* (V39.54) owner: «شيك لو في أي كونفليكت». The number was the COUNT of new points plus one: two technicians adding in the same
+     zone while offline took the same id and the later sync wrote over the earlier point; and a deleted point's number came back.
+     Now: the highest number ever seen (registry, hidden, deleted, proposals) plus one, and two letters of this account — unique
+     across devices. A registered point at the spot is asked about first, and if kept, the office is told. */
+  var id = nsNextId(pre, tp);
+  var nb = nsDupNear(lat, lng, NEWSITE.type);
+  if (nb && !confirm(t('يوجد هنا موقعٌ مسجَّل') + ': ' + (nb.x.name || nb.x.id) + ' (' + nm(Math.round(nb.d)) + ' ' + t('م') + ').\n' + t('هل هذه نقطةٌ مختلفة فعلًا؟ «إلغاء» يفتح المسجَّلة بدل إضافة نسخة'))){
+    POP_SITE = nb.x.id; POP_OPEN = true; CUR = 'map'; render(1); return; }
 
   var site = {
     id:id, name:(!camp && NEWSITE.nm) ? NEWSITE.nm : nsName(id),   /* (V29.7) غيرُ المخيم باسمه المكتوب */
@@ -145,6 +176,7 @@ function nsSave(){
     note:NEWSITE.note
   };
   if (NEWSITE.ex47 && !minProp) site.ex47 = NEWSITE.ex47;   /* (V37.92) نقطةٌ من ملف ١٤٤٧ وُضعت على الخريطة */
+  if (nb){ site.nearOf = nb.x.id; if (!minProp) notifPush('نقطة جديدة بجوار مسجَّلة', id + ' \u2190 ' + Math.round(nb.d) + ' م ' + t('من') + ' ' + (nb.x.name || nb.x.id) + ' — ' + t('راجِع أنها ليست مكرّرة'), { site:id, lv:'مهم' }); }   /* (V39.54) */
   if (minProp) propKeep(site); else STATE.sites.push(site);   /* (V37.69) المقترحةُ خارجَ السجلِّ حتى الاعتماد */
   SITE_IX = null; SITE_TOK = null;
   CORE.set('newsites', id, site);
@@ -167,7 +199,7 @@ function nsSave(){
   statBump();
   toast(id + ' \u00b7 ' + t(minProp ? 'أُرسلت مقترحةً من الوزارة — يعتمدها المهندس' : office ? 'سُجّلت — جدوِل زيارتَها الآن' : 'سُجّلت زيارةً — أكمل بياناتِ المسح')); if (minProp) CUR = 'map';
 
-  NEWSITE = { lat:0, lng:0, zone:NEWSITE.zone, type:NEWSITE.type, sq:'', sign:'',
+  NEWSITE = { lat:0, lng:0, zone:NEWSITE.zone, type:'مخيم', sq:'', sign:'',   /* (V39.54) owner: «تتضاف تحت مخيمات» — the last type no longer carries into the next point */
               co:'', coReq:'', tents:'', reason:'', why:'', note:'', photos:{}, nm:'', center:'', chals:[] };
   NS_CO_OPEN = false; NS_CO_Q = '';
 

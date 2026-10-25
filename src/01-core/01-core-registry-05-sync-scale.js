@@ -362,7 +362,8 @@ var CORE = {
           if (!STATE.poison.some(function(p2){ return p2.kind === it.kind && String(p2.id) === String(it.id); }))
             STATE.poison.push({ kind:it.kind, id:it.id, v:it.v, err:f.msg, at:Date.now() });
           STATE.queue = STATE.queue.filter(function(q){ return q !== it; });
-          logEvent('وثيقةٌ عُزلت عن الرفع — ' + it.kind + '/' + it.id + ' \u00b7 ' + f.msg.slice(0, 80), it.id);   /* (V31.1) كان `id` غيرَ معرَّفٍ هنا فيرمي خطأً */
+          logEvent('وثيقةٌ عُزلت عن الرفع — ' + it.kind + '/' + it.id + ' \u00b7 ' + f.msg.slice(0, 80), it.id);
+          if (typeof notifPush === 'function' && it.kind !== 'presence' && it.kind !== 'stats') notifPush('وثيقة رُفضت على جهاز', it.kind + '/' + it.id + ' — ' + f.msg.slice(0, 100), { site:it.kind === 'sites' || it.kind === 'recs' || it.kind === 'inss' ? String(it.id) : '', lv:'مهم' });   /* (V39.54) owner: «أي كونفليكت يحصل عرّفني» */   /* (V31.1) كان `id` غيرَ معرَّفٍ هنا فيرمي خطأً */
         }
       });
       if (r.failed.length && !SOFT_SAID['رفع الطابور']){

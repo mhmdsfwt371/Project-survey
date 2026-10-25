@@ -1923,6 +1923,23 @@ console.log('\n══ ٧٤ · خطةُ الحساسات تصل القاعدة �
   w.STATE.poison = (w.STATE.poison || []).filter(p => p.id !== 'BAD');
 }
 
+/* ── ٧٥ · (V39.54) التعارضات: رقمُ النقطة الجديدة فريد، والمسجَّلةُ في المكان يُسأل عنها، والترددية بفلترها ── */
+console.log('\n══ ٧٥ · التعارضات والترددية ══');
+{
+  const id1 = w.nsNextId('ARF', 'CMP');
+  T(/^NSK-ARF-CMP-N\d{3}[A-Z]{2}$/.test(id1), 'رقمُ النقطة الجديدة بحرفَي الحساب: ' + id1);
+  const fake = { id:id1, name:'x', zone:'عرفات', type:'مخيم', lat:21.35, lng:39.98 }; w.STATE.sites.push(fake);
+  const id2 = w.nsNextId('ARF', 'CMP'); w.STATE.sites.pop();
+  T(+id2.match(/N(\d{3})/)[1] === +id1.match(/N(\d{3})/)[1] + 1, 'والتالي بعد أعلى رقمٍ رُئي (لا بعدِّ الموجود): ' + id2);
+  const camp = w.STATE.sites.find(q => q.type === 'مخيم' && +q.lat && +q.lng);
+  const nb = w.nsDupNear(+camp.lat + 0.00005, +camp.lng, 'مخيم');
+  T(!!nb && nb.d < 25, 'ونقطةٌ جديدةٌ على مخيمٍ مسجَّلٍ يُسأل عنها قبل الحفظ: ' + (nb ? nb.x.id + ' · ' + Math.round(nb.d) + ' م' : '—'));
+  const nT = w.STATE.sites.filter(w.siteTard).length, aT = w.STATE.sites.filter(x => w.siteTard(x) && x.zone === 'عرفات' && x.type === 'مخيم').length;
+  T(nT === 191 && aT === 191, 'والترددية: ١٩١ مخيمًا كلُّها في عرفات (' + nT + ')');
+  w.FILT.tard = 'tard'; const pass1 = w.STATE.sites.filter(x => w.filtPass(x)).length; w.FILT.tard = 'norm'; const pass2 = w.STATE.sites.filter(x => w.filtPass(x)).length; w.FILT.tard = '';
+  T(pass1 === 191 && pass2 === w.STATE.sites.length - 191 && w.filtOn() === false, 'وفلترُها: «ترددي» ١٩١ و«عادي» الباقي');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

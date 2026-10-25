@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V39.53",
+  "app_version": "V39.54",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2315,7 +2315,8 @@
   "V39.50": "dtwUnits (reader/camera/router + بوابة المخيم gw من خطة الحساسات حين يُعرَف المدخل) وdtwSpot (صف ٢٫٤ م شرق المدخل ما لم يُسحب) وdtwIp/dtwIpText (ipRtr/ipRdr/ipCam/ipGw، وإلا المشتق .1/.2/.3 بعلامة «مشتق»، والجيت واي «لم يُسجَّل») · dtwChipsPaint: علامات HTML ثابتة الحجم من تقريب ١٦ لأقرب ٤٠ مدخلًا، لكل أيقونة تلميحها ونقرها · m3IotFeatures: الجيت واي الأول يقف مع المدخل (dtwGwAtGate) · معالج نقر واحد في المجسّم بالأولوية (نموذج three.js ← حساس/جيت واي ← جهاز ← نقطة ← مخيم) بدل معالجات الطبقات · ipGw في نموذج تعديل الموقع وحفظه وتصدير العناوين ومسحها · السيناريوهات محدّثة",
   "V39.51": "iotValHtml(camp, i): الحرارة والرطوبة دائمًا — من liveIotOf(serial) وإلا liveSensor(camp, did) (كائن أو رقم قديم)، بعمرها ونقطة الحداثة والبطارية، أو سبب الغياب؛ يستدعي liveIotLoad · مستعمَل في m3HoverHtml للحساس وفي تلميح نماذج three.js (عبر m3HoverHtml) وفي بطاقة الحساس · سيناريو ٧٢ وسيناريو التوأم محدّثان",
   "V39.52": "queueHtml: عمود «الحالة» (tries/next/err أو «لم يُحاوَل بعد») وتنبيه ملخّص الأسباب وتنبيه EPOCH_PENDING · data-pushnow يصفّر it.next قبل الدفع · سيناريو ٧٣",
-  "V39.53": "FB.live('sites'): iot ← iotJ (JSON واحد) · siteOvDec عند الاستلام (السحب الكامل وsiteOvIncoming) · CORE.flush: Promise.resolve().then(FB.push) — رميٌ أثناء بناء الدفعة يمرّ إلى pushEach فيُعزَل المرفوض باسمه · جسر أفاقي برو يقرأ iotJ · سيناريو ٧٤"
+  "V39.53": "FB.live('sites'): iot ← iotJ (JSON واحد) · siteOvDec عند الاستلام (السحب الكامل وsiteOvIncoming) · CORE.flush: Promise.resolve().then(FB.push) — رميٌ أثناء بناء الدفعة يمرّ إلى pushEach فيُعزَل المرفوض باسمه · جسر أفاقي برو يقرأ iotJ · سيناريو ٧٤",
+  "V39.54": "tardSet/siteTard (١٩١ مخيمًا من مطابقة محطات الإركاب بحدود poly.json، و١٧ على الحد فقط في tardSet.edge غير مطبَّقة، وتجاوز الموقع tard) · FILT.tard وقسم «الترددية» وشريحته وdata-ftard · nsNextId (أعلى رقم رُئي في كل القوائم + حرفان من الحساب) · nsDupNear (داخل حدود مخيم أو ٢٥ م من النوع نفسه) يُسأل عنه ويُسجَّل nearOf ويُشعَر المكتب · النوع يعود «مخيم» · العزل بالرفض يُشعر المكتب · سيناريو ٧٥"
   },
   "map_and_geolocation": {
     "tile_layers": {

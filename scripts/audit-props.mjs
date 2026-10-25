@@ -33,6 +33,7 @@ T(w.propList().length === 0 && !!w.siteFind(id) && w.siteFind(id).approved === t
 w.statBump(); T(w.siteStats().total === t0 + 1, 'ويزيد عدُّ النقاط واحدًا');
 if (e0 >= 0) T(w.execRows().tot.all === e0 + 1, 'ويزيد التقريرُ التنفيذيُّ واحدًا');
 /* ٣ · الرفضُ يُخرجها بلا أثرٍ في العدّ */
+w.confirm = () => true;   /* (V39.54) the second proposal stands near the first: «is this a different point?» — yes */
 w.ROLE = 'viewer'; w.NEWSITE = { lat:21.414, lng:39.886, zone:'منى', type:'مخيم', sq:'8', sign:'58/2', co:CO, photos:{}, chals:[] }; w.nsSave(); const id2 = (w.propList()[0] || {}).id;
 T(!!id2, 'مقترحةٌ ثانيةٌ تُحفَظ جانبًا كذلك');
 w.ROLE = 'engineer'; T(w.propReject(id2) === true && w.propList().length === 0 && !w.siteFind(id2), 'الرفضُ يُخرج المقترحةَ ولا تدخل السجل');

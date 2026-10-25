@@ -145,7 +145,18 @@ function routesList(){
 }
 
 
-function filtOn(){ return !!(FILT.zone || FILT.type || FILT.work || FILT.life || FILT.stg || FILT.exec || FILT.ccg || FILT.route || (FILT.floor !== '' && FILT.floor != null) || CO_SEL.length); }
+/* (V39.54) owner: «المخيمات دي في عرفات ليها نوع اسمه ترددي وأقدر أفلتر بيه والباقي عادي». The tafweej boarding stations
+   (محطات الإركاب، ٥٠٥ نقطة) were matched to Arafat's camp footprints: a camp holding a stop is ترددي — 191 camps. Seventeen more
+   have a stop on their edge only (under 10 m) and are kept apart until the owner decides. A site override (tard true/false)
+   wins either way. */
+function tardSet(){
+  if (tardSet.m) return tardSet.m;
+  var m = {}; ['0048','0049','0053','0055','0056','0057','0058','0060','0062','0063','0064','0065','0066','0067','0068','0069','0070','0071','0072','0073','0074','0075','0077','0079','0080','0081','0082','0084','0086','0087','0088','0089','0091','0092','0093','0094','0095','0096','0097','0098','0099','0101','0102','0103','0104','0105','0106','0109','0111','0118','0119','0120','0121','0122','0124','0125','0126','0127','0128','0129','0130','0131','0132','0133','0134','0135','0136','0138','0139','0140','0141','0142','0143','0144','0145','0146','0147','0149','0150','0151','0152','0153','0154','0155','0156','0157','0159','0160','0161','0162','0163','0164','0168','0169','0170','0171','0174','0175','0176','0177','0178','0179','0180','0181','0182','0183','0184','0185','0187','0188','0189','0190','0191','0192','0193','0194','0195','0196','0197','0198','0199','0200','0201','0202','0204','0205','0206','0207','0208','0209','0210','0212','0214','0215','0216','0217','0218','0219','0220','0221','0222','0223','0224','0225','0226','0227','0228','0236','0325','0326','0334','0335','0336','0337','0338','0339','0360','0361','0362','0363','0364','0365','0368','0369','0370','0371','0425','0426','0433','0435','0436','0437','0438','0439','0440','0442','0443','0445','0446','0447','0448','0470','0476','0480','0651','0652','0653','0654','0655','0656','0657'].forEach(function(n){ m['NSK-ARF-CMP-' + n] = 1; });
+  tardSet.edge = {}; ['0083','0085','0100','0107','0123','0137','0148','0165','0166','0167','0172','0186','0203','0211','0405','0420','0479'].forEach(function(n){ tardSet.edge['NSK-ARF-CMP-' + n] = 1; });
+  return (tardSet.m = m);
+}
+function siteTard(x){ if (!x) return false; var ov = STATE.siteOv && STATE.siteOv[x.id]; if (ov && typeof ov.tard === 'boolean') return ov.tard; return !!tardSet()[x.id]; }
+function filtOn(){ return !!(FILT.zone || FILT.type || FILT.work || FILT.life || FILT.stg || FILT.exec || FILT.ccg || FILT.route || FILT.tard || (FILT.floor !== '' && FILT.floor != null) || CO_SEL.length); }
 /* (V39.29) the stage of a point in the installation or dismantling legend — the same rule the legend counts by */
 function modeStageOf(x, mode){ return (mode === 'dis' ? disDone(x.id) : insDone(x.id)) ? 'done' : (asnOf(x.id) ? 'asn' : 'wait'); }
 
@@ -153,6 +164,7 @@ function filtPass(x){
   if (FILT.zone && taxOf(x).g !== FILT.zone) return false;   /* (V27.2) بتصنيف المالك */
   if (FILT.type && taxOf(x).t !== FILT.type) return false;
   if (FILT.work && x.work !== FILT.work) return false;
+  if (FILT.tard && (FILT.tard === 'tard') !== siteTard(x)) return false;   /* (V39.54) ترددي · عادي */
   if (FILT.route && x.route !== FILT.route) return false;   /* بالمسار (V17.51) */
   if (FILT.floor !== '' && FILT.floor != null && siteFloor(x) !== +FILT.floor) return false;   /* بالدور (V22.2) */
   /* بالحالة: ما لم يُزَر، ما زير وينتظر الاعتماد، المعتمدُ الجاهز، المُسند، المُركّب… —
@@ -450,6 +462,7 @@ function catBar(withWork){
   var act = [];
   if (FILT.zone) act.push(['zone', esc(FILT.zone)]); if (FILT.type) act.push(['type', typeSel]); if (FILT.route) act.push(['route', routeSel]);
   if (FILT.floor !== '' && FILT.floor != null) act.push(['floor', floorSel]); if (FILT.work) act.push(['work', workSel]);
+  if (FILT.tard) act.push(['tard', esc(t(FILT.tard === 'tard' ? 'ترددي' : 'عادي'))]);   /* (V39.54) */
   if (FILT.life) act.push(['life', esc(t((LIFE[FILT.life] || { n:FILT.life }).n))]); if (FILT.exec) act.push(['exec', esc(t(FILT.exec))]); if (FILT.ccg) act.push(['ccg', grpSel.replace(/ <b>.*$/, '')]);
   var passN = act.length ? STATE.sites.filter(function(x){ return filtPass(x); }).length : S.total;
   var sum = act.length ? '<div class="fsum"><span class="hint" style="margin:0">' + esc(t('المختار')) + '</span>'
@@ -457,6 +470,8 @@ function catBar(withWork){
     + '<span class="pill acc">' + nm(passN) + ' ' + esc(t('نقطة')) + '</span>' + btn(t('امسح الكل'), 'btn-quiet btn-sm', ' data-fclr="all"') + '</div>' : '';
   return '<div class="catbar">' + sum + zoneRow
     + fsec('type', 'النوع', typeSel, typeRow, !!FILT.type)
+    + fsec('tard', 'الترددية', FILT.tard ? esc(t(FILT.tard === 'tard' ? 'ترددي' : 'عادي')) : '', '<div class="catrow">' + [['', 'الكل'], ['tard', 'ترددي'], ['norm', 'عادي']].map(function(o){
+        return '<button type="button" class="cat' + (FILT.tard === o[0] ? ' on' : '') + '" data-ftard="' + o[0] + '">' + esc(t(o[1])) + (o[0] === 'tard' ? ' <span class="num">' + nm(STATE.sites.filter(siteTard).length) + '</span>' : '') + '</button>'; }).join('') + '</div>', !!FILT.tard)   /* (V39.54) */
     + fsec('life', 'الحالة', lifeSel, lifeRow, !!FILT.life)
     /* (V37.55) تسمياتُ المالك: «التحديات» و«معالجة التحديات» و«أدوار منشأة الجمرات» */
     + fsec('exec', 'التحديات', execSel, execRow, !!FILT.exec)
