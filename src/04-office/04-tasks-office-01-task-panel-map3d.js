@@ -166,9 +166,17 @@ function m3Init(){
   M3.on('click', 'nsk-iot', function(ev){ var f = ev.features && ev.features[0]; if (f && typeof m3IotClick === 'function') m3IotClick(f, ev); });
   M3.on('click', 'nsk-iot-pt', function(ev){ var f = ev.features && ev.features[0]; if (f && typeof m3IotClick === 'function') m3IotClick(f, ev); });
   /* (V39.17) owner: hovering the mouse shows the value — a tooltip follows the mouse over sensors, gateways, devices and points */
-  ['nsk-iot-pt', 'nsk-iot', 'nsk-twin', 'nsk-pts', 'nsk-cols'].forEach(function(ly){
-    M3.on('mousemove', ly, function(ev){ var f = ev.features && ev.features[0]; if (f) m3Hover(ev, m3HoverHtml(ly, f.properties)); });
-    M3.on('mouseleave', ly, function(){ m3Hover(null); });
+  /* (V39.48) owner: «لما أقف على الدبوس ألاقي الحساس هو اللي يظهر» — one handler for all layers, by priority: a sensor pin,
+     then a device at the entrance, then the point, and the camp only when the mouse is on none of them. (Per-layer handlers
+     all fired for the same mouse position and the camp's, registered last, won.) */
+  var HL = ['nsk-iot-pt', 'nsk-iot', 'nsk-twin', 'nsk-pts', 'nsk-cols'];
+  M3.on('mousemove', function(ev){
+    if (!MAP_3D) return;
+    var lys = HL.filter(function(l){ return M3.getLayer(l); }), fs = [];
+    try { fs = M3.queryRenderedFeatures([[ev.point.x - 3, ev.point.y - 3], [ev.point.x + 3, ev.point.y + 3]], { layers:lys }); } catch (eQ){ LS_ERR = eQ; }
+    var best = null; lys.some(function(l){ best = fs.filter(function(f){ return f.layer && f.layer.id === l; })[0]; return !!best; });
+    if (best) m3Hover(ev, m3HoverHtml(best.layer.id, best.properties));
+    else if (!(typeof teState === 'function' && teState().hover)) m3Hover(null);   /* the models' own tooltip stays theirs */
   });
   M3.on('click', function(ev){
     if (ev.originalEvent && ev.originalEvent._nskIot) return;
@@ -205,7 +213,8 @@ function m3HoverHtml(layer, p){
     var c = typeof iotOf === 'function' ? iotOf(p.camp) : null, m = c ? ((p.kind === 's' ? c.sm : c.gm) || [])[+p.i] || {} : {};
     return '<b>' + esc(p.kind === 's' ? t('حساس') : t('جيت واي')) + ' <span class="num">' + esc(p.did || m.id || '') + '</span></b>'
       + (m.model ? ' \u00b7 ' + esc(m.model) : '') + (m.tag ? ' \u00b7 ' + esc(t('العلامة')) + ' ' + esc(m.tag) : '')   /* (V39.22) */
-      + (m.room ? ' \u00b7 ' + esc(t('الغرفة')) + ' ' + esc(m.room) : '') + ' \u00b7 ' + esc(t(m.status || 'مخطط')) + (m.serial ? '<br><span class="num">' + esc(m.serial) + '</span>' : '');
+      + (m.room ? ' \u00b7 ' + esc(t('الغرفة')) + ' ' + esc(m.room) : '') + ' \u00b7 ' + esc(t(m.status || 'مخطط')) + (m.serial ? '<br><span class="num">' + esc(m.serial) + '</span>' : '')
+      + (typeof liveIotLine === 'function' ? liveIotLine(m.serial) : '');   /* (V39.48) the live reading, when the bridge has one */
   }
   if (layer === 'nsk-twin') return '<b>' + esc(t(itemName(p.code))) + '</b>' + (p.serial ? ' \u00b7 <span class="num">' + esc(p.serial) + '</span>' : '') + '<br><span class="hint" style="margin:0">' + esc(p.site) + '</span>';
   var x = siteFind(p.id); if (!x) return '';

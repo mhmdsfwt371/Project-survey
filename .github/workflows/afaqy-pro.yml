@@ -1,0 +1,35 @@
+# ═══ جسرُ أفاقي برو (V39.47) ═══
+# الحساساتُ والجيت واي لكل نقطة من أفاقي برو إلى iotlive/_all كلَّ ١٠ دقائق — قراءةٌ فقط، ويخرج بهدوء حتى تُضاف أسرارُ حساب التكامل.
+name: AFAQY PRO bridge
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch: {}
+permissions:
+  contents: read
+concurrency:
+  group: afaqy-pro
+  cancel-in-progress: true
+jobs:
+  bridge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+      - name: الحزم
+        run: |
+          for i in 1 2 3; do
+            npm i --no-save --no-audit --no-fund firebase-admin@^12 && exit 0
+            sleep $((i*15))
+          done
+          exit 1
+      - name: الحساساتُ والجيت واي من أفاقي برو
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          AFAQY_PRO_URL: ${{ secrets.AFAQY_PRO_URL }}
+          AFAQY_PRO_USER: ${{ secrets.AFAQY_PRO_USER }}
+          AFAQY_PRO_PASS: ${{ secrets.AFAQY_PRO_PASS }}
+        run: node scripts/afaqy-pro.mjs

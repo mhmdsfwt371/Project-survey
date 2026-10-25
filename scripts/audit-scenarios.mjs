@@ -1285,9 +1285,9 @@ console.log('\n══ ٤٥ · التوأم الرقمي في الخريطة ال
   w.m3IotPaint();
   const F = data ? data.features.filter(f => f.properties.camp === camp.id) : [];
   const col = k => F.filter(f => f.properties.kind === k && f.geometry.type === 'Polygon' && !f.properties.beacon && !f.properties.stem).map(f => f.properties.color);   /* (V39.32) the stems repeat them too */   /* (V39.17/V39.21) the columns; the dots and beacons repeat them */
-  T(F.length === 51 && col('s').length === 12 && col('g').length === 1 && F.filter(f => f.geometry.type === 'Point').length === 13 && F.filter(f => f.properties.beacon).length === 13 && F.filter(f => f.properties.stem).length === 12, 'المخيمُ في المجسّم: اثنا عشر حساسًا وجيت واي، كلٌّ عمودٌ صغيرٌ ونقطةٌ تبقى في كلِّ تقريب (' + F.length + ')');   /* (V39.17) */
-  T(col('s')[3] === '#E05252' && col('s')[0] === w.IOT_C.sensor && col('s')[9] !== w.IOT_C.sensor && col('g')[0] === w.IOT_C.gw && F.every(f => (f.geometry.type === 'Polygon' || f.geometry.type === 'Point') && f.properties.h > 0),
-    'ولونُه بحالته: المعطّلُ أحمر، والمركّبُ بلونه، والمخطَّطُ أفتح — والجيت واي أطول');
+  T(F.length === 54 && col('s').length === 12 && col('g').length === 4 && F.filter(f => f.geometry.type === 'Point').length === 13 && F.filter(f => f.properties.beacon).length === 13 && F.filter(f => f.properties.stem).length === 12,   /* (V39.48) the gateway is four parts: pole, cabinet, antenna, tip */ 'المخيمُ في المجسّم: اثنا عشر حساسًا وجيت واي، كلٌّ عمودٌ صغيرٌ ونقطةٌ تبقى في كلِّ تقريب (' + F.length + ')');   /* (V39.17) */
+  T(col('s')[3] === '#E05252' && col('s')[0] === w.IOT_C.sensor && col('s')[9] !== w.IOT_C.sensor && F.filter(f => f.properties.kind === 'g' && f.properties.part === 'tip')[0].properties.color === w.IOT_C.gw && F.filter(f => f.properties.kind === 'g' && f.properties.part === 'tip')[0].properties.h > 1.8 && F.every(f => (f.geometry.type === 'Polygon' || f.geometry.type === 'Point') && f.properties.h > 0),
+    'ولونُه بحالته: المعطّلُ أحمر، والمركّبُ بلونه، والمخطَّطُ أفتح — ولونُ الجيت واي على رأس هوائيّه الذي يعلو الحساسات');
   /* the editor: a tap selects, the next tap on the ground moves */
   w.iotEditStart(camp.id);
   const E = w.IOT.edit; w.m3IotClick({ properties:{ camp:camp.id, kind:'s', i:2 } }, { originalEvent:{} });
@@ -1330,9 +1330,9 @@ console.log('\n══ ٤٧ · أجهزةُ النقطة في المجسّم ═�
   w.dtwPaint();
   const F = data ? data.features.filter(f => f.properties.site === x.id) : [];
   const kinds = F.map(f => f.properties.kind);
-  T(F.length === 5 && kinds.indexOf('reader') > -1 && kinds.filter(k => k === 'camera').length === 2 && kinds.indexOf('router') > -1 && kinds.indexOf('solar') > -1, 'وفي المجسّم خمسةُ أعمدةٍ حول النقطة بأنواعها');
-  const reader = F.find(f => f.properties.kind === 'reader');
-  T(reader.properties.color === '#7C4DFF' && reader.properties.h === 2.6 && reader.properties.serial === 'RDR-TEST-01' && F.every(f => f.geometry.type === 'Polygon'), 'القارئُ بلونه وطوله وسيرياله');
+  const units = new Set(F.map(f => f.properties.code + '#' + f.properties.i)); T(units.size === 5 && F.length === 13 && kinds.indexOf('reader') > -1 && new Set(F.filter(f => f.properties.kind === 'camera').map(f => f.properties.i)).size === 2 && kinds.indexOf('router') > -1 && kinds.indexOf('solar') > -1, 'وفي المجسّم خمسُ وحداتٍ حول النقطة بأنواعها، كلٌّ من أجزائها الواقعية (V39.48)');
+  const reader = F.find(f => f.properties.kind === 'reader' && f.properties.part === 'panel');
+  T(reader.properties.color === '#EEF1F3' && reader.properties.h === 2.85 && reader.properties.base === 2.3 && reader.properties.serial === 'RDR-TEST-01' && F.some(f => f.properties.kind === 'reader' && f.properties.part === 'pole' && f.properties.h === 2.9) && F.every(f => f.geometry.type === 'Polygon'), 'القارئُ لوحةٌ على عمودٍ بسيرياله (V39.48)');
   const card = w.dtwCardHtml(reader.properties);
   T(/RDR-TEST-01/.test(card) && /مُركّب/.test(card) && /فني التجربة/.test(card) && /data-site="/.test(card) && /data-insq="/.test(card), 'وبطاقةُ الجهاز: السيريال والحالة ومن ركّبه، وزرّا صفحة النقطة وتعديل التركيب');
   w.dtwPaint.on = false; w.dtwPaint(); T(data.features.length === 0, 'وزرُّ «الأجهزة» يطفئ الطبقة');
@@ -1499,8 +1499,8 @@ console.log('\n══ ٥٥ · منارات الحساسات ودخول المخ�
   w.siteOvSet(camp.id, { iot:{ gw:[+camp.lat, +camp.lng], gws:[], sensors, sm:sensors.map((_, i) => ({ id:camp.id + '-S' + (i + 1), status:'مُركّب' })), gm:[{ id:camp.id + '-GW1', status:'مُركّب' }], maxM:40, at:Date.now() } });
   const on0 = w.IOT.on; w.IOT.on = true; const F = w.m3IotFeatures().filter(f => f.properties.camp === camp.id); w.IOT.on = on0;
   const beacons = F.filter(f => f.properties.beacon), cols = F.filter(f => !f.properties.beacon && !f.properties.stem && f.geometry.type === 'Polygon');   /* (V39.32) the stems are not columns */
-  T(beacons.length > 0 && beacons.length === cols.length && beacons.every(f => f.properties.base === 4.8 && f.properties.h > 4.8), 'لكلِّ حساسٍ وجيت واي منارةٌ فوق سقف الخيمة (' + beacons.length + ')');
-  T(cols.filter(f => f.properties.kind === 'g').every(f => f.properties.h === 6), 'وعمودُ الجيت واي يعلو الأسقف');
+  const nDev = cols.filter(f => f.properties.kind === 's').length + new Set(cols.filter(f => f.properties.kind === 'g').map(f => f.properties.i)).size; T(beacons.length > 0 && beacons.length === nDev && beacons.every(f => f.properties.base === 4.8 && f.properties.h > 4.8), 'لكلِّ حساسٍ وجيت واي منارةٌ فوق سقف الخيمة (' + beacons.length + ')');
+  T(cols.filter(f => f.properties.kind === 'g' && f.properties.part === 'tip').every(f => f.properties.h === 3.4), 'وهوائيُّ الجيت واي يعلو أسقفَ الخيام (V39.48)');
   const M30 = w.M3, d30 = w.MAP_3D; let flown = null; w.M3 = { flyTo:o => { flown = o; } }; w.MAP_3D = true; w.m3Enter.last = null;
   T(w.m3Enter(camp.id) && flown && flown.zoom === 20 && flown.pitch === 80 && Math.abs(flown.center[0] - +camp.lng) < 1e-9, 'و«ادخل المخيم» يقف بالكاميرا على البوابة مائلةً إلى الحدّ');
   const b1 = flown.bearing; w.m3Enter(camp.id); T(Math.abs(((flown.bearing - b1) % 360 + 360) % 360 - 180) < 1e-6, 'والثانيةُ تدير الكاميرا لتنظر إلى أجهزة البوابة');
@@ -1566,7 +1566,7 @@ console.log('\n══ ٥٧ · مداخلُ مخيم العرض وصندوقُ ا
   let data = null; w.M3 = { getBounds:() => ({ contains:() => true }), getZoom:() => 19, getSource:() => ({ setData:v => { data = v; } }) }; w.MAP_3D = true; w.dtwPaint.on = true; w.dtwPaint();
   const dv = data ? data.features.filter(f => f.properties.site === id) : [];
   const near = dv.every(f => { const c = f.geometry.coordinates[0][0]; return Math.hypot((c[0] - F.gate.at[1]) * 103650, (c[1] - F.gate.at[0]) * 111320) < 3; });
-  T(dv.length === 3 && near, 'وأجهزةُ النقطة (القارئ والراوتر والكاميرا) تقف في المجسّم عند صندوق البوابة لا وسط المخيم');
+  T(new Set(dv.map(f => f.properties.code + '#' + f.properties.i)).size === 3 && near, 'وأجهزةُ النقطة (القارئ والراوتر والكاميرا) تقف في المجسّم عند صندوق البوابة لا وسط المخيم');   /* (V39.48) each unit is several parts */
   w.M3 = M30; w.MAP_3D = d30; if (ins0) w.STATE.inss[id] = ins0; else delete w.STATE.inss[id]; w.ROLE = role0; w.STATE.meta.role = role0;
 }
 

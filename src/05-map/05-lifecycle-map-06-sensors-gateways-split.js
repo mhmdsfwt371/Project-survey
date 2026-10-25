@@ -35,6 +35,25 @@ function iotRing(id){ var x = siteFind(id), F = x && typeof campFoot === 'functi
 function iotOutside(id, c){ var R = iotRing(id); if (!R || !c) return []; var out = []; c.sensors.forEach(function(q, i){ if (!polyIn(q, R)) out.push(i); }); return out; }
 
 
+/* ═══ (V39.47) القراءاتُ الحيّة من أفاقي برو — iotlive/_all يكتبه جسرُ السحابة كلَّ ١٠ دقائق ═══
+   الربطُ بالسيريال المسجَّل للحساس أو الجيت واي في خطة المخيم. تُقرأ الوثيقةُ عند الحاجة (طبقةُ الحساسات أو بطاقةُ جهاز)
+   مرةً كلَّ ١٠ دقائق على الأكثر — لا مستمعَ دائم. */
+function liveIotLoad(force){   /* the state lives on IOT (no new global): IOT.live = {at, v, busy} */
+  var L = IOT.live || (IOT.live = { at:0, v:null, busy:false });
+  if (L.busy || (!force && Date.now() - L.at < 600000) || typeof DB === 'undefined' || !DB || !DB.col) return;
+  L.busy = true; L.at = Date.now();
+  try { DB.col('iotlive').doc('_all').get().then(function(doc){ L.busy = false; L.v = (doc && doc.exists) ? doc.data() : null; STATE.iotLive = (L.v && L.v.camps) || null;   /* V39.20's liveSensor reads it */ }, function(){ L.busy = false; }); }
+  catch (e){ L.busy = false; }
+}
+function liveIotOf(serial){ var L = IOT.live, u = L && L.v && L.v.units, k = String(serial || '').trim().toLowerCase(); return (u && k && u[k]) || null; }
+function liveIotLine(serial){
+  var x = liveIotOf(serial); if (!x) return '';
+  var age = x.t ? Date.now() - x.t : Infinity, col = age < 1200000 ? '#3FB27F' : age < 7200000 ? '#E0A100' : '#E05252';
+  var v = x.v || {}, parts = [];
+  if (v.temp != null) parts.push(nm(v.temp) + '\u00B0'); if (v.hum != null) parts.push(nm(v.hum) + '\u066A'); if (v.bat != null) parts.push('\u{1F50B} ' + nm(v.bat));
+  return '<div style="margin-top:4px"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + col + '"></span> <b>' + esc(t('القراءة الحية')) + ':</b> '
+    + (parts.length ? esc(parts.join(' \u00B7 ')) : esc(t('لا قيم'))) + ' <span class="hint" style="margin:0">' + esc(age === Infinity ? t('بلا وقت') : age < 7200000 ? t('منذ') + ' ' + nm(Math.max(1, Math.round(age / 60000))) + ' ' + t('د') : t('غير متصل')) + '</span></div>';
+}
 function iotDevHtml(id, kind, i){   /* نافذةُ الجهاز */
   var c = iotOf(id); if (!c) return ''; var x = siteFind(id), nm0 = x ? (x.name || id) : id, m = kind === 's' ? (c.sm[i] || {}) : (c.gm[i] || {});
   var did = kind === 's' ? iotSid(id, c, i) : iotGid(id, c, i), ttl = kind === 's' ? t('حساس حرارة ورطوبة') : t('جيت واي'), out = kind === 's' && iotOutside(id, c).indexOf(i) > -1;
@@ -42,11 +61,13 @@ function iotDevHtml(id, kind, i){   /* نافذةُ الجهاز */
   var cov = kind !== 's' ? '<div class="hint" style="margin:0">' + esc(t('يغطي')) + ' ' + nm(c.sensors.length) + ' ' + esc(t('حساسًا، أبعدها')) + ' ' + nm(iotMax(c.gw, c.sensors, c.gws)) + ' ' + esc(t('م')) + '</div>' : '';
   return '<b>' + esc(ttl) + '</b> <span class="num">' + esc(did) + '</span><br><span class="hint">' + esc(nm0) + '</span>'
     + row('الطراز', m.model) + row('العلامة على الجهاز', m.tag) + row('الغرفة', m.room) + row('السيريال', m.serial) + row('الحالة', m.status || 'مخطط') + row('ملاحظة', m.note) + cov
+    + liveIotLine(m.serial)   /* (V39.47) */
     + (out ? '<div style="color:#E05252">\u26A0 ' + esc(t('خارج حدود المخيم')) + '</div>' : '')
     + (mayIot() ? '<div style="margin-top:6px">' + btn('\u270E ' + t('عدّل'), 'btn-quiet btn-sm', ' data-iotdev="' + esc(id) + '|' + kind + '|' + i + '"')
         + (typeof mvdStart === 'function' ? btn('\u2725 ' + t('حرّك'), 'btn-quiet btn-sm', ' data-mvd="' + esc(id) + '" data-mvdk="' + (kind === 's' ? 's' : 'g') + i + '"') : '') + '</div>' : '');
 }
 function iotPaint(){
+  if (IOT.on) liveIotLoad();   /* (V39.47) the live readings, at most every 10 minutes */
   try { if (typeof m3IotPaint === 'function') m3IotPaint(); } catch (e3){ LS_ERR = e3; }   /* (V39.11) the 3D twin follows */
   if (typeof MAP === 'undefined' || !MAP || typeof L === 'undefined') return;
   try {
@@ -103,10 +124,20 @@ function m3IotFeatures(){
      from outside the camp wherever it stands; the gateway's column rises above the roofs as well. */
   var push = function(camp, kind, i, q, m, bad, sel){
     var P = { camp:camp, kind:kind, i:i, did:(m && m.id) || '', color:iotColor(kind, m, bad, sel), h:kind === 's' ? 1.8 : 6, sel:sel ? 1 : 0 };
-    F.push({ type:'Feature', properties:P, geometry:{ type:'Polygon', coordinates:iotSq(q, kind === 's' ? 0.7 : 1.1) } });
-    /* (V39.32) owner: «الزوم أوي مش مبيّن الحساسات» — the beacon was 0.9 m: a speck at zoom 19. Now 1.6 m for a sensor and 2.2 m
-       for a gateway, a metre and more above the roofs, on a thin stem from the sensor so it reads as «this sensor, here» */
-    F.push({ type:'Feature', properties:Object.assign({}, P, { beacon:1, base:4.8, h:kind === 's' ? 6 : 7.2 }), geometry:{ type:'Polygon', coordinates:iotSq(q, kind === 's' ? 0.8 : 1.1) } });
+    if (kind === 'g'){   /* (V39.48) owner: «خلّي أشكالها متناسبة وواقعية» — the gateway is a cabinet on its pole with an antenna, its status colour on the antenna's tip */
+      var rect = function(w, d, x, y){ var lat = +q[0], lng = +q[1], mLat = 1 / 111320, mLng = 1 / (111320 * Math.cos(lat * Math.PI / 180)), cx = lng + x * mLng, cy = lat + y * mLat, hw = w / 2 * mLng, hd = d / 2 * mLat;
+        return [[[cx - hw, cy - hd], [cx + hw, cy - hd], [cx + hw, cy + hd], [cx - hw, cy + hd], [cx - hw, cy - hd]]]; };
+      F.push({ type:'Feature', properties:Object.assign({}, P, { part:'pole', color:'#55606B', base:0, h:2.1 }), geometry:{ type:'Polygon', coordinates:rect(.1, .1, 0, 0) } });
+      F.push({ type:'Feature', properties:Object.assign({}, P, { part:'cabinet', color:'#DADFE3', base:1.5, h:2.1 }), geometry:{ type:'Polygon', coordinates:rect(.5, .3, 0, 0) } });
+      F.push({ type:'Feature', properties:Object.assign({}, P, { part:'antenna', color:'#1B1F23', base:2.1, h:3.1 }), geometry:{ type:'Polygon', coordinates:rect(.05, .05, .17, 0) } });
+      F.push({ type:'Feature', properties:Object.assign({}, P, { part:'tip', base:3.1, h:3.4 }), geometry:{ type:'Polygon', coordinates:rect(.18, .18, .17, 0) } });
+      F.push({ type:'Feature', properties:Object.assign({}, P, { beacon:1, base:4.8, h:5.3 }), geometry:{ type:'Polygon', coordinates:iotSq(q, 0.25) } });   /* still findable above the roofs */
+    } else {
+    F.push({ type:'Feature', properties:P, geometry:{ type:'Polygon', coordinates:iotSq(q, 0.7) } });
+    /* (V39.32) owner: «الزوم أوي مش مبيّن الحساسات» — the beacon was 0.9 m: a speck at zoom 19. Now 1.6 m for a sensor,
+       a metre and more above the roofs, on a thin stem from the sensor so it reads as «this sensor, here» */
+    F.push({ type:'Feature', properties:Object.assign({}, P, { beacon:1, base:4.8, h:6 }), geometry:{ type:'Polygon', coordinates:iotSq(q, 0.8) } });
+    }
     if (kind === 's') F.push({ type:'Feature', properties:Object.assign({}, P, { stem:1, base:P.h, h:4.8 }), geometry:{ type:'Polygon', coordinates:iotSq(q, 0.12) } });   /* the gateway's own column already rises above the roofs */
     F.push({ type:'Feature', properties:P, geometry:{ type:'Point', coordinates:[+q[1], +q[0]] } });
   };

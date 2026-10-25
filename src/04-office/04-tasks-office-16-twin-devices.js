@@ -45,6 +45,31 @@ function dtwRing(lat, lng, idx, total){
   return [lat + dy, lng + dx];
 }
 
+/* (V39.48) a rectangle w × d metres centred (x, y) metres east/north of p — the device's parts stand on real proportions */
+function dtwRect(p, w, d, x, y){
+  var lat = +p[0], lng = +p[1], mLat = 1 / 111320, mLng = 1 / (111320 * Math.cos(lat * Math.PI / 180));
+  var cx = lng + (x || 0) * mLng, cy = lat + (y || 0) * mLat, hw = w / 2 * mLng, hd = d / 2 * mLat;
+  return [[[cx - hw, cy - hd], [cx + hw, cy - hd], [cx + hw, cy + hd], [cx - hw, cy + hd], [cx - hw, cy - hd]]];
+}
+/* the parts of each kind: {p:part, w,d: footprint m, x,y: offset m, b: base m, t: top m, c: colour}. Real sizes of the field's
+   gear — a reader panel on a 3 m pole, a camera housing with its lens on a 3.8 m pole, a router's small box with two whips,
+   a gateway cabinet with its antenna, an RFID panel antenna, a solar panel on its post, a battery box on the ground.
+   A reader whose colour is its live pulse keeps that colour on its panel. */
+function dtwParts(K, p){
+  var POLE = '#55606B', WHITE = '#EEF1F3', DARK = '#1B1F23', live = K.live ? K.color : WHITE;
+  switch (K.k){
+    case 'reader':  return [{ p:'pole', w:.12, d:.12, b:0, t:2.9, c:POLE }, { p:'panel', w:.5, d:.3, b:2.3, t:2.85, c:live }];
+    case 'camera':  return [{ p:'pole', w:.12, d:.12, b:0, t:3.8, c:POLE }, { p:'head', w:.28, d:.52, b:3.5, t:3.8, c:WHITE }, { p:'lens', w:.14, d:.14, x:0, y:-.3, b:3.56, t:3.72, c:DARK }];
+    case 'router':  return [{ p:'box', w:.34, d:.24, b:1.15, t:1.42, c:'#2B2F36' }, { p:'whip', w:.04, d:.04, x:-.1, b:1.42, t:1.74, c:DARK }, { p:'whip', w:.04, d:.04, x:.1, b:1.42, t:1.74, c:DARK }];
+    case 'gateway': return [{ p:'cabinet', w:.46, d:.26, b:1.5, t:2.1, c:'#DADFE3' }, { p:'antenna', w:.05, d:.05, x:.16, b:2.1, t:2.85, c:DARK }];
+    case 'antenna': return [{ p:'pole', w:.1, d:.1, b:0, t:2.7, c:POLE }, { p:'panel', w:.44, d:.08, b:2.2, t:2.7, c:WHITE }];
+    case 'solar':   return [{ p:'post', w:.1, d:.1, b:0, t:2.6, c:POLE }, { p:'panel', w:1.1, d:.62, b:2.6, t:2.66, c:'#1F3A5F' }];
+    case 'battery': return [{ p:'box', w:.45, d:.28, b:0, t:.35, c:'#5B4636' }];
+    case 'box':     return [{ p:'cabinet', w:.6, d:.4, b:0, t:1.2, c:'#4A4A4A' }];
+    case 'cable':   return [{ p:'reel', w:.3, d:.3, b:0, t:.3, c:'#6D7F8E' }];
+    default:        return [{ p:'unit', w:.4, d:.4, b:0, t:.8, c:K.color }];
+  }
+}
 function dtwFeatures(){
   var F = [];
   if (!MAP_3D || !M3 || !M3.getBounds || !(dtwPaint.on !== false)) return F;
@@ -57,10 +82,12 @@ function dtwFeatures(){
       var g0 = typeof iotFieldGate === 'function' ? iotFieldGate(x.id) : null;   /* (V39.23) the box stands at the camp's street entrance when the field says where */
       var r0 = (STATE.inss || {})[x.id], pp = r0 && r0.pos && r0.pos[dv.code + '#' + dv.i];   /* (V39.31) where it was dragged */
       var K = dtwKinds(dv.code), p = pp ? [+pp[0], +pp[1]] : (g0 ? dtwRing(g0[0], g0[1], j, D.length) : dtwRing(+x.lat, +x.lng, j, D.length));
-      if (K.k === 'reader' && liveState().on) K = { k:K.k, h:K.h, color:liveColorOf(x) };   /* (V39.20) the reader column beats with its pulse */
+      if (K.k === 'reader' && liveState().on) K = { k:K.k, h:K.h, color:liveColorOf(x), live:true };   /* (V39.20) the reader column beats with its pulse */
       var base = typeof m3Base === 'function' ? m3Base(x) : 0;   /* (V39.15) a device on a floor stands on that floor */
-      F.push({ type:'Feature', properties:{ site:x.id, code:dv.code, i:dv.i, serial:dv.serial, kind:K.k, color:K.color, h:base + K.h, base:base },
-               geometry:{ type:'Polygon', coordinates:iotSq(p, 0.5) } });
+      dtwParts(K, p).forEach(function(q){   /* (V39.48) owner: «خلّي أشكالها متناسبة وواقعية» — a pole, a head, a lens, an antenna */
+        F.push({ type:'Feature', properties:{ site:x.id, code:dv.code, i:dv.i, serial:dv.serial, kind:K.k, color:q.c, h:base + q.t, base:base + q.b, part:q.p },
+                 geometry:{ type:'Polygon', coordinates:dtwRect(p, q.w, q.d, q.x, q.y) } });
+      });
     });
   });
   return F;

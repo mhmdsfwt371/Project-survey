@@ -8,6 +8,9 @@
    ٣) كلُّ محاولة كتابةٍ تحمل شرطًا مسبقًا لا يتحقّق أبدًا (وقتُ تحديثٍ من ١٩٧٠): إن سمحت القاعدةُ ردَّ الخادمُ
       «الشرطُ لم يتحقّق» ولم يكتب، وإن منعت ردَّ «ممنوع» — فيُعرَف الحكمُ ولا يتغيّر شيء.
    ٤) ضابطٌ: محاولةٌ بلا حسابٍ يجب أن تُمنع — فإن عادت «مسموحة» فالطريقةُ لا تصلح ويُقال ذلك لا نتيجةٌ كاذبة.
+   ٥) (V39.46) القاعدةُ التي تقرأ السجلَّ المخزَّن (resource.data أو diff — كخلاصة الوزارة) لا يصلح لها الشرطُ المستحيل: يعطي
+      «منع» كاذبًا — ثبت ذلك على القاعدة الحيّة في ٢٥ أكتوبر (الطريقتان على السجلّ نفسِه: الشرطُ المستحيل «منع» والكتابةُ
+      الحقيقيةُ «سماح»). فهذه تُختبَر بكتابةٍ حقيقيةٍ على سجلَّي الاختبار zz-rulecheck (محذوفان دائمًا فلا يظهران في شاشة).
    ═══════════════════════════════════════════════════════════════════════════ */
 import { readFileSync, writeFileSync, appendFileSync } from 'fs';
 import { randomUUID } from 'crypto';
@@ -108,37 +111,6 @@ else {
     say('| ' + name + ' | ' + cells.join(' | ') + ' |');
   }
 }
-/* ٥) (V39.43) تشخيصُ ما يُرفَض للوزارة — لا يغيّر الحكم. الفرضية: رقمٌ غيرُ منتهٍ (NaN) محفوظٌ في السجل يجعل
-   «diff» يعدّه متغيّرًا في كل كتابة (NaN لا يساوي نفسَه)، فتسقط قاعدةُ «الخلاصة وحدها» على السجلات الحقيقية لا على المحاكي */
-const diag = t => { console.log('::warning title=rules-live-diag::' + t); lines.push('- ' + t); };
-const isPlain = v => v && typeof v === 'object' && !Array.isArray(v) && v.constructor === Object;
-const nonFinite = (o, pre = '') => { const out = [];
-  for (const [k, v] of Object.entries(o || {})){
-    if (typeof v === 'number' && !Number.isFinite(v)) out.push(pre + k);
-    else if (Array.isArray(v)) v.forEach((x, i) => { if (typeof x === 'number' && !Number.isFinite(x)) out.push(pre + k + '[' + i + ']'); else if (isPlain(x)) out.push(...nonFinite(x, pre + k + '[' + i + '].')); });
-    else if (isPlain(v)) out.push(...nonFinite(v, pre + k + '.'));
-  } return out; };
-async function getProbe(role, path){
-  const r = await fetch('https://firestore.googleapis.com/v1/projects/' + PROJECT + '/databases/(default)/documents/' + path, { headers:{ authorization:'Bearer ' + tok[role] } });
-  return r.status === 200 ? 'سماح' : r.status === 403 ? 'منع' : String(r.status);
-}
-try {
-  lines.push('\n## تشخيص');
-  if (recPending){
-    const rd = (await db.collection('recs').doc(recPending).get()).data() || {};
-    diag('الزيارةُ المختبَرة: حقولٌ غيرُ منتهية = ' + (nonFinite(rd).join('، ') || 'لا شيء') + ' · قراءةُ الوزارة لها: ' + await getProbe('viewer', 'recs/' + recPending));
-  }
-  if (insAny){ const idoc = (await db.collection('inss').doc(insAny).get()).data() || {}; diag('التركيبُ المختبَر: حقولٌ غيرُ منتهية = ' + (nonFinite(idoc).join('، ') || 'لا شيء')); }
-  if (RC_OK) diag('الطريقةُ نفسُها على سجلّ الاختبار (شرطٌ مستحيل): خلاصةُ الوزارة ← ' + await writeProbe('viewer', 'recs/zz-rulecheck', { bst:'ملاحظة' }) + ' — إن كانت «منع» والكتابةُ الحقيقيةُ «سماح» فالشرطُ المستحيلُ لا يصلح للقواعد التي تقرأ السجلّ المخزَّن');
-  for (const col of ['recs', 'inss']){
-    const snap = await db.collection(col).get(); let dirty = 0, clean = ''; const keys = {};
-    snap.forEach(d => { const nf = nonFinite(d.data()); if (nf.length){ dirty++; nf.forEach(k => { const kk = k.replace(/\[\d+\]/g, '[]'); keys[kk] = (keys[kk] || 0) + 1; }); } else if (!clean) clean = d.id; });
-    const top = Object.entries(keys).sort((x, y) => y[1] - x[1]).slice(0, 4).map(([k, n]) => k + ' ×' + n).join('، ');
-    const probe = clean ? await writeProbe('viewer', col + '/' + clean, { bst:'ملاحظة' }) : 'بلا سجلٍّ نظيف';
-    diag(col + ': ' + dirty + ' من ' + snap.size + ' فيها رقمٌ غيرُ منتهٍ' + (top ? ' (' + top + ')' : '') + ' · خلاصةُ الوزارة على سجلٍّ نظيف: ' + probe);
-  }
-} catch (e){ diag('تعذّر التشخيص: ' + String(e.message).slice(0, 150)); }
-
 if (RC_OK) try { await db.collection('recs').doc('zz-rulecheck').set(RC_DOC, { merge:true }); await db.collection('inss').doc('zz-rulecheck').set(Object.assign({}, RC_DOC, { status:'مُركّب' }), { merge:true }); } catch (e){}
 /* ٤) تعطيلُ الحسابات المؤقّتة */
 for (const r of ROLES){
