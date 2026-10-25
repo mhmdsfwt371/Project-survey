@@ -92,6 +92,36 @@ else {
     say('| ' + name + ' | ' + cells.join(' | ') + ' |');
   }
 }
+/* ٥) (V39.43) تشخيصُ ما يُرفَض للوزارة — لا يغيّر الحكم. الفرضية: رقمٌ غيرُ منتهٍ (NaN) محفوظٌ في السجل يجعل
+   «diff» يعدّه متغيّرًا في كل كتابة (NaN لا يساوي نفسَه)، فتسقط قاعدةُ «الخلاصة وحدها» على السجلات الحقيقية لا على المحاكي */
+const diag = t => { console.log('::warning title=rules-live-diag::' + t); lines.push('- ' + t); };
+const isPlain = v => v && typeof v === 'object' && !Array.isArray(v) && v.constructor === Object;
+const nonFinite = (o, pre = '') => { const out = [];
+  for (const [k, v] of Object.entries(o || {})){
+    if (typeof v === 'number' && !Number.isFinite(v)) out.push(pre + k);
+    else if (Array.isArray(v)) v.forEach((x, i) => { if (typeof x === 'number' && !Number.isFinite(x)) out.push(pre + k + '[' + i + ']'); else if (isPlain(x)) out.push(...nonFinite(x, pre + k + '[' + i + '].')); });
+    else if (isPlain(v)) out.push(...nonFinite(v, pre + k + '.'));
+  } return out; };
+async function getProbe(role, path){
+  const r = await fetch('https://firestore.googleapis.com/v1/projects/' + PROJECT + '/databases/(default)/documents/' + path, { headers:{ authorization:'Bearer ' + tok[role] } });
+  return r.status === 200 ? 'سماح' : r.status === 403 ? 'منع' : String(r.status);
+}
+try {
+  lines.push('\n## تشخيص');
+  if (recPending){
+    const rd = (await db.collection('recs').doc(recPending).get()).data() || {};
+    diag('الزيارةُ المختبَرة: حقولٌ غيرُ منتهية = ' + (nonFinite(rd).join('، ') || 'لا شيء') + ' · قراءةُ الوزارة لها: ' + await getProbe('viewer', 'recs/' + recPending));
+  }
+  if (insAny){ const idoc = (await db.collection('inss').doc(insAny).get()).data() || {}; diag('التركيبُ المختبَر: حقولٌ غيرُ منتهية = ' + (nonFinite(idoc).join('، ') || 'لا شيء')); }
+  for (const col of ['recs', 'inss']){
+    const snap = await db.collection(col).get(); let dirty = 0, clean = ''; const keys = {};
+    snap.forEach(d => { const nf = nonFinite(d.data()); if (nf.length){ dirty++; nf.forEach(k => { const kk = k.replace(/\[\d+\]/g, '[]'); keys[kk] = (keys[kk] || 0) + 1; }); } else if (!clean) clean = d.id; });
+    const top = Object.entries(keys).sort((x, y) => y[1] - x[1]).slice(0, 4).map(([k, n]) => k + ' ×' + n).join('، ');
+    const probe = clean ? await writeProbe('viewer', col + '/' + clean, { bst:'ملاحظة' }) : 'بلا سجلٍّ نظيف';
+    diag(col + ': ' + dirty + ' من ' + snap.size + ' فيها رقمٌ غيرُ منتهٍ' + (top ? ' (' + top + ')' : '') + ' · خلاصةُ الوزارة على سجلٍّ نظيف: ' + probe);
+  }
+} catch (e){ diag('تعذّر التشخيص: ' + String(e.message).slice(0, 150)); }
+
 /* ٤) تعطيلُ الحسابات المؤقّتة */
 for (const r of ROLES){
   try { await auth.updateUser('rc-' + r, { disabled:true }); } catch (e){}
