@@ -354,6 +354,36 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
                   : '')
             : '<p class="hint" style="margin:0">' + esc(t('لا تكرارَ في الإحداثيات.')) + '</p>')
 
+      /* (V39.60) owner: «اعرضهالي كده بس، وخلّي البيانات الأساسية القديمة الصح، وأعدّل أنا أي وقت» — camps whose name says one
+         square/sign and whose fields say another (65 in the registry itself, e.g. 0631: name «A2/38», sign «D/204»). Shown only:
+         nothing is changed automatically; each opens its point, where «تعديل البيانات» fixes it. */
+      + (function(){
+          var M = typeof campNameMismatch === 'function' ? campNameMismatch() : [];
+          if (!M.length) return '';
+          return card('\u{1F3F7} ' + t('اسم المخيم لا يطابق مربعه وشاخصه') + ' — ' + nm(M.length),
+            '<p class="hint" style="margin:0 0 8px">' + esc(t('للعرض فقط — لا يتغيّر شيءٌ تلقائيًّا. افتح النقطة ثم «تعديل البيانات» وصحّح ما يلزم متى شئت.')) + '</p>'
+            + M.slice(0, campNameMismatch.all ? 200 : 12).map(function(o){ var x = o.x;
+                return '<button type="button" class="btn btn-quiet btn-sm" data-site="' + esc(x.id) + '" style="width:100%;justify-content:space-between;margin-bottom:4px;text-align:start"><span><b>' + esc(x.id) + '</b><br><span class="hint" style="margin:0">' + esc(t('الاسم')) + ': ' + esc(t('مربع')) + ' ' + esc(o.nSq) + ' · ' + esc(t('شاخص')) + ' ' + esc(o.nSign) + '</span><br><span class="hint" style="margin:0">' + esc(t('البيانات')) + ': ' + esc(t('مربع')) + ' ' + esc(x.sq || '—') + ' · ' + esc(t('شاخص')) + ' ' + esc(x.sign || '—') + '</span></span><span>\u270E</span></button>'; }).join('')
+            + (M.length > 12 ? '<div class="actions" style="margin:6px 0 0">' + btn(campNameMismatch.all ? t('اعرض أقل') : t('اعرض الكل') + ' (' + nm(M.length) + ')', 'btn-quiet btn-sm', ' data-cnmall="1"') + '</div>' : ''));   /* (V39.61) the screen stays light: twelve, the rest on demand */
+        })()
+      /* (V39.58) owner: «الدوائر اللي في عرفات امسحها وارسمها مخيمات — مش عايز أي دائرة على مخيم». A camp is drawn as a circle
+         only when it has no boundary: a point added on the map after the registry. Inside a registered camp's boundary it is
+         that camp registered twice — merged here: its visit moves to the registered camp (when that one has none) and it
+         leaves the map; outside every boundary it is a new camp waiting for its boundary to be drawn. */
+      + (function(){
+          var C = typeof campCircles === 'function' ? campCircles() : { inside:[], outside:[] };
+          if (!C.inside.length && !C.outside.length) return '';
+          var nm2 = function(x){ return '<b>' + esc(x.name || x.id) + '</b> <span class="hint num" style="margin:0">' + esc(x.id) + '</span>'; };
+          return card('\u2B55 ' + t('مخيماتٌ تظهر دوائر') + ' — ' + nm(C.inside.length + C.outside.length),
+            '<p class="hint" style="margin:0 0 8px">' + esc(t('المخيمُ يُرسم دائرةً حين لا حدودَ له. ما يقع داخل حدود مخيمٍ مسجَّلٍ هو المخيمُ نفسُه مضافًا مرةً ثانية: «ادمج» ينقل زيارتَه إليه إن كان بلا زيارة ويُخفيه من الخريطة؛ وما يقع خارج كلِّ الحدود مخيمٌ جديدٌ تُرسم حدودُه.')) + '</p>'
+            + (C.inside.length && may2 ? '<div class="actions" style="margin:0 0 8px">' + btn('\u21C4 ' + t('ادمج الكل') + ' (' + nm(C.inside.length) + ')', 'btn-primary btn-sm', ' data-ccmergeall="1"') + '</div>' : '')
+            + C.inside.slice(0, 60).map(function(o){
+                return '<div class="card" style="margin:0 0 6px;padding:8px 10px"><div>' + nm2(o.dup) + ' \u2192 ' + nm2(o.keep) + (o.both ? ' <span class="pill warn">' + esc(t('الاثنان مُسحا — تُخفى الدائرة ويبقى سجلّها')) + '</span>' : '') + '</div>'
+                  + '<div class="actions" style="margin:6px 0 0">' + btn(t('افتح'), 'btn-quiet btn-sm', ' data-site="' + esc(o.dup.id) + '"') + (may2 ? btn('\u21C4 ' + t('ادمج'), 'btn-quiet btn-sm', ' data-ccmerge="' + esc(o.keep.id) + '|' + esc(o.dup.id) + '"') : '') + '</div></div>'; }).join('')
+            + (C.outside.length ? '<p class="hint" style="margin:10px 0 4px">' + esc(t('خارج كلِّ الحدود — مخيماتٌ جديدةٌ تنتظر رسمَ حدودها')) + ' <b class="num">' + nm(C.outside.length) + '</b></p>'
+                + C.outside.slice(0, 40).map(function(x){ return '<button type="button" class="btn btn-quiet btn-sm" data-site="' + esc(x.id) + '" style="width:100%;justify-content:space-between;margin-bottom:4px"><span>' + nm2(x) + '</span><span>\u270F</span></button>'; }).join('') : ''));
+        })()
+
       + card('\u{1F3E2} ' + t('مخيماتٌ بلا شركة') + ' — ' + nm(noco.length),
           (noco.length
             ? '<p class="hint" style="margin:0 0 8px">' + esc(t('تسقط من تقارير الشركات ولا يصلها إشعارُ مواعيد التركيب. إمّا تُعبَّأ من كشف التخصيص، أو تُوسَم «بلا تخصيص» فتُستثنى صراحةً بدل أن تُحسَب صفرًا صامتًا.')) + '</p>'

@@ -103,6 +103,28 @@ function dqDupPos(){
    ويختار الأصلَ، فيُدمَج التوأمُ فيه (يُخفى ويُوسَم dupOf) فيخرج من كلِّ عدٍّ
    وشاشةٍ ويبقى مسجَّلًا للرجوع. والأصلُ يجب أن يكون ما مُسح إن مُسح أحدُهما. */
 function siteKeyOf(x){ return (+x.lat) && (+x.lng) ? (+x.lat).toFixed(5) + ',' + (+x.lng).toFixed(5) : ''; }
+/* (V39.60) camps whose name «… - مربع X - شاخص Y» disagrees with their square/sign fields */
+function campNameMismatch(){
+  var out = [], norm = function(v){ return String(v == null ? '' : v).replace(/\s+/g, '').toLowerCase(); };
+  (STATE.sites || []).forEach(function(x){
+    if (x.type !== 'مخيم') return; var m = /مربع\s+(.+?)\s+-\s+شاخص\s+(.+)$/.exec(String(x.name || '')); if (!m) return;
+    if (norm(m[1]) !== norm(x.sq) || norm(m[2]) !== norm(x.sign)) out.push({ x:x, nSq:m[1].trim(), nSign:m[2].trim() });
+  });
+  return out;
+}
+/* (V39.58) camps drawn as circles (no boundary): inside a registered camp's boundary → {dup, keep, both}; else outside */
+function campCircles(){
+  var out = { inside:[], outside:[] }; if (typeof campFoot !== 'function' || typeof POLY !== 'object' || !POLY) return out;   /* before the boundary file loads every camp looks boundary-less */
+  var withFoot = [], bare = [];
+  (STATE.sites || []).forEach(function(x){ if (x.type !== 'مخيم' || !(+x.lat && +x.lng)) return; var r = campFoot(x); if (r && r.length > 2) withFoot.push({ x:x, r:r }); else bare.push(x); });
+  var inR = function(lat, lng, r){ var c = false; for (var i = 0, j = r.length - 1; i < r.length; j = i++){ var yi = r[i][1], yj = r[j][1], xi = r[i][0], xj = r[j][0]; if (((yi > lat) !== (yj > lat)) && (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi)) c = !c; } return c; };
+  bare.forEach(function(x){
+    var h = null; for (var i = 0; i < withFoot.length && !h; i++) if (inR(+x.lat, +x.lng, withFoot[i].r)) h = withFoot[i].x;
+    if (h) out.inside.push({ dup:x, keep:h, both:!!(svVisited((STATE.recs || {})[x.id]) && svVisited((STATE.recs || {})[h.id])) });
+    else out.outside.push(x);
+  });
+  return out;
+}
 function twinOf(x){
   if (!x) return null;
   var k = siteKeyOf(x); if (!k) return null;

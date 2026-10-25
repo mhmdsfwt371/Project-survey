@@ -18,6 +18,22 @@ function dupMerge(keepId, dupId){
   return true;
 }
 
+/* (V39.58) merge a boundary-less camp point into the registered camp that contains it: its visit (and installation) move
+   when the registered camp has none, then it is hidden like a merged twin (dupOf) — undone from the same list */
+function campMergeInto(keepId, dupId){
+  if (!maySiteEdit()){ toast(t('تعديلُ بيانات النقطة للمهندس فما فوق')); return false; }
+  var keep = siteFind(keepId), dup = siteFind(dupId);
+  if (!keep || !dup || keepId === dupId){ toast(t('لا نقطةَ بهذا المعرِّف')); return false; }
+  var moved = [];
+  [['recs', 'الزيارة'], ['inss', 'التركيب']].forEach(function(k){
+    var src = (STATE[k[0]] || {})[dupId], dst = (STATE[k[0]] || {})[keepId];
+    if (src && !src.deleted && (!dst || dst.deleted)){ CORE.set(k[0], keepId, Object.assign({}, src, { id:keepId, movedFrom:dupId, movedAt:Date.now() })); moved.push(k[1]); }
+  });
+  siteOvSet(dupId, { hidden:true, dupOf:keepId, dupBy:STATE.meta.name || '', dupAt:Date.now() });
+  siteOvApply(); statBump();
+  logEvent('دمجُ مخيمٍ بلا حدود — ' + dupId + ' في ' + keepId + (moved.length ? ' (نُقل: ' + moved.join('، ') + ')' : ''), keepId);
+  return true;
+}
 function dupUndo(dupId){
   if (!maySiteEdit()){ toast(t('تعديلُ بيانات النقطة للمهندس فما فوق')); return false; }
   var h = (STATE.hiddenSites || []).filter(function(x){ return x.id === dupId; })[0];

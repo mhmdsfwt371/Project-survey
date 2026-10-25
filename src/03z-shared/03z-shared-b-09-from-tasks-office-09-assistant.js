@@ -71,6 +71,7 @@ var HELP_KEYWORDS = {
   exp:       ['تصدير اكسيل','استيراد ملف','رفع ملف'],
   guide:     ['طريقة الاستخدام','شرح التطبيق'],
   ncr:       ['عدم مطابقة','مشكلة جودة'],
+  dq:        ['جودة البيانات','جوده البيانات','المكررات','الدوائر','مخيمات تظهر دوائر','اسم المخيم لا يطابق'],   /* (V39.60) owner searched «جودة البيانات» and got NCR first — the data-quality cards are the «تصحيح البيانات» tab */
   hse:       ['حادث','سلامة','بلاغ حادثة'],
   budget:    ['الميزانية','حد الاعتماد المالي'],
   consts:    ['ثوابت النظام','ساعات العمل','ايام الاسبوع'],
@@ -264,7 +265,10 @@ function askEngClick(e){
   if (to){ askEngOpen(to.getAttribute('data-askengto')); return; }
   try { assistLog(ASSIST_Q, false, true); } catch (eAL2){ LS_ERR = eAL2; }
   var al = askEngList();
-  if (al.length > 1){ askEngWho.pick = true; render(1); return; }
+  /* (V39.61) owner: «زرار كلّم المهندس مش بيفتح أصلًا». With more than one engineer the button set «pick» and called render(1) —
+     but the assistant's results box is kept across renders (the typed question stays), so the engineer list never appeared
+     and the button looked dead. The box itself is redrawn now. */
+  if (al.length > 1){ askEngWho.pick = true; var rsA = document.getElementById('assistRes'); if (rsA) rsA.innerHTML = assistResHtml(); else render(1); return; }
   if (al.length){ askEngOpen(al[0]); return; }
   BUG_FROM_ASSIST = String(ASSIST_Q || ''); BUG_KIND = 'عطل'; BUG_OPEN = true; ASSIST_OPEN = false; render(1);
 }

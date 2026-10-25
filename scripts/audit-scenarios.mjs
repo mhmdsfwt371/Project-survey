@@ -1959,6 +1959,65 @@ console.log('\n══ ٧٦ · نوعُ المخيم في نموذج المسح �
   delete w.STATE.recs[norm.id].ctype; delete w.STATE.recs[norm.id].tbar; delete norm._tax; w.formReset();
 }
 
+/* ── ٧٧ · (V39.58) مخيماتٌ تظهر دوائر: داخل حدود مسجَّلٍ تُدمج وتنتقل زيارتُها، وخارجها تنتظر حدودها ── */
+console.log('\n══ ٧٧ · المخيمات الدائرية ══');
+{
+  w.POLY = w.POLY || {};
+  const keep = w.STATE.sites.find(x => x.type === 'مخيم' && +x.lat && +x.lng && !w.STATE.recs[x.id]);
+  const la = +keep.lat, lo = +keep.lng, d = 0.0004;
+  const hadPoly = w.POLY[keep.id]; w.POLY[keep.id] = [[lo - d, la - d], [lo + d, la - d], [lo + d, la + d], [lo - d, la + d], [lo - d, la - d]];
+  const dup = { id:'NSK-ARF-CMP-N900ZZ', name:'دائرة اختبار', zone:keep.zone, type:'مخيم', lat:la + 0.0001, lng:lo };
+  const far = { id:'NSK-ARF-CMP-N901ZZ', name:'مخيم جديد', zone:keep.zone, type:'مخيم', lat:la + 0.05, lng:lo + 0.05 };
+  w.STATE.sites.push(dup, far); w.STATE.recs[dup.id] = { id:dup.id, access:'تم الوصول', st:'تمت الزيارة', by:'فني', at:Date.now() };
+  const C = w.campCircles();
+  T(C.inside.some(o => o.dup.id === dup.id && o.keep.id === keep.id) && C.outside.some(x => x.id === far.id), 'الدائرةُ داخل حدود مخيمٍ مسجَّلٍ تُعرف بأصلها، والبعيدةُ مخيمٌ جديدٌ بلا حدود');
+  w.ROLE = 'admin'; w.STATE.meta.role = 'admin';
+  T(w.campMergeInto(keep.id, dup.id) === true && w.STATE.recs[keep.id] && w.STATE.recs[keep.id].movedFrom === dup.id && !w.STATE.sites.some(x => x.id === dup.id), '«ادمج»: الزيارةُ انتقلت إلى المسجَّل والدائرةُ اختفت من الخريطة');
+  T(w.dupMerged().some(x => x.id === dup.id && x.dupOf === keep.id), 'وتظهر في «مدمَجةٌ من قبل» ويُفكّ دمجُها من هناك');
+  w.STATE.sites = w.STATE.sites.filter(x => x.id !== far.id); delete w.STATE.recs[keep.id]; delete w.STATE.recs[dup.id];
+  if (hadPoly) w.POLY[keep.id] = hadPoly; else delete w.POLY[keep.id];
+}
+
+/* ── ٧٨ · (V39.59) حدودُ المخيمات المحفوظةُ على الجهاز تُراجَع مع الخادم فتصل الحدودُ المكتملة ── */
+console.log('\n══ ٧٨ · حدودُ المخيمات تتجدّد ══');
+{
+  const P0 = w.POLY, L0 = w.POLY_LOADING, g0 = w.idbGet, s0 = w.idbSet, f0 = w.fetch;
+  const oldP = { 'NSK-ARF-CMP-0001':[[39.98, 21.33], [39.981, 21.33], [39.981, 21.331]] };
+  const newP = Object.assign({}, oldP, { 'NSK-ARF-CMP-0631':[[39.977, 21.342], [39.9772, 21.342], [39.9772, 21.3423], [39.977, 21.3423]] });
+  let stored = null;
+  w.idbGet = k => Promise.resolve(k === 'poly' ? oldP : null); w.idbSet = (k, v) => { if (k === 'poly') stored = v; return Promise.resolve(); };
+  w.fetch = () => Promise.resolve({ ok:true, json:() => Promise.resolve(newP) });
+  w.POLY = null; w.POLY_LOADING = null; w.polyRevalidate.done = false;
+  await w.polyLoad(); await new Promise(r => setTimeout(r, 30));
+  T(!!w.POLY['NSK-ARF-CMP-0631'] && stored && stored['NSK-ARF-CMP-0631'], 'نسخةُ الجهاز القديمة تُعرض ثم تُستبدل بالأحدث من الخادم وتُحفظ — فلا يبقى مخيمٌ دائرةً لأن جهازه حفظ ملفًّا قديمًا');
+  w.idbGet = g0; w.idbSet = s0; w.fetch = f0; w.POLY = P0; w.POLY_LOADING = L0;
+}
+
+/* ── ٧٩ · (V39.60) اسمُ المخيم لا يطابق بياناته: يُعرض ولا يُغيَّر، والمساعدُ يدلّ على جودة البيانات ── */
+console.log('\n══ ٧٩ · اسمُ المخيم وبياناته ══');
+{
+  const M = w.campNameMismatch(), x = w.siteFind('NSK-ARF-CMP-0631');
+  T(M.length >= 60 && M.some(o => o.x.id === 'NSK-ARF-CMP-0631' && o.nSign === 'A2/38') && x.sign === 'D/204', 'المخيماتُ التي يخالف اسمُها مربعَها وشاخصَها تُعرض (' + M.length + ') — ومنها ٠٦٣١ (الاسم A2/38، البيانات D/204) ولا يتغيّر شيء');
+  const hs = w.helpSearch('جودة البيانات', 0).map(e => e.id);
+  T(hs[0] === 'dq', 'والمساعدُ يدلّ على «تصحيح البيانات» قبل «عدم المطابقة» حين يُسأل عن جودة البيانات: ' + hs.slice(0, 3).join('،'));
+}
+
+/* ── ٨٠ · (V39.61) «كلّم المهندس» يفتح قائمةَ المهندسين ثم المحادثة ── */
+console.log('\n══ ٨٠ · كلّم المهندس ══');
+{
+  const U0 = w.STATE.users, me0 = w.STATE.meta.name, cur0 = w.CUR;
+  if (!w.STATE.meta.name) w.STATE.meta.name = 'مالك';
+  w.STATE.users = { a:{ name:w.STATE.meta.name, role:'admin', active:true }, b:{ name:'م. أول', role:'engineer', active:true }, c:{ name:'م. ثانٍ', role:'engineer', active:true } };
+  w.askEngWho.pick = false; w.ASSIST_OPEN = true; w.ASSIST_Q = 'سؤال تجربة'; w.render(1); await new Promise(r => setTimeout(r, 80));
+  const b = w.document.querySelector('[data-askeng]');
+  if (b){ b.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await new Promise(r => setTimeout(r, 80)); }
+  const pk = w.document.querySelector('[data-askengto]');
+  T(!!b && !!pk, 'الضغطُ على «كلّم المهندس» يُظهر قائمةَ المهندسين في المساعد نفسه (كان يبدو زرًّا ميّتًا)');
+  if (pk){ pk.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await new Promise(r => setTimeout(r, 120)); }
+  T(w.CUR === 'chat' && w.ASSIST_OPEN === false && /^dm:/.test((w.chPageHtml.f || {}).open || ''), 'واختيارُ المهندس يفتح المحادثةَ معه وفيها السؤال');
+  w.STATE.users = U0; w.STATE.meta.name = me0; w.askEngWho.pick = false; w.goPage(cur0 || 'map'); w.render(1);
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

@@ -21,11 +21,11 @@
 | `01-core-registry-07-blackbox-registry.js` | 190 | 12 | Black box (crash forensics) and the embedded site registry SITES_RAW with its publish/cache cycle to the database. |
 | `01-core-registry-08-egates-seed.js` | 72 | 7 | Al Mashaaer train: the nine stations and their 62 E-GATE points (registry points at the station reference, owner decision Q-023), the station card listing its g |
 
-## `02-catalog/` — الكتالوج والنقطة — التعريفات والتصنيف والصلاحيات وتعديل المسح  (12 ملفات · 4138 سطر · 244 دالة)
+## `02-catalog/` — الكتالوج والنقطة — التعريفات والتصنيف والصلاحيات وتعديل المسح  (12 ملفات · 4160 سطر · 246 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
-| `02-catalog-forms-01-site-edit-twins.js` | 244 | 21 | Site rows from the registry (siteRow/loadSites), zone-of-type rules, editing site data without a visit (override layer), bulk data corrections, twin points on o |
+| `02-catalog-forms-01-site-edit-twins.js` | 266 | 23 | Site rows from the registry (siteRow/loadSites), zone-of-type rules, editing site data without a visit (override layer), bulk data corrections, twin points on o |
 | `02-catalog-forms-02-types-shapes-filters.js` | 499 | 30 | Point classification and map shapes per type, owner taxonomy (five zones, nine types), path filters, ministry camera details, tafweej layer, camp path and the f |
 | `02-catalog-forms-03-site-details-points.js` | 351 | 9 | Full site details page (PAGE.site) and technician points computed from work. |
 | `02-catalog-forms-04-mywork-diary.js` | 537 | 9 | 'My work' screens, project diary, weight/target simulator and how dues are computed. |
@@ -54,7 +54,7 @@
 | `03-survey-records-10-wbs-plan-trials.js` | 471 | 29 | Work breakdown structure, plan versus actual, plan export with formulas, item file and the trials page. |
 | `03-survey-records-11-weekly-tasks-paths.js` | 477 | 31 | Weekly tasks as sentence cards, meeting mode, the one filter for screen and paper, and path filtering with each path's status. |
 
-## `03z-shared/` — المشتركُ — تعريفاتٌ تحتاجها النواةُ قبل مجالات المكتب والوزارة والتقارير (نُقلت حرفيًّا، لا كودَ جديدًا هنا)  (63 ملفات · 8082 سطر · 454 دالة)
+## `03z-shared/` — المشتركُ — تعريفاتٌ تحتاجها النواةُ قبل مجالات المكتب والوزارة والتقارير (نُقلت حرفيًّا، لا كودَ جديدًا هنا)  (63 ملفات · 8099 سطر · 456 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -71,7 +71,7 @@
 | `03z-shared-11-from-tasks-office-11-site-popup.js` | 422 | 10 | Definitions moved verbatim from src/04-office/04-tasks-office-11-site-popup.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names,  |
 | `03z-shared-12-from-tasks-office-12-draw-paths-areas.js` | 306 | 28 | Definitions moved verbatim from src/04-office/04-tasks-office-12-draw-paths-areas.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these n |
 | `03z-shared-13-from-tasks-office-13-perf-distribution-cameras.js` | 260 | 14 | Definitions moved verbatim from src/04-office/04-tasks-office-13-perf-distribution-cameras.js (V38.38, stage A of core + chunks): the core (01–05, 08) reference |
-| `03z-shared-14-from-tasks-office-14-pull-scope-listen-map.js` | 365 | 21 | Definitions moved verbatim from src/04-office/04-tasks-office-14-pull-scope-listen-map.js (V38.38, stage A of core + chunks): the core (01–05, 08) references th |
+| `03z-shared-14-from-tasks-office-14-pull-scope-listen-map.js` | 378 | 23 | Definitions moved verbatim from src/04-office/04-tasks-office-14-pull-scope-listen-map.js (V38.38, stage A of core + chunks): the core (01–05, 08) references th |
 | `03z-shared-15-from-tasks-office-15-handover-minutes.js` | 183 | 8 | Definitions moved verbatim from src/04-office/04-tasks-office-15-handover-minutes.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these n |
 | `03z-shared-16-from-exec-report-01-exec-report.js` | 116 | 13 | Definitions moved verbatim from src/06-ministry/06-exec-report-01-exec-report.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names |
 | `03z-shared-17-from-ext-camps-03-nusuk-card-system.js` | 493 | 33 | Definitions moved verbatim from src/06-ministry/06-ext-camps-03-nusuk-card-system.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these n |
@@ -102,7 +102,7 @@
 | `03z-shared-b-06-from-tasks-office-06-risks-changes-coverage.js` | 21 | 1 | Definitions moved verbatim from src/04-office/04-tasks-office-06-risks-changes-coverage.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 0 |
 | `03z-shared-b-07-from-tasks-office-07-incidents-milestones.js` | 32 | 2 | Definitions moved verbatim from src/04-office/04-tasks-office-07-incidents-milestones.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08) |
 | `03z-shared-b-08-from-tasks-office-08-reports-center-sop-help.js` | 165 | 1 | Definitions moved verbatim from src/04-office/04-tasks-office-08-reports-center-sop-help.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05,  |
-| `03z-shared-b-09-from-tasks-office-09-assistant.js` | 386 | 19 | Definitions moved verbatim from src/04-office/04-tasks-office-09-assistant.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08) references |
+| `03z-shared-b-09-from-tasks-office-09-assistant.js` | 390 | 19 | Definitions moved verbatim from src/04-office/04-tasks-office-09-assistant.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08) references |
 | `03z-shared-b-10-from-tasks-office-10-assistant-reports.js` | 163 | 5 | Definitions moved verbatim from src/04-office/04-tasks-office-10-assistant-reports.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08) re |
 | `03z-shared-b-11-from-tasks-office-12-draw-paths-areas.js` | 30 | 3 | Definitions moved verbatim from src/04-office/04-tasks-office-12-draw-paths-areas.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08) ref |
 | `03z-shared-b-12-from-tasks-office-13-perf-distribution-cameras.js` | 27 | 1 | Definitions moved verbatim from src/04-office/04-tasks-office-13-perf-distribution-cameras.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05 |
@@ -122,7 +122,7 @@
 | `03z-shared-b-26-from-approvals-reports-10-point-actions-export-pdf.js` | 52 | 2 | Definitions moved verbatim from src/07-reports/07-approvals-reports-10-point-actions-export-pdf.js (V38.38–V38.39, stage A of core + chunks, pass b): the core ( |
 | `03z-shared-b-27-from-approvals-reports-11-import-roles-perms.js` | 29 | 0 | Definitions moved verbatim from src/07-reports/07-approvals-reports-11-import-roles-perms.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, |
 
-## `03zz-late/` —   (65 ملفات · 6831 سطر · 439 دالة)
+## `03zz-late/` —   (65 ملفات · 6847 سطر · 440 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -131,7 +131,7 @@
 | `01-core--01-core-registry-03-config-values.js` | 13 | 1 | Moved verbatim from src/01-core/01-core-registry-03-config-values.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk c |
 | `01-core--01-core-registry-07-blackbox-registry.js` | 81 | 6 | Moved verbatim from src/01-core/01-core-registry-07-blackbox-registry.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chu |
 | `01-core--01-core-registry-08-egates-seed.js` | 16 | 1 | Moved verbatim from src/01-core/01-core-registry-08-egates-seed.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk cal |
-| `02-catalog--02-catalog-forms-01-site-edit-twins.js` | 184 | 11 | Moved verbatim from src/02-catalog/02-catalog-forms-01-site-edit-twins.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office ch |
+| `02-catalog--02-catalog-forms-01-site-edit-twins.js` | 200 | 12 | Moved verbatim from src/02-catalog/02-catalog-forms-01-site-edit-twins.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office ch |
 | `02-catalog--02-catalog-forms-02-types-shapes-filters.js` | 96 | 10 | Moved verbatim from src/02-catalog/02-catalog-forms-02-types-shapes-filters.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the offi |
 | `02-catalog--02-catalog-forms-03-site-details-points.js` | 38 | 2 | Moved verbatim from src/02-catalog/02-catalog-forms-03-site-details-points.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the offic |
 | `02-catalog--02-catalog-forms-04-mywork-diary.js` | 34 | 1 | Moved verbatim from src/02-catalog/02-catalog-forms-04-mywork-diary.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk |
@@ -242,7 +242,7 @@
 | `05-lifecycle-map-20-map3d-ui.js` | 111 | 10 | (V39.28) owner: «الخريطة الـ3D مش حلوة وفيها حاجات كتير مخلياها صعبة — فكّر كمهندس GIS: نضيف وسهل المراقبة |
 | `05-lifecycle-map-21-move-devices.js` | 127 | 11 | (V39.31) owner: «عاوز أي نقطة، من أقل نقطة، أقدر أحرّكها: كاميرا وأنتنات وريدر وحساسات وجيت واي وخلافه». A point |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4398 سطر · 158 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4408 سطر · 158 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -256,11 +256,11 @@
 | `06-ministry-alerts-08-pptx-template.js` | 1044 | 23 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 284 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 1217 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 1227 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
 
-## `07-reports/` — الاعتمادُ والتقارير — المخزن والورشة والأجهزة والإشعارات والأدوار  (11 ملفات · 3444 سطر · 114 دالة)
+## `07-reports/` — الاعتمادُ والتقارير — المخزن والورشة والأجهزة والإشعارات والأدوار  (11 ملفات · 3474 سطر · 114 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -268,7 +268,7 @@
 | `07-approvals-reports-02-inventory-workshop.js` | 254 | 13 | Inventory, purchases and catalogue from movements, workshop requests (CR/AR/IR), request log and the single item key. |
 | `07-approvals-reports-03-trials-invoices.js` | 508 | 15 | Trials with cost and hours, trial kits from the catalogue, trial points on camps, and invoice photos. |
 | `07-approvals-reports-04-devices-reset-pulse.js` | 338 | 19 | Live crew list, device versions, season reset, pulse and in-app report, page usage card, cost guard, field performance card and devices needing action. |
-| `07-approvals-reports-05-speed-board.js` | 577 | 5 | Speed board per device and per page (presence heartbeat: version, pending queue, photos). |
+| `07-approvals-reports-05-speed-board.js` | 607 | 5 | Speed board per device and per page (presence heartbeat: version, pending queue, photos). |
 | `07-approvals-reports-06-people-functions.js` | 202 | 15 | People and functions: who gets field work, unified department page, functions from which roles derive. |
 | `07-approvals-reports-07-network-notifications.js` | 72 | 5 | Network addresses, notifications (four channels, one message), generated where read, collision detection, bell window and per-device controls. |
 | `07-approvals-reports-08-shipments-vehicles.js` | 641 | 13 | Shipments tracked, vehicles as moving custody with their own log. |
@@ -276,7 +276,7 @@
 | `07-approvals-reports-10-point-actions-export-pdf.js` | 69 | 0 | Point window actions, click identity, export centre by section, export by role, PDF cover page. |
 | `07-approvals-reports-11-import-roles-perms.js` | 322 | 10 | Import via downloaded template, roles (who sees and does what), the owner is never locked out, database permissions matrix, custom roles, ranks, org tree and me |
 
-## `08-events/` — البياناتُ والأحداث — الإعدادات والمستخدمون والنقرات والإقلاع  (13 ملفات · 5108 سطر · 124 دالة)
+## `08-events/` — البياناتُ والأحداث — الإعدادات والمستخدمون والنقرات والإقلاع  (13 ملفات · 5113 سطر · 124 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -288,7 +288,7 @@
 | `08-data-events-boot-06-long-lists-storage-clicks.js` | 413 | 13 | Long lists (100 first then 'show more'), persistent storage request, table and window clicks. |
 | `08-data-events-boot-07-clicks-a-1.js` | 273 | 3 | Delegated click handlers, group A part 1 (return true when the event is consumed). |
 | `08-data-events-boot-08-clicks-a-2.js` | 377 | 3 | Delegated click handlers, group A part 2. |
-| `08-data-events-boot-09-clicks-a-3.js` | 294 | 3 | Delegated click handlers, group A part 3. |
+| `08-data-events-boot-09-clicks-a-3.js` | 299 | 3 | Delegated click handlers, group A part 3. |
 | `08-data-events-boot-10-clicks-doc-1.js` | 358 | 4 | Document-level click handlers part 1 (onDocClick and parts 1–3): settings, constants, survey edit, pending file, E-GATE verification. |
 | `08-data-events-boot-11-clicks-doc-2.js` | 539 | 7 | Document-level click handlers part 2 (parts 4–7). |
 | `08-data-events-boot-12-clicks-doc-3.js` | 262 | 3 | Document-level click handlers part 3 (parts 8–9). |
@@ -300,4 +300,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 238 ملفًّا · 47858 سطر · 2197 دالة.
+**الإجمالي:** 238 ملفًّا · 47958 سطر · 2202 دالة.

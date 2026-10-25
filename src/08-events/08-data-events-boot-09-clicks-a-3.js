@@ -143,6 +143,11 @@ function clickAPart7(e){
   if (e.target.closest('[data-kiosk]')){ kioskToggle(); return true; }
   var dk = e.target.closest('[data-dupkeep]');
   if (dk){ pr = dk.getAttribute('data-dupkeep').split('|'); if (dupMerge(pr[0], pr[1])) render(1); return true; }
+  if (e.target.closest('[data-cnmall]')){ campNameMismatch.all = !campNameMismatch.all; render(1); return true; }   /* (V39.61) the name/data mismatch list in full */
+  var ccm = e.target.closest('[data-ccmerge]');   /* (V39.58) a boundary-less camp into the camp that contains it */
+  if (ccm){ var ccp = ccm.getAttribute('data-ccmerge').split('|'); if (campMergeInto(ccp[0], ccp[1])){ toast(ccp[1] + ' \u00b7 ' + t('دُمجت في') + ' ' + ccp[0]); render(1); } return true; }
+  if (e.target.closest('[data-ccmergeall]')){ var CC = campCircles(), nOk = 0; if (!confirm(t('دمجُ كلِّ المخيمات الدائرية الواقعة داخل حدود مخيماتٍ مسجَّلة') + ' (' + nm(CC.inside.length) + ')؟')) return true;
+    CC.inside.forEach(function(o){ if (campMergeInto(o.keep.id, o.dup.id)) nOk++; }); toast(t('دُمج') + ' ' + nm(nOk)); render(1); return true; }
   var du = e.target.closest('[data-dupundo]');
   if (du){ if (dupUndo(du.getAttribute('data-dupundo'))) render(1); return true; }
   var kkz = e.target.closest('[data-kkz]');

@@ -332,19 +332,32 @@ function s47Load(){
   return S47_LOADING;
 }
 
+function polyFetch(){
+  return fetch('poly.json', { cache:'no-cache' }).then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(j){ if (!j) return false; POLY = j; idbSet('poly', j); return true; });
+}
+function polyRevalidate(){
+  if (polyRevalidate.done) return; polyRevalidate.done = true;
+  fetch('poly.json', { cache:'no-cache' }).then(function(r){ return r.ok ? r.json() : null; }).then(function(j){
+    if (!j || !POLY) return;
+    var a = Object.keys(j), b = Object.keys(POLY), same = a.length === b.length && a.every(function(k){ var x = j[k], y = POLY[k]; return y && x.length === y.length && String(x[0]) === String(y[0]); });
+    if (same) return;
+    POLY = j; idbSet('poly', j); if (typeof campFoot === 'function') campFoot.bad = {};
+    try { if (MAP && typeof mapPaint === 'function') mapPaint(); if (typeof MAP_3D !== 'undefined' && MAP_3D && typeof m3Paint === 'function') m3Paint(); } catch (e){ LS_ERR = e; }
+  }).catch(function(e){ LS_ERR = e; });
+}
 /* المضلّعات ملفٌّ خارجيٌّ يُطلَب مرةً ويُخزَّن محليًّا */
 function polyLoad(){
   if (POLY) return Promise.resolve(true);
   if (POLY_LOADING) return POLY_LOADING;
+  /* (V39.59) owner: «الدوائر اللي في عرفات… شكل المخيم معروف وواضح زي منى». The boundaries were kept on the device the
+     first time and never asked for again: phones that loaded the file before Arafat's boundaries were completed kept the old
+     copy, so those camps showed as circles with «ارسم الحدود» though the file has their boundaries (e.g. 0631, 0353 within
+     ten metres of their points). Now the stored copy is shown at once and the file is checked against the server in the
+     background (a cheap «not modified» when nothing changed); a newer file replaces the copy and the map is redrawn. */
   POLY_LOADING = idbGet('poly').then(function(v){
-    if (v){ POLY = v; return true; }
-    return fetch('poly.json').then(function(r){ return r.ok ? r.json() : null; })
-      .then(function(j){
-        if (!j) return false;
-        POLY = j;
-        idbSet('poly', j);
-        return true;
-      });
+    if (v){ POLY = v; polyRevalidate(); return true; }
+    return polyFetch();
   }).catch(function(e){
     softErr('حدود المخيمات', e, 'تعذّر جلبُ حدود المخيمات — الخريطةُ تعمل بلا حدود');
     return false;
