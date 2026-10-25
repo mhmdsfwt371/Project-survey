@@ -1849,6 +1849,15 @@ console.log('\n══ ٦٩ · نتائجُ المراجعة الشاملة ═�
   w.ROLE = role0; w.STATE.meta.role = role0; w.goPage(cur0 || 'map'); w.render(1);
 }
 
+/* ── ٧٠ · (V39.39) المزايا الجديدة في أدلّة الأدوار: إجراءٌ لكلٍّ بأصحابه ── */
+console.log('\n══ ٧٠ · المزايا الجديدة في الأدلة ══');
+{
+  const ids = (w.SOPS || []).map(s => s.id);
+  T(['sop-move', 'sop-summary', 'sop-3d'].every(k => ids.indexOf(k) > -1), 'إجراءاتُ «تحريك نقطة أو جهاز» و«خلاصة النقطة» و«مراقبة الثلاثي» في الأدلة');
+  const mv = w.SOPS.find(s => s.id === 'sop-move'), actors = mv.steps.map(st => st[0]);
+  T(actors.indexOf('المهندس') > -1 && actors.indexOf('المشرف') > -1 && actors.indexOf('الفني') > -1 && /الوزارة/.test(mv.rules.join(' ')), 'وكلُّ دورٍ يجد خطوتَه: المهندسُ والمشرفُ والفني، والوزارةُ في القواعد');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

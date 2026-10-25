@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V39.38",
+  "app_version": "V39.39",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2300,7 +2300,8 @@
   "V39.35": "iotDevHtml وdtwCardHtml: زرّ data-mvd + data-mvdk (s<i> / g<j> / code#i) لمن يملك تعديل الخطة أو التركيب · mvdStart(id, only) يُغلق البطاقة (m3PopClose) · mvdShown يرشّح الدبابيس بـonly · mvdBarHtml يعرض اسم الجهاز و«كل أجهزة النقطة» · سيناريو ٦٧ (٣٧٦ فحصًا)",
   "V39.36": "tentOn افتراضيًّا false (tentPaint.on === true) والمفتاح يقلبه · m3Toggle: IOT.on = true عند الدخول ما لم IOT.touched (يُضبط عند ضغط المستخدم data-iot) · nsk-iot (العمود والساق والرأس) من تقريب ١٦٫٥ · نصّ لوح الطبقات · سيناريو ٦٨ (٣٧٩ فحصًا)",
   "V39.37": "a11yFieldNames بعد كل render: كل حقل بلا aria-label/title/placeholder/label يأخذ النص المجاور (أو أول خيار في القائمة) · render0: طبقة الخريطة (#mapUI) تُفرَّغ عند الانتقال لصفحة أخرى — لا helpPop/queuePop مكرّر · شريحة الوضع الحالي في متابعة الوزارة disabled وaria-current · docs/review-1448.md: الطريقة والنتائج حسب القسم والمتبقي بأصحابه ومواعيده · سيناريو ٦٩ (٣٨٢ فحصًا)",
-  "V39.38": "تقسيم آلي بمحلّل acorn: النصف الثاني من الدالة يُنقل كما هو إلى <name>Tail(المتغيرات المحلية التي يقرؤها فقط) و«return <name>Tail(...)»، مع فحص أن لا متغيّر يُعاد تعيينه في النصف الثاني وتقرؤه دالة داخلية في الأول: onDocClickPart4/4b وrender0 وliveSmall وasnSheet؛ وفي popHtml: popNextHtml(s, rec, sv) للخطوة التالية وpopMarksHtml(st, s, task) لعلامات الأفعال · audit-buttons يقرأ كل معالج نقر باسمه كما actList · خط الصحة over150: 6 → 0 · docs/review-1448.md محدَّث"
+  "V39.38": "تقسيم آلي بمحلّل acorn: النصف الثاني من الدالة يُنقل كما هو إلى <name>Tail(المتغيرات المحلية التي يقرؤها فقط) و«return <name>Tail(...)»، مع فحص أن لا متغيّر يُعاد تعيينه في النصف الثاني وتقرؤه دالة داخلية في الأول: onDocClickPart4/4b وrender0 وliveSmall وasnSheet؛ وفي popHtml: popNextHtml(s, rec, sv) للخطوة التالية وpopMarksHtml(st, s, task) لعلامات الأفعال · audit-buttons يقرأ كل معالج نقر باسمه كما actList · خط الصحة over150: 6 → 0 · docs/review-1448.md محدَّث",
+  "V39.39": "SOPS: sop-move وsop-summary وsop-3d بخطواتها وأصحابها وقواعدها، وترجماتها (٣٤ نصًّا) · docs/manuals مُولَّدة من جديد (١٤ دليلًا) · docs/review-1448.md: §٤ مصفوفة صلاحيات المزايا الجديدة، ومفتاح النشر صالح حتى يوليو ٢٠٢٧ (تحقّق من ترويسة الصلاحية) · سيناريو ٧٠ (٣٨٤ فحصًا)"
   },
   "map_and_geolocation": {
     "tile_layers": {
