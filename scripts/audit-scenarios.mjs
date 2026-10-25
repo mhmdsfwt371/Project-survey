@@ -1890,6 +1890,17 @@ console.log('\n══ ٧٢ · قيمةُ الحساس في التلميح ══
   T(/٣٣[٫.]٤°/.test(w.iotDevHtml(camp.id, 's', 0)), 'وبطاقةُ الحساس تقول القيمتين نفسَيهما');
 }
 
+/* ── ٧٣ · (V39.52) طابورُ الرفع يقول سببَه، و«ادفع الآن» يحاول ما ينتظر مهلتَه ── */
+console.log('\n══ ٧٣ · طابورُ الرفع يقول سببَه ══');
+{
+  const q0 = w.STATE.queue.slice();
+  w.STATE.queue = [ { kind:'events', id:'EV-T1', v:{ by:'x' }, at:Date.now() - 60000, tries:2, next:Date.now() + 240000, err:'unavailable: The service is currently unavailable.' },
+                    { kind:'sites', id:'S-T1', v:{}, at:Date.now() - 30000 } ];
+  const html = w.queueHtml();
+  T(/سببُ ما لم يُرفَع/.test(html) && /unavailable/.test(html) && /التالية بعد/.test(html) && /لم يُحاوَل بعد/.test(html), 'كلُّ وثيقةٍ تقول حالتَها (محاولاتٌ وسببٌ وموعدٌ تالٍ · أو «لم يُحاوَل بعد») والسببُ ملخَّصٌ فوقها');
+  w.STATE.queue = q0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

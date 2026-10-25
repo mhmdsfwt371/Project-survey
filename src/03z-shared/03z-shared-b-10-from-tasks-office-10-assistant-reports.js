@@ -83,7 +83,20 @@ function queueHtml(){
     + (Q.length ? '' : alertBox('success','لا شيءَ بانتظار الرفع على هذا الجهاز — كلُّ ما سُجِّل هنا وصل.'))
     /* (V38.30) ما تُجوهل بالمهلة يُرى ويُصدَّر — لا يُمحى صامتًا */
     + ((STATE.stale || []).length ? alertBox('warn', t('تُجوهل') + ' ' + nm((STATE.stale || []).length) + ' ' + t('مما كان ينتظر الرفع لأنه أقدمُ من المهلة') + ' (' + nm(CORE.queueTtlDays()) + ' ' + t('يوم') + ') — ' + t('محفوظٌ على الجهاز: صدّره ليستورده المكتب، أو امحُه')) + '<div class="actions" style="margin:4px 0 8px">' + btn('\u{1F5D1} ' + t('امحُ المتجاهَل'), 'btn-quiet btn-sm', ' data-qstaleclear="1"') + '</div>' : '')
-    + (Q.length ? table(['النوع','السجل','بواسطة','سُجّل'],
+    /* (V39.52) owner: «المزامنة فيها مشكلة؟» — eighteen waiting with no reason given. Each item now says where it stands
+       (not tried yet · tried n times, why, and when it is tried again), the reasons are summed up on top, and a held queue
+       (the epoch still being read, or an upload already running) says so — so one screenshot names the cause. */
+    + (function(){
+        if (!Q.length) return '';
+        var R = {}, held = typeof EPOCH_PENDING !== 'undefined' && EPOCH_PENDING;
+        Q.forEach(function(x){ if (x.err){ var k = String(x.err).replace(/\s+/g, ' ').slice(0, 90); R[k] = (R[k] || 0) + 1; } });
+        var keys = Object.keys(R).sort(function(a, b){ return R[b] - R[a]; });
+        var notTried = Q.filter(function(x){ return !x.tries; }).length;
+        return (held ? alertBox('warn', t('الرفعُ موقوفٌ لحظيًّا حتى يُقرأ عهدُ القاعدة — يعود وحده خلال ثوانٍ')) : '')
+          + (keys.length ? alertBox('warn', t('سببُ ما لم يُرفَع') + ': ' + keys.slice(0, 3).map(function(k){ return '«' + k + '» \u00d7' + nm(R[k]); }).join(' \u00b7 ')) : '')
+          + (notTried && !keys.length ? '<p class="hint" style="margin:6px 0">' + esc(t('لم تُحاوَل بعد')) + ': ' + nm(notTried) + '</p>' : '');
+      })()
+    + (Q.length ? table(['النوع','السجل','بواسطة','سُجّل','الحالة'],
         capList(Q, 200).map(function(x){
           var v = x.v || {};
           /* «بواسطة» صاحبُ العمل المسجَّل في السجل نفسه لا حاملُ الجهاز:
@@ -92,7 +105,11 @@ function queueHtml(){
           return [pill(t(Q_LBL[x.kind] || x.kind), 'acc'),
                   '<strong>' + esc(String(x.id || '\u2014')) + '</strong>',
                   esc(dispName(who)),
-                  '<span class="num">' + esc(fmtDT(x.at || 0)) + '</span>'];
+                  '<span class="num">' + esc(fmtDT(x.at || 0)) + '</span>',
+                  /* (V39.52) where this one stands */
+                  !x.tries ? '<span class="hint" style="margin:0">' + esc(t('لم يُحاوَل بعد')) + '</span>'
+                    : '<span style="font-size:12px">' + esc(t('محاولات')) + ' ' + nm(x.tries) + (x.next && x.next > Date.now() ? ' \u00b7 ' + esc(t('التالية بعد')) + ' ' + nm(Math.max(1, Math.round((x.next - Date.now()) / 60000))) + ' ' + esc(t('د')) : '')
+                      + (x.err ? '<br><span class="hint" style="margin:0" dir="auto">' + esc(String(x.err).slice(0, 120)) + '</span>' : '') + '</span>'];
         })) : '')
     + (Q.length > 200
         ? ''

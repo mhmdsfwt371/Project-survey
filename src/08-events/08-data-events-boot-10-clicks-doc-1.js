@@ -269,6 +269,9 @@ function onDocClickPart2(e){
     var was = STATE.queue.length;
     toast(t('يُدفَع الطابور…'));
     CORE._busy = false;
+    /* (V39.52) «ادفع الآن» is the user's say-so: what waits for its back-off is tried now (it was skipped, so the button
+       answered «رُفع ٠ · بقي ١٨» with nothing tried) */
+    STATE.queue.forEach(function(it){ if (it.next) it.next = 0; });
     var go = function(){
       return CORE.flush().then(function(sent){
         if (STATE.queue.length && sent){ CORE._busy = false; return go(); }
