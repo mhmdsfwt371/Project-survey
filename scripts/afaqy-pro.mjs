@@ -34,7 +34,7 @@ say('✓ الدخول');
 const admin = (await import('firebase-admin')).default;
 admin.initializeApp({ credential: admin.credential.cert(JSON.parse(SA)) }); const db = admin.firestore();
 const mine = {}; let planned = 0;
-(await db.collection('sites').get()).forEach(d => { const c = (d.data() || {}).iot; if (!c) return;
+(await db.collection('sites').get()).forEach(d => { const D = d.data() || {}; let c = D.iot; if (!c && typeof D.iotJ === 'string'){ try { c = JSON.parse(D.iotJ); } catch {} } if (!c) return;   /* (V39.53) the plan travels as iotJ */
   [['s', c.sm], ['g', c.gm]].forEach(([k, arr]) => (arr || []).forEach((m, i) => { planned++; const s = String((m && m.serial) || '').trim(); if (s) mine[s.toLowerCase()] = { site:d.id, k, i, id:(m && m.id) || '' }; })); });
 say('· أجهزةُ الخطط: ' + planned + ' — منها بسيريالٍ مسجَّل ' + Object.keys(mine).length);
 /* ٣) وحداتُ أفاقي برو */

@@ -1901,6 +1901,28 @@ console.log('\n══ ٧٣ · طابورُ الرفع يقول سببَه ══
   w.STATE.queue = q0;
 }
 
+/* ── ٧٤ · (V39.53) خطةُ الحساسات تُرفَع، ووثيقةٌ يرفضها البناءُ لا توقف الطابور ── */
+console.log('\n══ ٧٤ · خطةُ الحساسات تصل القاعدة ══');
+{
+  const hasNested = o => { const walk = v => Array.isArray(v) ? v.some(x => Array.isArray(x) || walk(x)) : (v && typeof v === 'object' ? Object.values(v).some(walk) : false); return walk(o); };
+  const plan = { gw:[21.4, 39.89], gws:[], sensors:[[21.41, 39.891], [21.411, 39.892]], sm:[{ id:'X-S1', serial:'EM1' }], gm:[{ id:'X-GW1' }], at:1 };
+  const out = w.FB.clean(w.FB.live('sites', { iot:plan, lat:1 }));
+  T(typeof out.iotJ === 'string' && !('iot' in out) && !hasNested(out), 'الخطةُ تُكتَب نصًّا واحدًا بلا مصفوفةٍ داخل مصفوفة (ما ترفضه القاعدة)');
+  const back = w.siteOvDec(out);
+  T(JSON.stringify(back.iot) === JSON.stringify(plan) && !('iotJ' in back), 'وتُقرأ كما كانت عند وصولها');
+  /* a document the batch refuses while being built: the others go up, it is isolated by name */
+  const ready0 = w.FB.ready, push0 = w.FB.push, each0 = w.FB.pushEach, init0 = w.FB.init, q0 = w.STATE.queue.slice(), on0 = w.STATE.meta.online, ep0 = w.EPOCH_PENDING;
+  w.FB.ready = true; w.STATE.meta.online = true; w.EPOCH_PENDING = false; w.CORE._busy = false;
+  w.FB.init = () => Promise.resolve(true);
+  w.FB.push = () => { throw new Error('Function WriteBatch.set() called with invalid data. Nested arrays are not supported'); };
+  w.FB.pushEach = batch => Promise.resolve({ ok:batch.filter(it => it.id !== 'BAD'), failed:batch.filter(it => it.id === 'BAD').map(it => ({ it, msg:'invalid data. Nested arrays are not supported' })), healed:0 });
+  w.STATE.queue = [ { kind:'sites', id:'BAD', v:{ x:[[1, 2]] }, at:Date.now() }, { kind:'evlog', id:'EV-OK', v:{ t:'x' }, at:Date.now() } ];   /* fresh: the age limit would set ancient ones aside */
+  const rq = await w.CORE.flush().catch(e => 'ERR ' + e);
+  T(rq === 1 && !w.STATE.queue.some(q => q.id === 'BAD' || q.id === 'EV-OK') && (w.STATE.poison || []).some(p => p.id === 'BAD'),   /* (the isolation's own log line queues itself — not counted) */ 'ووثيقةٌ يرفضها بناءُ الدفعة تُعزَل باسمها ويُرفَع ما بعدها — لا يتوقف الطابورُ كلُّه');
+  w.FB.ready = ready0; w.FB.push = push0; w.FB.pushEach = each0; w.FB.init = init0; w.STATE.queue = q0; w.STATE.meta.online = on0; w.EPOCH_PENDING = ep0;
+  w.STATE.poison = (w.STATE.poison || []).filter(p => p.id !== 'BAD');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

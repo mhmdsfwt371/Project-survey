@@ -145,8 +145,14 @@ function siteLocked(id){
 
 /* (V36.7) تجاوزٌ وصل من جهازٍ آخر (حيًّا أو بالسحب): يُدمَج في STATE.siteOv، ويُعاد توزيعُ النقطة بين الظاهرة والمخفية —
    فالحذفُ يُخفيها والاستعادةُ تعيدها، والتعديلُ يُطبَّق، في كلِّ الأجهزة. */
+/* (V39.53) a site document from the database carries the sensor plan as iotJ (one JSON string) — back to iot here */
+function siteOvDec(v){
+  if (!v || typeof v.iotJ !== 'string') return v;
+  var o = Object.assign({}, v); try { o.iot = JSON.parse(v.iotJ); } catch (e){ LS_ERR = e; } delete o.iotJ; return o;
+}
 function siteOvIncoming(id, v){
   if (!id || !v) return false;
+  v = siteOvDec(v);
   STATE.siteOv = STATE.siteOv || {};
   var before = !!(STATE.siteOv[id] && STATE.siteOv[id].hidden);
   STATE.siteOv[id] = Object.assign({}, STATE.siteOv[id] || {}, v);

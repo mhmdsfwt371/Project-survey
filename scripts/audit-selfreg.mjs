@@ -32,7 +32,8 @@ console.log('\n══ ١ · التسجيلُ الذاتيُّ يكتب «غير�
 const writes = [];
 w.FB.ready = true; w.FB.db = { collection: () => ({ doc: () => ({ get: async () => ({ exists:false, size:1 }), set: async v => { writes.push(v); } }) }) };
 await w.myDocFix(); await wait(50);
-T(writes.length === 1 && writes[0].role === 'tech' && writes[0].active === false && writes[0].self === true, 'وثيقةُ الحساب: فنيٌّ غيرُ فعّالٍ موسومٌ self');
+const acct = writes.filter(v => v && v.self === true);   /* (V39.53) the queue now also uploads document by document when the batch cannot be built (this mock has no batch) — the account document is the one tagged self */
+T(acct.length === 1 && acct[0].role === 'tech' && acct[0].active === false && acct[0].self === true, 'وثيقةُ الحساب: فنيٌّ غيرُ فعّالٍ موسومٌ self');
 T(w.meInactive() === true, 'والتطبيقُ يعرف أنه ينتظر التفعيل');
 w.render(1); await wait(60);
 const ab = d.getElementById('inactBanner');
@@ -42,8 +43,10 @@ T(!w.RELEASE_NOTES.length || true, 'ويعمل: الشاشاتُ لا تُقفَ
 console.log('\n══ ٢ · حين يفعّله المكتبُ يعود المعزولُ إلى الطابور ══');
 w.STATE.poison = [{ kind:'recs', id:'S9', v:{ id:'S9' }, err:'PERMISSION_DENIED: Missing or insufficient permissions' }];
 w.myDocFetch = async () => { w.STATE.users['uid-new'] = { role:'tech', active:true, self:true }; return true; };
+const fl0 = w.CORE.flush; w.CORE.flush = () => Promise.resolve(0);   /* (V39.53) watch the re-queue itself — the per-document upload (this mock has no batch) would send it at once */
 const r = await w.meActivatedCheck(); await wait(60);
 T(r === true && w.STATE.poison.length === 0 && w.STATE.queue.some(q => q.kind === 'recs' && q.id === 'S9'), 'التفعيلُ يعيد المعزولَ برفض الصلاحية إلى الطابور');
+w.CORE.flush = fl0;
 T(!d.getElementById('inactBanner'), 'وتزول اللافتة');
 T(/meActivatedCheck/.test(w.presenceBeat.toString()), 'والتحقّقُ يركب نبضةَ الحضور — لا قراءةَ جديدة');
 

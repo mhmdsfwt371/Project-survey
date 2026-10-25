@@ -322,7 +322,7 @@ var CORE = {
        واقفًا ويُعاد الرفضُ في كلِّ دورةٍ فلا يصل شيءٌ أبدًا. */
     return FB.init().then(function(ok){
       if (!ok) return Promise.reject(new Error('offline'));
-      return FB.push(batch).then(function(){ return { ok:batch, failed:[] }; })
+      return Promise.resolve().then(function(){ return FB.push(batch); }).then(function(){ return { ok:batch, failed:[] }; })   /* (V39.53) a throw while the batch is built is a rejection like any other — then each document on its own */
         .catch(function(e){
           /* الدفعةُ سقطت جملةً — يُعرَف السببُ وثيقةً وثيقة */
           if (/offline|not-ready|unavailable|network/i.test(String(e && (e.message || e.code) || e))) throw e;
@@ -568,6 +568,11 @@ var FB = {
     var roOnly = STATE.meta && (STATE.meta.role === 'viewer' || STATE.meta.role === 'exec');   /* (V28.4) اعتمادُ الوزارة تحصر قاعدتُه الحقولَ — فلا يُضاف له */
     if (!roOnly && CORE.TOMB && CORE.TOMB[kind] && vv.deleted !== true) vv.deleted = false;
     if (kind === 'recs' && vv.deleted !== true && vv.quick && typeof recIsQuick === 'function' && !recIsQuick(v)) vv.quick = 0;
+    /* (V39.53) the camp's sensor plan holds coordinate pairs (sensors:[[lat,lng],…]) — arrays inside an array, which the database
+       refuses. The SDK threw before the commit, outside the per-document handling, so one saved or moved plan held every later write
+       on the device (owner: «١٧ كتابة لم ترفع من أكثر من ساعة»; a colleague's sensor moves never arrived). It travels as one JSON
+       string, like the registry (V38.88), and is read back where site documents come in (siteOvDec). */
+    if (kind === 'sites' && vv.iot && typeof vv.iot === 'object'){ vv.iotJ = JSON.stringify(vv.iot); delete vv.iot; }
     return vv;
   },
   putOne: function(it){
@@ -985,7 +990,7 @@ var FB = {
         FB.readCount = (FB.readCount || 0) + sn.size;
         sAt.sites = sStart;
         STATE.siteOv = STATE.siteOv || {};
-        sn.forEach(function(d){ STATE.siteOv[d.id] = Object.assign({}, STATE.siteOv[d.id] || {}, d.data()); });
+        sn.forEach(function(d){ STATE.siteOv[d.id] = Object.assign({}, STATE.siteOv[d.id] || {}, siteOvDec(d.data())); });   /* (V39.53) */
         /* المخفيُّ يُزال من القائمة هنا — وقبل وصول القاعدة من الحفظ المحليّ */
         var all = STATE.sites.concat(STATE.hiddenSites || []);
         STATE.sites = all; siteOvApply();
