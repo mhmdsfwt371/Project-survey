@@ -83,7 +83,6 @@ function mileDone(m){
   var o = mileOv(m.id);
   if (o.prog != null && o.prog !== '') return Math.max(0, Math.min(1, (+o.prog || 0) / 100));
   if (m.custom || o.custom) return 0;
-  var S = siteStats();
   var byZone = function(z, type){
     var tot = 0, done = 0;
     STATE.sites.forEach(function(x){

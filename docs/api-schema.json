@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V39.40",
+  "app_version": "V39.41",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2302,7 +2302,8 @@
   "V39.37": "a11yFieldNames بعد كل render: كل حقل بلا aria-label/title/placeholder/label يأخذ النص المجاور (أو أول خيار في القائمة) · render0: طبقة الخريطة (#mapUI) تُفرَّغ عند الانتقال لصفحة أخرى — لا helpPop/queuePop مكرّر · شريحة الوضع الحالي في متابعة الوزارة disabled وaria-current · docs/review-1448.md: الطريقة والنتائج حسب القسم والمتبقي بأصحابه ومواعيده · سيناريو ٦٩ (٣٨٢ فحصًا)",
   "V39.38": "تقسيم آلي بمحلّل acorn: النصف الثاني من الدالة يُنقل كما هو إلى <name>Tail(المتغيرات المحلية التي يقرؤها فقط) و«return <name>Tail(...)»، مع فحص أن لا متغيّر يُعاد تعيينه في النصف الثاني وتقرؤه دالة داخلية في الأول: onDocClickPart4/4b وrender0 وliveSmall وasnSheet؛ وفي popHtml: popNextHtml(s, rec, sv) للخطوة التالية وpopMarksHtml(st, s, task) لعلامات الأفعال · audit-buttons يقرأ كل معالج نقر باسمه كما actList · خط الصحة over150: 6 → 0 · docs/review-1448.md محدَّث",
   "V39.39": "SOPS: sop-move وsop-summary وsop-3d بخطواتها وأصحابها وقواعدها، وترجماتها (٣٤ نصًّا) · docs/manuals مُولَّدة من جديد (١٤ دليلًا) · docs/review-1448.md: §٤ مصفوفة صلاحيات المزايا الجديدة، ومفتاح النشر صالح حتى يوليو ٢٠٢٧ (تحقّق من ترويسة الصلاحية) · سيناريو ٧٠ (٣٨٤ فحصًا)",
-  "V39.40": "scripts/rules-live.mjs + .github/workflows/rules-live.yml (أسبوعي السبت ويدوي): مقارنة القواعد المنشورة (securityRules().getFirestoreRuleset) بملف المستودع · حسابات rc-<role> مؤقتة (تُفعَّل ثم تُعطَّل ووثيقة users بـdeleted) · كل محاولة كتابة PATCH بشرط currentDocument.updateTime=1970 لا يتحقق: السماح ← FAILED_PRECONDITION والمنع ← PERMISSION_DENIED، بلا كتابة · ضابط بلا حساب يجب أن يُمنع · الحالات: تعديل زيارة تنتظر الاعتماد، الخلاصة على الزيارة والتركيب، نقل موقع، قراءة المشتريات × المهندس والمشرف والفني والوزارة والإدارة العليا · النتيجة في ملخص السير وsettings/sysreport.rules · docs/review-1448.md محدَّث"
+  "V39.40": "scripts/rules-live.mjs + .github/workflows/rules-live.yml (أسبوعي السبت ويدوي): مقارنة القواعد المنشورة (securityRules().getFirestoreRuleset) بملف المستودع · حسابات rc-<role> مؤقتة (تُفعَّل ثم تُعطَّل ووثيقة users بـdeleted) · كل محاولة كتابة PATCH بشرط currentDocument.updateTime=1970 لا يتحقق: السماح ← FAILED_PRECONDITION والمنع ← PERMISSION_DENIED، بلا كتابة · ضابط بلا حساب يجب أن يُمنع · الحالات: تعديل زيارة تنتظر الاعتماد، الخلاصة على الزيارة والتركيب، نقل موقع، قراءة المشتريات × المهندس والمشرف والفني والوزارة والإدارة العليا · النتيجة في ملخص السير وsettings/sysreport.rules · docs/review-1448.md محدَّث",
+  "V39.41": "تنبيهات no-unused-vars ٢٤ → ١ (حُذف التعريف مع كل كتابة إليه؛ خط الصحة مثبَّت) · buildParts(ship): regAsJsonParse — SITES_RAW يُشحن JSON.parse('…') (قياس بارد بلا ذاكرة ترجمة: ٣٫٧ م.ث بدل ٥٫٠) وregFromHtml يقرأ الصيغتين · rules-live: النتيجة تعليقات ::notice (حتى ١٠) و::error لأي استثناء — تُقرأ بلا تنزيل السجل"
   },
   "map_and_geolocation": {
     "tile_layers": {

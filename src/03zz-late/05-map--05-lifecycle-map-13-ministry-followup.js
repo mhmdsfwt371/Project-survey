@@ -206,9 +206,8 @@ function ccCard(c){
 }
 
 function mfuHeroHtml(){
-  var all = STATE.sites || [], sv = 0, ins = 0, hd = 0, ds = 0, now = Date.now(), today = dayKey(now);
+  var all = STATE.sites || [], now = Date.now(), today = dayKey(now);
   var SC = stageCounts();
-  all.forEach(function(x){ if (svVisited(STATE.recs[x.id])) sv++; if (insDone(x.id)) ins++; if (handDone(x.id)) hd++; if (disDone(x.id)) ds++; });
   /* نبضُ ١٤ يومًا من السجلات مباشرةً — مرورٌ واحد */
   var days = [], byDay = {}; for (var i = 13; i >= 0; i--){ var k = dayKey(now - i * 864e5); days.push(k); byDay[k] = 0; }
   Object.keys(STATE.recs).forEach(function(id){ var r = STATE.recs[id]; if (!svVisited(r) || !siteFind(id)) return; var k = dayKey(r.at || r._at); if (byDay[k] != null) byDay[k]++; });

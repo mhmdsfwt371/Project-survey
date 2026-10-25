@@ -267,7 +267,7 @@ PAGE.req = { m:'الميدان', t:'الطلبات والتوزيع',
       + '<p class="hint">' + esc(t('المنجَزُ لا يُحذَف: نقاطُ صاحبه بُنيت عليه. والزيارةُ التي تمّت تُعتمَد أو تُردُّ في «اعتماد الزيارات» ولا تُمحى.')) + '</p>';
   })();
     if (cur === 'assign') return head + (function(){
-    var C = catCounts(), S = siteStats();
+    var S = siteStats();
     var rows = [], keys = Object.keys(S.byKey);
     keys.sort();
     keys.forEach(function(k){

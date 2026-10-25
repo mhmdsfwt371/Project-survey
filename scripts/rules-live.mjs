@@ -13,7 +13,11 @@ import { readFileSync, writeFileSync, appendFileSync } from 'fs';
 import { randomUUID } from 'crypto';
 const SA = process.env.FIREBASE_SERVICE_ACCOUNT || '';
 const OUT = process.env.RULES_OUT || '/tmp/rules-live.md';
-const lines = []; const say = s => { lines.push(s); console.log(s); };
+const lines = []; let notes = 0;
+/* (V39.41) the result as annotations too — readable from the run's page and its API without downloading the log */
+const say = s => { lines.push(s); console.log(s); if (notes < 10 && /^(✓|✗|⚠|✅|❌|\| [^-])/.test(s) && !/^\| الفحص/.test(s)){ notes++; console.log('::notice title=rules-live::' + s.replace(/\n/g, ' ')); } };
+process.on('unhandledRejection', e => { console.log('::error title=rules-live::' + String(e && e.message || e).slice(0, 300)); process.exit(1); });
+process.on('uncaughtException', e => { console.log('::error title=rules-live::' + String(e && e.message || e).slice(0, 300)); process.exit(1); });
 if (!SA){ console.log('::notice::بلا مفتاحِ خدمة — لا اختبارَ حيًّا'); process.exit(0); }
 const admin = (await import('firebase-admin')).default;
 const sa = JSON.parse(SA); admin.initializeApp({ credential: admin.credential.cert(sa) });

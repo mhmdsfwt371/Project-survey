@@ -11,6 +11,11 @@ export function regFromHtml(html){
      another statement, so the object must start right after the «=» */
   const m = /var SITES_RAW\s*=\s*/.exec(html); if (!m) return null;
   const at = m.index + m[0].length;
+  if (html.startsWith("JSON.parse('", at)){   /* (V39.41) the shipped form: a JSON string literal */
+    const q = at + 'JSON.parse('.length; let e2 = -1, es = false;
+    for (let i = q + 1; i < html.length; i++){ const c = html[i]; if (es){ es = false; continue; } if (c === '\\'){ es = true; continue; } if (c === "'"){ e2 = i; break; } }
+    return e2 > q ? JSON.parse(new Function('return ' + html.slice(q, e2 + 1))()) : null;
+  }
   if (html[at] !== '{') return null;   /* «= null;» أو ما يشبهه: غيرُ مضمَّن */
   /* نهايةُ الكائن بعدِّ الأقواس لا بنمطٍ نصّي (درسُ photos-sync) */
   let depth = 0, str = false, esc = false, end = -1;

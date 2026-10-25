@@ -348,7 +348,6 @@ function onDocClickPart3(e){
     if (pz){ STATE.poison.splice(+pzr.getAttribute('data-pzretry'), 1); CORE.dirty(pz.kind, pz.id, pz.v); toast(t('أُعيد إلى الطابور')); render(1); }
     return;
   }
-  var pzd = e.target.closest('[data-pzdrop]');
   return CLICK_NEXT;
 }
 /* onDocClick — الجزء 4 من 9 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).

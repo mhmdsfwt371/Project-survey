@@ -176,7 +176,6 @@ function helpSearch(q, minScore){   /* (V37.37) minScore: المساعدُ لا 
 }
 
 function assistHtml(){
-  var results = ASSIST_Q ? helpSearch(ASSIST_Q) : [];   /* (V33.2) المصطلحُ أوّلًا */
   return '<div class="pop" id="assistPop" style="width:min(560px,94vw);max-height:min(88vh, calc(var(--vh,1vh) * 100 - 16px));overflow:auto">'
     + '<div class="pop-head">'
     +   '<div><h3 style="color:var(--ink)">\u{1F9ED} ' + esc(t('المساعد')) + '</h3>'
@@ -364,7 +363,7 @@ var ASSIST_PAGE_Q = {
 };
 
 function assistForYou(){
-  var out = [], d = null; try { d = assistDiag(); } catch (e){ d = null; }
+  var out = [];
   var me = (STATE.meta && STATE.meta.name) || '', rk = typeof rankOf === 'function' ? rankOf(ROLE) : 0;
   /* حالةُ الجهاز في بطاقتها فوق — لا تتكرّر هنا */
   try {   /* ما سجّله صاحبُ الجهاز اليوم — يراه في سطرٍ قبل أن يسأل «هل وصل؟» */

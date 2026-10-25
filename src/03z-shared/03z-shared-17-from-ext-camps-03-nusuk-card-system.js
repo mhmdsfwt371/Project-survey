@@ -126,7 +126,6 @@ function extMatchLoad(forceRefresh){
     return Promise.resolve(EXT_MATCH_STATE);
   EXT.busy = true; EXT.err = '';   /* (V37.80) لا رسمَ من داخل الرسم — الشاشةُ تعرض «جارٍ التحميل» بنفسها */
   return Promise.all([extReadersLoad(), extTentsLoad()]).then(function(res){
-    var readers = res[0] || {};
     /* (V37.85) كلُّ نقطةٍ مركَّبة تُربَط بمفتاحين: المخيمُ بشاخصه وقربِه، والقارئُ بسيريالِه —
        وما يختلف فيه المفتاحان يُعلَّم تحذيرًا */
     var matched = [], unmatched = [];

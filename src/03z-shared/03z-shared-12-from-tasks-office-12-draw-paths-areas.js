@@ -37,10 +37,10 @@ function tfdMpp(lat){ var z = (typeof MAP === 'object' && MAP && MAP.getZoom) ? 
 function tfdSnap(lat, lng){
   var g = TFD.g; if (!g || !g.e) return -1;
   var tol = Math.min(250, Math.max(20, tfdMpp(lat) * 36)), kx = 111320 * Math.cos(lat * Math.PI / 180), ky = 110574;
-  var px = lng * kx, py = lat * ky, best = -1, bt = 0, bx2 = 0, by2 = 0, bd = 1e18, i;
+  var px = lng * kx, py = lat * ky, best = -1, bx2 = 0, by2 = 0, bd = 1e18, i;
   for (i = 0; i < g.e.length; i++){ var A = g.n[g.e[i][0]], B = g.n[g.e[i][1]], ax = A[1] * kx, ay = A[0] * ky, dx = B[1] * kx - ax, dy = B[0] * ky - ay, L2 = dx * dx + dy * dy;
     var tt = L2 ? Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / L2)) : 0, cx = ax + tt * dx, cy = ay + tt * dy, d2 = (px - cx) * (px - cx) + (py - cy) * (py - cy);
-    if (d2 < bd){ bd = d2; best = i; bt = tt; bx2 = cx; by2 = cy; } }
+    if (d2 < bd){ bd = d2; best = i; bx2 = cx; by2 = cy; } }
   if (best < 0 || Math.sqrt(bd) > tol) return -1;
   var a = g.e[best][0], b = g.e[best][1], P = [+(by2 / ky).toFixed(6), +(bx2 / kx).toFixed(6)], la = geoDist(g.n[a], P), lb = geoDist(g.n[b], P);
   if (la < 3) return a; if (lb < 3) return b;
@@ -292,7 +292,6 @@ function moveApply(lat, lng){
 
 function moveBar(){
   if (!MOVE_ID) return '';
-  var s = siteFind(MOVE_ID);
   return '<div class="map-selbar" style="background:rgba(127,179,255,.96);color:#04121f">'
     + '<span>' + esc(t('اضغط على الموقع الجديد لـ')) + ' <b>' + esc(MOVE_ID) + '</b></span>'
     + '<div class="actions" style="margin-inline-start:auto">'

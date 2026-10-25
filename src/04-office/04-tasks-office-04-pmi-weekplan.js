@@ -298,8 +298,8 @@ PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
        بالفعل» وهو لم يحفظ شيئًا — فبقيت «الوتيرة والهدف» تقول «لم تُضبط
        المواعيد» للأبد. صار الموعدان يُقرآن ويُكتبان في CFG كسائر الإعدادات،
        وأزمنةُ التركيب تُضبط بالدقائق ويُحسَب الإجماليُّ من عدد النقاط الفعلي. */
-    var S = siteStats(), nCamp = 0, nCor = 0;
-    STATE.sites.forEach(function(x){ if (siteZone(x) === 'camp') nCamp++; else nCor++; });
+    var S = siteStats();
+    
     var mC = cfgGet('minCamp'), mR = cfgGet('minCor');
     var hrs = function(n, m){ return nm(Math.round(n * m / 60)); };
     /* ═══ صفٌّ لكلِّ نوعٍ في السجل (V17.14) ═══

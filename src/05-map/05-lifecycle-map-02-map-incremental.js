@@ -174,7 +174,7 @@ function mapPaint(light){
   if (TOUCH) r = Math.max(r + 1.5, 4.5);
   var sun = (typeof SUN_ON !== 'undefined' && SUN_ON && !(typeof KIOSK_ON !== 'undefined' && KIOSK_ON)) ? 1 : 0;
   if (sun) r = r * 1.4 + 1;   /* وضعُ الشمس: علاماتٌ أسمك (V17.99) */
-  var shown = 0, inView = 0, want = {};
+  var inView = 0, want = {};
 
   var LIST = (typeof layerFiltered === 'function') ? layerFiltered() : STATE.sites;
   var bS = b.getSouth(), bN = b.getNorth(), bW = b.getWest(), bE = b.getEast();
@@ -190,7 +190,7 @@ function mapPaint(light){
     if (!x.lat || !x.lng) continue;
     if (x.lat >= bS && x.lat <= bN && x.lng >= bW && x.lng <= bE) inView++;
     if (!(x.lat >= kS && x.lat <= kN && x.lng >= kW && x.lng <= kE)) continue;
-    want[x.id] = 1; shown++;
+    want[x.id] = 1;
     if (MK.defer && !MK.by[x.id] && made >= MK_FIRST){ MK.defer.push(x); continue; }   /* (V31.8) */
     if (!MK.by[x.id]) made++;
     mkPlace(x, z, r, sun, TOUCH);

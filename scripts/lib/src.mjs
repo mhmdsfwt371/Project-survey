@@ -45,7 +45,7 @@ export async function buildParts(root = 'src', opt = {}){
   const ver = appVersion(root);
   let coreJs = stripJs(core), chunkJs = stripJs(chunk) + CHUNK_TRAILER;
   const full = head + coreJs + '\n' + chunkJs + tail;   /* the readable page the audits run */
-  if (opt.ship){ coreJs = await minJs(coreJs); chunkJs = (await minJs(chunkJs)) + '\n'; }
+  if (opt.ship){ coreJs = await minJs(regAsJsonParse(coreJs)); chunkJs = (await minJs(chunkJs)) + '\n'; }
   const tag = '</script>\n<script defer src="' + CHUNK_FILE + '?v=' + ver.replace(/^V/, '') + '"></script>';
   const index = head + coreJs + tag + tail.slice('</script>'.length);
   return { index, chunk:chunkJs, full, ver };
@@ -53,3 +53,21 @@ export async function buildParts(root = 'src', opt = {}){
 /* the whole app in one page, in production order — what every jsdom audit loads */
 let _full = null;
 export async function appHtml(root = 'src'){ if (!_full) _full = (await buildParts(root)).full; return _full; }
+/* (V39.41) the embedded registry (SITES_RAW, ~300 KB of JSON on one line) ships as JSON.parse('…') instead of an object
+   literal: engines parse a JSON string markedly faster than the same object as JavaScript, which is what the field's older
+   phones pay on every cold start. Same data, same variable; only the shipped page changes (the audits' page keeps the
+   literal). scripts/lib/registry.mjs reads both forms. */
+export function regAsJsonParse(js){
+  const m = /var SITES_RAW\s*=\s*\{/.exec(js); if (!m) return js;
+  const at = m.index + m[0].length - 1;
+  let depth = 0, str = false, esc = false, end = -1;
+  for (let i = at; i < js.length; i++){
+    const c = js[i];
+    if (str){ if (esc) esc = false; else if (c === '\\') esc = true; else if (c === '"') str = false; continue; }
+    if (c === '"') str = true; else if (c === '{') depth++; else if (c === '}' && --depth === 0){ end = i + 1; break; }
+  }
+  if (end < 0) return js;
+  const json = js.slice(at, end); JSON.parse(json);   /* only valid JSON is converted */
+  const lit = "'" + json.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029').replace(/<\/script/gi, '<\\/script') + "'";
+  return js.slice(0, at) + 'JSON.parse(' + lit + ')' + js.slice(end);
+}

@@ -50,7 +50,6 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
     var head = tabHead('guide'), cur = tabCur('guide');
     if (cur === 'wf') return head + wfBody();
     if (cur === 'guide') return head + (function(){
-    var r = R();
     /* المهندسُ يقرأ دليلَ أيِّ دورٍ ليعرف ما يراه فريقُه؛ وغيرُه يقرأ دليلَه */
     var pick = may('roles') || may('users');
     var cur = (pick && GUIDE.role && ROLES[GUIDE.role]) ? GUIDE.role : ROLE;

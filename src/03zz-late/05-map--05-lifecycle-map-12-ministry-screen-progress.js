@@ -243,10 +243,8 @@ function kioskToggle(){
 
 /* (V37.0) أعدادُ المراحل في رسمة القاعة الواحدة */
 function kioskBody(){
-  var K = siteKeyStats(), S = K.total, now = Date.now(), day = now - 864e5;
+  var K = siteKeyStats(), now = Date.now(), day = now - 864e5;
   var life = {}; (STATE.sites || []).forEach(function(x){ var l = lifeOf(x); life[l] = (life[l] || 0) + 1; });
-  var pcSv = S.n ? S.sv / S.n * 100 : 0;
-  var minOk = (life.ready || 0) + (life.sched || 0) + (life.installed || 0) + (life.handed || 0);
   var steps = (STATE.steps || []).filter(function(x){ return +x.at >= day; });
   var kinds = {}, people = {};
   steps.forEach(function(x){ kinds[x.kind] = (kinds[x.kind] || 0) + 1; if (x.by) people[x.by] = 1; });

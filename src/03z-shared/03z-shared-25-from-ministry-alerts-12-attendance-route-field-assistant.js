@@ -185,7 +185,7 @@ function waAsnCard(){
 
 function inboxItems(){
   var out = [], S = siteStats();
-  var solWait = 0, qaWait = 0, ncrOpen = 0, chgWait = 0, handReadyN = 0, lateN = 0, tkWait = 0;
+  var solWait = 0, qaWait = 0, ncrOpen = 0, chgWait = 0, handReadyN = 0, lateN = 0;
   Object.keys(STATE.inss).forEach(function(k){
     var r = STATE.inss[k];
     if (r && r.solution && r.solution.status === 'مقترح') solWait++;
@@ -198,7 +198,6 @@ function inboxItems(){
   Object.keys(STATE.tasks).forEach(function(k){
     var x = STATE.tasks[k]; if (!x || x.status === 'معتمد') return;
     if (x.when && x.when < today && !svVisited(STATE.recs[x.site])) lateN++;   /* (V32.6) زيارةٌ تمّت بأيِّ نتيجة ليست متأخرة */
-    if (x.kind === 'visit' && svReview(STATE.recs[x.site]) === 'pending') tkWait++;
   });
   out.push(['زياراتٌ تنتظر اعتمادك', S.pending, 'svappr', S.pending ? 'wrn' : 'ok']);
   out.push(['حلولٌ مقترحةٌ تنتظر اعتمادك', solWait, 'solution', solWait ? 'wrn' : 'ok']);

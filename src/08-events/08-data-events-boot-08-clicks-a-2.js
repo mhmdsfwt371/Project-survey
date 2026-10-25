@@ -370,7 +370,6 @@ function clickAPart5(e){
   if (e.target.closest('[data-rtcancel]')){ RT_MIN = false; routeCancel(); return true; }
   var slg = e.target.closest('[data-sitelog]');
   if (slg){ toast(t('يُجلَب سجلُّ النقطة…')); siteLogFetch(slg.getAttribute('data-sitelog')); return true; }
-  var bgf = e.target.closest('[data-bugf]');
   return CLICK_NEXT;
 }
 /* clickA — الجزء 6 من 7 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).
