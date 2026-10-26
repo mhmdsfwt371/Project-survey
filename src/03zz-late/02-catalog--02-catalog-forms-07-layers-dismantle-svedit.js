@@ -141,7 +141,7 @@ function svqSave(id, key, val, quiet){   /* (V38.20) quiet: جزءٌ من حفظ
   var line = t(svqLabel(key)) + ': ' + svqFmt(old) + ' \u2190 ' + svqFmt(val);
   logEvent('تعديلُ مسح — ' + id + ' \u00b7 ' + line, id);
   if (rec.review === 'approved') notifPush('تعديلُ مسحٍ معتمد', line + ' — ' + id + (back ? ' — ' + t('عاد لانتظار الاعتماد') : ''), { site:id, lv:'مهم' });
-  SVQ.key = ''; SVQ.tmp = null; SVQ.tmpL = null; SVQ.note = null; SVQ.err = '';
+  SVQ.key = ''; SVQ.tmp = null; SVQ.tmpL = null; SVQ.note = null; SVQ.err = ''; SVQ.holdTill = Date.now() + 1500;   /* (V39.66) */
   statBump();
   if (!quiet) toast(t(back ? 'عُدِّل الحقل — وعاد المسحُ لانتظار الاعتماد' : 'عُدِّل الحقل — والباقي كما هو'));   /* (V38.21) الحفظُ المركّب يقول جملةً واحدة */
   return true;

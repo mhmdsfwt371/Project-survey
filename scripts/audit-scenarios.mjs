@@ -2055,6 +2055,41 @@ console.log('\n══ ٨٣ · بطاقاتُ التقارير المثبّتة �
   T(/button\.kk-zl\{[^}]*background:var\(--raise/.test(css) && /button\.kk-zl\{[^}]*color:var\(--ink\)/.test(css) && /appearance:none/.test(css), 'بطاقةُ التقرير المثبّت زرٌّ بسطح السمة ونصِّها وحدودها — لا الأبيضُ الافتراضيُّ بنصٍّ باهتٍ في الليلي');
 }
 
+/* ── ٨٤ · (V39.65) بياناتُ الحساس تُحفظ: الكتابةُ تدخل الجهازَ فورًا، و«حفظ البيانات» يكتب الخطة، و«احفظ» يأخذ ما كُتب ── */
+console.log('\n══ ٨٤ · حفظُ بيانات الحساسات ══');
+{
+  const id = w.STATE.sites.find(x => x.type === 'مخيم' && +x.lat && +x.lng).id, x = w.siteFind(id);
+  const D0 = w.IOT.data, ov0 = w.STATE.siteOv[id] ? JSON.parse(JSON.stringify(w.STATE.siteOv[id])) : null, r0 = w.ROLE, m0 = w.STATE.meta.role;
+  w.ROLE = 'admin'; w.STATE.meta.role = 'admin';
+  w.IOT.data = { camps:{ [id]:{ gw:[+x.lat, +x.lng], sensors:[[+x.lat + 0.0001, +x.lng], [+x.lat + 0.0002, +x.lng]] } } };
+  if (w.STATE.siteOv[id]) delete w.STATE.siteOv[id].iot;
+  w.iotEditStart(id, { k:'s', i:0 }); w.iotFieldLive('iotSerial', 'SN-X1'); w.iotSave();
+  const a = ((w.STATE.siteOv[id] || {}).iot || {}).sm || [];
+  T(a[0] && a[0].serial === 'SN-X1', '«احفظ» بلا «حفظ البيانات» يحفظ السيريالَ المكتوب (كان يضيع)');
+  w.iotEditStart(id, { k:'s', i:1 }); w.iotFieldLive('iotSerial', 'SN-X2'); w.iotFieldLive('iotStatus', 'مركّب'); w.iotMetaSet();
+  const b = ((w.STATE.siteOv[id] || {}).iot || {}).sm || [];
+  T(b[1] && b[1].serial === 'SN-X2' && b[1].status === 'مركّب' && !!w.IOT.edit, '«حفظ البيانات» يكتب الخطةَ فورًا ويبقى التعديلُ مفتوحًا للجهاز التالي');
+  w.IOT.edit = null; w.IOT.data = D0; if (ov0) w.STATE.siteOv[id] = ov0; else delete w.STATE.siteOv[id]; w.ROLE = r0; w.STATE.meta.role = m0;
+}
+
+/* ── ٨٥ · (V39.66) «تعديل المسح» لا ينغلق حين يُعدَّل الحقلُ مرةً ثانية ── */
+console.log('\n══ ٨٥ · لوحةُ «تعديل المسح» تبقى مفتوحة ══');
+{
+  const c = w.STATE.sites.find(x => w.siteTard(x)), r0 = w.STATE.recs[c.id], role0 = w.ROLE, mr0 = w.STATE.meta.role;
+  w.ROLE = 'admin'; w.STATE.meta.role = 'admin';
+  w.STATE.recs[c.id] = { id:c.id, access:'تم الوصول', st:'تمت الزيارة', mount:'عمود', by:'فني', at:Date.now() };
+  w.SVQ = { id:c.id, key:'', tmp:null }; w.render(1);
+  w.svqSave(c.id, 'ctype', 'ترددي', true);
+  const back = w.document.getElementById('svqSheet');
+  if (back) back.dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
+  T(w.SVQ.id === c.id, 'لمسةٌ تقع على الخلفية لحظةَ الحفظ (حين تقصر اللوحة) لا تغلقها — يُعدَّل الحقلُ مرةً ثانية');
+  const css = [...w.document.querySelectorAll('style')].map(x => x.textContent).join('\n');
+  T(/#svqSheet \.svq-box\{min-height:/.test(css), 'واللوحةُ بارتفاعٍ ثابتٍ فلا تنزل الصفوفُ تحت الإصبع بعد الحفظ');
+  w.SVQ.holdTill = 0; if (back) w.document.getElementById('svqSheet').dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
+  T(w.SVQ.id === '', 'ولمسُ الخلفية بعد ذلك يغلقها كما كان');
+  if (r0) w.STATE.recs[c.id] = r0; else delete w.STATE.recs[c.id]; w.ROLE = role0; w.STATE.meta.role = mr0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

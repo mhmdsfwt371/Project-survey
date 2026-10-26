@@ -67,21 +67,38 @@ function iotDel(){
   E.sel = null; iotPaint(); render(1);
 }
 
+/* (V39.65) owner: «باضيف بيانات الحساسات بس مش بيعمل save». The fields were read only when «حفظ البيانات» was pressed, into the
+   edit session, and only «احفظ» wrote the plan — typing a serial and pressing «احفظ» (or leaving) lost it, and a redraw in
+   between wiped what was typed. Now every keystroke goes into the selected device, «حفظ البيانات» writes the plan at once
+   (the edit stays open), and «احفظ» takes what is in the fields before it writes and closes. */
+function iotSelMeta(){ var E = IOT.edit; if (!E || !E.sel) return null; var A = E.sel.k === 's' ? E.sm : E.gm; if (!A) return null; if (!A[E.sel.i]) A[E.sel.i] = { status:'مخطط' }; return A[E.sel.i]; }
+function iotFieldLive(id, val){ var m = iotSelMeta(), k = iotFieldLive.F[id]; if (!m || !k) return; if (k === 'room' && IOT.edit.sel.k !== 's') return; m[k] = k === 'status' ? (String(val || '').trim() || 'مخطط') : String(val == null ? '' : val).trim(); }
+iotFieldLive.F = { iotRoom:'room', iotSerial:'serial', iotModel:'model', iotTag:'tag', iotNote:'note', iotStatus:'status' };
+/* a fallback for a field whose typing never reached the session (autofill): only an empty value is filled from the screen —
+   every keystroke, clearing included, already arrived through iotFieldLive */
+function iotMetaRead(){ var m = iotSelMeta(); if (!m) return; Object.keys(iotFieldLive.F).forEach(function(id){ var k = iotFieldLive.F[id], el = document.getElementById(id); if (el && String(el.value || '').trim() && !m[k]) iotFieldLive(id, el.value); }); }
+function iotPersist(E){
+  var maxM = iotMax(E.gw, E.sensors, E.gws);
+  siteOvSet(E.id, { iot:{ gw:E.gw, gws:E.gws, sensors:E.sensors, sm:E.sm, gm:E.gm, maxM:maxM, at:Date.now(), by:STATE.meta.name || '' } });
+  return maxM;
+}
 function iotMetaSet(){   /* بياناتُ المحدَّد من اللوحة */
   var E = IOT.edit; if (!E || !E.sel) return;
-  var m = E.sel.k === 's' ? E.sm[E.sel.i] : E.gm[E.sel.i]; if (!m) return;
-  var v = function(k){ var el = document.getElementById(k); return el ? String(el.value || '').trim() : ''; };
-  if (E.sel.k === 's') m.room = v('iotRoom'); m.serial = v('iotSerial'); m.status = v('iotStatus') || 'مخطط'; m.note = v('iotNote');
-  m.model = v('iotModel'); m.tag = v('iotTag');   /* (V39.22) */
-  toast(t('حُفظت بياناتُ الجهاز — اضغط «احفظ» للخطّة كلِّها')); render(1);
+  var m = iotSelMeta(); if (!m) return;
+  iotMetaRead();
+  if (!mayIot()){ toast(t('تعديلُ الحساسات للمهندس فما فوق والمشرف')); return; }
+  if (!E.sensors.length){ toast(t('لا يُحفَظ مخيمٌ بلا حساسات')); return; }
+  iotPersist(E);   /* (V39.65) written now — the edit stays open for the next device */
+  logEvent('بياناتُ جهازٍ في خطة حساسات — ' + E.id + ' \u00b7 ' + (m.id || '') + (m.serial ? ' \u00b7 ' + m.serial : ''), E.id);
+  toast(t('حُفظت بياناتُ الجهاز') + (m.serial ? ' \u00b7 ' + m.serial : '')); render(1);
 }
 
 function iotSave(){
   var E = IOT.edit; if (!E) return false;
   if (!mayIot()){ toast(t('تعديلُ الحساسات للمهندس فما فوق والمشرف')); return false; }
   if (!E.sensors.length){ toast(t('لا يُحفَظ مخيمٌ بلا حساسات')); return false; }
-  var maxM = iotMax(E.gw, E.sensors, E.gws);
-  siteOvSet(E.id, { iot:{ gw:E.gw, gws:E.gws, sensors:E.sensors, sm:E.sm, gm:E.gm, maxM:maxM, at:Date.now(), by:STATE.meta.name || '' } });
+  iotMetaRead();   /* (V39.65) what is typed in the fields is part of the plan */
+  var maxM = iotPersist(E);
   logEvent('تعديلُ حساسات مخيم — ' + E.id + ' \u00b7 ' + nm(E.sensors.length) + ' حساسًا \u00b7 ' + nm(1 + E.gws.length) + ' جيت واي \u00b7 أبعدُها ' + nm(maxM) + ' م', E.id);
   if (maxM > 150) toast(t('حُفظت — وحساسٌ أبعدُ من ١٥٠ م عن أقرب جيت واي') + ' (' + nm(maxM) + ' ' + t('م') + ') \u2014 ' + t('أضف جيت واي أو انقله نحو الحساسات'));
   else toast(t('حُفظت خطّةُ حساسات المخيم'));

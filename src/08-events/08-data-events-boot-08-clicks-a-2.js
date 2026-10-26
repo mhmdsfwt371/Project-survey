@@ -16,7 +16,10 @@ function clickAPart3(e){
     }
     return true;
   }
-  if (e.target && e.target.id === 'svqSheet'){ SVQ = { id:'', key:'', tmp:null }; render(1); return true; }   /* لمسُ الخلفية يغلق (V22.7) */
+  /* (V39.66) owner: «أعدّل وأحفظ تمام، وأجي أعدّل تاني البوب اب بتقفل». After a save the editor folds and the sheet — held to
+     the bottom of the screen — gets shorter, so the row the finger aims at moves down and the tap lands on the dimmed backdrop,
+     which closed the sheet. The sheet keeps its height now, and a backdrop tap within a moment of a save or an edit is ignored. */
+  if (e.target && e.target.id === 'svqSheet'){ if (Date.now() < (SVQ.holdTill || 0)) return true; SVQ = { id:'', key:'', tmp:null }; render(1); return true; }   /* لمسُ الخلفية يغلق (V22.7) */
   if (e.target.closest('[data-svq]')){ SVQ = { id:e.target.closest('[data-svq]').getAttribute('data-svq'), key:'', tmp:null }; POP_OPEN = false;
     try { if (window.history && history.pushState) history.pushState({ svq:1 }, ''); } catch (e3){ LS_ERR = e3; }   /* زرُّ الرجوع في الجهاز يغلق اللوح لا التطبيق */
     render(1); return true; }   /* (V22.3) */
@@ -36,7 +39,7 @@ function clickAPart3(e){
   var iqq = e.target.closest('[data-insqqx]');
   if (iqq){ var qi2 = +iqq.getAttribute('data-insqqx'), qx2 = PHOTO_Q[qi2]; if (qx2 && qx2.site === insqState().id){ PHOTO_Q.splice(qi2, 1); CORE.saveSoon(); toast(t('أُلغيت')); } render(1); return true; }
   if (e.target.closest('[data-svqx]')){ SVQ = { id:'', key:'', tmp:null }; render(1); return true; }
-  if (e.target.closest('[data-svqk]')){ SVQ.key = e.target.closest('[data-svqk]').getAttribute('data-svqk'); SVQ.tmp = null; render(1); setTimeout(function(){ var el = document.getElementById('svqIn'); if (el){ try { el.focus(); } catch (e2){ LS_ERR = e2; } } }, 30); return true; }
+  if (e.target.closest('[data-svqk]')){ SVQ.holdTill = Date.now() + 1500; SVQ.key = e.target.closest('[data-svqk]').getAttribute('data-svqk'); SVQ.tmp = null; render(1); setTimeout(function(){ var el = document.getElementById('svqIn'); if (el){ try { el.focus(); } catch (e2){ LS_ERR = e2; } } }, 30); return true; }
   if (e.target.closest('[data-svqdelask]')){ SVQ.delAsk = e.target.closest('[data-svqdelask]').getAttribute('data-svqdelask'); render(1); return true; }   /* (V22.8) */
   if (e.target.closest('[data-svqdelx]')){ SVQ.delAsk = ''; render(1); return true; }
   if (e.target.closest('[data-svqdel]')){ if (svqPhotoDel(e.target.closest('[data-svqdel]').getAttribute('data-svqdel'))) render(1); return true; }

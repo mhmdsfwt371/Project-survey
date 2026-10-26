@@ -945,6 +945,8 @@ button.kk-zl .hint{color:var(--muted,inherit);opacity:.85}
 .wp-steps{margin:0;padding-inline-start:4px;list-style:none}.wp-steps li{margin:3px 0}.wp-steps label{display:flex;gap:8px;align-items:flex-start;cursor:pointer}
 .svq-back{position:fixed;inset:0;z-index:calc(var(--z-pop) + 10);background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
 .svq-box{background:var(--surface);color:var(--ink);width:min(640px,100%);max-height:calc(100vh - env(safe-area-inset-top,0px) - 16px);overflow:auto;border-radius:18px 18px 0 0;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 30px rgba(0,0,0,.35)}
+/* (V39.66) the edit sheet keeps a steady height — folding an editor after a save no longer pulls the rows down under the finger */
+#svqSheet .svq-box{min-height:min(72vh,620px)}
 .svq-h{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;position:sticky;top:-14px;background:var(--surface);z-index:2;padding:4px 0 8px;margin-top:-4px}
 .svq-h .npop-x{position:static}
 .svq-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
@@ -1333,7 +1335,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V39.64</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V39.66</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>

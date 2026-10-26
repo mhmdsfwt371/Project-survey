@@ -1,9 +1,9 @@
 /* Nusuk Survey — offline shell cache */
-const CACHE = 'nusuk-survey-v39.64';
+const CACHE = 'nusuk-survey-v39.66';
 const SHELL = [
   './',
   './index.html',
-  './app-office.js?v=39.64',   /* (V38.39) المجالاتُ المؤجَّلة — تُثبَّت مع الهيكل فتعمل بلا شبكة؛ الرقمُ يُحدَّث مع كلِّ نسخة */
+  './app-office.js?v=39.66',   /* (V38.39) المجالاتُ المؤجَّلة — تُثبَّت مع الهيكل فتعمل بلا شبكة؛ الرقمُ يُحدَّث مع كلِّ نسخة */
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png',

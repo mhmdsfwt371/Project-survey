@@ -55,6 +55,7 @@ document.addEventListener('wheel', function(e){
 }, { passive:true });
 
 document.addEventListener('change', function(e){
+  if (e.target && e.target.id === 'iotStatus' && typeof iotFieldLive === 'function'){ iotFieldLive('iotStatus', e.target.value); return; }   /* (V39.65) */
   /* (V38.43) report builder: a dropdown changed → preview and buttons follow */
   if (e.target && e.target.closest && e.target.closest('[data-rb]')){ rbOnChange(e.target.closest('[data-rb]')); return; }
   if (e.target && e.target.closest && e.target.closest('[data-vcn],[data-vcw],[data-vcp],[data-vco]')) catDraftCatch(e);   /* (V37.4) */
@@ -280,6 +281,9 @@ document.addEventListener('change', function(e){
 });
 
 document.addEventListener('input', function(e){
+  /* (V39.65) the sensor/gateway fields are written into the edit session as they are typed — a redraw or a «احفظ» without
+     «حفظ البيانات» first no longer loses them (owner: «باضيف بيانات الحساسات بس مش بيعمل save») */
+  if (e.target && /^iot(Room|Serial|Model|Tag|Note)$/.test(e.target.id || '') && typeof iotFieldLive === 'function'){ iotFieldLive(e.target.id, e.target.value); return; }
   /* (V38.74) the sites list searches as you type — a short pause after the last key, then the list follows (the field keeps
      its text and focus through the redraw: renderKeepGrab) */
   if (e.target && e.target.id === 'siteQ'){
