@@ -2048,6 +2048,13 @@ console.log('\n══ ٨٢ · الحاجز التنظيمي في متابعة ا
   Object.keys(keep).forEach(k => { if (keep[k]) w.STATE.recs[k] = keep[k]; else delete w.STATE.recs[k]; });
 }
 
+/* ── ٨٣ · (V39.64) «تقاريري المثبّتة» تأخذ ألوانَ السمة لا وجهَ المتصفح الفاتح ── */
+console.log('\n══ ٨٣ · بطاقاتُ التقارير المثبّتة ══');
+{
+  const css = [...w.document.querySelectorAll('style')].map(x => x.textContent).join('\n');
+  T(/button\.kk-zl\{[^}]*background:var\(--raise/.test(css) && /button\.kk-zl\{[^}]*color:var\(--ink\)/.test(css) && /appearance:none/.test(css), 'بطاقةُ التقرير المثبّت زرٌّ بسطح السمة ونصِّها وحدودها — لا الأبيضُ الافتراضيُّ بنصٍّ باهتٍ في الليلي');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

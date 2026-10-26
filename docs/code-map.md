@@ -2,11 +2,11 @@
 
 المصدرُ في `src/` مجلّداتٌ بالمجال، تُجمَّع بترتيب المسار الكامل إلى `index.html` (ملفٌّ واحدٌ عند النشر ليعمل بلا شبكة). سقفُ الملف **1500 سطر** — البوابةُ تقع فوقه.
 
-## `00-shell/` — الهيكل — رأسُ الصفحة والأنماط  (1 ملفات · 1364 سطر · 0 دالة)
+## `00-shell/` — الهيكل — رأسُ الصفحة والأنماط  (1 ملفات · 1368 سطر · 0 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
-| `00-head.html` | 1364 | 0 |  |
+| `00-head.html` | 1368 | 0 |  |
 
 ## `01-core/` — النواة — اللغة والمحرك والمزامنة والسجل  (8 ملفات · 2801 سطر · 127 دالة)
 
@@ -242,7 +242,7 @@
 | `05-lifecycle-map-20-map3d-ui.js` | 111 | 10 | (V39.28) owner: «الخريطة الـ3D مش حلوة وفيها حاجات كتير مخلياها صعبة — فكّر كمهندس GIS: نضيف وسهل المراقبة |
 | `05-lifecycle-map-21-move-devices.js` | 127 | 11 | (V39.31) owner: «عاوز أي نقطة، من أقل نقطة، أقدر أحرّكها: كاميرا وأنتنات وريدر وحساسات وجيت واي وخلافه». A point |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4412 سطر · 158 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4414 سطر · 158 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -256,7 +256,7 @@
 | `06-ministry-alerts-08-pptx-template.js` | 1044 | 23 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 284 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 1231 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 1233 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
 
@@ -300,4 +300,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 238 ملفًّا · 47994 سطر · 2204 دالة.
+**الإجمالي:** 238 ملفًّا · 48000 سطر · 2204 دالة.

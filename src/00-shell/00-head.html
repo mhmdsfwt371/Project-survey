@@ -877,6 +877,10 @@ body.kiosk .kk-story{font-size:21px}
 .kk-h{font-weight:800;font-size:15px;margin:0 0 10px;color:var(--kk-soft);text-transform:none}
 .kk-zone{margin:8px 0}
 .kk-zl{display:flex;justify-content:space-between;gap:10px;font-size:14px;margin:0 0 4px}
+/* (V39.64) «تقاريري المثبّتة»: the cards are buttons with this class, and a bare button kept the browser's light face — white with
+   the theme's pale hint text in the dark theme. They take the theme's own surface, ink and line now. */
+button.kk-zl{background:var(--raise,var(--surface));color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px 10px;align-items:center;-webkit-appearance:none;appearance:none}
+button.kk-zl .hint{color:var(--muted,inherit);opacity:.85}
 .kk-bar{height:14px;border-radius:8px;background:var(--line-2);overflow:hidden}
 .kk-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--min-green),var(--min-gold));border-radius:8px;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
 .kk-kinds{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
@@ -1329,7 +1333,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V39.63</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V39.64</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
