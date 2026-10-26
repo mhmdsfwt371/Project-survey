@@ -69,11 +69,14 @@ function svExtra(s){
       + svNum('gates','عدد بوابات المخيم')
       /* (V39.56) owner: «أختار نوع المخيم: ترددي ولا عادي — ولو ترددي يظهر تحته «الحاجز التنظيمي للتفويج» وأقول عددهم».
          Prefilled from the visit's own choice, else from the boarding-stations match; the choice is the camp's type from then on. */
-      + (function(){ if (!FORM.ctype){ var r0 = (STATE.recs || {})[s.id]; FORM.ctype = (r0 && r0.ctype) || (siteTard(s) ? 'ترددي' : 'عادي'); if (FORM.tbar === '' && r0 && r0.tbar != null) FORM.tbar = r0.tbar; } return ''; })()
-      + svSel('ctype','نوع المخيم', ['عادي', 'ترددي'])
+      /* (V39.68) owner: «حصر بأعداد بوابات التفويج — وجود باب تفويج يعني ترددي، والفني أو المشرف في نموذج المسح يختاره ترددي
+         ويكتب كام بوابة». The type was filled in by itself (from the stations list, later «عادي») and saved with every form, so a
+         camp could be counted ترددي nobody chose. It starts empty now and is kept only when picked. */
+      + (function(){ if (!FORM.ctype){ var r0 = (STATE.recs || {})[s.id]; FORM.ctype = (r0 && r0.ctype) || ''; if (FORM.tbar === '' && r0 && r0.tbar != null) FORM.tbar = r0.tbar; } return ''; })()
+      + svSel('ctype','نوع المخيم', ['', 'عادي', 'ترددي'], 'ترددي = فيه بوابة تفويج أو أكثر')
       + (FORM.ctype === 'ترددي' ? '<div class="field" style="grid-column:1/-1"><div style="font-weight:700;margin:2px 0 6px">\u{1F6A7} ' + esc(t('الحاجز التنظيمي للتفويج')) + '</div>'
-          + '<input type="number" min="0" step="1" data-form="tbar" value="' + esc(FORM.tbar == null ? '' : FORM.tbar) + '" placeholder="' + esc(t('عدد الحواجز')) + '">'
-          + '<p class="hint">' + esc(t('كم حاجزًا تنظيميًّا للتفويج في المخيم — واحدٌ أو أكثر، كما تراه في الموقع')) + '</p></div>' : '')   /* (V39.62) owner: «الحاجز التنظيمي للتفويج ده المسمّى — كل مخيم ترددي فيه واحد أو أكتر وعاوز أحصرهم» */
+          + '<input type="number" min="0" step="1" data-form="tbar" value="' + esc(FORM.tbar == null ? '' : FORM.tbar) + '" placeholder="' + esc(t('عدد البوابات')) + '">'
+          + '<p class="hint">' + esc(t('كم بوابةَ تفويجٍ في المخيم — واحدةٌ أو أكثر، كما تراها في الموقع')) + '</p></div>' : '')   /* (V39.62) owner: «الحاجز التنظيمي للتفويج ده المسمّى — كل مخيم ترددي فيه واحد أو أكتر وعاوز أحصرهم» */
       + '</div>');
 
   if (isWide) h += card(isJam ? 'مسار الجمرات' : 'المسار',

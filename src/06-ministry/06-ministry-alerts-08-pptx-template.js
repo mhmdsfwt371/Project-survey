@@ -202,7 +202,7 @@ PAGE.mfu = { m:'المتابعة', t:'متابعة الوزارة',
     if (cur === 'minst') return (svListPop() + supPopHtml()) + head + mtInst();   /* (V37.62) */
     if (cur === 'mcos') return (svListPop() + supPopHtml()) + head + mtCos();   /* (V37.62) */
     if (cur === 'mobs') return (svListPop() + supPopHtml()) + head + mtObs();   /* (V37.62) */
-    if (cur === 'mchal') return head + tardBarHtml() + mfuChal();   /* (V39.63) */
+    if (cur === 'mchal') return head + mfuChal();   /* (V39.68) the gates count is an inventory, not a challenge — it stays on «المسح» */
     if (cur === 'mreq') return head + mfuReq();
     if (cur === 'mdaily') return (svListPop() + supPopHtml()) + head + mtDaily();   /* (V37.62) */
     if (cur === 'mcamps') return head + mtCamps();   /* (V37.75) المخيماتُ المركزية — إشغالٌ حيٌّ من نظام البطاقات */

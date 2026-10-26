@@ -1952,10 +1952,10 @@ console.log('\n══ ٧٦ · نوعُ المخيم في نموذج المسح �
   const camp = w.STATE.sites.filter(x => x.type === 'مخيم')[3], norm = w.STATE.sites.filter(x => x.type === 'مخيم')[4], rc76 = w.STATE.recs[camp.id];
   w.STATE.recs[camp.id] = Object.assign({}, rc76 || {}, { id:camp.id, ctype:'ترددي' });
   w.formReset(); let h = w.svExtra(camp);
-  T(/نوع المخيم/.test(h) && w.FORM.ctype === 'ترددي' && /الحاجز التنظيمي للتفويج/.test(h) && /data-form="tbar"/.test(h) && /عدد الحواجز/.test(h), 'مخيمٌ جعله المسحُ ترددي: النوعُ «ترددي» مسبقًا، وتحته «الحاجز التنظيمي للتفويج» وخانةُ «عدد الحواجز»');
+  T(/نوع المخيم/.test(h) && w.FORM.ctype === 'ترددي' && /الحاجز التنظيمي للتفويج/.test(h) && /data-form="tbar"/.test(h) && /عدد البوابات/.test(h), 'مخيمٌ جعله المسحُ ترددي: النوعُ «ترددي»، وتحته «الحاجز التنظيمي للتفويج» وخانةُ «عدد البوابات»');
   if (rc76) w.STATE.recs[camp.id] = rc76; else delete w.STATE.recs[camp.id];
   w.formReset(); h = w.svExtra(norm);
-  T(w.FORM.ctype === 'عادي' && !/الحاجز التنظيمي للتفويج/.test(h), 'ومخيمٌ عاديّ: «عادي» بلا سطر الحاجز');
+  T(w.FORM.ctype === '' && /value="" selected/.test(h) && !/الحاجز التنظيمي للتفويج/.test(h), 'ومخيمٌ لم يُختر نوعُه: الخانةُ فارغةٌ «اختر» ولا تُحفظ إلا باختيار (V39.68)');
   w.FORM.ctype = 'ترددي'; h = w.svExtra(norm);
   T(/الحاجز التنظيمي للتفويج/.test(h), 'واختيارُ «ترددي» يُظهر السطرَ والعدد');
   w.STATE.recs[norm.id] = Object.assign({}, w.STATE.recs[norm.id] || {}, { id:norm.id, ctype:'ترددي', tbar:4 }); delete norm._tax;
@@ -2049,7 +2049,7 @@ console.log('\n══ ٨٢ · الحاجز التنظيمي في متابعة ا
   const S = w.tardBarStats();
   T(S.bars === b0.bars + 3 && S.withBar === b0.withBar + 2 && S.normal === b0.normal + 1, 'من الزيارات وحدها: ٣ حواجز في مخيمين، وواحدٌ غيّره المسح إلى عادي (' + JSON.stringify(S) + ')');
   const h = w.tardBarHtml();
-  T(/الحاجز التنظيمي للتفويج/.test(h) && !/بانتظار تأكيد المسح/.test(h), 'وتظهر في «المسح» و«التحديات» بمتابعة الوزارة تحت المخيمات — بلا «بانتظار التأكيد» من المحطات');
+  T(/حصر بوابات التفويج/.test(h) && /الحاجز التنظيمي للتفويج/.test(h) && !/بانتظار تأكيد المسح/.test(h), 'حصرُ بوابات التفويج في تبويب «المسح» بمتابعة الوزارة — حصرٌ لا تحدٍّ (V39.68)');
   Object.keys(keep).forEach(k => { if (keep[k]) w.STATE.recs[k] = keep[k]; else delete w.STATE.recs[k]; });
 }
 

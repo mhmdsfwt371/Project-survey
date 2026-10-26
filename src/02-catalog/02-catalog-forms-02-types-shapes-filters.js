@@ -173,8 +173,9 @@ function tardBarHtml(){
   var S = tardBarStats();
   var pill = function(n, l, c){ return '<span class="pill" style="border-color:' + c + ';color:' + c + '"><b class="num">' + nm(n) + '</b> ' + esc(t(l)) + '</span>'; };
   return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid #F59E0B"><div class="hint" style="margin:0 0 2px">\u26FA ' + esc(t('المخيمات')) + ' \u00b7 ' + esc(t('من المسح الميداني')) + '</div>'
-    + '<div style="font-weight:800;font-size:18px;margin:0 0 4px">\u{1F6A7} ' + esc(t('الحاجز التنظيمي للتفويج')) + ': <span class="num">' + nm(S.bars) + '</span> <span class="hint" style="font-size:13px;margin:0">' + esc(t('في')) + ' ' + nm(S.withBar) + ' ' + esc(t('مخيمًا')) + '</span></div>'
-    + '<div style="display:flex;flex-wrap:wrap;gap:6px">' + pill(S.conf, 'مخيمٌ ترددي أكّده المسح', '#F59E0B') + pill(S.noCount, 'بلا عددٍ بعد', '#EF4444') + pill(S.normal, 'غيّره المسح إلى عادي', '#22C55E') + '</div></div>';
+    + '<div style="font-weight:800;font-size:18px;margin:0 0 4px">\u{1F6A7} ' + esc(t('حصر بوابات التفويج')) + ': <span class="num">' + nm(S.bars) + '</span> ' + esc(t('بوابة')) + ' <span class="hint" style="font-size:13px;margin:0">' + esc(t('في')) + ' ' + nm(S.withBar) + ' ' + esc(t('مخيمًا ترددي')) + '</span></div>'
+    + '<div class="hint" style="margin:0 0 6px">' + esc(t('الحاجز التنظيمي للتفويج — المخيمُ الذي فيه بوابةُ تفويجٍ ترددي، يختاره الفني أو المشرف في نموذج المسح ويكتب عدد بواباته')) + '</div>'
+    + '<div style="display:flex;flex-wrap:wrap;gap:6px">' + pill(S.conf, 'مخيم ترددي', '#F59E0B') + pill(S.noCount, 'ترددي بلا عدد بوابات بعد', '#EF4444') + '</div></div>';   /* (V39.68) an inventory of gates */
 }
 function siteTard(x){ if (!x) return false; var rc = STATE.recs && STATE.recs[x.id]; if (rc && (rc.ctype === 'ترددي' || rc.ctype === 'عادي')) return rc.ctype === 'ترددي';   /* (V39.56) the survey's choice first */
   var ov = STATE.siteOv && STATE.siteOv[x.id]; if (ov && typeof ov.tard === 'boolean') return ov.tard; return !!tardSet()[x.id]; }

@@ -21,12 +21,12 @@
 | `01-core-registry-07-blackbox-registry.js` | 190 | 12 | Black box (crash forensics) and the embedded site registry SITES_RAW with its publish/cache cycle to the database. |
 | `01-core-registry-08-egates-seed.js` | 72 | 7 | Al Mashaaer train: the nine stations and their 62 E-GATE points (registry points at the station reference, owner decision Q-023), the station card listing its g |
 
-## `02-catalog/` — الكتالوج والنقطة — التعريفات والتصنيف والصلاحيات وتعديل المسح  (12 ملفات · 4189 سطر · 248 دالة)
+## `02-catalog/` — الكتالوج والنقطة — التعريفات والتصنيف والصلاحيات وتعديل المسح  (12 ملفات · 4190 سطر · 248 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
 | `02-catalog-forms-01-site-edit-twins.js` | 266 | 23 | Site rows from the registry (siteRow/loadSites), zone-of-type rules, editing site data without a visit (override layer), bulk data corrections, twin points on o |
-| `02-catalog-forms-02-types-shapes-filters.js` | 518 | 32 | Point classification and map shapes per type, owner taxonomy (five zones, nine types), path filters, ministry camera details, tafweej layer, camp path and the f |
+| `02-catalog-forms-02-types-shapes-filters.js` | 519 | 32 | Point classification and map shapes per type, owner taxonomy (five zones, nine types), path filters, ministry camera details, tafweej layer, camp path and the f |
 | `02-catalog-forms-03-site-details-points.js` | 351 | 9 | Full site details page (PAGE.site) and technician points computed from work. |
 | `02-catalog-forms-04-mywork-diary.js` | 537 | 9 | 'My work' screens, project diary, weight/target simulator and how dues are computed. |
 | `02-catalog-forms-05-management-performance.js` | 435 | 4 | Management records, methodology matching and the single performance page with five levels. |
@@ -38,7 +38,7 @@
 | `02-definitions-08-definitions.js` | 569 | 84 | Canonical definitions used everywhere: visit/survey/installation states, challenge categories (chalCats), location choices (locOpts/locApplies), helper predicat |
 | `02-edit-09-edit-requests.js` | 185 | 11 | Data-correction requests from the field (fixreqs) and their review. |
 
-## `03-survey/` — المسح والتركيب — النماذج والنقاط والإسناد والخطة  (11 ملفات · 4022 سطر · 179 دالة)
+## `03-survey/` — المسح والتركيب — النماذج والنقاط والإسناد والخطة  (11 ملفات · 4025 سطر · 179 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -47,7 +47,7 @@
 | `03-survey-records-03-assign-solutions.js` | 443 | 22 | Assignment from list or map, request codes, and the proposed device solution for a point before an installation request. |
 | `03-survey-records-04-readiness-conditions.js` | 384 | 9 | What is ready per request type and the condition chain explaining why a point cannot be assigned. |
 | `03-survey-records-05-forms-approvals.js` | 160 | 11 | Field forms that write to the engine, the two approvals, missing survey fields, required-field marking and save blocking. |
-| `03-survey-records-06-survey-form.js` | 332 | 17 | The survey form: basic fields first and details on demand, prefix generation, automatic photo checks, and the draft that survives iOS closing the page. |
+| `03-survey-records-06-survey-form.js` | 335 | 17 | The survey form: basic fields first and details on demand, prefix generation, automatic photo checks, and the draft that survives iOS closing the page. |
 | `03-survey-records-07-demo-single-errors.js` | 199 | 16 | Demo-point kits, single-point form, production error capture, events carrying their point and actor. |
 | `03-survey-records-08-parts-history-onboarding.js` | 219 | 9 | Parts picker, three items missing from the worker, the point's full history, and the first-run tour. |
 | `03-survey-records-09-team-bugs-companies.js` | 217 | 14 | Team numbers in one pass, bug report and bug screen, accepted-only work rule, daily WhatsApp briefing, company phone book and company rename. |
@@ -242,7 +242,7 @@
 | `05-lifecycle-map-20-map3d-ui.js` | 111 | 10 | (V39.28) owner: «الخريطة الـ3D مش حلوة وفيها حاجات كتير مخلياها صعبة — فكّر كمهندس GIS: نضيف وسهل المراقبة |
 | `05-lifecycle-map-21-move-devices.js` | 127 | 11 | (V39.31) owner: «عاوز أي نقطة، من أقل نقطة، أقدر أحرّكها: كاميرا وأنتنات وريدر وحساسات وجيت واي وخلافه». A point |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4421 سطر · 158 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4424 سطر · 158 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -256,7 +256,7 @@
 | `06-ministry-alerts-08-pptx-template.js` | 1044 | 23 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 284 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 1240 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 1243 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
 
@@ -300,4 +300,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 238 ملفًّا · 48059 سطر · 2212 دالة.
+**الإجمالي:** 238 ملفًّا · 48066 سطر · 2212 دالة.
