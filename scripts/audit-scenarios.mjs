@@ -1948,7 +1948,7 @@ console.log('\n══ ٧٦ · نوعُ المخيم في نموذج المسح �
 {
   const camp = w.STATE.sites.find(x => w.siteTard(x)), norm = w.STATE.sites.find(x => x.type === 'مخيم' && !w.siteTard(x));
   w.formReset(); let h = w.svExtra(camp);
-  T(/نوع المخيم/.test(h) && w.FORM.ctype === 'ترددي' && /الحاجز التنظيمي للتفويج/.test(h) && /data-form="tbar"/.test(h), 'مخيمٌ من محطات الإركاب: النوعُ «ترددي» مسبقًا، وتحته «الحاجز التنظيمي للتفويج» وخانةُ العدد');
+  T(/نوع المخيم/.test(h) && w.FORM.ctype === 'ترددي' && /الحاجز التنظيمي للتفويج/.test(h) && /data-form="tbar"/.test(h) && /عدد الحواجز/.test(h), 'مخيمٌ من محطات الإركاب: النوعُ «ترددي» مسبقًا، وتحته «الحاجز التنظيمي للتفويج» وخانةُ «عدد الحواجز» (V39.62)');
   w.formReset(); h = w.svExtra(norm);
   T(w.FORM.ctype === 'عادي' && !/الحاجز التنظيمي للتفويج/.test(h), 'ومخيمٌ عاديّ: «عادي» بلا سطر الحاجز');
   w.FORM.ctype = 'ترددي'; h = w.svExtra(norm);
@@ -2016,6 +2016,36 @@ console.log('\n══ ٨٠ · كلّم المهندس ══');
   if (pk){ pk.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await new Promise(r => setTimeout(r, 120)); }
   T(w.CUR === 'chat' && w.ASSIST_OPEN === false && /^dm:/.test((w.chPageHtml.f || {}).open || ''), 'واختيارُ المهندس يفتح المحادثةَ معه وفيها السؤال');
   w.STATE.users = U0; w.STATE.meta.name = me0; w.askEngWho.pick = false; w.goPage(cur0 || 'map'); w.render(1);
+}
+
+/* ── ٨١ · (V39.62) «تعديل المسح» يعرض نوعَ المخيم وعددَ الحواجز التنظيمية لكل مخيمٍ مُزار ── */
+console.log('\n══ ٨١ · نوعُ المخيم في «تعديل المسح» ══');
+{
+  const tc = w.STATE.sites.find(x => w.siteTard(x)), nc = w.STATE.sites.find(x => x.type === 'مخيم' && !w.siteTard(x));
+  const r0t = w.STATE.recs[tc.id], r0n = w.STATE.recs[nc.id];
+  w.STATE.recs[tc.id] = { id:tc.id, access:'تم الوصول', mount:'عمود' }; w.STATE.recs[nc.id] = { id:nc.id, access:'تم الوصول', mount:'عمود' };
+  const kt = w.svqKeys(w.STATE.recs[tc.id]), kn = w.svqKeys(w.STATE.recs[nc.id]);
+  T(kt[0] === 'ctype' && kt[1] === 'tbar' && kn[0] === 'ctype' && kn.indexOf('tbar') < 0, 'زيارةٌ قديمةٌ بلا نوع: «نوع المخيم» أولُ صفٍّ لكل مخيمٍ مُزار، و«الحاجز التنظيمي للتفويج — العدد» تحته للترددي وحدَه');
+  T(w.svqLabel('ctype') === 'نوع المخيم' && /الحاجز التنظيمي للتفويج/.test(w.svqLabel('tbar')) && /value="ترددي" selected|selected[^>]*>ترددي/.test(w.svqEditor('ctype', w.STATE.recs[tc.id], tc)), 'بعنوانيهما، والنوعُ مختارٌ مسبقًا من محطات الإركاب');
+  w.STATE.recs[nc.id].ctype = 'ترددي';
+  T(w.svqKeys(w.STATE.recs[nc.id]).indexOf('tbar') === 1 && w.taxOf(nc).t === 'مخيمات ترددية', 'وتغييرُه إلى «ترددي» يُظهر العدد ويضعه في «مخيمات ترددية» فورًا');
+  if (r0t) w.STATE.recs[tc.id] = r0t; else delete w.STATE.recs[tc.id]; if (r0n) w.STATE.recs[nc.id] = r0n; else delete w.STATE.recs[nc.id];
+}
+
+/* ── ٨٢ · (V39.63) متابعة الوزارة: الحاجزُ التنظيميُّ للتفويج تحت المخيمات من المسح الميداني ── */
+console.log('\n══ ٨٢ · الحاجز التنظيمي في متابعة الوزارة ══');
+{
+  const T3 = w.STATE.sites.filter(x => w.siteTard(x)).slice(0, 3), N1 = w.STATE.sites.find(x => x.type === 'مخيم' && !w.siteTard(x));
+  const keep = {}; [...T3, N1].forEach(x => { keep[x.id] = w.STATE.recs[x.id]; });
+  const b0 = w.tardBarStats();
+  w.STATE.recs[T3[0].id] = { id:T3[0].id, access:'تم الوصول', ctype:'ترددي', tbar:2 };
+  w.STATE.recs[T3[1].id] = { id:T3[1].id, access:'تم الوصول', ctype:'ترددي', tbar:1 };
+  w.STATE.recs[T3[2].id] = { id:T3[2].id, access:'تم الوصول', ctype:'عادي' };
+  const S = w.tardBarStats();
+  T(S.bars === b0.bars + 3 && S.withBar === b0.withBar + 2 && S.normal === b0.normal + 1, 'من الزيارات وحدها: ٣ حواجز في مخيمين، وواحدٌ غيّره المسح إلى عادي (' + JSON.stringify(S) + ')');
+  const h = w.tardBarHtml();
+  T(/الحاجز التنظيمي للتفويج/.test(h) && /بانتظار تأكيد المسح/.test(h), 'وتظهر في «المسح» و«التحديات» بمتابعة الوزارة تحت المخيمات');
+  Object.keys(keep).forEach(k => { if (keep[k]) w.STATE.recs[k] = keep[k]; else delete w.STATE.recs[k]; });
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

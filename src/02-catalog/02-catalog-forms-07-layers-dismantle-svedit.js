@@ -88,8 +88,8 @@ function LAYER(){ return LAYERS[FIELD_MODE] || LAYERS.survey; }
    لغيره بالكتابة على المعتمد، والتغييرُ على المعتمد يراه صاحبُ الاعتماد؛ ويُنبَّه المهندسُ في الحالين. */
 var SVQ = { id:'', key:'', tmp:null, delAsk:'' };
 var TYPES_OPEN = false;   /* بطاقةُ التصنيفات في «المواقع» مطويّةٌ حتى تُفتَح (V23.0) */
-var SVQ_NUM = { len_m:1, wid_m:1, hgt_m:1, height:1, cable:1, tents:1, gates:1, corr_w:1, pdist:1, n_ant:1, n_rdr:1, n_cam:1, n_sens:1, hours:1, crew_n:1, kits:1, kits_done:1 };
-var SVQ_OPT = { mount:['عمود','جدار','سور','هيكل قائم'], power:['شبكة','مولد','طاقة شمسية','لا يوجد'] };   /* (V38.25) «موقع النقطة» شرائحُ متعدّدةٌ لا قائمة */
+var SVQ_NUM = { tbar:1, len_m:1, wid_m:1, hgt_m:1, height:1, cable:1, tents:1, gates:1, corr_w:1, pdist:1, n_ant:1, n_rdr:1, n_cam:1, n_sens:1, hours:1, crew_n:1, kits:1, kits_done:1 };
+var SVQ_OPT = { ctype:['عادي','ترددي'], mount:['عمود','جدار','سور','هيكل قائم'], power:['شبكة','مولد','طاقة شمسية','لا يوجد'] };   /* (V38.25) «موقع النقطة» شرائحُ متعدّدةٌ لا قائمة */
 var SVQ_TEXT = { note:1, chal_note:1, power_note:1, civil:1, equip:1 };
 function svqMay(id){ var r = STATE.recs[id]; return !!r && !r.deleted && may('edit'); }
 function svqKeys(rec){
@@ -102,11 +102,21 @@ function svqKeys(rec){
   if (hasCh && ks.indexOf('chal_note') < 0){ var ci = ks.indexOf('chals'); ks.splice(ci > -1 ? ci + 1 : ks.length, 0, 'chal_note'); }
   /* (V38.79) corridors and Jamarat: the challenge is edited through «موقع النقطة» — no chips row */
   if (locOnly(siteFind(rec.id))) ks = ks.filter(function(k){ return k !== 'chals'; });
+  /* (V39.62) owner: «مش لاقيه» — the camp type was only in the full survey form; visits made before it had no value, and this
+     panel lists recorded values only. A visited camp now always shows «نوع المخيم», and the count of «الحاجز التنظيمي للتفويج» under a
+     Taraddudi one (its own choice, else the boarding-stations match). */
+  var sC = siteFind(rec.id);
+  if (sC && sC.type === 'مخيم' && rec.access === 'تم الوصول'){
+    ks = ks.filter(function(k){ return k !== 'ctype' && k !== 'tbar'; });
+    var trd = rec.ctype ? rec.ctype === 'ترددي' : siteTard(sC);
+    ks.unshift('ctype'); if (trd) ks.splice(1, 0, 'tbar');
+  }
   return ks;
 }
 function svqLabel(k){ if (String(k).indexOf('ph:') === 0) return 'صورة: ' + svqKindLabel(k.slice(3)); return k === 'chals' ? 'تحديات التركيب' : (SV_LABELS[k] || k); }
 function svqFmt(v){ return Array.isArray(v) ? v.filter(function(x){ return typeof x !== 'object' && !/^\[object /.test(String(x)); }).map(function(x){ return t(x); }).join(' \u00b7 ')   /* (V38.78) */ : (v === '' || v == null ? '\u2014' : (typeof v === 'number' ? nm(v) : t(String(v)))); }
 function svqEditor(k, rec, s){
+  if (k === 'ctype' && !rec.ctype) rec = Object.assign({}, rec, { ctype:siteTard(s) ? 'ترددي' : 'عادي' });   /* (V39.62) preselected from the boarding-stations match */
   var v = rec[k];
   if (k === 'loc'){
     /* (V38.25) شرائحُ متعدّدةٌ كالتحديات — «لا شيء مما سبق» يُفرغ الباقي */

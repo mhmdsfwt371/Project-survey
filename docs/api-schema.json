@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V39.61",
+  "app_version": "V39.63",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2323,7 +2323,9 @@
   "V39.58": "campCircles(): مخيمات بلا campFoot — داخل حدود مسجَّل {dup,keep,both} وإلا outside · campMergeInto(keep, dup): ينقل recs/inss إن كان المسجَّل بلا سجل (movedFrom) ثم hidden+dupOf كدمج التوائم ويُفكّ بـdupUndo · بطاقة في جودة البيانات بأزرار data-ccmerge وdata-ccmergeall (بتأكيد) · سيناريو ٧٧",
   "V39.59": "polyLoad: نسخة IndexedDB تُعرض فورًا ثم polyRevalidate (مرة في الجلسة، fetch بـcache:no-cache — ٣٠٤ إن لم يتغير) يستبدلها إن اختلفت المفاتيح أو أطوالها أو أول نقطة ويُصفّر campFoot.bad ويعيد رسم الخريطتين · polyFetch · سيناريو ٧٨ · ومعه V39.58 (campCircles/campMergeInto)",
   "V39.60": "campNameMismatch(): المخيمات التي يخالف «مربع X - شاخص Y» في اسمها حقلَي sq/sign (١١٣ بعد التطبيع) · بطاقة للعرض في تبويب dq بأزرار data-site · HELP_KEYWORDS.dq «جودة البيانات»… · سيناريو ٧٩ · ومعه V39.58 وV39.59",
-  "V39.61": "askEngClick: مع أكثر من مهندس يُعاد رسم #assistRes بـassistResHtml بدل render(1) الذي يُبقي الصندوق · سيناريو ٨٠ · ومعه V39.58–V39.60"
+  "V39.61": "askEngClick: مع أكثر من مهندس يُعاد رسم #assistRes بـassistResHtml بدل render(1) الذي يُبقي الصندوق · سيناريو ٨٠ · ومعه V39.58–V39.60",
+  "V39.62": "tbar: العنوان المؤقت «عدد بوابات التفويج» والتلميح ووسم المراجعة «— عدد البوابات» · سيناريو ٧٦ يفحص الخانة",
+  "V39.63": "tardBarStats() من rec.ctype/rec.tbar وحدهما (conf · withBar · bars · noCount · pending بمحطات الإركاب · normal) · tardBarHtml() في PAGE.mfu تبويبَي msurv وmchal · سيناريو ٨٢ · ومعه V39.62"
   },
   "map_and_geolocation": {
     "tile_layers": {

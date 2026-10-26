@@ -198,11 +198,11 @@ PAGE.mfu = { m:'المتابعة', t:'متابعة الوزارة',
     if (cur === 'kiosk' || (cur === 'mfu' && KIOSK_ON)){ setTimeout(kioskAnimate, 30); setTimeout(function(){ try { kkSatInit(); } catch (e){ softErr('kkSat', e, ''); } }, 40); return head + kioskBody(); }
     head += mfuExportBar();   /* التصديرُ على كلِّ عنوان (V20.2) */
     if (cur === 'mweek') return head + mtWeek() + mtDetails('تحديث المهام والمعالم', '<details class="mfu-add" open><summary>' + esc(t('حالة أبرز المهام')) + '</summary>' + mfuTasks() + '</details>' + PAGE.wtask.body(), '\u270E');   /* (V37.62) اللوحةُ أوّلًا، والتحديثُ كما هو في قسمٍ مطويّ */   /* (V27.1) شريحتان من مصدرٍ واحد صارتا واحدة */   /* المهامُّ الأسبوعيةُ كما هي — تُحدَّث من هنا (V20.5) */
-    if (cur === 'msurv') return head + mfuSurv();   /* (V29.2) */
+    if (cur === 'msurv') return head + tardBarHtml() + mfuSurv();   /* (V29.2) · (V39.63) the barriers counted by the survey, under the camps */
     if (cur === 'minst') return (svListPop() + supPopHtml()) + head + mtInst();   /* (V37.62) */
     if (cur === 'mcos') return (svListPop() + supPopHtml()) + head + mtCos();   /* (V37.62) */
     if (cur === 'mobs') return (svListPop() + supPopHtml()) + head + mtObs();   /* (V37.62) */
-    if (cur === 'mchal') return head + mfuChal();
+    if (cur === 'mchal') return head + tardBarHtml() + mfuChal();   /* (V39.63) */
     if (cur === 'mreq') return head + mfuReq();
     if (cur === 'mdaily') return (svListPop() + supPopHtml()) + head + mtDaily();   /* (V37.62) */
     if (cur === 'mcamps') return head + mtCamps();   /* (V37.75) المخيماتُ المركزية — إشغالٌ حيٌّ من نظام البطاقات */
