@@ -85,7 +85,31 @@ function iotDevHtml(id, kind, i){   /* نافذةُ الجهاز */
     + (mayIot() ? '<div style="margin-top:6px">' + btn('\u270E ' + t('عدّل'), 'btn-quiet btn-sm', ' data-iotdev="' + esc(id) + '|' + kind + '|' + i + '"')
         + (typeof mvdStart === 'function' ? btn('\u2725 ' + t('حرّك'), 'btn-quiet btn-sm', ' data-mvd="' + esc(id) + '" data-mvdk="' + (kind === 's' ? 's' : 'g') + i + '"') : '') + '</div>' : '');
 }
+/* (V39.67) owner: «دي نقاط محطات الإركاب — في المخيم ممكن يكون أكتر من محطة؛ اعملها شكل مختلف وطبقة جديدة زي الحساسات».
+   505 points (layers/boarding-1448.json, from the owner's KMZ). A layer of its own, off by default, an amber triangle on
+   the flat map and an amber dot in 3D; it decides nothing about a camp's type. */
+function brdSt(){ return brdSt.S || (brdSt.S = { on:false, data:null, loading:null, layer:null }); }
+function brdLoad(){
+  var B = brdSt(); if (B.data || B.loading) return B.loading || Promise.resolve(true);
+  B.loading = fetch('layers/boarding-1448.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(j){
+    B.data = j && Array.isArray(j.pts) ? j.pts : []; B.loading = null; brdPaint(); if (CUR === 'map') render(1); return true;
+  }).catch(function(e){ B.loading = null; softErr('محطات الإركاب', e, 'تعذّر جلبُ محطات الإركاب'); return false; });
+  return B.loading;
+}
+function brdCount(){ var B = brdSt(); return B.data ? B.data.length : 0; }
+function brdPaint(){
+  var B = brdSt();
+  try { if (typeof MAP_3D !== 'undefined' && MAP_3D && M3 && M3.getSource){ var s3 = M3.getSource('nskbst'); if (s3) s3.setData({ type:'FeatureCollection', features:B.on && B.data ? B.data.map(function(q){ return { type:'Feature', geometry:{ type:'Point', coordinates:[q[1], q[0]] }, properties:{} }; }) : [] }); } } catch (e3){ LS_ERR = e3; }
+  if (typeof MAP === 'undefined' || !MAP || typeof L === 'undefined') return;
+  try { if (B.layer && B.layer._map !== MAP) B.layer = null; if (B.layer) B.layer.clearLayers(); else B.layer = L.layerGroup().addTo(MAP); } catch (e){ LS_ERR = e; return; }
+  if (!B.on || !B.data) return;
+  B.data.forEach(function(q){
+    shapeMk(q, { renderer:MAP_CV, radius:7, color:'#3B2A05', weight:1.2, fillColor:'#F59E0B', fillOpacity:.95, bubblingMouseEvents:false }, 'triangle')
+      .bindTooltip('\u{1F68F} ' + esc(t('محطة إركاب')), { direction:'top' }).addTo(B.layer);
+  });
+}
 function iotPaint(){
+  try { brdPaint(); } catch (eB){ LS_ERR = eB; }   /* (V39.67) */
   if (IOT.on) liveIotLoad();   /* (V39.47) the live readings, at most every 10 minutes */
   try { if (typeof m3IotPaint === 'function') m3IotPaint(); } catch (e3){ LS_ERR = e3; }   /* (V39.11) the 3D twin follows */
   if (typeof MAP === 'undefined' || !MAP || typeof L === 'undefined') return;

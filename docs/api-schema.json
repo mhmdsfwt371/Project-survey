@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V39.66",
+  "app_version": "V39.67",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2328,7 +2328,8 @@
   "V39.63": "tardBarStats() من rec.ctype/rec.tbar وحدهما (conf · withBar · bars · noCount · pending بمحطات الإركاب · normal) · tardBarHtml() في PAGE.mfu تبويبَي msurv وmchal · سيناريو ٨٢ · ومعه V39.62",
   "V39.64": "button.kk-zl: background var(--raise) · color var(--ink) · border var(--line) · appearance:none · سيناريو ٨٣",
   "V39.65": "iotFieldLive (من حدث input/change لحقول iotRoom/Serial/Model/Tag/Note/Status) · iotSelMeta · iotMetaRead احتياطيٌّ يملأ الفارغ فقط · iotPersist · iotMetaSet يكتب الخطة ويبقي التعديل · iotSave يأخذ المكتوب · سيناريو ٨٤",
-  "V39.66": "#svqSheet .svq-box min-height · SVQ.holdTill (١٫٥ ث) بعد svqSave وفتح ✎ — لمس الخلفية خلالها يُتجاهَل · سيناريو ٨٥ · ومعه V39.65 (حفظ بيانات الحساسات)"
+  "V39.66": "#svqSheet .svq-box min-height · SVQ.holdTill (١٫٥ ث) بعد svqSave وفتح ✎ — لمس الخلفية خلالها يُتجاهَل · سيناريو ٨٥ · ومعه V39.65 (حفظ بيانات الحساسات)",
+  "V39.67": "layers/boarding-1448.json (٥٠٥ نقطة) · brdSt/brdLoad/brdPaint/brdCount — مثلثٌ كهرماني على Leaflet ومصدر nskbst وطبقة nsk-bst في الخريطة الثلاثية · شريحة data-brd في الخريطتين (data-bst للبحث) · tardSet() فارغة: siteTard من rec.ctype ثم تجاوز الموقع tard · أُزيلت «بانتظار التأكيد» من tardBarHtml · سيناريوهات ٧٥/٧٦/٨١/٨٢/٨٥ على اختيار المسح · سيناريو ٨٦"
   },
   "map_and_geolocation": {
     "tile_layers": {

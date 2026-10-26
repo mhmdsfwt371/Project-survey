@@ -152,15 +152,13 @@ function routesList(){
    (محطات الإركاب، ٥٠٥ نقطة) were matched to Arafat's camp footprints: a camp holding a stop is ترددي — 191 camps. Seventeen more
    have a stop on their edge only (under 10 m) and are kept apart until the owner decides. A site override (tard true/false)
    wins either way. */
-function tardSet(){
-  if (tardSet.m) return tardSet.m;
-  var m = {}; ['0048','0049','0053','0055','0056','0057','0058','0060','0062','0063','0064','0065','0066','0067','0068','0069','0070','0071','0072','0073','0074','0075','0077','0079','0080','0081','0082','0084','0086','0087','0088','0089','0091','0092','0093','0094','0095','0096','0097','0098','0099','0101','0102','0103','0104','0105','0106','0109','0111','0118','0119','0120','0121','0122','0124','0125','0126','0127','0128','0129','0130','0131','0132','0133','0134','0135','0136','0138','0139','0140','0141','0142','0143','0144','0145','0146','0147','0149','0150','0151','0152','0153','0154','0155','0156','0157','0159','0160','0161','0162','0163','0164','0168','0169','0170','0171','0174','0175','0176','0177','0178','0179','0180','0181','0182','0183','0184','0185','0187','0188','0189','0190','0191','0192','0193','0194','0195','0196','0197','0198','0199','0200','0201','0202','0204','0205','0206','0207','0208','0209','0210','0212','0214','0215','0216','0217','0218','0219','0220','0221','0222','0223','0224','0225','0226','0227','0228','0236','0325','0326','0334','0335','0336','0337','0338','0339','0360','0361','0362','0363','0364','0365','0368','0369','0370','0371','0425','0426','0433','0435','0436','0437','0438','0439','0440','0442','0443','0445','0446','0447','0448','0470','0476','0480','0651','0652','0653','0654','0655','0656','0657'].forEach(function(n){ m['NSK-ARF-CMP-' + n] = 1; });
-  tardSet.edge = {}; ['0083','0085','0100','0107','0123','0137','0148','0165','0166','0167','0172','0186','0203','0211','0405','0420','0479'].forEach(function(n){ tardSet.edge['NSK-ARF-CMP-' + n] = 1; });
-  return (tardSet.m = m);
-}
+/* (V39.67) owner: «لو كنت قلتلك إن المخيمات اللي فيها محطات إركاب ترددي فده كان معلومات غلط — الترددي هو اللي الشباب عملوه
+   النهارده من تعديل بيانات المخيم». The boarding-stations list no longer marks any camp: a camp is ترددي only when a survey
+   set it so (or an office override); the stations are their own layer (محطات الإركاب). */
+function tardSet(){ return {}; }
 /* (V39.63) owner: «في متابعة الوزارة والتحديات تظهر تحت المخيمات: كام واحد هيكون فيه حاجز تنظيمي للتفويج بناءً على شغل
-   المسح في الميدان». From the visits only: camps the survey confirmed ترددي, the barriers counted in them, those confirmed
-   without a count yet, and Taraddudi camps (by the boarding stations) the survey has not confirmed or changed yet. */
+   المسح في الميدان». From the visits only: camps the survey set ترددي, the barriers counted in them, those set without a count
+   yet, and those the survey set عادي. (V39.67: no «awaiting confirmation» — the stations no longer mark camps.) */
 function tardBarStats(){
   var o = { conf:0, withBar:0, bars:0, noCount:0, pending:0, normal:0 };
   (STATE.sites || []).forEach(function(x){
@@ -168,7 +166,6 @@ function tardBarStats(){
     var r = (STATE.recs || {})[x.id], ct = r && !r.deleted ? r.ctype : '';
     if (ct === 'ترددي'){ o.conf++; var n = +r.tbar || 0; if (n > 0){ o.withBar++; o.bars += n; } else o.noCount++; }
     else if (ct === 'عادي') o.normal++;
-    else if (tardSet()[x.id]) o.pending++;
   });
   return o;
 }
@@ -177,7 +174,7 @@ function tardBarHtml(){
   var pill = function(n, l, c){ return '<span class="pill" style="border-color:' + c + ';color:' + c + '"><b class="num">' + nm(n) + '</b> ' + esc(t(l)) + '</span>'; };
   return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid #F59E0B"><div class="hint" style="margin:0 0 2px">\u26FA ' + esc(t('المخيمات')) + ' \u00b7 ' + esc(t('من المسح الميداني')) + '</div>'
     + '<div style="font-weight:800;font-size:18px;margin:0 0 4px">\u{1F6A7} ' + esc(t('الحاجز التنظيمي للتفويج')) + ': <span class="num">' + nm(S.bars) + '</span> <span class="hint" style="font-size:13px;margin:0">' + esc(t('في')) + ' ' + nm(S.withBar) + ' ' + esc(t('مخيمًا')) + '</span></div>'
-    + '<div style="display:flex;flex-wrap:wrap;gap:6px">' + pill(S.conf, 'مخيمٌ ترددي أكّده المسح', '#F59E0B') + pill(S.noCount, 'بلا عددٍ بعد', '#EF4444') + pill(S.pending, 'ترددي بانتظار تأكيد المسح', '#94A3B8') + pill(S.normal, 'غيّره المسح إلى عادي', '#22C55E') + '</div></div>';
+    + '<div style="display:flex;flex-wrap:wrap;gap:6px">' + pill(S.conf, 'مخيمٌ ترددي أكّده المسح', '#F59E0B') + pill(S.noCount, 'بلا عددٍ بعد', '#EF4444') + pill(S.normal, 'غيّره المسح إلى عادي', '#22C55E') + '</div></div>';
 }
 function siteTard(x){ if (!x) return false; var rc = STATE.recs && STATE.recs[x.id]; if (rc && (rc.ctype === 'ترددي' || rc.ctype === 'عادي')) return rc.ctype === 'ترددي';   /* (V39.56) the survey's choice first */
   var ov = STATE.siteOv && STATE.siteOv[x.id]; if (ov && typeof ov.tard === 'boolean') return ov.tard; return !!tardSet()[x.id]; }

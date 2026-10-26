@@ -116,6 +116,9 @@ function m3Layers(){
     if (typeof iotFieldLoad === 'function') iotFieldLoad();   /* (V39.23) the camps' real gates and devices */
     if (!M3.getSource('nskiot')){
       M3.addSource('nskiot', { type:'geojson', data:{ type:'FeatureCollection', features:(typeof m3IotFeatures === 'function' ? m3IotFeatures() : []) } });
+      /* (V39.67) محطات الإركاب — an amber dot with a dark ring, filled when the layer is on */
+      M3.addSource('nskbst', { type:'geojson', data:{ type:'FeatureCollection', features:[] } });
+      M3.addLayer({ id:'nsk-bst', type:'circle', source:'nskbst', paint:{ 'circle-radius':['interpolate', ['linear'], ['zoom'], 12, 3, 16, 6, 18, 8], 'circle-color':'#F59E0B', 'circle-stroke-width':1.5, 'circle-stroke-color':'#3B2A05' } });
       /* (V39.17) owner: the sensors stay visible — a dot of fixed size at every zoom, and the column when close enough */
       M3.addLayer({ id:'nsk-iot-pt', type:'circle', source:'nskiot', filter:['==', ['geometry-type'], 'Point'],   /* (V39.18) at every zoom: inside a tent the dot still marks the sensor */
         paint:{ 'circle-radius':['interpolate', ['linear'], ['zoom'], 11, 2.5, 15, 5, 18, 7], 'circle-color':['get','color'],

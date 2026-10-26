@@ -105,6 +105,7 @@ function mapUIHtml(){
     +     esc(t(MAP_3D ? 'العودة إلى الخريطة المسطّحة' : 'الخريطة بالتضاريس والأعمدة'))+'">'
     +     (MAP_3D ? '\u25A6 ' : '\u26F0 ')+esc(t(MAP_3D ? '٢د' : '٣د'))+'</button>'
     /* (V39.11) owner: the sensors and gateways layer up here with the other layers, not only inside the filter */
+    +   '<button type="button" class="map-chip'+(brdSt().on?' on':'')+'" data-brd="1">\u{1F68F} '+esc(t('محطات الإركاب'))+(brdSt().on && brdCount() ? ' \u00b7 <span class="num">' + nm(brdCount()) + '</span>' : '')+'</button>'   /* (V39.67) */
     +   '<button type="button" class="map-chip'+(IOT.on?' on':'')+'" data-iot="1">\u{1F4E1} '+esc(t('الحساسات'))+(IOT.on ? (function(){ var k = iotCount(); return ' \u00b7 ' + nm(k.s); })() : '')+'</button>'
     /* (V39.15) the facility's floors as chips up here while the Jamarat (or a floor) is selected — the filter sheet's own switch */
     +   ((FILT.zone === 'كاميرات المتابعة' || (FILT.floor !== '' && FILT.floor != null)) ? '<span class="chip-pair">' + [['', 'كل الأدوار'], ['0', 'الأرضي'], ['1', 'الأول'], ['2', 'الثاني'], ['3', 'الثالث'], ['4', 'الرابع']].map(function(f){

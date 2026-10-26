@@ -54,7 +54,7 @@ function m3uiSheet(){
     + '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><b>\u{1F5C2} ' + esc(t('طبقات الخريطة')) + '</b>'
     + '<button type="button" class="btn btn-quiet btn-sm" data-m3ui="close" aria-label="' + esc(t('إغلاق')) + '">\u2715</button></div>'
     + sec('الأساس', tg(MAP_SAT, 'data-sat="1"', '\u{1F6F0}', 'قمر صناعي') + tg(S.terrain, 'data-m3terrain="1"', '\u26F0', 'التضاريس'))
-    + sec('التشغيل', tg(IOT.on, 'data-iot="1"', '\u{1F4E1}', 'الحساسات', IOT.on ? ' \u00b7 ' + nm(iotCount().s) : '')
+    + sec('التشغيل', tg(brdSt().on, 'data-brd="1"', '\u{1F68F}', 'محطات الإركاب', brdSt().on && brdCount() ? ' \u00b7 ' + nm(brdCount()) : '') + tg(IOT.on, 'data-iot="1"', '\u{1F4E1}', 'الحساسات', IOT.on ? ' \u00b7 ' + nm(iotCount().s) : '')
         + tg(typeof dtwPaint !== 'function' || dtwPaint.on !== false, 'data-twin="1"', '\u{1F9E9}', 'الأجهزة')
         + tg(typeof tentOn !== 'function' || tentOn(), 'data-tent="1"', '\u26FA', 'الخيام')
         + tg(typeof phPinOn !== 'function' || phPinOn(), 'data-phpin="1"', '\u{1F5BC}', 'الصور')
