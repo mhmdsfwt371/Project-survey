@@ -13,8 +13,8 @@ if [ ! -d "$APP/.git" ]; then
 fi
 cd "$APP"
 # أدواتُ الفحص كلُّها دفعةً واحدة (تثبيتٌ جزئيٌّ لاحقٌ يحذف ما سبق — فتُثبَّت معًا دائمًا)
-npm install --no-audit --no-fund > /tmp/npm-restore.log 2>&1
-npm install --no-save --no-audit --no-fund terser@5.51.2 eslint@9 jszip docx xlsx qrcode acorn nodemailer googleapis @firebase/rules-unit-testing firebase-admin >> /tmp/npm-restore.log 2>&1
+npm install --no-audit --no-fund > /tmp/npm-restore.log 2>&1   # ثم الأدواتُ بالقائمة نفسها التي تثبّتها السحابة (docs-check.yml) — لا أكثر، وإلا سقط جردُ تطابق البيئة
+npm install --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3 eslint@9 globals@15 acorn@^8 terser@5.51.2 >> /tmp/npm-restore.log 2>&1
 grep -q "package-lock.json" .git/info/exclude 2>/dev/null || printf 'package-lock.json\nfunctions/node_modules/\n' >> .git/info/exclude
 # أدواتُ الجلسة الصغيرة
 mkdir -p /tmp/rv

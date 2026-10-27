@@ -2331,7 +2331,7 @@
   "V39.66": "#svqSheet .svq-box min-height · SVQ.holdTill (١٫٥ ث) بعد svqSave وفتح ✎ — لمس الخلفية خلالها يُتجاهَل · سيناريو ٨٥ · ومعه V39.65 (حفظ بيانات الحساسات)",
   "V39.67": "layers/boarding-1448.json (٥٠٥ نقطة) · brdSt/brdLoad/brdPaint/brdCount — مثلثٌ كهرماني على Leaflet ومصدر nskbst وطبقة nsk-bst في الخريطة الثلاثية · شريحة data-brd في الخريطتين (data-bst للبحث) · tardSet() فارغة: siteTard من rec.ctype ثم تجاوز الموقع tard · أُزيلت «بانتظار التأكيد» من tardBarHtml · سيناريوهات ٧٥/٧٦/٨١/٨٢/٨٥ على اختيار المسح · سيناريو ٨٦",
   "V39.68": "svExtra: ctype يبدأ '' (svSel ['','عادي','ترددي'] بتلميح) ويُحفظ باختيار فقط · tbar «عدد البوابات» · tardBarHtml «حصر بوابات التفويج» بحبّتين (مخيم ترددي · بلا عدد) · أُزيل من تبويب mchal · سيناريوهات ٧٦ و٨٢",
-  "V39.69": "functions/ (integTick كل ٥ دقائق، integNow للمهندس والمدير مرةً في الدقيقة) · integ/{afaqypro|nusuk} في القواعد: كتابةٌ للمهندس والمدير ولا قراءة، وتوقّعاتها المعادية · units/lists بـfilters.imei · التوكن في integ/afaqypro_tok · iotlive/_all وsettings/integStatus · deploy-functions.yml (--force لسياسة تنظيف النسخ) · firebase.json functions"
+  "V39.69": "functions/ (integTick كل ٥ دقائق، integNow للمهندس والمدير مرةً في الدقيقة) · integ/{afaqypro|nusuk} في القواعد: كتابةٌ للمهندس والمدير ولا قراءة، وتوقّعاتها المعادية · units/lists بـfilters.imei · التوكن في integ/afaqypro_tok · iotlive/_all وsettings/integStatus · deploy-functions.yml (--force لسياسة تنظيف النسخ) · firebase.json functions · scripts/dev-restore.sh"
   },
   "map_and_geolocation": {
     "tile_layers": {
