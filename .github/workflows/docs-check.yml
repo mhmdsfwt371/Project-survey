@@ -401,7 +401,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4]
+        shard: [1, 2, 3, 4, 5, 6]   # (V39.81) ست شرائح متوازية بدل أربع — القائمةُ الكاملةُ في وقتٍ أقل
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -417,12 +417,12 @@ jobs:
           exit 1
       # بوابةٌ صامتة (V17.93): الفشلُ لا يُسقِط الشريحة — علامةُ FAIL وتعليقٌ على الالتزام،
       # والترقيةُ تشترط PASS من الشرائح الأربع والمتصفّحِ والمحاكي
-      - name: الشريحة ${{ matrix.shard }} من ٤ — الخطواتُ نفسُها مقسَّمة
+      - name: الشريحة ${{ matrix.shard }} من ٦ — الخطواتُ نفسُها مقسَّمة
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -o pipefail
-          RC=0; node scripts/cloud-run.mjs ${{ matrix.shard }} 4 2>&1 | tee /tmp/shard.txt || RC=$?
+          RC=0; node scripts/cloud-run.mjs ${{ matrix.shard }} 6 2>&1 | tee /tmp/shard.txt || RC=$?
           mkdir -p gate
           if [ "$RC" = "0" ]; then echo PASS > gate/shard-${{ matrix.shard }}.txt; else
             { echo FAIL; grep -a '✗' /tmp/shard.txt | tail -30; } > gate/shard-${{ matrix.shard }}.txt
@@ -459,7 +459,7 @@ jobs:
           MAIL_FROM: ${{ secrets.MAIL_FROM }}
           MAIL_TO: ${{ secrets.MAIL_TO }}
         run: |
-          bad=""; for n in 1 2 3 4; do f="gates/shard-$n.txt"; if [ ! -f "$f" ] || [ "$(head -1 "$f")" != "PASS" ]; then bad="$bad $n"; fi; done
+          bad=""; for n in 1 2 3 4 5 6; do f="gates/shard-$n.txt"; if [ ! -f "$f" ] || [ "$(head -1 "$f")" != "PASS" ]; then bad="$bad $n"; fi; done
           if [ -z "$bad" ]; then echo "✓ الجردُ الكاملُ الليليُّ أخضر"; exit 0; fi
           { echo "الجردُ الكاملُ الليليُّ (١٤٨ خطوة) على ${{ github.sha }} سقطت فيه الشرائح:$bad"; echo ""; for n in $bad; do echo "── الشريحة $n"; tail -n +2 "gates/shard-$n.txt" 2>/dev/null | head -30; done; echo ""; echo "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"; } > /tmp/nightly.txt
           npm i --no-save --no-audit --no-fund nodemailer@^6 || true
@@ -524,7 +524,7 @@ jobs:
           merge-multiple: true
       - name: البوابة — ستُّ علاماتٍ خضراء أو لا ترقية
         run: |
-          need="fast browser rules shard-1 shard-2 shard-3 shard-4"; bad=""   # (V39.42) and the four shards: the whole list before any promotion   # (خطةُ التسليم) الطبقةُ السريعةُ والمتصفّحُ والمحاكي على الدفعة — والشرائحُ الأربعُ ليلًا
+          need="fast browser rules shard-1 shard-2 shard-3 shard-4 shard-5 shard-6"; bad=""   # (V39.42) and the four shards: the whole list before any promotion   # (خطةُ التسليم) الطبقةُ السريعةُ والمتصفّحُ والمحاكي على الدفعة — والشرائحُ الأربعُ ليلًا
           for n in $need; do
             f="gates/$n.txt"
             if [ ! -f "$f" ] || [ "$(head -1 "$f")" != "PASS" ]; then bad="$bad $n"; fi
@@ -664,7 +664,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           sha="${{ github.sha }}"; bad=""; : > /tmp/chain-stop-detail.txt
-          for n in 1 2 3 4; do f="gates/shard-$n.txt"
+          for n in 1 2 3 4 5 6; do f="gates/shard-$n.txt"
             if [ ! -f "$f" ] || [ "$(head -1 "$f")" != "PASS" ]; then bad="$bad $n"; { echo "── الشريحة $n"; tail -n +2 "$f" 2>/dev/null | head -20; } >> /tmp/chain-stop-detail.txt; fi
           done
           if [ -n "$bad" ]; then echo "STOP_AT=الفحوصات الكاملة" >> "$GITHUB_ENV"; echo "STOP=سقطت الشرائح:$bad" >> "$GITHUB_ENV"; exit 0; fi

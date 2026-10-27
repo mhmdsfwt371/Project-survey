@@ -5,7 +5,7 @@ name: Provision accounts + photos
 # وعند الطلب من صفحة Actions.
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '*/5 * * * *'   # (V39.81) دورةٌ واحدةٌ كلَّ ٥ دقائق بدل حلقة ٥٫٥ ساعات
   # الجدولةُ تتأخّر ساعاتٍ تحت ضغط GitHub — فالدفعُ إلى main يشغّل الجسرَ أيضًا (V17.39)
   push:
     branches: [main]
@@ -20,11 +20,11 @@ permissions:
 # under load. One run now keeps working for five and a half hours, a cycle every five minutes, and a newer start replaces it.
 concurrency:
   group: provision-loop
-  cancel-in-progress: true
+  cancel-in-progress: false   # (V39.81) لا تُقطَع دورةٌ جارية؛ الزائدُ ينتظر أو يُلغى بصمت
 jobs:
   provision:
     runs-on: ubuntu-24.04
-    timeout-minutes: 350
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -46,13 +46,12 @@ jobs:
           GDRIVE_FOLDER: ${{ secrets.GDRIVE_FOLDER }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          for i in $(seq 1 66); do
+          for i in 1; do   # (V39.81) owner: «كل شوية بيجيلي إيميل بمشكلة» — the 5.5-hour loop lost its runner («The hosted runner lost communication»); one short cycle per run removes that
             echo "::group::الدورة $i — $(date -u +%H:%M)"
             node scripts/provision.mjs   || echo "::warning::الحسابات: الدورة $i تعثّرت"
             node scripts/photos-sync.mjs || echo "::warning::الصور: الدورة $i تعثّرت"
             node scripts/bugs-sync.mjs   || echo "::warning::البلاغات: الدورة $i تعثّرت"
             echo "::endgroup::"
-            if [ "$i" -lt 66 ]; then sleep 300; fi   # (V39.77) the old «[ … ] && sleep» ended the step with status 1 on the last cycle — a «failed» mail every run
           done
       # (V38.84) ما قرأته هذه المهمّةُ من القاعدة يُضاف إلى settings/jobreads — تسمّيه بطاقةُ التكلفة باسمه
       - name: عدّادُ قراءات المهمّة
