@@ -2,7 +2,7 @@
    FILE    : src/09-integ/09-integ-01-connections-tab.js
    DOMAIN  : Integrations — external platforms read by the cloud bridge
    PURPOSE : The office «Connections» tab: AFAQY PRO account (stored write-only), bridge status, «Refresh now».
-   DEFINES : integStatusLoad, integStateLine, integProHtml, integNusukHtml, integStepsHtml, integMissing, integMissingHtml, integTabHtml, mayIntegEdit, integSave, integOff, integNow
+   DEFINES : integPubLoad, integPubOf, integAcctHtml, integStatusLoad, integStateLine, integProHtml, integNusukHtml, integStepsHtml, integMissing, integMissingHtml, integTabHtml, mayIntegEdit, integSave, integOff, integNow
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              design notes.
    ============================================================================ */
@@ -15,6 +15,33 @@
    Nothing here talks to AFAQY PRO directly, and the password never comes back to any device.
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/* (V39.74) owner: «عاوز اليوزر أو الإيميل يكون ظاهر، والباسورد هو اللي أكتبه كل مرة؛ ولما يعمل كونكت ألاقيهم مقفولين ومكتوب
+   الإيميل المعمول بيه كونكت ومكتوب إنه متصل». The account itself stays write-only (integ/{name}); its username alone is also
+   kept in settings/integPub (office-only read) so the card can show it locked, with «✎ تغيير» and «افصل». */
+function integPubLoad(force){
+  var P = integPubLoad.S || (integPubLoad.S = { at:0, v:null, busy:false });
+  if (!force && (P.busy || Date.now() - P.at < 20000)) return P;
+  if (!FB.ready || !FB.db || !STATE.meta.online) return P;
+  P.busy = true;
+  DB.col('settings').doc('integPub').get().then(function(doc){ P.v = doc && doc.exists ? doc.data() : {}; P.at = Date.now(); P.busy = false; if (CUR === 'sys' && tabCur('sys') === 'integ') render(1); })
+    .catch(function(e){ P.busy = false; P.at = Date.now(); LS_ERR = e; });
+  return P;
+}
+function integPubOf(name){ var P = integPubLoad(); return P.v && P.v[name] && P.v[name].user ? P.v[name] : null; }
+/* the account fields: locked with the saved username once connected; open while adding or changing */
+function integAcctHtml(name, idU, idP, userLabel, extra){
+  var pub = integPubOf(name), ed = integAcctHtml.edit && integAcctHtml.edit[name];
+  if (pub && !ed){
+    return '<div class="grid2">'
+      + '<div class="field"><label>' + esc(t(userLabel)) + '</label><input class="in" value="' + esc(pub.user) + '" readonly disabled dir="ltr" style="opacity:.85"></div>'
+      + '<div class="field"><label>' + esc(t('كلمة السر')) + '</label><input class="in" value="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022" readonly disabled style="opacity:.85"></div>'
+      + '</div><div class="actions" style="margin-top:8px">' + btn('\u270E ' + t('تغيير الحساب'), 'btn-secondary', ' data-integedit="' + name + '"') + extra + btn(t('افصل'), 'btn-quiet', ' data-integoff="' + name + '"') + '</div>';
+  }
+  return '<div class="grid2">'
+    + '<div class="field"><label>' + esc(t(userLabel)) + '</label><input class="in" id="' + idU + '" autocomplete="off" dir="ltr" value="' + esc(pub ? pub.user : '') + '"></div>'
+    + '<div class="field"><label>' + esc(t('كلمة السر')) + '</label><input class="in" id="' + idP + '" type="password" autocomplete="new-password" placeholder="' + esc(t('تُكتب في كل مرة')) + '"></div>'
+    + '</div>';
+}
 function integStatusLoad(force){
   var S = integStatusLoad.S || (integStatusLoad.S = { at:0, v:null, busy:false });
   if (!force && (S.busy || Date.now() - S.at < 20000)) return;
@@ -27,7 +54,7 @@ function integStateLine(p){
   if (!p) return '<span class="pill" style="border-color:#94A3B8;color:#94A3B8">\u23F3 ' + esc(t('لم يعمل الجسرُ بعد — أول سحبٍ خلال ٥ دقائق من الحفظ')) + '</span>';
   var ago = p.at ? nm(Math.max(0, Math.round((Date.now() - p.at) / 60000))) + ' ' + t('د') : '—';
   if (p.state === 'off') return '<span class="pill" style="border-color:#94A3B8;color:#94A3B8">\u26AA ' + esc(t('غير متصل — لا حساب محفوظ')) + '</span>';
-  if (p.state === 'err') return '<span class="pill" style="border-color:#EF4444;color:#EF4444">\u{1F534} ' + esc(t('فشل')) + ': ' + esc(p.err === 'otp' ? t('المنصة طلبت كودَ تحقق — هذا الحساب عليه تأكيدٌ بخطوتين؛ استخدم حسابَ ربطٍ بلا تأكيد، أو اطلب بناءَ خطوة الكود') : p.err === 'login' ? t('الدخول رُفض — راجع اسم المستخدم وكلمة السر') : String(p.err || '')) + (p.httpStatus ? ' (' + nm(p.httpStatus) + ')' : '') + ' \u00b7 ' + esc(t('منذ')) + ' ' + ago + '</span>';
+  if (p.state === 'err') return '<span class="pill" style="border-color:#EF4444;color:#EF4444">\u{1F534} ' + esc(t('فشل')) + ': ' + esc(p.err === 'otp' ? t('المنصة طلبت كودَ تحقق — هذا الحساب عليه تأكيدٌ بخطوتين؛ استخدم حسابَ ربطٍ بلا تأكيد، أو اطلب بناءَ خطوة الكود') : p.err === 'login' ? t('الدخول رُفض — راجع اسم المستخدم وكلمة السر') + (p.msg ? ' (' + p.msg + ')' : '') : String(p.err || '')) + (p.httpStatus ? ' (' + nm(p.httpStatus) + ')' : '') + ' \u00b7 ' + esc(t('منذ')) + ' ' + ago + '</span>';
   var withImei = +p.withImei || 0, matched = +p.matched || 0;
   return '<span class="pill" style="border-color:#22C55E;color:#22C55E">\u{1F7E2} ' + esc(t('متصل')) + ' \u00b7 ' + esc(t('آخر سحب منذ')) + ' ' + ago + '</span> '
     + '<span class="pill">' + nm(matched) + ' / ' + nm(withImei) + ' ' + esc(t('جهازًا مطابَقًا برقمه')) + '</span>'
@@ -41,12 +68,11 @@ function integProHtml(){
   return card('\u{1F50C} ' + t('أفاقي برو') + ' — ' + t('الحساسات والجيت واي'),
     '<p class="hint" style="margin:0 0 8px">' + esc(t('يُسحب كلَّ ٥ دقائق بأرقام أجهزتنا وحدها، للقراءة فقط. الحسابُ يُحفظ في مكانٍ لا يقرؤه أحدٌ من التطبيق — ولا يعود إلى أي جهاز.')) + '</p>'
     + '<div style="margin:0 0 10px">' + integStateLine(p) + '</div>'
-    + '<div class="grid2">'
-    + '<div class="field"><label>' + esc(t('اسم المستخدم')) + '</label><input class="in" id="integUser" autocomplete="off" placeholder="' + esc(t('حساب الربط في أفاقي برو')) + '"></div>'
-    + '<div class="field"><label>' + esc(t('كلمة السر')) + '</label><input class="in" id="integPass" type="password" autocomplete="new-password"></div>'
-    + '<div class="field" style="grid-column:1/-1"><label>' + esc(t('عنوان المنصة')) + '</label><input class="in" id="integUrl" value="https://api.afaqy.sa" dir="ltr"></div>'
-    + '</div>'
-    + '<div class="actions" style="margin-top:8px">' + btn('\u{1F50C} ' + t('احفظ واتصل'), 'btn-primary', ' data-integsave="afaqypro"') + btn('\u21BB ' + t('حدّث الآن'), 'btn-secondary', ' data-integnow="1"' + busy) + btn(t('افصل'), 'btn-quiet', ' data-integoff="afaqypro"') + '</div>'
+    + (function(){ var pub = integPubOf('afaqypro'), ed = integAcctHtml.edit && integAcctHtml.edit.afaqypro, now = btn('\u21BB ' + t('حدّث الآن'), 'btn-secondary', ' data-integnow="1"' + busy);
+        if (pub && !ed) return '<div class="hint" style="margin:0 0 6px">' + esc(t('الحساب المتصل')) + ': <b dir="ltr">' + esc(pub.user) + '</b></div>' + integAcctHtml('afaqypro', 'integUser', 'integPass', 'اسم المستخدم', now);
+        return integAcctHtml('afaqypro', 'integUser', 'integPass', 'اسم المستخدم', '')
+          + '<div class="field" style="margin-top:8px"><label>' + esc(t('عنوان المنصة')) + '</label><input class="in" id="integUrl" value="https://api.afaqy.sa" dir="ltr"></div>'
+          + '<div class="actions" style="margin-top:8px">' + btn('\u{1F50C} ' + t('احفظ واتصل'), 'btn-primary', ' data-integsave="afaqypro"') + (pub ? btn(t('إلغاء'), 'btn-quiet', ' data-integedit="afaqypro"') : '') + '</div>'; })()
     + '<p class="hint" style="margin:8px 0 0">' + esc(t('«حدّث الآن» للمهندس والمدير — مرةً في الدقيقة للجميع، وتعود القراءاتُ خلال ثوانٍ إلى الخريطة الثلاثية.')) + '</p>');
 }
 function integNusukHtml(){
@@ -54,10 +80,9 @@ function integNusukHtml(){
      the bridge starts on it once the card system's login steps reach us — nothing is guessed. */
   return card('\u{1F3AB} ' + t('نظام البطاقات') + ' — ' + t('القارئات والكاميرات'),
     '<p class="hint" style="margin:0 0 8px">' + esc(t('يُحفظ الحسابُ الآن في المكان المحمي نفسه. السحبُ منه يبدأ حين تصلنا خطواتُ الدخول من فريقهم (الرسالةُ جاهزة) — وإن طلبت المنصةُ كودًا يظهر لك هنا مكانٌ تكتبه فيه.')) + '</p>'
-    + '<div class="grid2">'
-    + '<div class="field"><label>' + esc(t('الإيميل أو اسم المستخدم')) + '</label><input class="in" id="nskUser" autocomplete="off" dir="ltr"></div>'
-    + '<div class="field"><label>' + esc(t('كلمة السر')) + '</label><input class="in" id="nskPass" type="password" autocomplete="new-password"></div>'
-    + '</div><div class="actions" style="margin-top:8px">' + btn('\u{1F4BE} ' + t('احفظ الحساب'), 'btn-secondary', ' data-integsave="nusuk"') + '</div>');
+    + (function(){ var pub = integPubOf('nusuk'), ed = integAcctHtml.edit && integAcctHtml.edit.nusuk;
+        if (pub && !ed) return '<div class="hint" style="margin:0 0 6px">\u{1F7E1} ' + esc(t('الحساب محفوظ')) + ': <b dir="ltr">' + esc(pub.user) + '</b> \u00b7 ' + esc(t('بانتظار خطوات الدخول من فريقهم')) + '</div>' + integAcctHtml('nusuk', 'nskUser', 'nskPass', 'الإيميل أو اسم المستخدم', '');
+        return integAcctHtml('nusuk', 'nskUser', 'nskPass', 'الإيميل أو اسم المستخدم', '') + '<div class="actions" style="margin-top:8px">' + btn('\u{1F4BE} ' + t('احفظ الحساب'), 'btn-secondary', ' data-integsave="nusuk"') + (pub ? btn(t('إلغاء'), 'btn-quiet', ' data-integedit="nusuk"') : '') + '</div>'; })());
 }
 /* (V39.72) «يقول لي الربط تم وأبدأ أشوف قراءاتك بناءً على ١ ٢ ٣ — ويشرح الطريقة» */
 function integStepsHtml(){
@@ -103,7 +128,9 @@ function integSave(name){
   var nsk = name === 'nusuk', user = g(nsk ? 'nskUser' : 'integUser'), pass = g(nsk ? 'nskPass' : 'integPass'), url = nsk ? '' : (g('integUrl') || 'https://api.afaqy.sa');   /* (V39.72) */
   if (!user || !pass){ toast(t('اكتب اسمَ المستخدم وكلمةَ السر')); return; }
   DB.col('integ').doc(name).set({ user:user, pass:pass, url:url, on:true, at:Date.now(), by:STATE.meta.name || '', _by:STATE.meta.uid || '', _at:Date.now() })
-    .then(function(){ ['integPass', 'nskPass'].forEach(function(id){ var el = document.getElementById(id); if (el) el.value = ''; }); logEvent('حُفظ حسابُ الربط — ' + name + ' \u00b7 ' + user, ''); toast(t('حُفظ — أول سحبٍ خلال ٥ دقائق، أو اضغط «حدّث الآن»')); integStatusLoad(true); })
+    .then(function(){ var pubD = {}; pubD[name] = { user:user, at:Date.now(), by:STATE.meta.name || '' }; DB.col('settings').doc('integPub').set(Object.assign({ _by:STATE.meta.uid || '', _at:Date.now() }, pubD), { merge:true }).then(function(){ integPubLoad(true); }).catch(function(e){ LS_ERR = e; });   /* (V39.74) */
+      if (integAcctHtml.edit) integAcctHtml.edit[name] = false;
+      ['integPass', 'nskPass'].forEach(function(id){ var el = document.getElementById(id); if (el) el.value = ''; }); logEvent('حُفظ حسابُ الربط — ' + name + ' \u00b7 ' + user, ''); toast(t('حُفظ — أول سحبٍ خلال ٥ دقائق، أو اضغط «حدّث الآن»')); integStatusLoad(true); })
     .catch(function(e){ toast(t('تعذّر الحفظ') + ': ' + String(e && e.message || e).slice(0, 80)); });
 }
 function integOff(name){
@@ -111,7 +138,8 @@ function integOff(name){
   if (!STATE.meta.online || !FB.ready || !FB.db){ toast(t('يحتاج اتصالًا بالشبكة')); return; }
   if (!confirm(t('فصلُ الربط يحذف الحسابَ المحفوظ ويوقف السحب. متابعة؟'))) return;
   DB.col('integ').doc(name).set({ on:false, user:'', pass:'', at:Date.now(), by:STATE.meta.name || '', _by:STATE.meta.uid || '', _at:Date.now() })
-    .then(function(){ logEvent('فُصل الربط — ' + name, ''); toast(t('فُصل')); integStatusLoad(true); })
+    .then(function(){ var pubD = {}; pubD[name] = { user:'', at:Date.now() }; DB.col('settings').doc('integPub').set(Object.assign({ _by:STATE.meta.uid || '', _at:Date.now() }, pubD), { merge:true }).then(function(){ integPubLoad(true); }).catch(function(e){ LS_ERR = e; });   /* (V39.74) */
+      logEvent('فُصل الربط — ' + name, ''); toast(t('فُصل')); integStatusLoad(true); })
     .catch(function(e){ toast(t('تعذّر') + ': ' + String(e && e.message || e).slice(0, 80)); });
 }
 integNow.URL = 'https://us-central1-project-survey-60600.cloudfunctions.net/';

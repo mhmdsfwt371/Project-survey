@@ -113,12 +113,16 @@ var PHOTO_Q = [], PHOTO_FAIL = [];
      والرقمُ يُحسب مما رُفع فعلًا لهذه النقطة وما ينتظر في الطابور — لا من
    عدّادٍ في الذاكرة يبدأ من واحدٍ كلَّما أُغلق التطبيق. */
 function photoNext(siteId){
-  var n = 0;
+  /* (V39.75) owner's field report: «عدد الصور 1 رغم الرفع… والصورة الجديدة بتستبدل القديمة». The number was a COUNT of the
+     point's photos on this device plus one: a photo this device had not pulled (or a removed entry) made the count fall
+     short and the new photo took an existing number — its document then overwrote that photo. Now: the highest number
+     seen, stored or queued, plus one. */
+  var n = 0, pre = siteId + '-';
   Object.keys(STATE.photos || {}).forEach(function(k){
-    var v = STATE.photos[k];
-    if (v && v.site === siteId) n++;
+    var v = STATE.photos[k], q = v && v.site === siteId ? (+v.seq || (k.indexOf(pre) === 0 ? +k.slice(pre.length) : 0) || 0) : 0;
+    if (q > n) n = q; else if (v && v.site === siteId && !q) n++;
   });
-  PHOTO_Q.forEach(function(q){ if (q.site === siteId) n++; });
+  PHOTO_Q.forEach(function(q){ if (q.site === siteId){ var s2 = +q.seq || 0; n = s2 > n ? s2 : n + (s2 ? 0 : 1); } });
   return n + 1;
 }
 
@@ -155,7 +159,7 @@ function photoFlush(){
     CORE.set('photos', it.site + '-' + seq, {
       del:null, site:it.site, kind:it.kind, seq:seq, name:nm2,
       driveId:r.id, link:r.webViewLink, at:it.at, q:it.q || null   /* (V30.6) */
-    });
+    }); if (typeof phTouch === 'function') phTouch();   /* (V39.75) the list shows the uploaded photo at once — it kept the old index */
     logEvent('رفع صورة — ' + it.site + ' \u00b7 ' + it.kind + ' \u00b7 ' + nm2, it.site);
     if (PHOTO_Q.length) setTimeout(photoFlush, 400);
     return 1;
@@ -189,7 +193,7 @@ function photoFlushCloud(){
   CORE.set('photos', it.site + '-' + seq, {
     del:null, site:it.site, kind:it.kind, seq:seq, name:nm2, at:it.at, by:STATE.meta.name || '',
     status:'pending', blob:true, q:it.q || null   /* (V30.6) مقاييسُ الجودة */
-  });
+  }); if (typeof phTouch === 'function') phTouch();   /* (V39.75) the list shows the uploaded photo at once — it kept the old index */
   CORE.saveSoon();
   logEvent('رفع صورة — ' + it.site + ' \u00b7 ' + it.kind + ' \u00b7 ' + nm2 + ' — ينقلها الخادمُ إلى الدرايف', it.site);
   if (PHOTO_Q.length) setTimeout(photoFlush, 300);

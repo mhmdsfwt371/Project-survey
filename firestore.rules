@@ -300,6 +300,8 @@ service cloud.firestore {
     match /iotlive/{camp}    { allow read: if ok(); allow write: if false; }
     // (V39.69) حساباتُ الربط (أفاقي برو · نُسُك): المديرُ والمهندسُ يكتبانها ولا يقرؤها أحدٌ من التطبيق — الدالةُ السحابيةُ وحدها
     // (بحساب الخدمة) تقرؤها؛ والتوكناتُ المحفوظةُ بجوارها لا يكتبها التطبيقُ أصلًا
+    // (V39.74) اسمُ مستخدم حساب الربط وحده (لا كلمة السر) — للمكتب قراءةً
+    match /settings/integPub { allow read: if mgr(); }
     match /integ/{name}      { allow read: if false; allow create, update, delete: if mgr() && name in ['afaqypro', 'nusuk']; }
     // النبضُ والتقريرُ (V17.94): يكتبهما الخادمُ، ويقرؤهما المكتبُ والإدارةُ العليا — لا بلاغَ عامًّا
     match /settings/sysreport { allow read: if mgr() || (ok() && role() == 'exec'); allow write: if false; }
@@ -322,7 +324,7 @@ service cloud.firestore {
     match /settings/{id} {
       // الكتلُ المتطابقةُ تُجمَع بـ«أو»: ما لوثيقةٍ بعينها قاعدةٌ أضيقُ يُستثنى هنا
       // صراحةً وإلا فتحته هذه — كما استُثنيت الجوالات، ويُستثنى التقرير (V17.94)
-      allow read: if ok() && id != 'contacts' && id != 'cotel' && id != 'sysreport' && id != 'pmo' && id != 'extApi' && id != 'cost';
+      allow read: if ok() && id != 'contacts' && id != 'cotel' && id != 'sysreport' && id != 'pmo' && id != 'extApi' && id != 'cost' && id != 'integPub';
       allow write: if pm('settings', 'w', mgr()) && id != 'sysreport' && id != 'cost' && id != 'pmo';
     }
 

@@ -60,8 +60,10 @@ async function proPull(why){
   /* the token is kept between runs and renewed when refused — not a fresh login every five minutes */
   const tokRef = db.collection('integ').doc('afaqypro_tok'); let tok = ((await tokRef.get()).data() || {}).tok || '';
   const login = async () => { const L = await proCall(url, '/auth/login', { username:cfg.user, password:cfg.pass }); const t = tokOf(L.j);
-    if (!t){ const sh = shape(L.j), needCode = /otp|verif|two.?factor|2fa|mfa|\bcode\b/i.test(JSON.stringify(sh || '')) || /otp|verif|code/i.test(JSON.stringify(L.j || '').slice(0, 400));   /* (V39.72) a code-step reply is not a wrong password */
-      throw Object.assign(new Error(needCode ? 'otp' : 'login'), { st:L.status, shape:sh }); } await tokRef.set({ tok:t, at:Date.now() }); return t; };
+    if (!t){   /* (V39.76) the documented refusal is {message:'invalid_credentials', status_code:401} with HTTP 200 — «status_code» had
+                  matched the old «code» test and showed «asked for a code». A code step is told only by its own words. */
+      const sh = shape(L.j), msg = String((L.j && L.j.message) || '').slice(0, 60), needCode = /otp|verif|two.?factor|2fa|mfa/i.test(msg) || /\b(otp|verify|verification)\b/i.test(JSON.stringify(sh || ''));
+      throw Object.assign(new Error(needCode ? 'otp' : 'login'), { st:(L.j && L.j.status_code) || L.status, shape:sh, msg:msg }); } await tokRef.set({ tok:t, at:Date.now() }); return t; };
   try {
     if (!tok) tok = await login();
     const units = []; let sample = null;
@@ -86,7 +88,7 @@ async function proPull(why){
     await status({ state:'ok', planned, withImei:imeis.length, found:units.length, matched, ms:Date.now() - now, sample:sample || null });
     return { state:'ok', matched, found:units.length };
   } catch (e) {
-    await status({ state:'err', err:String(e.message || e).slice(0, 120), httpStatus:e.st || 0, shape:e.shape || '' });
+    await status({ state:'err', err:String(e.message || e).slice(0, 120), httpStatus:e.st || 0, shape:e.shape || '', msg:e.msg || '' });
     return { state:'err', err:String(e.message || e).slice(0, 120) };
   }
 }

@@ -2138,6 +2138,24 @@ console.log('\n══ ٨٨ · مصدرُ «ترددي» ══');
   C.forEach((x, i) => { if (keep[i]) w.STATE.recs[x.id] = keep[i]; else delete w.STATE.recs[x.id]; delete x._tax; });
 }
 
+/* ── ٨٩ · (V39.75) صورُ الزيارة: كلُّ صورةٍ مرفوعةٍ تظهر، ولا تأخذ رقمَ صورةٍ موجودة ── */
+console.log('\n══ ٨٩ · صورُ الزيارة ══');
+{
+  const x = w.STATE.sites.filter(s => s.type === 'مخيم')[30], id = x.id, r0 = w.STATE.recs[id], q0 = w.PHOTO_Q.slice(), on0 = w.STATE.meta.online, dc0 = w.drvCfg, me0 = w.STATE.meta.name;
+  w.STATE.meta.name = me0 || 'فني';
+  w.STATE.recs[id] = { id, access:'تم الوصول', st:'تمت الزيارة', by:w.STATE.meta.name, at:Date.now(), photos:['close'] };
+  w.STATE.photos[id + '-1'] = { site:id, kind:'close', seq:1, at:1, link:'x' }; w.STATE.photos[id + '-4'] = { site:id, kind:'general', seq:4, at:2, link:'y' };   // a gap: a photo numbered 4 already
+  w.phTouch && w.phTouch();
+  T(w.photoNext(id) === 5, 'الرقمُ التالي بعد أعلى رقمٍ موجود (٥) لا بعدِّ الصور (٣) — فلا تكتب صورةٌ جديدةٌ فوق صورةٍ قائمة');
+  w.STATE.meta.online = false; for (let i = 0; i < 3; i++) w.svqPhoto(id, 'extra', { data:'data:image/jpeg;base64,' + 'B'.repeat(800) + i });
+  w.STATE.meta.online = true; w.drvCfg = () => null;
+  for (let i = 0; i < 4; i++){ try { await w.photoFlush(); } catch (e) {} }
+  const shown = w.photosOf(id).length, docs = Object.keys(w.STATE.photos).filter(k => k.startsWith(id + '-')).length;
+  T(shown === 5 && docs === 5, 'وثلاثُ صورٍ إضافيةٍ تُرفَع كلُّها وتظهر كلُّها في «صور الزيارة» (' + shown + ' من ' + docs + ')');
+  Object.keys(w.STATE.photos).filter(k => k.startsWith(id + '-')).forEach(k => delete w.STATE.photos[k]); w.phTouch && w.phTouch();
+  if (r0) w.STATE.recs[id] = r0; else delete w.STATE.recs[id]; w.PHOTO_Q.length = 0; q0.forEach(q => w.PHOTO_Q.push(q)); w.STATE.meta.online = on0; w.drvCfg = dc0; w.STATE.meta.name = me0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

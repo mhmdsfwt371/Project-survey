@@ -60,7 +60,7 @@ const noScript = SCRIPT_HOSTS.filter(h => !allow('script-src', h));
 T(!noScript.length, 'كلُّ ما يُحمَّل سكربتًا مأذونٌ له: ' + SCRIPT_HOSTS.join(' · '), noScript.join(' · '));
 
 /* المصادرُ التي تُطلَب بالشبكة: fetch أو XHR أو نمطُ خريطةٍ أو بلاطاتٌ */
-const FETCH_HOSTS = [...new Set(
+const FETCH_HOSTS = ['us-central1-project-survey-60600.cloudfunctions.net', /* (V39.73) «حدّث الآن» في تبويب الربط */ ...new Set(
   [...html.matchAll(/(?:fetch\(\s*['"`]|open\(\s*'[A-Z]+'\s*,\s*['"`])https:\/\/([^\/'"`\s]+)/g)].map(x => x[1])
 )];
 const noFetch = FETCH_HOSTS.filter(h => !allow('connect-src', h));
