@@ -298,6 +298,9 @@ service cloud.firestore {
     match /settings/bridge   { allow read: if ok(); allow write: if false; }
     /* (V39.20) the sensors' pulse — a future bridge writes it with the admin key (see docs/live.md); the app only reads */
     match /iotlive/{camp}    { allow read: if ok(); allow write: if false; }
+    // (V39.69) حساباتُ الربط (أفاقي برو · نُسُك): المديرُ والمهندسُ يكتبانها ولا يقرؤها أحدٌ من التطبيق — الدالةُ السحابيةُ وحدها
+    // (بحساب الخدمة) تقرؤها؛ والتوكناتُ المحفوظةُ بجوارها لا يكتبها التطبيقُ أصلًا
+    match /integ/{name}      { allow read: if false; allow create, update, delete: if mgr() && name in ['afaqypro', 'nusuk']; }
     // النبضُ والتقريرُ (V17.94): يكتبهما الخادمُ، ويقرؤهما المكتبُ والإدارةُ العليا — لا بلاغَ عامًّا
     match /settings/sysreport { allow read: if mgr() || (ok() && role() == 'exec'); allow write: if false; }
     // سجلاتُ الإدارة (V19.3): الدروسُ المستفادة والمراجعاتُ وأصحابُ المصلحة — للمكتب والإدارة العليا قراءةً، والمكتبُ كتابةً

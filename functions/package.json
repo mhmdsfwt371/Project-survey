@@ -1,0 +1,11 @@
+{
+  "name": "nusuk-integrations",
+  "private": true,
+  "description": "Read-only integrations for Nusuk Survey: AFAQY PRO (sensors and gateways by IMEI), and later the Nusuk card system. Runs every 5 minutes and on «حدّث الآن».",
+  "main": "index.js",
+  "engines": { "node": "20" },
+  "dependencies": {
+    "firebase-admin": "12.7.0",
+    "firebase-functions": "6.1.1"
+  }
+}

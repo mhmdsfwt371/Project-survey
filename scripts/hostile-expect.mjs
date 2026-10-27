@@ -56,6 +56,7 @@ export const HOSTILE = {
   bugs:        office('DDADD', { uid:'someone' }),
   misc:        office('DDDDD'),
   iotlive:     office('AADDD'),   /* (V39.20) نبضُ الحساسات — يقرؤه الفعّال، ولا يكتبه إلا الجسر بمفتاح الإدارة */
+  integ:       office('DDDDD'),   /* (V39.69) حساباتُ الربط — لا يقرؤها أحدٌ من التطبيق، ويكتبها المهندسُ والمدير وحدهما */
   /* الوثائقُ المفردة — القائمةُ لا تُختبَر: شرطُ المعرِّف لا يُثبَت لاستعلام */
   'settings/pulse':    { str:DENY3, ina:DENY3, tec:'AAD' },
   'settings/bridge':   { str:DENY3, ina:DENY3, tec:'ADD' },

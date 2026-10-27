@@ -1,0 +1,31 @@
+name: Deploy Cloud Functions
+# (V39.69) Read-only integrations (AFAQY PRO now, the card system next): every 5 minutes + «حدّث الآن».
+# Deployed with the same service account as the rules. --force sets the artifact cleanup policy so old builds are removed
+# and storage stays inside the free tier.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'functions/**'
+      - '.github/workflows/deploy-functions.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+      - name: Install function dependencies
+        working-directory: functions
+        run: npm install --no-audit --no-fund
+      - name: Write service account
+        env:
+          SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: printf '%s' "$SA" > "$RUNNER_TEMP/sa.json"
+      - name: Deploy functions
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
+        run: npx firebase-tools@13 deploy --only functions --project project-survey-60600 --non-interactive --force
