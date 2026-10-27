@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V39.79",
+  "app_version": "V39.80",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2341,7 +2341,8 @@
   "V39.76": "functions: رد الدخول بلا رمز ← otp بكلمات الكود وحدها (لا status_code) · status.msg رسالة المنصة · الواجهة تعرضها · ومعه V39.73–V39.75",
   "V39.77": "provision.yml: if/then بدل [ ] && في آخر دورة",
   "V39.78": "kmzFullBuild/kmzFull/zipDeflate (CompressionStream deflate-raw، وإلا zipStore) · data-kmz=\"full\" · سيناريو ٩٠",
-  "V39.79": "photoTag() حرفا الحساب في معرّف الصورة واسم ملفها · photoNext.last ذاكرةُ الجهاز · photos-sync: استعادةُ الملفات اليتيمة (settings/photosRecover) · site من المعرّف يقبل الحرفين"
+  "V39.79": "photoTag() حرفا الحساب في معرّف الصورة واسم ملفها · photoNext.last ذاكرةُ الجهاز · photos-sync: استعادةُ الملفات اليتيمة (settings/photosRecover) · site من المعرّف يقبل الحرفين",
+  "V39.80": "recoveredPhotos/recoveredPhotosHtml (photos.recovered) · afaqy-pro.yml وmyafaqy.yml بلا جدولة (workflow_dispatch باقٍ) · سيناريو ٩١"
   },
   "map_and_geolocation": {
     "tile_layers": {

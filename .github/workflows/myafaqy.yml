@@ -4,8 +4,7 @@
 # لا يُنفَّذ ولا يُخمَّن — يُكتَب في الملخّص ما ينقص.
 name: myafaqy bridge
 on:
-  schedule:
-    - cron: '*/15 * * * *'
+  # (V39.80) الجدولةُ موقوفة بقرار المالك حتى يُقرَّر ربطُ myafaqy — يبقى التشغيلُ اليدويّ.
   workflow_dispatch: {}
 permissions:
   contents: read

@@ -367,6 +367,7 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
             + (un.length ? '<p class="hint" style="margin:10px 0 4px">' + esc(t('لا يُحتسب — اتملا وحده في النموذج القديم أو كتبه المكتب')) + ' <b class="num">' + nm(un.length) + '</b></p>'
                 + un.slice(0, 30).map(function(o){ return '<button type="button" class="btn btn-quiet btn-sm" data-site="' + esc(o.x.id) + '" style="width:100%;justify-content:space-between;margin-bottom:4px"><span>' + esc(o.x.name || o.x.id) + '</span><span class="hint" style="margin:0">' + esc(o.cs.by || t('تلقائي')) + '</span></button>'; }).join('') : ''));
         })()
+      + recoveredPhotosHtml()   /* (V39.80) */
       /* (V39.60) owner: «اعرضهالي كده بس، وخلّي البيانات الأساسية القديمة الصح، وأعدّل أنا أي وقت» — camps whose name says one
          square/sign and whose fields say another (65 in the registry itself, e.g. 0631: name «A2/38», sign «D/204»). Shown only:
          nothing is changed automatically; each opens its point, where «تعديل البيانات» fixes it. */
@@ -617,3 +618,33 @@ if (cur === 'vers') return head + (function(){
   })();
   }};
 
+
+/* (V39.80) owner approved: «كارت الصور المسترجعة». The Drive sync gives a record back to every Drive photo that had lost its own
+   (the repeated number overwrote it — 23 photos on 10 points on 27 Oct). Listed here by point, newest first, so the office can see
+   them and the technician can delete a copy uploaded twice. A kind+uploader seen twice on one point is marked «قد تكون مكرّرة». */
+function recoveredPhotos(){
+  var by = {};
+  Object.keys(STATE.photos || {}).forEach(function(k){
+    var p = STATE.photos[k]; if (!p || !p.recovered || p.del || !p.site) return;
+    (by[p.site] = by[p.site] || []).push(p);
+  });
+  return Object.keys(by).map(function(id){
+    var L = by[id].sort(function(a, b){ return (b.at || 0) - (a.at || 0); }), seen = {}, dup = 0;
+    L.forEach(function(p){ var k = (p.kind || '') + '|' + (p.by || ''); if (seen[k]) dup++; seen[k] = 1; });
+    return { id:id, x:(STATE.sites || []).filter(function(s){ return s.id === id; })[0] || { id:id }, list:L, dup:dup, at:L[0].at || 0 };
+  }).sort(function(a, b){ return b.at - a.at; });
+}
+function recoveredPhotosHtml(){
+  var R = recoveredPhotos(); if (!R.length) return '';
+  var n = R.reduce(function(s, o){ return s + o.list.length; }, 0);
+  return card('\u{1F5BC} ' + t('صورٌ مسترجَعة'),
+    '<p class="hint" style="margin:0 0 8px">' + esc(t('صورٌ كانت على الدرايف بلا سجلّ — رقمُها تكرّر بين جهازين فكُتب سجلُّها فوقه — فأعادها الخادم إلى «صور الزيارة». راجعها، وإن رُفعت صورةٌ مرتين فاحذف النسخة الزائدة من «تعديل المسح».')) + '</p>'
+    + '<div style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 8px"><span class="pill">' + nm(n) + ' ' + esc(t('صورة')) + '</span><span class="pill">' + nm(R.length) + ' ' + esc(t('نقطة')) + '</span></div>'
+    + R.slice(0, 40).map(function(o){
+        var who = {}; o.list.forEach(function(p){ if (p.by) who[typeof dispName === 'function' ? dispName(p.by) : p.by] = 1; });
+        return '<button type="button" class="btn btn-quiet btn-sm" data-site="' + esc(o.id) + '" style="width:100%;justify-content:space-between;margin-bottom:4px;text-align:start">'
+          + '<span>' + esc(o.x.name ? o.x.name + ' \u00b7 ' + o.id : o.id) + ' <span class="hint" style="margin:0">' + esc(Object.keys(who).join('، ')) + '</span>'
+          + (o.dup ? ' <span class="pill" style="border-color:#F59E0B;color:#F59E0B">' + esc(t('قد تكون مكرّرة')) + '</span>' : '') + '</span>'
+          + '<b class="num">' + nm(o.list.length) + '</b></button>';
+      }).join(''));
+}

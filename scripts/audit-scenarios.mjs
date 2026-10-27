@@ -2173,6 +2173,20 @@ console.log('\n══ ٩٠ · KMZ مفصّل بكل الفلاتر ══');
   T(/<visibility>0<\/visibility>/.test(x) && x.split('<Document>').length === 2 && x.trim().endsWith('</kml>'), 'ومجلّداتُ الفلاتر مطفأةٌ حتى يُعلَّم عليها، والملفُّ مغلقٌ صحيحًا');
 }
 
+/* ── ٩١ · (V39.80) كارتُ الصور المسترجَعة ── */
+console.log('\n══ ٩١ · الصورُ المسترجَعة ══');
+{
+  const x = w.STATE.sites.filter(s => s.type === 'مخيم')[40], id = x.id;
+  w.STATE.photos[id + '-7R'] = { site:id, kind:'extra', by:'فني أ', at:Date.now() - 2000, seq:7, recovered:true, link:'a' };
+  w.STATE.photos[id + '-8R'] = { site:id, kind:'extra', by:'فني أ', at:Date.now() - 1000, seq:8, recovered:true, link:'b' };
+  w.STATE.photos[id + '-9R'] = { site:id, kind:'mount', by:'فني أ', at:Date.now(), seq:9, recovered:true, link:'c', del:true };
+  const R = w.recoveredPhotos(), o = R.find(r => r.id === id), h = w.recoveredPhotosHtml();
+  T(!!o && o.list.length === 2 && o.dup === 1, 'تُجمَع الصورُ المسترجَعة بنقطتها، والمحذوفةُ لا تُعَدّ، ونوعٌ ورافعٌ تكرّرا يُعلَّمان (' + (o ? o.list.length + '/' + o.dup : '—') + ')');
+  T(h.indexOf('data-site="' + id + '"') > -1 && /قد تكون مكرّرة/.test(h), 'والكارتُ يفتح النقطة ويقول «قد تكون مكرّرة»');
+  ['-7R', '-8R', '-9R'].forEach(k => delete w.STATE.photos[id + k]);
+  T(w.recoveredPhotosHtml() === '' || !w.recoveredPhotos().some(r => r.id === id), 'وبلا صورٍ مسترجَعة لا يظهر لها شيء');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);
