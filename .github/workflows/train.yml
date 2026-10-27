@@ -13,6 +13,7 @@ permissions:
   contents: write
   statuses: read
   actions: write
+  issues: write   # (V39.82) قفلُ مسائل «الإصدار … وقف عند» القديمة بعد كل ترقيةٍ ناجحة
 concurrency:
   group: train
   cancel-in-progress: false
@@ -55,3 +56,17 @@ jobs:
           if git merge-base --is-ancestor "${{ steps.pick.outputs.sha }}" origin/main; then
             gh workflow run season.yml --ref main && echo "✓ أُطلقت التغذية" || echo "::warning::تعذّر إطلاقُ التغذية"
           fi
+      - name: قفلُ مسائل «الإصدار … وقف» القديمة — الإنتاجُ تجاوزها
+        # (V39.82) owner: «اعملها» — every successful promotion closes the old «release stopped at…» issues it supersedes
+        if: steps.pick.outputs.sha != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git fetch origin main
+          if ! git merge-base --is-ancestor "${{ steps.pick.outputs.sha }}" origin/main; then exit 0; fi
+          VER=$(git show origin/main:sw.js | grep -o "nusuk-survey-v[0-9]*\.[0-9]*" | head -1 | sed 's/nusuk-survey-v/V/')
+          n=0
+          for num in $(gh issue list --state open --limit 100 --json number,title --jq '.[] | select(.title | test("^الإصدار V[0-9.]+ وقف عند")) | .number'); do
+            gh issue close "$num" --reason completed --comment "أُغلقت تلقائيًّا: الإنتاجُ على ${VER:-آخر إصدار} بعد ترقيةٍ خضراء — الإصدارُ المذكور تجاوزه ما بعده." && n=$((n+1)) || echo "::warning::تعذّر قفلُ #$num"
+          done
+          echo "::notice title=المسائل القديمة::أُغلقت $n"
