@@ -217,7 +217,7 @@ try {
       const p = d.data();
       if (!p.driveId || p.inSite) continue;
       try {
-        const dest = await destFolder(p, String(d.id).replace(/-\d+$/, ''));
+        const dest = await destFolder(p, String(d.id).replace(/-\d+[A-Z]{0,2}$/, ''));
         const cur = await drive.files.get({ fileId: p.driveId, fields: 'parents', supportsAllDrives: true });
         const have = cur.data.parents || [], others = have.filter(x => x !== dest);
         if (others.length || !have.includes(dest))
@@ -291,6 +291,40 @@ try {
   }
 } catch (e){ console.log('وسمُ توقيت الصور المنقولة تعذّر: ' + (e && e.message)); }
 
+/* (V39.79) الاستعادة: صورةٌ على الدرايف كُتب سجلُّها فوقَه برفعٍ لاحقٍ حمل الرقمَ نفسَه («…-2.jpg» أربعَ مرات لمخيمٍ واحد
+   في ٢٧ أكتوبر) يعود لها سجلٌّ: معرّفٌ جديدٌ بعلامة R، والملفُ نفسُه، ونوعُها ورافعُها من وصف الدرايف، ووقتُها من الدرايف.
+   تُفحص ملفاتُ آخر ثلاثين يومًا، وكلُّ ملفٍ مرةً واحدة. */
+const SEEN = db.collection('settings').doc('photosRecover');
+try {
+  const seenDoc = await SEEN.get(); const seen = new Set(((seenDoc.data() || {}).ids) || []);
+  const since = new Date(Date.now() - 30 * 86400000).toISOString();
+  let pageToken, found = [], recovered = 0, pages = 0;
+  do {
+    const r = await drive.files.list({ q: `mimeType='image/jpeg' and trashed=false and createdTime > '${since}'`, fields: 'nextPageToken,files(id,name,description,parents,createdTime,webViewLink)',
+      pageSize: 500, pageToken, supportsAllDrives: true, includeItemsFromAllDrives: true, orderBy: 'createdTime desc' });
+    (r.data.files || []).forEach(f => { if (/^NSK-.+-\d+[A-Z]{0,2}\.jpg$/.test(f.name || '') && !seen.has(f.id)) found.push(f); });
+    pageToken = r.data.nextPageToken; pages++;
+  } while (pageToken && pages < 6);
+  for (const f of found){
+    const ref = await db.collection('photos').where('driveId', '==', f.id).limit(1).get();
+    if (!ref.empty){ seen.add(f.id); continue; }
+    const site = f.name.replace(/-\d+[A-Z]{0,2}\.jpg$/, '');
+    const parts = String(f.description || '').split(' · ');
+    const kind = (parts[1] || 'extra').trim() || 'extra', by = (parts.slice(2).join(' · ') || '').trim();
+    const sp = await db.collection('photos').where('site', '==', site).get();
+    let max = 0; sp.forEach(d => { const q = +(d.data().seq) || +((/-(\d+)[A-Z]{0,2}$/.exec(d.id) || [])[1]) || 0; if (q > max) max = q; });
+    const seq = max + 1, id = `${site}-${seq}R`, name = id + '.jpg', at = Date.parse(f.createdTime) || Date.now();
+    await drive.files.update({ fileId: f.id, requestBody: { name }, fields: 'id', supportsAllDrives: true }).catch(() => {});
+    await drive.permissions.create({ fileId: f.id, requestBody: { role: 'reader', type: 'anyone' }, supportsAllDrives: true }).catch(() => {});
+    await db.collection('photos').doc(id).set({ site, kind, by, at, seq, name, driveId: f.id, link: f.webViewLink, status: 'done', movedAt: Date.now(), _at: Date.now(),
+      inSite: true, folderId: (f.parents || [])[0] || null, shared: true, recovered: true });
+    seen.add(f.id); recovered++;
+    console.log(`  ↺ استُعيدت ${name} ← ${f.name} (${kind} · ${by})`);
+  }
+  if (recovered) console.log(`::notice::استُعيد ${recovered} صورةً كانت سجلاتُها كُتبت فوقها`);
+  if (found.length) await SEEN.set({ ids: [...seen].slice(-3000), at: Date.now() }, { merge: true });
+} catch (e){ console.log('::warning::الاستعادة: ' + explain(e).slice(0, 160)); }
+
 const snap = await db.collection('photos').where('status', '==', 'pending').limit(150).get();
 if (snap.empty){ console.log('لا صورَ منتظرة'); process.exit(0); }
 console.log(`صور منتظرة: ${snap.size}`);
@@ -303,7 +337,7 @@ for (const d of snap.docs){
     if (!data){ throw new Error('وثيقةٌ بلا صورة'); }
     const b64 = data.replace(/^data:[^;]+;base64,/, '');
     const buf = Buffer.from(b64, 'base64');
-    const dirId = await destFolder(p, String(d.id).replace(/-\d+$/, ''));
+    const dirId = await destFolder(p, String(d.id).replace(/-\d+[A-Z]{0,2}$/, ''));
     const made = await drive.files.create({
       requestBody: { name, parents: [dirId], description: `${p.site || ''} · ${p.kind || ''} · ${p.by || ''}` },
       media: { mimeType: 'image/jpeg', body: Readable.from(buf) },

@@ -2147,10 +2147,15 @@ console.log('\n══ ٨٩ · صورُ الزيارة ══');
   w.STATE.photos[id + '-1'] = { site:id, kind:'close', seq:1, at:1, link:'x' }; w.STATE.photos[id + '-4'] = { site:id, kind:'general', seq:4, at:2, link:'y' };   // a gap: a photo numbered 4 already
   w.phTouch && w.phTouch();
   T(w.photoNext(id) === 5, 'الرقمُ التالي بعد أعلى رقمٍ موجود (٥) لا بعدِّ الصور (٣) — فلا تكتب صورةٌ جديدةٌ فوق صورةٍ قائمة');
+  { const n1 = w.photoNext(id); w.photoTook(id, n1); delete w.STATE.photos[id + '-4']; w.phTouch && w.phTouch();   /* (V39.79) a photo took the number, then the phone's copy loses a document — the next number still moves on */
+    T(w.photoNext(id) === n1 + 1, 'ويتقدّم الرقمُ ولو اختفت وثيقةٌ من نسخة الجهاز (' + (n1 + 1) + ')');
+    w.STATE.photos[id + '-4'] = { site:id, kind:'general', seq:4, at:2, link:'y' }; w.phTouch && w.phTouch(); }
+  T(/^[A-Z]{2}$/.test(w.photoTag()) && w.photoTag() === w.photoTag(), 'وحرفا الحساب ثابتان للمعرّف');
   w.STATE.meta.online = false; for (let i = 0; i < 3; i++) w.svqPhoto(id, 'extra', { data:'data:image/jpeg;base64,' + 'B'.repeat(800) + i });
   w.STATE.meta.online = true; w.drvCfg = () => null;
   for (let i = 0; i < 4; i++){ try { await w.photoFlush(); } catch (e) {} }
   const shown = w.photosOf(id).length, docs = Object.keys(w.STATE.photos).filter(k => k.startsWith(id + '-')).length;
+  T(Object.keys(w.STATE.photos).filter(k => k.startsWith(id + '-') && new RegExp('-\\d+' + w.photoTag() + '$').test(k)).length === 3, 'ومعرّفاتُ الصور الجديدة تحمل حرفَي الحساب — فلا تتصادم مع جهازٍ آخر');
   T(shown === 5 && docs === 5, 'وثلاثُ صورٍ إضافيةٍ تُرفَع كلُّها وتظهر كلُّها في «صور الزيارة» (' + shown + ' من ' + docs + ')');
   Object.keys(w.STATE.photos).filter(k => k.startsWith(id + '-')).forEach(k => delete w.STATE.photos[k]); w.phTouch && w.phTouch();
   if (r0) w.STATE.recs[id] = r0; else delete w.STATE.recs[id]; w.PHOTO_Q.length = 0; q0.forEach(q => w.PHOTO_Q.push(q)); w.STATE.meta.online = on0; w.drvCfg = dc0; w.STATE.meta.name = me0;

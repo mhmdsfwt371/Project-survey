@@ -123,7 +123,18 @@ function photoNext(siteId){
     if (q > n) n = q; else if (v && v.site === siteId && !q) n++;
   });
   PHOTO_Q.forEach(function(q){ if (q.site === siteId){ var s2 = +q.seq || 0; n = s2 > n ? s2 : n + (s2 ? 0 : 1); } });
+  var L = photoNext.last || (photoNext.last = {});   /* (V39.79) Drive showed four files named «…-2.jpg» for one camp: the phone's copy of
+     the photos can lose the document it just uploaded (scoped pulls), so a count or a max from that copy alone repeats the number.
+     What this device handed out is remembered here, and the id carries the account's two letters (see photoTag) so two phones never share one */
+  if (L[siteId] > n) n = L[siteId];
   return n + 1;
+}
+/* the number a queued photo took — so the next asks beyond it even if the phone's copy forgets the document */
+function photoTook(siteId, seq){ var L = photoNext.last || (photoNext.last = {}); if (+seq > (L[siteId] || 0)) L[siteId] = +seq; }
+/* the account's two letters — the same mark new points carry (nsNextId) */
+function photoTag(){
+  var u = String(STATE.meta.uid || STATE.meta.name || 'x'), h = 0; for (var i = 0; i < u.length; i++) h = (h * 31 + u.charCodeAt(i)) >>> 0;
+  var A = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; return A[h % A.length] + A[Math.floor(h / A.length) % A.length];
 }
 
 function photoQueue(siteId, kind, dataUrl){
@@ -131,6 +142,7 @@ function photoQueue(siteId, kind, dataUrl){
   if (pq && photoDupOf(siteId, pq)) toast('\u26A0 ' + t('هذه الصورة تكاد تطابق صورةً سابقةً لنفس النقطة'));
   PHOTO_Q.push({ site:siteId, kind:kind, data:dataUrl, at:Date.now(), tries:0,
                  seq:photoNext(siteId), q:pq || null });
+  photoTook(siteId, PHOTO_Q[PHOTO_Q.length - 1].seq);   /* (V39.79) */
   CORE.saveSoon();
   photoFlush();
 }
@@ -149,14 +161,14 @@ function photoFlush(){
   if (!drvCfg()) return photoFlushCloud();
   var it = PHOTO_Q[0];
   /* الرقمُ يُثبَّت عند الإدراج ويُعاد حسابُه إن غاب (طابورٌ من نسخةٍ أقدم) */
-  var seq = cfgN(it.seq) || (it.seq = photoNext(it.site));
-  var nm2 = it.site + '-' + seq + '.jpg';
+  var seq = cfgN(it.seq) || (it.seq = photoNext(it.site)); photoTook(it.site, seq);
+  var pid = it.site + '-' + seq + photoTag(), nm2 = pid + '.jpg';   /* (V39.79) */
   return drvUpload(nm2, it.data).then(function(r){
     PHOTO_Q.shift();
     /* في الوثيقة معرّفُ الملف ورابطُه لا الصورةُ نفسها */
     /* المفتاحُ بالرقم لا بالنوع: كانت صورةٌ ثانيةٌ من النوع نفسِه تكتب فوق
        الأولى في السجل — فيبقى الملفان على الدرايف ولا يُعرَف إلا آخرُهما. */
-    CORE.set('photos', it.site + '-' + seq, {
+    CORE.set('photos', pid, {
       del:null, site:it.site, kind:it.kind, seq:seq, name:nm2,
       driveId:r.id, link:r.webViewLink, at:it.at, q:it.q || null   /* (V30.6) */
     }); if (typeof phTouch === 'function') phTouch();   /* (V39.75) the list shows the uploaded photo at once — it kept the old index */
@@ -178,8 +190,8 @@ function photoFlush(){
 
 function photoFlushCloud(){
   var it = PHOTO_Q[0];
-  var seq = cfgN(it.seq) || (it.seq = photoNext(it.site));
-  var nm2 = it.site + '-' + seq + '.jpg';
+  var seq = cfgN(it.seq) || (it.seq = photoNext(it.site)); photoTook(it.site, seq);
+  var pid = it.site + '-' + seq + photoTag(), nm2 = pid + '.jpg';   /* (V39.79) */
   var data = String(it.data || '');
   /* سقفُ الوثيقة ميغابايت: ما زاد يُضغَط ثانيةً — وما بقي فوقه يُترَك للدرايف المباشر */
   if (data.length > 900000){
@@ -189,8 +201,8 @@ function photoFlushCloud(){
   }
   PHOTO_Q.shift();
   /* (V37.18) الخامُ في مجموعةٍ لا يسحبها أيُّ جهاز (photoblobs)، ووثيقةُ الصورة بياناتٌ وحدَها — كانت الصورُ الخامُ تُسحَب إلى كلِّ موبايل (٣٤ صورة = ٨٫٧ م.ب) فتقتل الصفحةَ على آيفون */
-  CORE.set('photoblobs', it.site + '-' + seq, { site:it.site, name:nm2, at:it.at, by:STATE.meta.name || '', data:data });
-  CORE.set('photos', it.site + '-' + seq, {
+  CORE.set('photoblobs', pid, { site:it.site, name:nm2, at:it.at, by:STATE.meta.name || '', data:data });
+  CORE.set('photos', pid, {
     del:null, site:it.site, kind:it.kind, seq:seq, name:nm2, at:it.at, by:STATE.meta.name || '',
     status:'pending', blob:true, q:it.q || null   /* (V30.6) مقاييسُ الجودة */
   }); if (typeof phTouch === 'function') phTouch();   /* (V39.75) the list shows the uploaded photo at once — it kept the old index */

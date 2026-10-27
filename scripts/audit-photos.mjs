@@ -39,18 +39,19 @@ w.STATE.meta.online=true;
 const S=w.STATE.sites, A=S[0].id, B=S[1].id;
 /* ١ · أوّلُ صورةٍ للنقطة تأخذ الرقم واحد */
 w.photoQueue(A,'site','data:,1'); await wait(200);
-T(up[0]===A+'-1.jpg', 'أوّلُ صورةٍ باسم النقطة والرقم ١', up[0]);
+T(new RegExp('^' + A + '-1[A-Z]{2}\\.jpg$').test(up[0]), 'أوّلُ صورةٍ باسم النقطة والرقم ١ وحرفَي الحساب (V39.79)', up[0]);
 /* ٢ · الثانيةُ والثالثةُ تزيدان */
 w.photoQueue(A,'mount','data:,2'); await wait(300);
 w.photoQueue(A,'after','data:,3'); await wait(300);
-T(up[1]===A+'-2.jpg' && up[2]===A+'-3.jpg', 'ثم ٢ و٣ — ولو اختلف نوعُها', up.slice(1,3).join(' · '));
+T(new RegExp('^' + A + '-2[A-Z]{2}\\.jpg$').test(up[1]) && new RegExp('^' + A + '-3[A-Z]{2}\\.jpg$').test(up[2]), 'ثم ٢ و٣ — ولو اختلف نوعُها', up.slice(1,3).join(' · '));
 /* ٣ · نقطةٌ أخرى تبدأ من واحد */
 w.photoQueue(B,'site','data:,4'); await wait(300);
-T(up[3]===B+'-1.jpg', 'وكلُّ نقطةٍ ترقيمُها المستقلّ', up[3]);
+T(new RegExp('^' + B + '-1[A-Z]{2}\\.jpg$').test(up[3]), 'وكلُّ نقطةٍ ترقيمُها المستقلّ', up[3]);
 /* ٤ · السجلُّ لا يكتب بعضُه فوق بعض */
 const keys=Object.keys(w.STATE.photos).filter(k=>k.indexOf(A)===0);
 T(keys.length===3, 'ثلاثُ وثائقَ للنقطة لا واحدة', keys.join(' · '));
-T(w.STATE.photos[A+'-2'].kind==='mount' && w.STATE.photos[A+'-2'].name===A+'-2.jpg', 'ولكلٍّ نوعُها واسمُها');
+const k2=keys.filter(k=>new RegExp('^'+A+'-2[A-Z]{2}$').test(k))[0];
+T(!!k2 && w.STATE.photos[k2].kind==='mount' && w.STATE.photos[k2].name===k2+'.jpg', 'ولكلٍّ نوعُها واسمُها (المعرّفُ بحرفَي الحساب — V39.79)');
 /* ٥ · بعد إعادة التحميل يكمل الترقيم ولا يبدأ من واحد */
 const saved=JSON.parse(JSON.stringify(w.STATE.photos));
 w.PHOTO_Q.length=0; w.STATE.photos=saved;
@@ -70,7 +71,7 @@ if (bad) process.exit(1);
   w.photoQueue(site,'before','data:image/jpeg;base64,AAAA'); await wait(200);
   const q=w.STATE.queue.filter(x=>x.kind==='photos'), qb=w.STATE.queue.filter(x=>x.kind==='photoblobs');
   /* (V37.18) الخامُ في photoblobs ووثيقةُ الصورة بلا خام — فلا يُسحَب الخامُ إلى أيِّ موبايل */
-  T2(q.length===1 && q[0].v.status==='pending' && !q[0].v.data && q[0].v.blob===true && q[0].v.name===site+'-1.jpg', 'بلا معرِّفِ عميلٍ تصعد الصورةُ للقاعدة بحالة «منتظرة» — بلا خامٍ في وثيقتها', q[0]&&q[0].v.name);
+  T2(q.length===1 && q[0].v.status==='pending' && !q[0].v.data && q[0].v.blob===true && new RegExp('^'+site+'-1[A-Z]{2}\\.jpg$').test(q[0].v.name), 'بلا معرِّفِ عميلٍ تصعد الصورةُ للقاعدة بحالة «منتظرة» — بلا خامٍ في وثيقتها', q[0]&&q[0].v.name);
   T2(qb.length===1 && qb[0].v.data && qb[0].id===q[0].id, 'والخامُ في مجموعته photoblobs بالمعرِّف نفسِه');
   T2(w.PHOTO_Q.length===0, 'ويخلو الطابورُ المحليّ');
   /* الكبيرةُ لا تُدفَع */

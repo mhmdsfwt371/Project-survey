@@ -441,7 +441,7 @@ function catBar(withWork){
   /* ─ المشعر: مفتوحٌ دائمًا ─ */
   var zoneRow = '<div class="catrow">'
     + '<button type="button" class="cat zone' + (FILT.zone?'':' on') + '" data-fz="">' + esc(t('الكل')) + ' <span class="n">' + nm(S.total) + '</span></button>'
-    + zones.map(function(z){ return '<button type="button" class="cat zone' + (FILT.zone===z?' on':'') + '" data-fz="' + esc(z) + '">' + esc(z) + ' <span class="n">' + nm(C.zone[z]) + '</span></button>'; }).join('') + '</div>';
+    + zones.map(function(z){ return '<button type="button" class="cat zone' + (FILT.zone===z?' on':'') + '" data-fz="' + esc(z) + '">' + esc(t(z)) + ' <span class="n">' + nm(C.zone[z]) + '</span></button>'; }).join('') + '</div>';
   /* ─ النوع ─ */
   var typeRow = types.length > 1 || FILT.type ? '<div class="catrow">' + types.map(function(ty){
       var d = TAX_DEF[ty] || { l:ty, i:'\u25CF', c:'#8A939D' }, on = FILT.type === ty;
@@ -469,7 +469,7 @@ function catBar(withWork){
   var workRow = '', workSel = '';
   if (withWork){ var wks = Object.keys(C.work).sort(function(a,b){ return C.work[b] - C.work[a]; });
     if (wks.length > 1){ workRow = '<div class="catrow"><button type="button" class="cat' + (FILT.work?'':' on') + '" data-fw="">' + esc(t('كل الأوجه')) + '</button>'
-      + wks.map(function(k){ return '<button type="button" class="cat' + (FILT.work===k?' on':'') + '" data-fw="' + esc(k) + '">' + esc(k) + ' <span class="n">' + nm(C.work[k]) + '</span></button>'; }).join('') + '</div>'; workSel = FILT.work ? esc(FILT.work) : ''; } }
+      + wks.map(function(k){ return '<button type="button" class="cat' + (FILT.work===k?' on':'') + '" data-fw="' + esc(k) + '">' + esc(t(k)) + ' <span class="n">' + nm(C.work[k]) + '</span></button>'; }).join('') + '</div>'; workSel = FILT.work ? esc(FILT.work) : ''; } }
   /* ─ الحالة، والتقريرُ التنفيذي، والمجموعاتُ الأربع: على ما مرّ من المرشّحات ─ */
   var lifeRow = '', lifeSel = '', execRow = '', execSel = '', grpRow = '', grpSel = '';
   if (typeof lifeOf === 'function' && typeof LIFE_ORDER !== 'undefined'){

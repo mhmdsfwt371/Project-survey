@@ -85,7 +85,7 @@ T(!w.STATE.recs[A.id] || !w.STATE.recs[A.id].note || w.STATE.recs[A.id].note !==
 T(Object.keys(w.FORM.photos).length === 0, 'والنموذجُ يُفرَّغ بعد الحفظ فلا يورَّث ما بعده');
 
 /* ═══ ٤ · رقمُ الصورة لا يتصادم بين نقطتين ═══ */
-w.PHOTO_Q.length = 0;
+w.PHOTO_Q.length = 0; w.photoNext.last = {};   /* (V39.79) a fresh world: the device's memory of numbers it handed out starts empty too */
 w.STATE.photos = { [A.id + '-1']:{ site:A.id, seq:1 }, [B.id + '-1']:{ site:B.id, seq:1 } };
 T(w.photoNext(A.id) === 2 && w.photoNext(B.id) === 2, 'ورقمُ الصورة يُحسَب لكلِّ نقطةٍ على حدة');
 w.photoQueue(A.id, 'site', 'data:image/jpeg;base64,DDD');
