@@ -44,8 +44,11 @@ T(chips.length === 6 && /كل الأدوار/.test(chips[0].textContent), 'صف�
 d.querySelector('#content [data-ffl="2"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(60);
 const shown = S.filter(w.filtPass);
 T(w.FILT.floor === '2' && shown.length > 0 && shown.every(x => w.siteFloor(x) === 2), 'اختيارُ «الدور الثاني» يعرض الدورَ الثاني وحدَه: ' + shown.length);
-d.querySelector('#content [data-ffl=""]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(40);
-T(w.FILT.floor === '' && !w.filtOn(), 'و«كل الأدوار» يرفعه');
+d.querySelector('#content [data-ffl="*"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(40);
+const allF = S.filter(w.filtPass);
+T(w.FILT.floor === '*' && allF.length > 0 && allF.every(x => w.siteFloor(x) != null), '«كل الأدوار» = نقاطُ منشأة الجمرات بأدوارها وحدها (V39.69): ' + allF.length);
+d.querySelector('#content [data-ffl="*"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(40);
+T(w.FILT.floor === '' && !w.filtOn(), 'والضغطةُ الثانية ترفعه');
 
 console.log('\n══ ٣ · النافذة ══');
 w.goPage('map'); w.render(1); await wait(60);

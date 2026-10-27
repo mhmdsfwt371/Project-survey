@@ -60,7 +60,8 @@ async function proPull(why){
   /* the token is kept between runs and renewed when refused — not a fresh login every five minutes */
   const tokRef = db.collection('integ').doc('afaqypro_tok'); let tok = ((await tokRef.get()).data() || {}).tok || '';
   const login = async () => { const L = await proCall(url, '/auth/login', { username:cfg.user, password:cfg.pass }); const t = tokOf(L.j);
-    if (!t) throw Object.assign(new Error('login'), { st:L.status, shape:shape(L.j) }); await tokRef.set({ tok:t, at:Date.now() }); return t; };
+    if (!t){ const sh = shape(L.j), needCode = /otp|verif|two.?factor|2fa|mfa|\bcode\b/i.test(JSON.stringify(sh || '')) || /otp|verif|code/i.test(JSON.stringify(L.j || '').slice(0, 400));   /* (V39.72) a code-step reply is not a wrong password */
+      throw Object.assign(new Error(needCode ? 'otp' : 'login'), { st:L.status, shape:sh }); } await tokRef.set({ tok:t, at:Date.now() }); return t; };
   try {
     if (!tok) tok = await login();
     const units = []; let sample = null;

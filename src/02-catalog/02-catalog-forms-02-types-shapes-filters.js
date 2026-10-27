@@ -152,10 +152,6 @@ function routesList(){
    (محطات الإركاب، ٥٠٥ نقطة) were matched to Arafat's camp footprints: a camp holding a stop is ترددي — 191 camps. Seventeen more
    have a stop on their edge only (under 10 m) and are kept apart until the owner decides. A site override (tard true/false)
    wins either way. */
-/* (V39.67) owner: «لو كنت قلتلك إن المخيمات اللي فيها محطات إركاب ترددي فده كان معلومات غلط — الترددي هو اللي الشباب عملوه
-   النهارده من تعديل بيانات المخيم». The boarding-stations list no longer marks any camp: a camp is ترددي only when a survey
-   set it so (or an office override); the stations are their own layer (محطات الإركاب). */
-function tardSet(){ return {}; }
 /* (V39.63) owner: «في متابعة الوزارة والتحديات تظهر تحت المخيمات: كام واحد هيكون فيه حاجز تنظيمي للتفويج بناءً على شغل
    المسح في الميدان». From the visits only: camps the survey set ترددي, the barriers counted in them, those set without a count
    yet, and those the survey set عادي. (V39.67: no «awaiting confirmation» — the stations no longer mark camps.) */
@@ -164,7 +160,7 @@ function tardBarStats(){
   (STATE.sites || []).forEach(function(x){
     if (x.type !== 'مخيم' || x.hidden || x.deleted) return;
     var r = (STATE.recs || {})[x.id], ct = r && !r.deleted ? r.ctype : '';
-    if (ct === 'ترددي'){ o.conf++; var n = +r.tbar || 0; if (n > 0){ o.withBar++; o.bars += n; } else o.noCount++; }
+    if (siteTard(x)){ o.conf++; var n = siteTbar(x); if (n > 0){ o.withBar++; o.bars += n; } else o.noCount++; }   /* (V39.70) field choices only */
     else if (ct === 'عادي') o.normal++;
   });
   return o;
@@ -177,8 +173,22 @@ function tardBarHtml(){
     + '<div class="hint" style="margin:0 0 6px">' + esc(t('الحاجز التنظيمي للتفويج — المخيمُ الذي فيه بوابةُ تفويجٍ ترددي، يختاره الفني أو المشرف في نموذج المسح ويكتب عدد بواباته')) + '</div>'
     + '<div style="display:flex;flex-wrap:wrap;gap:6px">' + pill(S.conf, 'مخيم ترددي', '#F59E0B') + pill(S.noCount, 'ترددي بلا عدد بوابات بعد', '#EF4444') + '</div></div>';   /* (V39.68) an inventory of gates */
 }
-function siteTard(x){ if (!x) return false; var rc = STATE.recs && STATE.recs[x.id]; if (rc && (rc.ctype === 'ترددي' || rc.ctype === 'عادي')) return rc.ctype === 'ترددي';   /* (V39.56) the survey's choice first */
-  var ov = STATE.siteOv && STATE.siteOv[x.id]; if (ov && typeof ov.tard === 'boolean') return ov.tard; return !!tardSet()[x.id]; }
+/* (V39.70) owner: «أي حاجة ترددي تيجي من خالد وعمار، من المشرفين في الميدان — وعدد بوابات التفويج كمان، مش أنا اللي أكتبها؛
+   والقديم امسح التاج بتاعه». A camp's type (and its gate count) counts only when a field person chose it: a «تعديل المسح» edit
+   (its log names who) or a survey form where the field was actually picked (stamped ctypeBy/tbarBy since this version).
+   Values the form filled in by itself before V39.68, or written by the office, no longer count — nothing is deleted. */
+function ctNameRole(name){ var U = STATE.users || {}; for (var k in U) if (U[k] && U[k].name === name) return U[k].role || ''; return ''; }
+function ctSrc(r, key){
+  if (!r || r.deleted || r[key] == null || r[key] === '') return null;
+  var last = null; (Array.isArray(r.edits) ? r.edits : []).forEach(function(e){ if (e && e.k === key) last = e; });
+  var by = '', at = 0, via = '', stB = r[key + 'By'], stA = r[key + 'At'] || 0;
+  if (stB && (!last || stA >= (last.at || 0))){ by = stB; at = stA; via = 'form'; }
+  else if (last && String(last.v) === String(r[key])){ by = last.by || ''; at = last.at || 0; via = 'edit'; }
+  return { v:r[key], by:by, at:at, via:via, field:!!by && isFieldRole(ctNameRole(by)) };
+}
+function ctypeSrc(x){ return x ? ctSrc((STATE.recs || {})[x.id], 'ctype') : null; }
+function siteTard(x){ if (!x) return false; var cs = ctypeSrc(x); return !!(cs && cs.field && cs.v === 'ترددي'); }
+function siteTbar(x){ if (!siteTard(x)) return 0; var ts = ctSrc((STATE.recs || {})[x.id], 'tbar'); return ts && ts.field ? (+ts.v || 0) : 0; }
 function filtOn(){ return !!(FILT.zone || FILT.type || FILT.work || FILT.life || FILT.stg || FILT.exec || FILT.ccg || FILT.route || (FILT.floor !== '' && FILT.floor != null) || CO_SEL.length); }
 /* (V39.29) the stage of a point in the installation or dismantling legend — the same rule the legend counts by */
 function modeStageOf(x, mode){ return (mode === 'dis' ? disDone(x.id) : insDone(x.id)) ? 'done' : (asnOf(x.id) ? 'asn' : 'wait'); }
@@ -188,13 +198,13 @@ function filtPass(x){
   if (FILT.type && taxOf(x).t !== FILT.type) return false;
   if (FILT.work && x.work !== FILT.work) return false;
   if (FILT.route && x.route !== FILT.route) return false;   /* بالمسار (V17.51) */
-  if (FILT.floor !== '' && FILT.floor != null && siteFloor(x) !== +FILT.floor) return false;   /* بالدور (V22.2) */
+  if (FILT.floor !== '' && FILT.floor != null && (FILT.floor === '*' ? siteFloor(x) == null : siteFloor(x) !== +FILT.floor)) return false;   /* بالدور (V22.2) · (V39.69) «كل الأدوار» = the Jamarat facility's points only */
   /* بالحالة: ما لم يُزَر، ما زير وينتظر الاعتماد، المعتمدُ الجاهز، المُسند، المُركّب… —
      كان المرشِّحُ يجيب النقاطَ بلا ما حدث لها، فلا يُعرَف من الخريطة ما تمّ وما بقي */
   if (FILT.life && typeof lifeOf === 'function' && lifeOf(x) !== FILT.life) return false;
   if (FILT.stg){ var sp = String(FILT.stg).split(':'); if (sp[0] === FIELD_MODE && modeStageOf(x, sp[0]) !== sp[1]) return false; }   /* (V39.29) from the legend */
-  if (FILT.exec && typeof execStatusMemo === 'function' && execLabelOf(execStatusMemo(x)) !== FILT.exec) return false;   /* (V37.52→V37.53) بالتسمية الظاهرة */
-  if (FILT.ccg && typeof ccGroupsOfSite === 'function' && ccGroupsOfSite(x).indexOf(FILT.ccg) < 0) return false;
+  if (FILT.exec && typeof execStatusMemo === 'function'){ var exL = execLabelOf(execStatusMemo(x)); if (FILT.exec === '*' ? execIsNone(exL) : exL !== FILT.exec) return false; }   /* (V39.69) «الكل» = every point with a real challenge */   /* (V37.52→V37.53) بالتسمية الظاهرة */
+  if (FILT.ccg && typeof ccGroupsOfSite === 'function'){ var cgs = ccGroupsOfSite(x); if (FILT.ccg === '*' ? !cgs.length : cgs.indexOf(FILT.ccg) < 0) return false; }   /* (V39.69) «الكل» = every point in any handling group */
   /* الشركةُ ترشيحٌ لا تلوينٌ فحسب: من اختار شركةً أراد نقاطَها وحدها */
   if (CO_SEL.length && CO_SEL.indexOf(x.co) < 0) return false;
   return true;
@@ -244,6 +254,8 @@ function camNetOf(x){
 var CAM_SPEC = { 'DH-IPC-HFW7842H-Z-X':'8MP (4K) · 2.7–12mm', 'DH-IPC-HFW7842H-Z-S2':'8MP (4K) · 2.7–12mm', 'DH-SD49425XB-HNR':'4MP · 25x (4.8–120mm)',
   'DH-SD8A840N-HNF-PA':'8MP (4K) · 40x', 'IPC-HFW2531T-ZS-S2':'5MP · 2.7–13.5mm', 'IPC-HFW5431E-ZE':'4MP · 2.7–13.5mm', 'IPC-HFW5541E-ZE':'5MP · 2.7–13.5mm' };   /* [عددُ الكاميرات، [[F|P، عدد]…]، حالةُ الربط، القطاع، موقعٌ تقريبيٌّ داخل الدور] */
 var FLOOR_NAMES = ['الأرضي', 'الأول', 'الثاني', 'الثالث', 'الرابع'];
+/* (V39.69) a challenges label that is not a challenge: «لا توجد تحديات…» and «تم التركيب» */
+function execIsNone(el){ el = String(el || ''); return !el || /^لا توجد تحديات/.test(el) || el === 'تم التركيب'; }
 function siteFloor(x){
   if (!x) return null;
   if (x.floor != null && x.floor !== '') return +x.floor;
@@ -450,9 +462,9 @@ function catBar(withWork){
     if (typeof TFW === 'object' && TFW.f >= 0) [0, 1, 2, 3, 4].forEach(function(f){ if (fks.indexOf(f) < 0) fks.push(f); });
     fks.sort(function(a, b){ return a - b; });
     if (fks.length > 1){ var fon = FILT.floor !== '' && FILT.floor != null;
-      floorRow = '<div class="catrow"><button type="button" class="cat' + (fon ? '' : ' on') + '" data-ffl="">' + esc(t('كل الأدوار')) + '</button>'
-        + fks.map(function(f){ return '<button type="button" class="cat' + (fon && +FILT.floor === f ? ' on' : '') + '" data-ffl="' + f + '">\u{1F3E2} ' + esc(t(floorName(f))) + (FC[f] ? ' <span class="n">' + nm(FC[f]) + ' ' + esc(t('نقطة')) + '</span>' : '') + '</button>'; }).join('') + '</div>';
-      floorSel = fon ? esc(t(floorName(+FILT.floor))) : ''; } }
+      floorRow = '<div class="catrow"><button type="button" class="cat' + (FILT.floor === '*' ? ' on' : '') + '" data-ffl="*">' + esc(t('كل الأدوار')) + '</button>'
+        + fks.map(function(f){ return '<button type="button" class="cat' + (fon && FILT.floor !== '*' && +FILT.floor === f ? ' on' : '') + '" data-ffl="' + f + '">\u{1F3E2} ' + esc(t(floorName(f))) + (FC[f] ? ' <span class="n">' + nm(FC[f]) + ' ' + esc(t('نقطة')) + '</span>' : '') + '</button>'; }).join('') + '</div>';
+      floorSel = fon ? esc(t(FILT.floor === '*' ? 'كل الأدوار' : floorName(+FILT.floor))) : ''; } }
   /* ─ وجهُ العمل ─ */
   var workRow = '', workSel = '';
   if (withWork){ var wks = Object.keys(C.work).sort(function(a,b){ return C.work[b] - C.work[a]; });
@@ -469,12 +481,15 @@ function catBar(withWork){
     if (typeof execStatusMemo === 'function' && typeof CC_GROUPS !== 'undefined'){
       var ec = {}, gc = {}; base.forEach(function(x){ var el = execLabelOf(execStatusMemo(x)); ec[el] = (ec[el] || 0) + 1; ccGroupsOfSite(x).forEach(function(g){ gc[g] = (gc[g] || 0) + 1; }); });
       var eKeys = []; EXEC_ORDER_L.forEach(function(k){ var el = execLabelOf(k); if (ec[el] && eKeys.indexOf(el) < 0) eKeys.push(el); });
-      if (eKeys.length){ execRow = '<div class="catrow"><button type="button" class="cat' + (FILT.exec ? '' : ' on') + '" data-fx="">' + esc(t('الكل')) + '</button>'
+      var exAny = eKeys.reduce(function(n, el){ return n + (execIsNone(el) ? 0 : ec[el]); }, 0);   /* (V39.69) owner: «لما أختار الكل يظهر المخيمات ذات التحديات بس» */
+      if (eKeys.length){ execRow = '<div class="catrow"><button type="button" class="cat' + (FILT.exec === '*' ? ' on' : '') + '" data-fx="*">' + esc(t('الكل')) + ' <span class="num">' + nm(exAny) + '</span></button>'
         + eKeys.map(function(el){ return '<button type="button" class="cat' + (FILT.exec === el ? ' on' : '') + '" data-fx="' + esc(el) + '">' + esc(t(el)) + ' <span class="num">' + nm(ec[el]) + '</span></button>'; }).join('') + '</div>'; execSel = FILT.exec ? esc(t(FILT.exec)) + (ec[FILT.exec] ? ' <b>' + nm(ec[FILT.exec]) + '</b>' : '') : ''; }
+      if (FILT.exec === '*') execSel = esc(t('كل التحديات')) + ' <b>' + nm(exAny) + '</b>';
       var gKeys = CC_GROUPS.filter(function(g){ return gc[g.g]; });
-      if (gKeys.length){ grpRow = '<div class="catrow"><button type="button" class="cat' + (FILT.ccg ? '' : ' on') + '" data-fg="">' + esc(t('الكل')) + '</button>'
+      var gAny = base.filter(function(x){ return ccGroupsOfSite(x).length; }).length;   /* (V39.69) */
+      if (gKeys.length){ grpRow = '<div class="catrow"><button type="button" class="cat' + (FILT.ccg === '*' ? ' on' : '') + '" data-fg="*">' + esc(t('الكل')) + ' <span class="num">' + nm(gAny) + '</span></button>'
         + gKeys.map(function(g){ return '<button type="button" class="cat' + (FILT.ccg === g.g ? ' on' : '') + '" data-fg="' + g.g + '">' + esc(t(g.n)) + ' <span class="num">' + nm(gc[g.g]) + '</span></button>'; }).join('') + '</div>';
-        var gSel = CC_GROUPS.filter(function(g){ return g.g === FILT.ccg; })[0]; grpSel = gSel ? esc(t(gSel.n)) + (gc[gSel.g] ? ' <b>' + nm(gc[gSel.g]) + '</b>' : '') : ''; }
+        var gSel = CC_GROUPS.filter(function(g){ return g.g === FILT.ccg; })[0]; grpSel = gSel ? esc(t(gSel.n)) + (gc[gSel.g] ? ' <b>' + nm(gc[gSel.g]) + '</b>' : '') : '';  if (FILT.ccg === '*') grpSel = esc(t('كل المعالجات')) + ' <b>' + nm(gAny) + '</b>'; }
     }
     if (lifeKeys.length){ lifeRow = '<div class="catrow"><button type="button" class="cat' + (FILT.life ? '' : ' on') + '" data-fl="">' + esc(t('كل الحالات')) + '</button>'
       + lifeKeys.map(function(k){ var L = LIFE[k], on = FILT.life === k;

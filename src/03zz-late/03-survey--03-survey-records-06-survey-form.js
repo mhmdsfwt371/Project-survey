@@ -107,6 +107,8 @@ function svSave(next){
   if (!reached){ var pv = STATE.recs[s.id]; rec.why = FORM.why; rec.tries = (pv && svStuck(pv) ? (+pv.tries || 1) : 0) + 1; rec.stuckSince = (pv && svStuck(pv) && (+pv.stuckSince || +pv.at)) || Date.now(); }
   else rec.chalCats = locOnly(s) ? [] : chalCats({ chals:FORM.chals }).filter(function(k){ return k !== 'review'; });
   SV_EXTRA_KEYS.forEach(function(k){ if (FORM[k] !== '' && FORM[k] != null) rec[k] = FORM[k]; });
+  var nowCt = Date.now(), whoCt = STATE.meta.name || '';   /* (V39.70) who picked the type / wrote the count in this form */
+  if (FORM.ctypeT && rec.ctype){ rec.ctypeBy = whoCt; rec.ctypeAt = nowCt; } if (FORM.tbarT && rec.tbar !== '' && rec.tbar != null){ rec.tbarBy = whoCt; rec.tbarAt = nowCt; } delete FORM.ctypeT; delete FORM.tbarT;
   if (rec.ctype !== 'ترددي') delete rec.tbar;   /* (V39.56) the barrier count belongs to a Taraddudi camp */
   try { var sxT = siteFind(rec.id || FORM.id || ''); if (sxT) delete sxT._tax; } catch (eT){ LS_ERR = eT; }   /* its type may have changed: the taxonomy is read again */
   /* العنوانُ الذي قرأه الفنيُّ من الجهاز يُكتَب على النقطة نفسِها — فتخرج من

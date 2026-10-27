@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V39.69",
+  "app_version": "V39.72",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2331,7 +2331,10 @@
   "V39.66": "#svqSheet .svq-box min-height · SVQ.holdTill (١٫٥ ث) بعد svqSave وفتح ✎ — لمس الخلفية خلالها يُتجاهَل · سيناريو ٨٥ · ومعه V39.65 (حفظ بيانات الحساسات)",
   "V39.67": "layers/boarding-1448.json (٥٠٥ نقطة) · brdSt/brdLoad/brdPaint/brdCount — مثلثٌ كهرماني على Leaflet ومصدر nskbst وطبقة nsk-bst في الخريطة الثلاثية · شريحة data-brd في الخريطتين (data-bst للبحث) · tardSet() فارغة: siteTard من rec.ctype ثم تجاوز الموقع tard · أُزيلت «بانتظار التأكيد» من tardBarHtml · سيناريوهات ٧٥/٧٦/٨١/٨٢/٨٥ على اختيار المسح · سيناريو ٨٦",
   "V39.68": "svExtra: ctype يبدأ '' (svSel ['','عادي','ترددي'] بتلميح) ويُحفظ باختيار فقط · tbar «عدد البوابات» · tardBarHtml «حصر بوابات التفويج» بحبّتين (مخيم ترددي · بلا عدد) · أُزيل من تبويب mchal · سيناريوهات ٧٦ و٨٢",
-  "V39.69": "functions/ (integTick كل ٥ دقائق، integNow للمهندس والمدير مرةً في الدقيقة) · integ/{afaqypro|nusuk} في القواعد: كتابةٌ للمهندس والمدير ولا قراءة، وتوقّعاتها المعادية · units/lists بـfilters.imei · التوكن في integ/afaqypro_tok · iotlive/_all وsettings/integStatus · deploy-functions.yml (--force لسياسة تنظيف النسخ) · firebase.json functions · scripts/dev-restore.sh"
+  "V39.69": "functions/ (integTick كل ٥ دقائق، integNow للمهندس والمدير مرةً في الدقيقة) · integ/{afaqypro|nusuk} في القواعد: كتابةٌ للمهندس والمدير ولا قراءة، وتوقّعاتها المعادية · units/lists بـfilters.imei · التوكن في integ/afaqypro_tok · iotlive/_all وsettings/integStatus · deploy-functions.yml (--force لسياسة تنظيف النسخ) · firebase.json functions · scripts/dev-restore.sh",
+  "V39.70": "ctSrc(rec, key): ctypeBy/tbarBy من النموذج إن اختير الحقل فعلًا (FORM.ctypeT/tbarT) أو آخر edits من «تعديل المسح» — field = isFieldRole(دور الاسم) · siteTard/siteTbar على الميداني وحده · النموذج لا يعرض قيمةً غير مؤكَّدة · بطاقة «مَن حدّد ترددي» · أُزيلت tardSet · سيناريو ٨٨ · ومعه V39.69",
+  "V39.71": "integ: كتابتا الحساب بـ_by/_at · العلامة البيضاء في نصوص التبويب ومفاتيح الترجمة · دمج عمل الجلستين (أساس الربط وتبويبه + V39.69/V39.70) في إصدار واحد",
+  "V39.72": "integStepsHtml · integNusukHtml (nskUser/nskPass ← integ/nusuk) · integMissing/integMissingHtml (iotOf ← sm/gm serial) · الدالة: رد دخولٍ يطلب كودًا ← err 'otp' · نود ٢٢ للدالة"
   },
   "map_and_geolocation": {
     "tile_layers": {

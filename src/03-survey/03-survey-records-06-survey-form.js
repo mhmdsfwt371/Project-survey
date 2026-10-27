@@ -72,7 +72,7 @@ function svExtra(s){
       /* (V39.68) owner: «حصر بأعداد بوابات التفويج — وجود باب تفويج يعني ترددي، والفني أو المشرف في نموذج المسح يختاره ترددي
          ويكتب كام بوابة». The type was filled in by itself (from the stations list, later «عادي») and saved with every form, so a
          camp could be counted ترددي nobody chose. It starts empty now and is kept only when picked. */
-      + (function(){ if (!FORM.ctype){ var r0 = (STATE.recs || {})[s.id]; FORM.ctype = (r0 && r0.ctype) || ''; if (FORM.tbar === '' && r0 && r0.tbar != null) FORM.tbar = r0.tbar; } return ''; })()
+      + (function(){ if (!FORM.ctype){ var r0 = (STATE.recs || {})[s.id]; var cs0 = ctypeSrc(s); FORM.ctype = cs0 && cs0.field ? r0.ctype : ''; if (FORM.tbar === '' && FORM.ctype === 'ترددي' && siteTbar(s)) FORM.tbar = r0.tbar;   /* (V39.70) an unconfirmed old value is not shown as chosen */ } return ''; })()
       + svSel('ctype','نوع المخيم', ['', 'عادي', 'ترددي'], 'ترددي = فيه بوابة تفويج أو أكثر')
       + (FORM.ctype === 'ترددي' ? '<div class="field" style="grid-column:1/-1"><div style="font-weight:700;margin:2px 0 6px">\u{1F6A7} ' + esc(t('الحاجز التنظيمي للتفويج')) + '</div>'
           + '<input type="number" min="0" step="1" data-form="tbar" value="' + esc(FORM.tbar == null ? '' : FORM.tbar) + '" placeholder="' + esc(t('عدد البوابات')) + '">'

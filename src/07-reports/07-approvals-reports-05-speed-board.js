@@ -355,6 +355,18 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
                   : '')
             : '<p class="hint" style="margin:0">' + esc(t('لا تكرارَ في الإحداثيات.')) + '</p>')
 
+      /* (V39.70) owner: «الـ٦١ دول معمولين من خالد وعمار ولا حاجات قديمة؟» — who set «ترددي» on each camp, and the values that
+         no longer count (filled in by the old form, or written by the office) */
+      + (function(){
+          var by = {}, un = [];
+          (STATE.sites || []).forEach(function(x){ if (x.type !== 'مخيم') return; var cs = ctypeSrc(x); if (!cs || cs.v !== 'ترددي') return; if (cs.field) by[cs.by] = (by[cs.by] || 0) + 1; else un.push({ x:x, cs:cs }); });
+          var names = Object.keys(by); if (!names.length && !un.length) return '';
+          return card('\u{1F3F7} ' + t('مَن حدّد «ترددي»'),
+            '<p class="hint" style="margin:0 0 8px">' + esc(t('يُحتسب «ترددي» وعددُ بوابات التفويج حين يختاره الفني أو المشرف أو المهندس الميداني بنفسه — في «تعديل المسح» أو باختياره في نموذج المسح.')) + '</p>'
+            + names.sort(function(a, b){ return by[b] - by[a]; }).map(function(n){ return '<div style="display:flex;justify-content:space-between;margin:0 0 4px"><span>\u2705 ' + esc(n) + '</span><b class="num">' + nm(by[n]) + '</b></div>'; }).join('')
+            + (un.length ? '<p class="hint" style="margin:10px 0 4px">' + esc(t('لا يُحتسب — اتملا وحده في النموذج القديم أو كتبه المكتب')) + ' <b class="num">' + nm(un.length) + '</b></p>'
+                + un.slice(0, 30).map(function(o){ return '<button type="button" class="btn btn-quiet btn-sm" data-site="' + esc(o.x.id) + '" style="width:100%;justify-content:space-between;margin-bottom:4px"><span>' + esc(o.x.name || o.x.id) + '</span><span class="hint" style="margin:0">' + esc(o.cs.by || t('تلقائي')) + '</span></button>'; }).join('') : ''));
+        })()
       /* (V39.60) owner: «اعرضهالي كده بس، وخلّي البيانات الأساسية القديمة الصح، وأعدّل أنا أي وقت» — camps whose name says one
          square/sign and whose fields say another (65 in the registry itself, e.g. 0631: name «A2/38», sign «D/204»). Shown only:
          nothing is changed automatically; each opens its point, where «تعديل البيانات» fixes it. */

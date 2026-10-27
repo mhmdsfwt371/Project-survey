@@ -70,8 +70,8 @@ function clickAPart6(e){
   if (fsh){ var sec = fsh.closest('.fsec'), body = sec && sec.querySelector('.fsec-b'); if (sec && body){ var openNow = sec.classList.toggle('open'); body.hidden = !openNow; fsh.setAttribute('aria-expanded', openNow ? 'true' : 'false'); fsecSet(fsh.getAttribute('data-fsech'), openNow); } return true; }
   var fcl = e.target.closest('[data-fclr]');
   if (fcl){ var fk = fcl.getAttribute('data-fclr'); if (fk === 'all'){ FILT.zone = ''; FILT.type = ''; FILT.route = ''; FILT.floor = ''; FILT.work = ''; FILT.life = ''; FILT.exec = ''; FILT.ccg = ''; } else FILT[fk] = ''; LIST_SHOWN = LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }
-  var fxf = e.target.closest('[data-fx]'); if (fxf){ FILT.exec = fxf.getAttribute('data-fx') || ''; LIST_SHOWN = LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }   /* (V37.52) */
-  var fgf = e.target.closest('[data-fg]'); if (fgf){ FILT.ccg = fgf.getAttribute('data-fg') || ''; LIST_SHOWN = LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }
+  var fxf = e.target.closest('[data-fx]'); if (fxf){ var fxv = fxf.getAttribute('data-fx') || ''; FILT.exec = (fxv === FILT.exec) ? '' : fxv;   /* (V39.69) a second tap clears */ LIST_SHOWN = LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }   /* (V37.52) */
+  var fgf = e.target.closest('[data-fg]'); if (fgf){ var fgv = fgf.getAttribute('data-fg') || ''; FILT.ccg = (fgv === FILT.ccg) ? '' : fgv; LIST_SHOWN = LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }
   var tdn = e.target.closest('[data-techdone]'); if (tdn){ if (techDoneSet(tdn.getAttribute('data-techdone'), true)){ logEvent('تمت الزيارةُ التقنية — ' + tdn.getAttribute('data-techdone')); toast(t('صارت زيارةً تمّت — تنتظر الاعتماد')); render(1); if (typeof mapPaint === 'function' && MAP) mapPaint(); } return true; }
   var tdu = e.target.closest('[data-techundo]'); if (tdu){ if (techDoneSet(tdu.getAttribute('data-techundo'), false)){ logEvent('أُعيدت «تحتاج زيارة تقنية» — ' + tdu.getAttribute('data-techundo')); render(1); if (typeof mapPaint === 'function' && MAP) mapPaint(); } return true; }
   if (e.target.closest('[data-seltech]')){ var nT = selTechDone(); toast(nm(nT) + ' ' + t('نقطة صارت «زيارة تمّت — تنتظر الاعتماد»')); render(1); if (typeof mapPaint === 'function' && MAP) mapPaint(); return true; }
@@ -120,7 +120,7 @@ function clickAPart6(e){
     return true; }
   var ffl = e.target.closest('[data-ffl]');
   if (ffl){ var fv = ffl.getAttribute('data-ffl'); FILT.floor = (fv === '' || String(FILT.floor) === fv) ? '' : fv; LIST_SHOWN = LIST_PAGE;
-    if (typeof TFW === 'object' && TFW.f >= 0){ TFW.camp = null; TFW.f = (FILT.floor === '' ? TFW_ALL : +FILT.floor); tfwPaint(); }   /* (V26.5) الدورُ الواحدُ يحكم المسارَ والنقاط */
+    if (typeof TFW === 'object' && TFW.f >= 0){ TFW.camp = null; TFW.f = (FILT.floor === '' || FILT.floor === '*' ? TFW_ALL : +FILT.floor); tfwPaint(); }   /* (V26.5) الدورُ الواحدُ يحكم المسارَ والنقاط */
     render(1);
            if (CUR === 'map' && MAP) mapPaint(); return true; }   /* (V22.2) */
   var ft = e.target.closest('[data-ft]');
