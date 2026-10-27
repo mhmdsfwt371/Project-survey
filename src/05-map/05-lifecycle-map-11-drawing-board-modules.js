@@ -261,7 +261,8 @@ function fieldTools(){
         '<div class="actions">'
         + btn('⬇ إكسل — المواقع','btn-secondary',' data-xls="sites"')
         + (may('exportAll')
-            ? btn('🌍 KMZ — منى وعرفات لجوجل إيرث','btn-secondary',' data-kmz="main"')
+            ? btn('🌍 KMZ مفصّل — كل النقاط المخطط تركيبها بكل الفلاتر','btn-primary',' data-kmz="full"')
+            + btn('🌍 KMZ — منى وعرفات لجوجل إيرث','btn-secondary',' data-kmz="main"')
             + btn('🌍 KMZ — إعادة تركيب ١٤٤٧','btn-secondary',' data-kmz="redo"')
             + btn('🌍 KMZ — بلون الشركة','btn-secondary',' data-kmz="co"')
             : '')

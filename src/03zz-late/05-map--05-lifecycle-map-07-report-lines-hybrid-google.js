@@ -27,6 +27,7 @@ function basemapRemove(){
 }
 
 function kmzExport(kind){
+  if (kind === 'full') return kmzFull();   /* (V39.78) كلُّ النقاط المخطط تركيبها بكل الفلاتر */
   var f = null, title = 'أفاقي — قارئات بطاقة نسك ١٤٤٨هـ', name = 'nusuk.kmz';
   if (kind === 'main'){
     f = function(x){ return x.zone === 'منى' || x.zone === 'عرفات'; };

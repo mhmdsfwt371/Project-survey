@@ -2156,6 +2156,18 @@ console.log('\n══ ٨٩ · صورُ الزيارة ══');
   if (r0) w.STATE.recs[id] = r0; else delete w.STATE.recs[id]; w.PHOTO_Q.length = 0; q0.forEach(q => w.PHOTO_Q.push(q)); w.STATE.meta.online = on0; w.drvCfg = dc0; w.STATE.meta.name = me0;
 }
 
+/* ── ٩٠ · (V39.78) KMZ مفصّل: كلُّ النقاط المخطط تركيبها، وكلُّ فلترٍ مجلّد ── */
+console.log('\n══ ٩٠ · KMZ مفصّل بكل الفلاتر ══');
+{
+  const b = w.kmzFullBuild(), x = b.xml, live = w.STATE.sites.filter(s => s.lat && s.lng && !s.dupOf).length;
+  T(b.count === live && b.count > 1000, 'كلُّ النقاط ذات الموقع في الملف (' + b.count + ')');
+  T(/كل النقاط — المشعر ← النوع ← الحالة/.test(x) && /🔎 حسب الحالة/.test(x) && /🔎 حسب التحديات/.test(x) && /🔎 حسب نوع النقطة/.test(x) && /🔎 حسب وجه العمل/.test(x),
+    'الشجرةُ الرئيسية ومجلّدٌ لكلِّ فلتر: الحالة والتحديات ونوع النقطة ووجه العمل');
+  const one = w.STATE.sites.find(s => s.lat && s.lng && !s.dupOf && s.name);
+  T(x.indexOf('<name>' + one.name.replace(/&/g, '&amp;').replace(/</g, '&lt;') + ' · ' + one.id + '</name>') > -1, 'واسمُ كلِّ نقطةٍ يحمل اسمَها ومعرّفَها — فيجدها بحثُ جوجل إيرث بأيٍّ منهما');
+  T(/<visibility>0<\/visibility>/.test(x) && x.split('<Document>').length === 2 && x.trim().endsWith('</kml>'), 'ومجلّداتُ الفلاتر مطفأةٌ حتى يُعلَّم عليها، والملفُّ مغلقٌ صحيحًا');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);
