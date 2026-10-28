@@ -2,7 +2,7 @@
    FILE    : src/09-integ/09-integ-01-connections-tab.js
    DOMAIN  : Integrations — external platforms read by the cloud bridge
    PURPOSE : The office «Connections» tab: AFAQY PRO account (stored write-only), bridge status, «Refresh now».
-   DEFINES : integSessionHtml, integExpiryNotify, integOtpHtml, integOtp, jobsStatusLoad, jobsCardHtml, integPubLoad, integPubOf, integAcctHtml, integStatusLoad, integStateLine, integProHtml, integNusukHtml, integStepsHtml, integMissing, integMissingHtml, integTabHtml, mayIntegEdit, integSave, integOff, integNow
+   DEFINES : iotDashHtml, integSessionHtml, integExpiryNotify, integOtpHtml, integOtp, jobsStatusLoad, jobsCardHtml, integPubLoad, integPubOf, integAcctHtml, integStatusLoad, integStateLine, integProHtml, integNusukHtml, integStepsHtml, integMissing, integMissingHtml, integTabHtml, mayIntegEdit, integSave, integOff, integNow
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              design notes.
    ============================================================================ */
@@ -276,3 +276,82 @@ function integExpiryNotify(p){
   try { localStorage.setItem(key, mark); } catch (e2){ LS_ERR = e2; }
   notifPush(t('ربط أفاقي برو'), step === 0 ? t('جلسة أفاقي برو انتهت — افتح «الربط» واضغط «حدّث الآن»، والكود هيوصل إيميلك') : t('جلسة أفاقي برو تنتهي خلال') + ' ' + nm(step) + ' ' + t('يوم') + ' \u2014 ' + t('التجديد بيبدأ لوحده قبل يومين والكود هيوصل إيميلك'), { lv:'مهم' });
 }
+
+/* (V40.7) the owner: «محتاج داشبورد لتحديث الأجهزة والحساسات — إيه اللي محدّث وإيه اللي مش محدّث، باسم النقطة أو اسم الحساس
+   والسيريال اللي مكتوب عليه … لما العدد يبقى بالـ500 والـ1000 والـ5000 محتاج حاجة سهلة توضّح كل حاجة». Every planned device
+   (each camp's gateways and sensors) against the AFAQY PRO bridge's last pull: fresh under 20 minutes, late under 2 hours,
+   offline beyond; on the platform without a reading; a serial the platform does not know; no serial at all. Counts on top
+   (each one a filter), the points with the most trouble, search by point / device / serial / platform name, problems first
+   and oldest first, 100 rows at a time, and the filtered list to Excel. One global: its helpers hang on the function. */
+function iotDashHtml(){
+  var F = iotDashHtml.F || (iotDashHtml.F = { st:'bad', kind:'all', q:'', n:100, sort:'old' });
+  var L = IOT.live; if (!L || Date.now() - (L.at || 0) > 60000) liveIotLoad(true);
+  var all = iotDashHtml.rows(), cnt = { all:all.length, bad:0, ok:0, late:0, off:0, nor:0, nof:0, nos:0 };
+  all.forEach(function(r){ cnt[r.st]++; if (r.st !== 'ok') cnt.bad++; });
+  var lv = L && L.v, pull = lv && lv.at ? Date.now() - lv.at : -1;
+  var q = String(F.q || '').trim().toLowerCase();
+  var rows = all.filter(function(r){
+    if (F.st === 'bad' ? r.st === 'ok' : (F.st !== 'all' && r.st !== F.st)) return false;
+    if (F.kind !== 'all' && r.kind !== F.kind) return false;
+    return !q || (r.pn + ' ' + r.camp + ' ' + r.did + ' ' + r.ser + ' ' + r.pnm + ' ' + r.room).toLowerCase().indexOf(q) > -1;
+  });
+  var rank = { off:0, late:1, nof:2, nor:3, nos:4, ok:5 };
+  rows.sort(F.sort === 'name' ? function(a, b){ return a.pn < b.pn ? -1 : a.pn > b.pn ? 1 : (a.did < b.did ? -1 : 1); }
+    : function(a, b){ return (rank[a.st] - rank[b.st]) || ((a.at || 0) - (b.at || 0)); });
+  var chip = function(k, ic, lab, col){ var on = F.st === k;
+    return '<button class="btn btn-sm ' + (on ? 'btn-primary' : 'btn-secondary') + '" data-iotd="st:' + k + '" style="' + (col && !on ? 'border-color:' + col + ';' : '') + '">' + ic + ' ' + esc(t(lab)) + ' <b class="num">' + nm(cnt[k]) + '</b></button>'; };
+  var head = '<div class="hint" style="margin:0 0 8px">' + esc(pull < 0 ? t('لسه مفيش سحب من أفاقي برو — راجع تبويب «الربط»') : t('آخر سحب من أفاقي برو') + ': ' + iotDashHtml.age(pull) + ' \u00b7 ' + t('بيتجدد كل ٥ دقايق')) + '</div>'
+    + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px">'
+    + chip('bad', '\u26A0\uFE0F', 'محتاج تدخّل', '#F59E0B') + chip('ok', '\u{1F7E2}', 'محدّث', '#22C55E') + chip('late', '\u{1F7E1}', 'متأخر', '#EAB308') + chip('off', '\u{1F534}', 'منقطع', '#EF4444')
+    + chip('nof', '\u26AB', 'السيريال مش على المنصة', '') + chip('nor', '\u26AA', 'على المنصة بلا قراءة', '') + chip('nos', '\u25FB', 'بلا سيريال', '') + chip('all', '\u{1F4CB}', 'الكل', '') + '</div>';
+  var byCamp = {}; all.forEach(function(r){ if (r.st === 'ok') return; var b = byCamp[r.camp] || (byCamp[r.camp] = { pn:r.pn, n:0, off:0, late:0 }); b.n++; if (r.st === 'off') b.off++; if (r.st === 'late') b.late++; });
+  var worst = Object.keys(byCamp).map(function(k){ return [k, byCamp[k]]; }).sort(function(a, b){ return (b[1].off - a[1].off) || (b[1].n - a[1].n); }).slice(0, 8);
+  var top = worst.length ? '<div class="hint" style="margin:0 0 4px">' + esc(t('أكتر النقط محتاجة تدخّل')) + ':</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px">'
+    + worst.map(function(w){ return '<button class="btn btn-quiet btn-sm" data-iotd="q:' + esc(w[0]) + '">' + esc(w[1].pn) + ' \u00b7 <b class="num">' + nm(w[1].n) + '</b>' + (w[1].off ? ' \u{1F534}' + nm(w[1].off) : '') + '</button>'; }).join('') + '</div>' : '';
+  var kb = function(k, lab){ return '<button class="btn btn-sm ' + (F.kind === k ? 'btn-primary' : 'btn-quiet') + '" data-iotd="kind:' + k + '">' + esc(t(lab)) + '</button>'; };
+  var sb = function(k, lab){ return '<button class="btn btn-sm ' + (F.sort === k ? 'btn-primary' : 'btn-quiet') + '" data-iotd="sort:' + k + '">' + esc(t(lab)) + '</button>'; };
+  var tools = '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 8px">'
+    + '<input class="in" id="iotdQ" style="max-width:280px" placeholder="' + esc(t('دوّر باسم النقطة أو رقم الجهاز أو السيريال')) + '" value="' + esc(F.q || '') + '">'
+    + (F.q ? btn('\u2715 ' + t('امسح البحث'), 'btn-quiet btn-sm', ' data-iotd="q:"') : '')
+    + kb('all', 'الكل') + kb('s', 'حساسات') + kb('g', 'جيت واي') + '<span style="width:8px"></span>' + sb('old', 'المشاكل والأقدم الأول') + sb('name', 'بالاسم')
+    + btn('\u2B07 ' + t('إكسل'), 'btn-secondary btn-sm', ' data-iotd="xlsx"') + btn('\u21BB ' + t('حدّث الآن'), 'btn-quiet btn-sm', ' data-iotd="refresh"') + '</div>';
+  var lab = { ok:['\u{1F7E2}', 'محدّث'], late:['\u{1F7E1}', 'متأخر'], off:['\u{1F534}', 'منقطع'], nor:['\u26AA', 'على المنصة بلا قراءة'], nof:['\u26AB', 'السيريال مش على المنصة'], nos:['\u25FB', 'بلا سيريال'] };
+  var body = rows.slice(0, F.n).map(function(r){
+    var v = r.v || {}, val = [];
+    if (r.kind === 's'){ if (v.temp != null) val.push(nm(v.temp) + '\u00B0'); if (v.hum != null) val.push(nm(v.hum) + '\u066A'); if (v.bat != null) val.push('\u{1F50B}' + nm(v.bat)); }
+    else { if (v.ext_bat != null) val.push('\u{1F50C}' + nm(v.ext_bat)); if (v.int_bat != null) val.push('\u{1F50B}' + nm(v.int_bat)); if (v.ext_bat == null && v.int_bat == null && v.bat != null) val.push('\u{1F50B}' + nm(v.bat)); }
+    return '<tr><td>' + esc(r.pn) + '</td><td dir="ltr">' + esc(r.did) + (r.room ? ' <span class="hint" style="margin:0">' + esc(r.room) + '</span>' : '') + '</td><td>' + esc(t(r.kind === 's' ? 'حساس' : 'جيت واي')) + '</td>'
+      + '<td dir="ltr">' + (r.ser ? esc(r.ser) : '\u2014') + '</td><td dir="ltr">' + (r.pnm ? esc(r.pnm) : '\u2014') + '</td>'
+      + '<td>' + (r.at ? iotDashHtml.age(Date.now() - r.at) : '\u2014') + '</td><td>' + (val.length ? esc(val.join(' \u00b7 ')) : '\u2014') + '</td>'
+      + '<td>' + lab[r.st][0] + ' ' + esc(t(lab[r.st][1])) + '</td></tr>';
+  }).join('');
+  var table = rows.length ? '<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>' + [t('النقطة'), t('الجهاز'), t('النوع'), t('السيريال'), t('الاسم على المنصة'), t('آخر تحديث'), t('القراءة الحالية'), t('الحالة')].map(esc).join('</th><th>') + '</th></tr></thead><tbody>' + body + '</tbody></table></div>'
+      + '<div class="hint" style="margin:6px 0 0">' + esc(t('معروض')) + ' ' + nm(Math.min(F.n, rows.length)) + ' ' + esc(t('من')) + ' ' + nm(rows.length) + (rows.length > F.n ? ' ' + btn(t('اعرض ١٠٠ كمان'), 'btn-secondary btn-sm', ' data-iotd="more"') : '') + '</div>'
+    : '<div class="hint">' + esc(cnt.all ? t('مفيش أجهزة بالفلتر ده') : t('لسه مفيش خطة حساسات في أي مخيم')) + '</div>';
+  return '<div class="card"><div class="card-h"><div class="card-t">\u{1F4E1} ' + esc(t('تحديث الأجهزة والحساسات')) + ' <span class="hint" style="margin:0">' + nm(cnt.all) + ' ' + esc(t('جهاز')) + '</span></div></div><div class="card-b">' + head + top + tools + table + '</div></div>';
+}
+iotDashHtml.rows = function(){
+  var U = (IOT.live && IOT.live.v && IOT.live.v.units) || {}, now = Date.now(), out = [];
+  iotCampIds().forEach(function(id){ var c = iotOf(id); if (!c) return; var x = siteFind(id), pn = x ? (x.name || id) : id;
+    var add = function(kind, did, m){ var ser = String((m && m.serial) || '').trim(), L = ser ? U[ser.toLowerCase()] : null, at = L && L.t ? +L.t : 0;
+      out.push({ camp:id, pn:String(pn), did:did, kind:kind, ser:ser, room:(m && m.room) || '', pnm:L ? String(L.nm || '') : '', at:at, v:L ? (L.v || {}) : null,
+        st:!ser ? 'nos' : !L ? 'nof' : !at ? 'nor' : now - at < 1200000 ? 'ok' : now - at < 7200000 ? 'late' : 'off' }); };
+    iotAllGw(c).forEach(function(g, j){ add('g', iotGid(id, c, j), (c.gm || [])[j] || {}); });
+    (c.sensors || []).forEach(function(q2, i){ add('s', iotSid(id, c, i), (c.sm || [])[i] || {}); });
+  });
+  return out;
+};
+iotDashHtml.age = function(ms){ var m = Math.max(1, Math.round(ms / 60000)); return m < 60 ? t('منذ') + ' ' + nm(m) + ' ' + t('د') : m < 2880 ? t('منذ') + ' ' + nm(Math.round(m / 60)) + ' ' + t('ساعة') : t('منذ') + ' ' + nm(Math.round(m / 1440)) + ' ' + t('يوم'); };
+iotDashHtml.act = function(a){
+  var F = iotDashHtml.F || (iotDashHtml.F = { st:'bad', kind:'all', q:'', n:100, sort:'old' }), k = a.split(':')[0], v = a.slice(k.length + 1);
+  if (k === 'st'){ F.st = v; F.n = 100; } else if (k === 'kind'){ F.kind = v; F.n = 100; } else if (k === 'sort') F.sort = v;
+  else if (k === 'q'){ F.q = v; F.n = 100; if (v) F.st = 'all'; } else if (k === 'more') F.n += 100;
+  else if (k === 'refresh'){ liveIotLoad(true); toast(t('بيتحدّث…')); }
+  else if (k === 'xlsx'){
+    var lab = { ok:'محدّث', late:'متأخر', off:'منقطع', nor:'على المنصة بلا قراءة', nof:'السيريال مش على المنصة', nos:'بلا سيريال' };
+    var R = iotDashHtml.rows().map(function(r){ var v = r.v || {}; return [r.pn, r.camp, r.did, t(r.kind === 's' ? 'حساس' : 'جيت واي'), r.room, r.ser, r.pnm, r.at ? fmtDT(r.at) : '', v.temp != null ? v.temp : '', v.hum != null ? v.hum : '', v.bat != null ? v.bat : '', v.ext_bat != null ? v.ext_bat : '', v.int_bat != null ? v.int_bat : '', t(lab[r.st])]; });
+    if (typeof mtXlsx === 'function') mtXlsx('تحديث الحساسات', ['النقطة', 'رقم المخيم', 'رقم الجهاز', 'النوع', 'الغرفة', 'السيريال', 'الاسم على المنصة', 'آخر تحديث', 'درجة الحرارة', 'الرطوبة', 'البطارية', 'بطارية خارجية', 'بطارية داخلية', 'الحالة'], R);
+    return;
+  }
+  render(1);
+};

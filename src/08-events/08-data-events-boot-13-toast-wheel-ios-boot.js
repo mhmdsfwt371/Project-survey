@@ -286,6 +286,11 @@ document.addEventListener('input', function(e){
   if (e.target && /^iot(Room|Serial|Model|Tag|Note)$/.test(e.target.id || '') && typeof iotFieldLive === 'function'){ iotFieldLive(e.target.id, e.target.value); return; }
   /* (V38.74) the sites list searches as you type — a short pause after the last key, then the list follows (the field keeps
      its text and focus through the redraw: renderKeepGrab) */
+  if (e.target && e.target.id === 'iotdQ'){   /* (V40.7) the devices dashboard searches as you type */
+    clearTimeout(renderKeepGrab.iqT); var iv = e.target.value;
+    renderKeepGrab.iqT = setTimeout(function(){ var F = iotDashHtml.F || {}; if (F.q === iv) return; F.q = iv; F.n = 100; if (iv) F.st = 'all'; iotDashHtml.F = F; render(); }, 280);
+    return;
+  }
   if (e.target && e.target.id === 'siteQ'){
     clearTimeout(renderKeepGrab.sqT); var qv = e.target.value;
     renderKeepGrab.sqT = setTimeout(function(){ if (SITE_Q === qv) return; SITE_Q = qv; PV.LIST_SHOWN = PV.LIST_PAGE; render(); }, 280);

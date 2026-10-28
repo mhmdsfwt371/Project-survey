@@ -42,7 +42,8 @@ function liveIotLoad(force){   /* the state lives on IOT (no new global): IOT.li
   var L = IOT.live || (IOT.live = { at:0, v:null, busy:false });
   if (L.busy || (!force && Date.now() - L.at < 600000) || typeof DB === 'undefined' || !DB || !DB.col) return;
   L.busy = true; L.at = Date.now();
-  try { DB.col('iotlive').doc('_all').get().then(function(doc){ L.busy = false; L.v = (doc && doc.exists) ? doc.data() : null; STATE.iotLive = (L.v && L.v.camps) || null;   /* V39.20's liveSensor reads it */ }, function(){ L.busy = false; }); }
+  try { DB.col('iotlive').doc('_all').get().then(function(doc){ L.busy = false; L.v = (doc && doc.exists) ? doc.data() : null; STATE.iotLive = (L.v && L.v.camps) || null;   /* V39.20's liveSensor reads it */
+    if (CUR === 'sys' && typeof tabCur === 'function' && tabCur('sys') === 'iotdash') render(1); }, function(){ L.busy = false; }); }   /* (V40.7) the dashboard redraws when the pull lands */
   catch (e){ L.busy = false; }
 }
 function liveIotOf(serial){ var L = IOT.live, u = L && L.v && L.v.units, k = String(serial || '').trim().toLowerCase(); return (u && k && u[k]) || null; }

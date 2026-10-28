@@ -2391,6 +2391,27 @@ console.log('\n══ ١٠٣ · عمر جلسة أفاقي برو ══');
   w.ROLE = R0;
 }
 
+/* ── ١٠٤ · (V40.7) داشبورد تحديث الأجهزة: الحالةُ الصحيحة لكل جهاز، والفلاتر والبحث، وخمسةُ آلاف جهاز بسرعة ── */
+console.log('\n══ ١٠٤ · داشبورد تحديث الأجهزة ══');
+{
+  const D0 = w.IOT.data, L0 = w.IOT.live, F0 = w.iotDashHtml.F, now = Date.now();
+  w.IOT.data = { camps:{ 'TST-1':{ gw:[21.41, 39.89], gws:[], sensors:[[21.41, 39.89], [21.41, 39.89], [21.41, 39.89], [21.41, 39.89], [21.41, 39.89]],
+    gm:[{ serial:'GW-A' }], sm:[{ serial:'S-OK' }, { serial:'S-LATE' }, { serial:'S-OFF' }, { serial:'S-MISSING' }, {}] } } };
+  w.IOT.live = { at:now, busy:false, v:{ at:now - 120000, units:{ 'gw-a':{ t:now - 60000, v:{ ext_bat:12.6, int_bat:4.1 }, nm:'UG65' }, 's-ok':{ t:now - 300000, v:{ temp:36.9, hum:42, bat:73 }, nm:'EM300' }, 's-late':{ t:now - 3600000, v:{} }, 's-off':{ t:now - 86400000, v:{} } } } };
+  const R = w.iotDashHtml.rows(), st = {}; R.forEach(r => { st[r.ser || '-'] = r.st; });
+  T(st['GW-A'] === 'ok' && st['S-OK'] === 'ok' && st['S-LATE'] === 'late' && st['S-OFF'] === 'off' && st['S-MISSING'] === 'nof' && st['-'] === 'nos', 'كلُّ جهازٍ بحالته: محدّث · متأخر · منقطع · السيريال مش على المنصة · بلا سيريال');
+  w.iotDashHtml.F = { st:'bad', kind:'all', q:'', n:100, sort:'old' };
+  const h = w.iotDashHtml(), body = h.split('<tbody>')[1] || '';
+  T(body.indexOf('S-OFF') > -1 && body.indexOf('S-OFF') < body.indexOf('S-LATE') && body.indexOf('S-OK') < 0, '«محتاج تدخّل» أولًا: المنقطع قبل المتأخر، والمحدّث مش ظاهر');
+  w.iotDashHtml.F.q = 's-ok'; const h2 = w.iotDashHtml(); w.iotDashHtml.act('q:s-ok');
+  T(w.iotDashHtml.F.st === 'all' && /S-OK/.test(w.iotDashHtml().split('<tbody>')[1] || '') && !/S-OFF/.test(w.iotDashHtml().split('<tbody>')[1] || ''), 'والبحثُ بالسيريال يلاقي الجهاز في أي حالة');
+  const big = { gw:[21.4, 39.8], gws:[], sensors:[], gm:[{ serial:'GWX' }], sm:[] }; for (let i = 0; i < 5000; i++){ big.sensors.push([21.4, 39.8]); big.sm.push({ serial:'X' + i }); }
+  w.IOT.data = { camps:{ 'BIG':big } }; w.iotDashHtml.F = { st:'all', kind:'all', q:'', n:100, sort:'old' };
+  const t0 = Date.now(), h3 = w.iotDashHtml(), ms = Date.now() - t0;
+  T(ms < 1500 && (h3.split('<tr>').length - 2) === 100, 'خمسةُ آلاف جهاز: تُحسب كلُّها وتُعرض ١٠٠ — في ' + ms + ' مللي ثانية');
+  w.IOT.data = D0; w.IOT.live = L0; w.iotDashHtml.F = F0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);
