@@ -95,6 +95,11 @@ function integNusukHtml(){
         var ok = !r.cf && (r.st === 401 || r.st === 403 || r.st === 200);
         return '<div class="hint" style="margin:0 0 8px;color:' + (r.cf ? '#EF4444' : ok ? '#22C55E' : '#F59E0B') + '">' + (r.cf ? '\u26D4 ' + esc(t('منصة نسك بتقفل الطلبات اللي جاية من السحابة (حماية Cloudflare) قبل أي دخول — محتاجين فريقهم يفتحوا لنا الباب')) : ok ? '\u2705 ' + esc(t('منصة نسك بترد على السحابة — الباب مفتوح، ومستني خطوات الدخول')) : '\u26A0\uFE0F ' + esc(t('منصة نسك ما ردّتش على السحابة')) + ' (' + nm(r.st) + ')') + ' \u00b7 ' + esc(t('آخر فحص')) + ' ' + iotDashHtml.age(Date.now() - r.at) + '</div>';
       })()
+    + (function(){   /* (V41.0) option «ب»: can THIS browser reach the Nusuk card hosts? (the cloud cannot — Cloudflare) */
+        var R = integNusukHtml.R, row = function(lab, x){ return '<div class="hint" style="margin:0 0 2px">' + esc(t(lab)) + ': ' + (!x ? '\u2026' : x.ok ? '\u2705 ' + esc(t('وصل')) : x.st === 401 ? '\u{1F511} ' + esc(t('وصل — محتاج توكين')) : x.st === 403 ? '\u26D4 ' + esc(t('ممنوع')) + ' (403)' : x.st ? '\u26A0\uFE0F ' + nm(x.st) : '\u26D4 ' + esc(t('المتصفح منعه')) + ' (' + esc(x.err || '') + ')') + '</div>'; };
+        return (mayIntegEdit() ? '<div class="actions" style="margin:0 0 8px">' + btn('\u{1F9EA} ' + t('جرّب الوصول لنسك من الجهاز ده'), 'btn-secondary btn-sm', ' data-nsktest="1"' + (R && R.busy ? ' disabled' : '')) + '</div>' : '')
+          + (R ? '<div style="margin:0 0 8px">' + row('قائمة القرّاء', R.a) + row('المخيمات', R.b) + '</div>' : '');
+      })()
     + (function(){ var pub = integPubOf('nusuk'), ed = integAcctHtml.edit && integAcctHtml.edit.nusuk;
         if (pub && !ed) return '<div class="hint" style="margin:0 0 6px">\u{1F7E1} ' + esc(t('الحساب محفوظ')) + ': <b dir="ltr">' + esc(pub.user) + '</b> \u00b7 ' + esc(t('بانتظار خطوات الدخول من فريقهم')) + '</div>' + integAcctHtml('nusuk', 'nskUser', 'nskPass', 'الإيميل أو اسم المستخدم', '');
         return integAcctHtml('nusuk', 'nskUser', 'nskPass', 'الإيميل أو اسم المستخدم', '') + '<div class="actions" style="margin-top:8px">' + btn('\u{1F4BE} ' + t('احفظ الحساب'), 'btn-secondary', ' data-integsave="nusuk"') + (pub ? btn(t('إلغاء'), 'btn-quiet', ' data-integedit="nusuk"') : '') + '</div>'; })());
@@ -436,3 +441,18 @@ iotDashHtml.save = function(v){
 /* (V40.8) the owner: «خلّي الصفحة دي في الميدان — داشبورد الحساسات والجيت واي». Its own page in the field group (admin,
    engineer, supervisor), no longer a tab under system health. */
 PAGE.iotdash = { m:'الميدان', t:'الحساسات والجيت واي', l:'كلُّ جهاز: محدَّثٌ أم لا، باسم النقطة والسيريال.', body:function(){ return iotDashHtml(); } };
+
+/* (V41.0) the owner chose option «ب» for Nusuk: pull from the office browser, since the cloud is turned away by Cloudflare
+   (403, measured from the cloud on 28 Oct). V37.93's first try from the owner's phone failed — but the app's network policy
+   did not list the Nusuk hosts then, so the browser itself refused; they are listed now. This asks both doors once from
+   this device and says what came back: reached, reached but wants a token, forbidden, or refused by the browser. */
+integNusukHtml.test = function(){
+  var R = integNusukHtml.R = { busy:true }; render(1);
+  var one = function(url, bearer){
+    var h = {}; if (bearer && EXT.tok) h.Authorization = 'Bearer ' + EXT.tok;
+    return fetch(url, { headers:h, credentials:'omit' }).then(function(r){ return { ok:r.ok, st:r.status }; }, function(e){ return { ok:false, st:0, err:String((e && e.name) || 'TypeError').slice(0, 20) }; });
+  };
+  var tk = typeof extTokLoad === 'function' ? extTokLoad() : Promise.resolve();
+  Promise.resolve(tk).then(function(){ return Promise.all([one(PV.EXT_STREAM, false), one(PV.EXT_API + '/tents?page=1&perPage=1', true)]); })
+    .then(function(x){ R.a = x[0]; R.b = x[1]; R.busy = false; R.at = Date.now(); render(1); }, function(){ R.busy = false; render(1); });
+};

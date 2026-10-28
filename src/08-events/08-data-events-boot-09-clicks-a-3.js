@@ -156,6 +156,8 @@ function clickAPart7(e){
   var vau = e.target.closest('[data-viewas]'); if (vau){ viewAsStart(vau.getAttribute('data-viewas')); return true; }
   if (e.target.closest('[data-vastop]')){ viewAsStop(); return true; }
   var sqj = e.target.closest('[data-svqjump]'); if (sqj){ var sqe = document.getElementById('svqSec' + sqj.getAttribute('data-svqjump')); if (sqe) sqe.scrollIntoView({ behavior:'smooth', block:'start' }); return true; }   /* (V39.86) */
+  var nst = e.target.closest('[data-nsktest]'); if (nst){ integNusukHtml.test(); return; }   /* (V41.0) */
+  var fab = e.target.closest('[data-fab]'); if (fab){ PV.FAB_ON = fab.getAttribute('data-fab') === '1'; lsSet('nsk14.fab', PV.FAB_ON ? '1' : '0'); render(1); return; }   /* (V41.0) the map's tool buttons fold */
   var iqd = e.target.closest('[data-iotd]'); if (iqd){ iotDashHtml.act(iqd.getAttribute('data-iotd')); return; }   /* (V40.7) the devices dashboard */
   var ige = e.target.closest('[data-integedit]'); if (ige){ var ign = ige.getAttribute('data-integedit'); integAcctHtml.edit = integAcctHtml.edit || {}; integAcctHtml.edit[ign] = !integAcctHtml.edit[ign]; render(1); return true; }   /* (V39.74) */
   if (e.target.closest('[data-brd]')){ var Bs = brdSt(); Bs.on = !Bs.on; if (Bs.on) brdLoad(); brdPaint(); render(1); return true; }   /* (V39.67) محطات الإركاب (data-bst is the search) */

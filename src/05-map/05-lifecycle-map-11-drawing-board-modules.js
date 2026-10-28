@@ -183,6 +183,12 @@ function mapUIHtml(){
     + (BED ? bedPanelHtml() : '')   /* (V25.9) */
     + (PV.SPLIT ? splitPanelHtml() : '')   /* (V37.67) */
     + (MAP_3D ? m3uiFab() : '<div class="map-fab">'   /* (V39.28) in 3D only «الشمال» and «موقعي» — drawing stays in 2D */
+    /* (V41.0) owner: «موقع غير مسجل ونقطة هنا والزراير اللي أسفل الخريطة عاوزهم يتعملهم collapse زي الحالات — عشان الفيو على
+       الموبايل واللابتوب». Folded by default and remembered; a drawing tool in progress keeps them open */
+    +   (function(){ if (PV.FAB_ON == null) PV.FAB_ON = lsGet('nsk14.fab') === '1'; var busy = PIN_ON || (PV.TFD && PV.TFD.on) || (ROUTE && ROUTE.on), on = PV.FAB_ON || busy;
+          return '<button type="button" class="map-chip lg-toggle" data-fab="' + (on ? '0' : '1') + '" title="' + esc(t(on ? 'إخفاء أدوات الخريطة' : 'إظهار أدوات الخريطة')) + '">' + (on ? '\u25BE ' + esc(t('إخفاء الأدوات')) : '\u25B4 ' + esc(t('الأدوات'))) + '</button>'
+            + (on ? '' : '<!--fab-folded-->'); })()
+    +   (!(PV.FAB_ON || PIN_ON || (PV.TFD && PV.TFD.on) || (ROUTE && ROUTE.on)) ? '' : ''
     +   ((may('edit') || ROLE === 'viewer') ? btn('+ '+t('موقع غير مسجّل'),'btn-primary btn-sm',' data-newsite="1"') : '')   /* (V37.68) الوزارةُ تقترح نقطة */
     +   (ROLE === 'viewer' ? btn((PIN_ON ? '\u23F3 ' + t('اضغط على الخريطة') : '\u{1F4CC} ' + t('نقطة هنا')), PIN_ON ? 'btn-danger btn-sm' : 'btn-secondary btn-sm', ' data-pin="1"') : '')   /* بلا أدوات الرسم */
     +   (may('settings')   /* (V37.96) كان «newsite» مفتاحًا لا وجودَ له فيُرجع كاذبًا دائمًا */
@@ -193,7 +199,7 @@ function mapUIHtml(){
                 (ROUTE.on && ROUTE.mode === 'line') ? 'btn-danger btn-sm' : 'btn-secondary btn-sm', ' data-route="1"')
             + btn((ROUTE.on && ROUTE.mode === 'area' ? '\u270F ' + t('جارٍ الرسم') : '\u{1F17F} ' + t('مساحة بنقاط')),
                 (ROUTE.on && ROUTE.mode === 'area') ? 'btn-danger btn-sm' : 'btn-secondary btn-sm', ' data-area="1"') : '')
-    +   btn('\u25CE '+t('موقعي'),'btn-light btn-sm',' data-locate="1"')
+    +   btn('\u25CE '+t('موقعي'),'btn-light btn-sm',' data-locate="1"'))
     + '</div>')
 
 
