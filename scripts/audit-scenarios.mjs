@@ -31,6 +31,9 @@ const parts = w.itemsList().filter(i => i.z === zone && i.name);
 const rdr = parts.find(i => /^rdr/i.test(i.code) || /قارئ/.test(i.name));
 const cam = parts.find(i => /كاميرا/.test(i.name));
 
+/* (V41.1) the map's top row folds by group — the older map checks look at every chip, so all groups are open for them */
+if (w.PV) w.PV.MTOP = '*';
+
 /* ── ١ · التركيب يحفظ كلَّ قطعةٍ بمفتاحها ونقاطِها، ويُستهلَك من المخزن ── */
 console.log('\n══ ١ · التركيب ══');
 {
@@ -2409,6 +2412,11 @@ console.log('\n══ ١٠٤ · الحساسات والجيت واي ══');
   T(/svq-back/.test(h3) && /pop:dev:TST-1:g:0/.test(h3) && /pop:dev:TST-1:s:4/.test(h3), 'بوبُ المخيم: جيت واي وحساساته — وكلُّ جهاز يتفتح');
   w.iotDashHtml.act('pop:dev:TST-1:s:0'); const h4 = w.iotDashHtml();
   T(h4.indexOf(w.nm(36.9)) > -1 && h4.indexOf(w.nm(42)) > -1 && /iotdSer/.test(h4), 'بوبُ الحساس: الحرارةُ والرطوبةُ كبيرة، وخانةُ السيريال للتعديل');
+  { /* (V41.1) RSSI: bands, and an offline sensor told apart — weak last signal = coverage, good = battery/fault */
+    const mk = (x, st) => ({ kind:'s', st, v:{ rssi:x } });
+    T(w.iotDashHtml.sig(mk(-80, 'ok')).k === 'good' && w.iotDashHtml.sig(mk(-100, 'ok')).k === 'ok' && w.iotDashHtml.sig(mk(-115, 'ok')).k === 'weak' && w.iotDashHtml.sig(mk(-125, 'ok')).k === 'crit' && w.iotDashHtml.sig({ kind:'g', v:{ rssi:-60 } }) === null, 'الإشارة: قوية ≥ −٩٠ · مقبولة · ضعيفة · حرجة < −١٢٠ — وللحساسات بس');
+    T(/مشكلة تغطية/.test(w.iotDashHtml.sigWhy(mk(-118, 'off'))) && /بطارية/.test(w.iotDashHtml.sigWhy(mk(-75, 'off'))), 'والحساس المنقطع: إشارته الأخيرة بتفرّق بين مشكلة تغطية وعطل/بطارية');
+  }
   w.iotDashHtml.act('close');
   const big = { gw:[21.4, 39.8], gws:[], sensors:[], gm:[{ serial:'GWX' }], sm:[] }; for (let i = 0; i < 8000; i++){ big.sensors.push([21.4, 39.8]); big.sm.push({ serial:'X' + i }); }
   w.IOT.data = { camps:{ 'BIG':big } }; w.iotDashHtml.F = { tab:'s', st:'all', zone:'all', q:'', n:100, sort:'old', pop:null };
@@ -2417,6 +2425,10 @@ console.log('\n══ ١٠٤ · الحساسات والجيت واي ══');
   w.IOT.data = D0; w.IOT.live = L0; w.iotDashHtml.F = F0;
 }
 { /* (V40.8) the dashboard is its own page in the field group */
+  { const M0 = w.PV.MTOP; w.PV.MTOP = ''; let h0 = ''; try { h0 = w.mapUIHtml(); } catch (e){}
+    w.PV.MTOP = 'layers'; let h1 = ''; try { h1 = w.mapUIHtml(); } catch (e){}
+    T(/data-mtop="layers"/.test(h0) && !/data-iot="1"/.test(h0) && /data-iot="1"/.test(h1) && /data-mfilt=/.test(h0), '(V41.1) صفُّ الخريطة فوق مطويّ بالمجموعات: الطبقاتُ تتفتح بضغطة، والتصفيةُ ظاهرة دايمًا');
+    w.PV.MTOP = M0; }
   T(w.PAGE.iotdash && w.PAGE.iotdash.m === 'الميدان' && typeof w.PAGE.iotdash.body === 'function' && (w.ROLES.supervisor.nav || []).indexOf('iotdash') > -1, 'الداشبورد صفحةٌ في «الميدان» للمدير والمهندس والمشرف — لا تبويبٌ في صحة النظام');
 }
 

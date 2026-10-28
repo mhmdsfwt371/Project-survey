@@ -92,7 +92,7 @@ function mapUIHtml(){
     +     '<input id="mapQ" type="search" value="' + esc(mq.q) + '" placeholder="' + esc(t('ابحث بالمعرّف أو الشاخص')) + '" aria-label="' + esc(t('ابحث بالمعرّف أو الشاخص')) + '" dir="auto" autocomplete="off"'
     +     ' style="min-height:44px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(10,16,30,.85);color:#fff;padding:0 14px;font:inherit;font-size:15px">'
     +     '<div id="mapQRes">' + mapQResHtml(mq.q) + '</div></div>' : '')
-    +   (MAP_3D ? m3uiTop(mq) : (''   /* (V39.28) the 3D map has one row; its layers live in one sheet */
+    +   (MAP_3D ? m3uiTop(mq) : mapTopFold(''   /* (V39.28) the 3D map has one row; its layers live in one sheet · (V41.1) the 2D row folds by group */
     +   '<button type="button" class="map-chip' + (mq.open ? ' on' : '') + '" data-mapq="' + (mq.open ? '0' : '1') + '">\u{1F50D} ' + esc(t('بحث')) + '</button>'
     +   Object.keys(LAYERS).map(function(k){
           return '<button type="button" class="map-chip '+(FIELD_MODE===k?'on':'')+'" data-mode="'+k+'">'
@@ -340,3 +340,37 @@ var SVD_CARDS = [
 var SVD_MEMO = null;
 
 
+
+/* (V41.1) owner: «الحاجات اللي فوق شوف إزاي تقلّلهم وتعمل collapse للحاجات اللي مع بعضها». The 2D top row keeps search, the
+   filter and the floors; the rest folds into four groups, one open at a time: the stage (shows the current one), the map
+   (satellite · 3D), the layers (with how many are on) and more (assign · select · companies). Built from the row as drawn, so
+   every chip keeps its own markup and click. PV.MTOP '*' opens all (the button-reach audit). */
+function mapTopFold(h){
+  var items = [], i = 0;
+  while (i < h.length){
+    if (h.indexOf('<span class="chip-pair"', i) === i){ var d = 0, j = i;
+      while (j < h.length){ var o = h.indexOf('<span', j), c = h.indexOf('</span>', j); if (c < 0){ j = h.length; break; }
+        if (o > -1 && o < c){ d++; j = o + 5; } else { d--; j = c + 7; if (d === 0) break; } }
+      items.push(h.slice(i, j)); i = j;
+    } else if (h.indexOf('<button', i) === i){ var e = h.indexOf('</button>', i); e = e < 0 ? h.length : e + 9; items.push(h.slice(i, e)); i = e; }
+    else { var n2 = h.indexOf('<', i + 1); if (n2 < 0) n2 = h.length; items.push(h.slice(i, n2)); i = n2; }
+  }
+  var G = { stage:/data-mode="/, map:/data-sat="|data-m3="/, layers:/data-(brd|iot|live|time|heat|cov|phpin|tent|twin)="/, more:/data-(apick|selmap|comode)="/ };
+  var grp = function(x){ for (var k in G) if (G[k].test(x)) return k; return ''; };
+  var isOn = function(x){ return /class="map-chip[^"]*\bon\b/.test(x); };
+  var open = PV.MTOP || '', seen = {}, out = '';
+  var by = { stage:[], map:[], layers:[], more:[] }; items.forEach(function(x){ var g = grp(x); if (g) by[g].push(x); });
+  var label = function(g){
+    if (g === 'stage'){ var cur = by.stage.filter(isOn)[0] || by.stage[0] || ''; var m = cur.match(/>([^<]*)<\/button>$/); return (m ? m[1] : esc(t('المرحلة'))); }
+    var n = by[g].filter(isOn).length;
+    return (g === 'map' ? '\u{1F5FA} ' + esc(t('الخريطة')) : g === 'layers' ? '\u{1F9E9} ' + esc(t('الطبقات')) : '\u22EF ' + esc(t('المزيد'))) + (n ? ' \u00b7 <span class="num">' + nm(n) + '</span>' : '');
+  };
+  items.forEach(function(x){
+    var g = grp(x); if (!g){ out += x; return; }
+    if (!seen[g]){ seen[g] = 1; var on = open === '*' || open === g;
+      out += '<button type="button" class="map-chip' + (on || by[g].some(isOn) && g !== 'stage' ? ' on' : (g === 'stage' ? ' on' : '')) + '" data-mtop="' + (on && open !== '*' ? '' : g) + '" aria-expanded="' + (on ? 'true' : 'false') + '">' + label(g) + ' ' + (on ? '\u25B4' : '\u25BE') + '</button>';
+      if (on) out += by[g].join('');
+    }
+  });
+  return out;
+}
