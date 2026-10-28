@@ -101,10 +101,10 @@ async function proPull(why){
     /* (V40.2) a code step in progress is not restarted by the 5-minute tick — a new one-time session would void the code
        the owner is about to type */
     const O = (await db.collection('integ').doc('afaqypro_otp').get()).data();
-    if (O && O.token && Date.now() - (O.sentAt || O.at || 0) < 15 * 60000) throw Object.assign(new Error('code'), { methods:O.methods || [], sent:!!O.sentAt, method:O.method || '', expiresIn:O.expiresIn || 0 }); const L = await proCall(url, '/auth/login', { username:cfg.user, password:cfg.pass }); const t = tokOf(L.j);
+    if (O && O.token && Date.now() - (O.sentAt || O.at || 0) < 15 * 60000) throw Object.assign(new Error('code'), { methods:O.methods || [], sent:!!O.sentAt, method:O.method || '', expiresIn:O.expiresIn || 0 }); const L = await proCall(url, '/auth/login', { username:cfg.user, password:cfg.pass }); const two = !!(L.j && L.j.data && L.j.data.is_2fa), t = two ? '' : tokOf(L.j);   /* (V40.3) with two-step on, data.token is the one-time session, not a working token — it gave 401 on every call */
     if (!t){   /* (V39.76) the documented refusal is {message:'invalid_credentials', status_code:401} with HTTP 200 — «status_code» had
                   matched the old «code» test and showed «asked for a code». A code step is told only by its own words. */
-      const sh = shape(L.j), msg = String((L.j && L.j.message) || '').slice(0, 60), needCode = /otp|verif|two.?factor|2fa|mfa/i.test(msg) || /\b(otp|verify|verification)\b/i.test(JSON.stringify(sh || ''));
+      const sh = shape(L.j), msg = String((L.j && L.j.message) || '').slice(0, 60), needCode = two || /otp|verif|two.?factor|2fa|mfa/i.test(msg) || /\b(otp|verify|verification)\b/i.test(JSON.stringify(sh || ''));
       if (needCode){   /* (V39.99) the web login gives the one-time session the code step needs */
         const W = await webLogin(cfg);
         if (W.tok){ base = WEB_URL; await tokRef.set({ tok:W.tok, at:Date.now(), base:WEB_URL }); return W.tok; }
@@ -126,6 +126,8 @@ async function proPull(why){
       if (refused(R)){
         if (!cfg.user || !cfg.pass) throw Object.assign(new Error('token'), { st:R.status });
         tok = await login(); R = await call('/units/lists', body, tok);
+        /* (V40.3) refused even with a fresh session: say so — it was shown as «connected, 0 found» */
+        if (refused(R)) throw Object.assign(new Error('refused'), { st:R.status, msg:String((R.j && R.j.message) || '').slice(0, 60) });
       }
       const arr = (R.j && R.j.data && (Array.isArray(R.j.data) ? R.j.data : R.j.data.data)) || [];
       if (!sample && arr.length) sample = { reply:shape(R.j), unit:shape(arr[0]), last:shape(arr[0].last_update), prms:shape((arr[0].last_update || {}).prms), sensors:shape(arr[0].sensors) };
