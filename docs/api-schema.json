@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V39.82",
+  "app_version": "V39.83",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2344,7 +2344,8 @@
   "V39.79": "photoTag() حرفا الحساب في معرّف الصورة واسم ملفها · photoNext.last ذاكرةُ الجهاز · photos-sync: استعادةُ الملفات اليتيمة (settings/photosRecover) · site من المعرّف يقبل الحرفين",
   "V39.80": "recoveredPhotos/recoveredPhotosHtml (photos.recovered) · afaqy-pro.yml وmyafaqy.yml بلا جدولة (workflow_dispatch باقٍ) · سيناريو ٩١",
   "V39.81": "provision.yml: cron */5، دورة واحدة، timeout 20، cancel-in-progress false · docs-check.yml: ٦ شرائح",
-  "V39.82": "train.yml: permissions.issues write + خطوةُ قفل المسائل بعد الترقية (gh issue close)"
+  "V39.82": "train.yml: permissions.issues write + خطوةُ قفل المسائل بعد الترقية (gh issue close)",
+  "V39.83": "navMain/navScores (pageHist ١٤ يومًا، آخر ٧ ×٢) · navPins/navPinSet (nsk14.navpin) · navLiveHint · ضغطةٌ مطوّلة/زرٌّ أيمن على a.sub · سيناريو ٩٢ · بلا متغيّرات عامة جديدة"
   },
   "map_and_geolocation": {
     "tile_layers": {

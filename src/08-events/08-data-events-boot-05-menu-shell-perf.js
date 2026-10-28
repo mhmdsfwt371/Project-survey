@@ -2,7 +2,7 @@
    FILE    : src/08-events/08-data-events-boot-05-menu-shell-perf.js
    DOMAIN  : Data & events — settings, users, click handlers, boot
    PURPOSE : Menu and shell, scroll position kept across renders, measured performance and browser vitals, focus kept in fields.
-   DEFINES : navIco, arNorm, subseq, navMatch, navTabHits, navTabLinks, navHtml, navMoreHtml, scrollGrab, scrollBack, perfNote, perfAvg … (+11 more)
+   DEFINES : navIco, arNorm, subseq, navMatch, navTabHits, navTabLinks, navHtml, navMain, navScores, navPins, navPinSet, navLiveHint, navMoreHtml, scrollGrab, scrollBack, perfNote, perfAvg … (+11 more)
    GLOBALS : NAV, NAV_ICO, CUR, OPEN, NAV_Q, FIELD_PAGES, NAV_HIST, SCROLL_KEEP, SCROLL_SEEN, PERF … (+1 more)
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
@@ -109,12 +109,12 @@ function navHtml(){
     + esc(t('ابحث في القائمة')) + '" '
     + 'style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14);'
     + 'color:var(--sidebar-ink);min-height:38px;font-size:13px" aria-label="'
-    + esc(t('ابحث في القائمة')) + '"></div>';
+    + esc(t('ابحث في القائمة')) + '"></div>' + navLiveHint();   /* (V39.83) */
   /* (V39.3) owner: «كل دور يشوف الشاشات اللي بيستخدمها فعلًا، والباقي تحت المزيد — ولا شاشة تتشال». Measured on production
      (five weeks of screen opens): eight screens took 80% of the opens and about ninety of 123 were never opened. Each group
      keeps its screens in navHtml.main (opened five times or more, plus help); the others move to one last group, «المزيد»,
      folded and kept in their groups' order — a search of the menu still finds every screen where it always was. */
-  var main = navHtml.main || [], more = [];
+  var main = navMain(), more = [];   /* (V39.83) the person's own use decides, not one list for everyone */
   return box + NAV.map(function(s){
     if (s.solo){
       if (!seesPage(s.id)) return '';
@@ -137,13 +137,37 @@ function navHtml(){
       + items.map(function(i){
           var bdg = ''; if (i[0] === 'mfu'){ try { var un = mfuUnseen(); if (un) bdg = ' <span class="tb-badge" style="position:static;display:inline-block">' + nm(un) + '</span>'; } catch (e){ LS_ERR = e; } }   /* (V20.7) */
           if (i[0] === 'chat' && typeof chUnread === 'function'){ try { var cu = chUnread(); if (cu) bdg = ' <span class="tb-badge" style="position:static;display:inline-block">' + nm(cu) + '</span>'; } catch (e4){ LS_ERR = e4; } }   /* (V38.62) unread messages */
-          return '<a href="#" class="sub'+(CUR===i[0]?' active':'')+'" data-p="'+i[0]+'">'+esc(t(i[1])) + bdg + '</a>' + navTabLinks(i[0]);
+          return '<a href="#" class="sub'+(CUR===i[0]?' active':'')+'" data-p="'+i[0]+'">'+esc(t(i[1])) + (navPins()[i[0]] === 'pin' ? ' <span aria-hidden="true" style="opacity:.6">\u{1F4CC}</span>' : '') + bdg + '</a>' + navTabLinks(i[0]);
         }).join('')
       + '</div></div>';
   }).join('') + navMoreHtml(more);
 }
 navHtml.main = ['map', 'sites', 'mywork', 'chat', 'survey', 'req', 'sel', 'fleet', 'forms',
                 'mfu', 'over', 'wtask', 'exec', 'co', 'pts', 'perf', 'users', 'ev', 'guide', 'acct'];
+/* (V39.83) owner: «المفروض تبقى بناءً على الاستخدام — اللي مش بستخدمه كتير يبقى في المزيد». The list above becomes the
+   default for a person without enough history; after that, this device's own page history (pageHist — 14 Makkah days,
+   already kept for the morning pulse) decides: a screen opened navMain.MIN times or more in the last 14 days (the last 7
+   count double) stays in its group, the rest fold under «المزيد». A long press pins a screen up or sends it down
+   (nsk14.navpin), and nothing is ever removed — the menu search still finds every screen. */
+function navPins(){ if (!navPins.m){ try { navPins.m = JSON.parse(lsGet('nsk14.navpin') || '{}') || {}; } catch (e){ LS_ERR = e; navPins.m = {}; } } return navPins.m; }
+function navPinSet(id, v){ var m = navPins(); if (v) m[id] = v; else delete m[id]; try { lsSet('nsk14.navpin', JSON.stringify(m)); } catch (e){ LS_ERR = e; } }
+function navScores(){
+  var h = typeof pageHist === 'function' ? pageHist() : {}, days = Object.keys(h).sort(), recent = days.slice(-7), sc = {}, total = 0;
+  days.forEach(function(d){ var w = recent.indexOf(d) > -1 ? 2 : 1; Object.keys(h[d] || {}).forEach(function(id){ var n = +h[d][id] || 0; sc[id] = (sc[id] || 0) + n * w; total += n; }); });
+  return { sc:sc, total:total };
+}
+function navMain(){
+  var S = navScores(), pins = navPins(), base = S.total >= navMain.FLOOR ? Object.keys(S.sc).filter(function(id){ return S.sc[id] >= navMain.MIN; }) : (navHtml.main || []).slice();
+  Object.keys(pins).forEach(function(id){ var i = base.indexOf(id); if (pins[id] === 'pin' && i < 0) base.push(id); if (pins[id] === 'more' && i > -1) base.splice(i, 1); });
+  if (base.indexOf('guide') < 0) base.push('guide');   /* help never folds */
+  return base;
+}
+navMain.MIN = 3; navMain.FLOOR = 30;   /* no new globals (V39.83) */
+function navLiveHint(){
+  var S = navScores(); if (S.total >= navMain.FLOOR) return '';
+  return '<div class="hint" style="margin:4px 12px 6px;font-size:11px;opacity:.8">' + esc(t('القائمةُ تترتّب حسب استعمالك بعد')) + ' ' + nm(navMain.FLOOR - S.total) + ' ' + esc(t('فتحة — واضغط مطوّلًا على أيِّ شاشة لتثبيتها فوق أو تحت')) + '</div>';
+}
+
 /* (V39.3) the folded last group: the screens opened less than five times in five weeks — never removed, one tap away */
 function navMoreHtml(more){
   if (!more.length) return '';

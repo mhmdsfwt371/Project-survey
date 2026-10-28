@@ -2187,6 +2187,27 @@ console.log('\n══ ٩١ · الصورُ المسترجَعة ══');
   T(w.recoveredPhotosHtml() === '' || !w.recoveredPhotos().some(r => r.id === id), 'وبلا صورٍ مسترجَعة لا يظهر لها شيء');
 }
 
+/* ── ٩٢ · (V39.83) القائمةُ الحيّة: استعمالُ الشخص يقرّر ما يبقى فوق وما يُطوى ── */
+console.log('\n══ ٩٢ · القائمةُ الحيّة ══');
+{
+  const ls0 = w.localStorage.getItem('nsk14.pgh'), pin0 = w.localStorage.getItem('nsk14.navpin');
+  w.pageHist.m = null; w.navPins.m = null; w.localStorage.removeItem('nsk14.pgh'); w.localStorage.removeItem('nsk14.navpin');
+  T(JSON.stringify(w.navMain().filter(x => x !== 'guide').sort()) === JSON.stringify(w.navHtml.main.filter(x => x !== 'guide').sort()) && /القائمةُ تترتّب حسب استعمالك بعد/.test(w.navHtml()),
+    'بلا تاريخٍ كافٍ: قائمةُ الدور الافتراضية، ولمحةٌ تقول متى تبدأ الترتيبُ الحيّ');
+  const dk = w.dayKey(), h = {}; h[dk] = { chat:40, map:4, mywork:1 };   /* 45 opens: «chat» heavily, «mywork» once (1×2 = 2 < 3) */
+  w.localStorage.setItem('nsk14.pgh', JSON.stringify(h)); w.pageHist.m = null;
+  const m = w.navMain();
+  T(m.indexOf('chat') > -1 && m.indexOf('map') > -1 && m.indexOf('mywork') < 0 && m.indexOf('guide') > -1, 'ومع الاستعمال: ما فُتح ٣ مراتٍ فأكثر يبقى فوق، وما دونها يُطوى، والدليلُ لا يُطوى أبدًا');
+  w.navPinSet('mywork', 'pin'); w.navPinSet('chat', 'more');
+  const m2 = w.navMain();
+  T(m2.indexOf('mywork') > -1 && m2.indexOf('chat') < 0 && /\u{1F4CC}/u.test(w.navHtml()), 'والتثبيتُ اليدويُّ يغلب: «ثبّت فوق» يرفع، و«خلّيها تحت» يطوي، وعلامةٌ على المثبَّت');
+  w.navPinSet('mywork', ''); w.navPinSet('chat', '');
+  T(w.navHtml().indexOf('data-p="chat"') > -1 && w.navHtml().indexOf('data-p="mywork"') > -1, 'ولا شاشةَ تُحذَف: المطويُّ ما زال في القائمة تحت «المزيد»');
+  if (ls0 == null) w.localStorage.removeItem('nsk14.pgh'); else w.localStorage.setItem('nsk14.pgh', ls0);
+  if (pin0 == null) w.localStorage.removeItem('nsk14.navpin'); else w.localStorage.setItem('nsk14.navpin', pin0);
+  w.pageHist.m = null; w.navPins.m = null;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

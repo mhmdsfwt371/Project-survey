@@ -595,6 +595,16 @@ document.addEventListener('keydown', function(e){
   var x0 = 0, y0 = 0, on = false;
   var sb = document.querySelector('.sidebar');
   if (!sb) return;
+  /* (V39.83) a long press (or right-click) on a menu screen: pinned up → folded down → by use */
+  var navLP = null;
+  var navPinCycle = function(a){
+    var id = a.getAttribute('data-p'), cur = navPins()[id] || '', next = cur === '' ? 'pin' : cur === 'pin' ? 'more' : '';
+    navPinSet(id, next); toast(next === 'pin' ? t('ثُبِّتت فوق') : next === 'more' ? t('نُقلت إلى «المزيد»') : t('ترجع حسب استعمالك'));
+    var nav = document.getElementById('nav'); if (nav && typeof navHtml === 'function') nav.innerHTML = navHtml();
+  };
+  sb.addEventListener('contextmenu', function(e){ var a = e.target.closest('a.sub[data-p]'); if (!a) return; e.preventDefault(); navPinCycle(a); });
+  sb.addEventListener('touchstart', function(e){ var a = e.target.closest('a.sub[data-p]'); if (!a) return; clearTimeout(navLP); navLP = setTimeout(function(){ navLP = null; navPinCycle(a); }, 650); }, { passive:true });
+  ['touchend', 'touchmove', 'touchcancel'].forEach(function(ev){ sb.addEventListener(ev, function(){ clearTimeout(navLP); }, { passive:true }); });
   sb.addEventListener('touchstart', function(e){
     if (!document.body.classList.contains('nav-open')) return;
     var t = e.touches[0];
