@@ -61,7 +61,8 @@ function integStateLine(p){
   return '<span class="pill" style="border-color:#22C55E;color:#22C55E">\u{1F7E2} ' + esc(t('متصل')) + ' \u00b7 ' + esc(t('آخر سحب منذ')) + ' ' + ago + '</span> '
     + '<span class="pill">' + nm(matched) + ' / ' + nm(withImei) + ' ' + esc(t('جهازًا مطابَقًا برقمه')) + '</span>'
     + (p.note ? ' <span class="hint" style="margin:0">' + esc(t('لم يُسجَّل رقمُ جهازٍ بعد — يُسجَّل في «تعديل حساسات» لكل حساس وجيت واي')) + '</span>' : '')
-    + (withImei && matched < withImei ? ' <span class="hint" style="margin:0">' + esc(t('غير المطابَق: رقمٌ غير موجود في أفاقي برو أو مكتوبٌ خطأ')) + '</span>' : '');
+    + (withImei && !matched && p.visible != null ? '<div class="hint" style="margin:6px 0 0;color:#F59E0B">' + esc(t('الحساب ده شايف')) + ' ' + nm(p.visible) + ' ' + esc(t('وحدة بس على أفاقي برو، ومفيش ولا واحدة من أرقامنا — غالبًا محتاج الحساب اللي شايف وحدات المشروع (اللي بتفتح بيه الموقع)')) + '</div>'   /* (V40.1) */
+      : (withImei && matched < withImei ? ' <span class="hint" style="margin:0">' + esc(t('غير المطابَق: رقمٌ غير موجود في أفاقي برو أو مكتوبٌ خطأ')) + '</span>' : ''));
 }
 function integProHtml(){
   var S = integStatusLoad.S, p = S && S.v && S.v.pro;

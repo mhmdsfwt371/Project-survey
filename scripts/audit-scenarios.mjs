@@ -2359,6 +2359,7 @@ console.log('\n══ ١٠١ · التوكين والحساب ══');
   const h = w.integProHtml();
   T(/id="integTok"/.test(h) && /type="password"/.test(h) && /id="integUser"/.test(h), 'نموذجُ الربط فيه خانةُ التوكين (مخفيّةُ الكتابة) بجانب اسم المستخدم وكلمة السر');
   T(/انتهى أو مرفوض/.test(w.integStateLine({ state:'err', err:'token', at:Date.now() })), 'والتوكينُ المنتهي بلا حسابٍ يُقال صراحةً: حط توكين جديد أو احفظ الحساب');
+  T(/شايف/.test(w.integStateLine({ state:'ok', at:Date.now(), withImei:7, matched:0, visible:2 })) && !/شايف/.test(w.integStateLine({ state:'ok', at:Date.now(), withImei:7, matched:3, visible:null })), '(V40.1) متصلٌ بلا مطابقة: يقول كم وحدةً يرى الحساب — فالحسابُ الغلط يُعرَف من الشاشة');
   w.integAcctHtml.edit = ed0; w.ROLE = R0;
 }
 

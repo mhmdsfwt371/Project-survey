@@ -124,6 +124,18 @@ async function proPull(why){
       if (!sample && arr.length) sample = { reply:shape(R.j), unit:shape(arr[0]), last:shape(arr[0].last_update), prms:shape((arr[0].last_update || {}).prms), sensors:shape(arr[0].sensors) };
       units.push(...arr);
     }
+    /* (V40.1) a 15-character number is the platform's «Device Serial» (the IMEI without its last character): ask by that too */
+    const got = new Set(); units.forEach(u => [u.imei, u.device_serial].forEach(x => { const k = String(x || '').trim().toLowerCase(); if (k) got.add(k); }));
+    const rest = imeis.filter(k => !got.has(k));
+    for (let i = 0; i < rest.length; i += 100){
+      const body = { offset:0, limit:1000, simplify:0, projection:['basic', 'last_update', 'sensors'], filters:{ device_serial:{ value:rest.slice(i, i + 100), op:'in' } } };
+      const R = await call('/units/lists', body, tok);
+      const arr = (R.j && R.j.data && (Array.isArray(R.j.data) ? R.j.data : R.j.data.data)) || [];
+      units.push(...arr);
+    }
+    /* (V40.1) none of ours found: how many units does this account see at all? A small number means the wrong account */
+    let visible = null;
+    if (!units.length){ const V = await call('/units/lists', { offset:0, limit:1, projection:['basic'] }, tok); const pg = V.j && (V.j.pagination || (V.j.data && V.j.data.pagination)); visible = pg && pg.allCount != null ? +pg.allCount : null; }
     const snap = {}, camps = {}; let matched = 0;
     units.forEach(u => {
       const keys = [u.imei, u.device_serial, u.device_gateway].map(x => String(x || '').trim().toLowerCase()).filter(Boolean);
@@ -134,7 +146,7 @@ async function proPull(why){
     Object.keys(snap).forEach(ser => { const r = snap[ser], C = camps[r.site] || (camps[r.site] = { at:0, s:{}, g:{} });
       (r.k === 's' ? C.s : C.g)[r.id || ser] = { at:r.t, v:r.v, serial:ser }; if (r.t > C.at) C.at = r.t; });
     await db.collection('iotlive').doc('_all').set({ at:Date.now(), n:matched, total:units.length, planned, src:'afaqy-pro', units:snap, camps });
-    await status({ state:'ok', planned, withImei:imeis.length, found:units.length, matched, ms:Date.now() - now, sample:sample || null });
+    await status({ state:'ok', planned, withImei:imeis.length, found:units.length, matched, visible, ms:Date.now() - now, sample:sample || null, err:'', httpStatus:0, msg:'', shape:'', methods:[], sent:false });   /* (V40.1) a success clears the last failure's fields */
     return { state:'ok', matched, found:units.length };
   } catch (e) {
     if (e.message === 'code'){ await status({ state:'code', methods:e.methods || [], sent:false, err:'', msg:'' }); return { state:'code' }; }   /* (V39.99) */
