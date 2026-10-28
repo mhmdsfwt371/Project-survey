@@ -7,6 +7,11 @@ on:
     branches: [main]
     paths:
       - 'functions/**'
+      - 'scripts/provision.mjs'
+      - 'scripts/photos-sync.mjs'
+      - 'scripts/drive-auth.mjs'
+      - 'scripts/lib/reads.mjs'
+      - 'scripts/lib/registry.mjs'
       - '.github/workflows/deploy-functions.yml'
   workflow_dispatch:
 
@@ -18,6 +23,11 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
+      - name: Package the accounts-and-photos job (V39.89)
+        run: |
+          mkdir -p functions/jobs/lib
+          cp scripts/provision.mjs scripts/photos-sync.mjs scripts/drive-auth.mjs functions/jobs/
+          cp scripts/lib/reads.mjs scripts/lib/registry.mjs functions/jobs/lib/
       - name: Install function dependencies
         working-directory: functions
         run: npm install --no-audit --no-fund

@@ -5,7 +5,7 @@ name: Provision accounts + photos
 # وعند الطلب من صفحة Actions.
 on:
   schedule:
-    - cron: '*/5 * * * *'   # (V39.81) دورةٌ واحدةٌ كلَّ ٥ دقائق بدل حلقة ٥٫٥ ساعات
+    - cron: '17 * * * *'   # (V39.89) البلاغاتُ كلَّ ساعة؛ الحساباتُ والصورُ صارت دالةً سحابيةً كلَّ ٥ دقائق (jobsTick)
   # الجدولةُ تتأخّر ساعاتٍ تحت ضغط GitHub — فالدفعُ إلى main يشغّل الجسرَ أيضًا (V17.39)
   push:
     branches: [main]
@@ -48,8 +48,8 @@ jobs:
         run: |
           for i in 1; do   # (V39.81) owner: «كل شوية بيجيلي إيميل بمشكلة» — the 5.5-hour loop lost its runner («The hosted runner lost communication»); one short cycle per run removes that
             echo "::group::الدورة $i — $(date -u +%H:%M)"
-            node scripts/provision.mjs   || echo "::warning::الحسابات: الدورة $i تعثّرت"
-            node scripts/photos-sync.mjs || echo "::warning::الصور: الدورة $i تعثّرت"
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then node scripts/provision.mjs || echo "::warning::الحسابات: الدورة $i تعثّرت"; fi   # (V39.89) يدويًّا فقط — احتياطٌ إن تعطّلت الدالة السحابية
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then node scripts/photos-sync.mjs || echo "::warning::الصور: الدورة $i تعثّرت"; fi
             node scripts/bugs-sync.mjs   || echo "::warning::البلاغات: الدورة $i تعثّرت"
             echo "::endgroup::"
           done

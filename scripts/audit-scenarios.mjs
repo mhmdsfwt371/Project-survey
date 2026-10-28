@@ -2244,6 +2244,23 @@ console.log('\n══ ٩٤ · شريطُ القفز ══');
   if (r0) w.STATE.recs[id] = r0; else delete w.STATE.recs[id]; Object.assign(w.SVQ, s0);
 }
 
+/* ── ٩٥ · (V39.89) بطاقةُ الحسابات والصور على السحابة ── */
+console.log('\n══ ٩٥ · التشغيل الدوري على السحابة ══');
+{
+  const S = w.jobsStatusLoad(); const v0 = S.v, at0 = S.at;
+  S.at = Date.now(); S.v = null;
+  T(/لم تُسجَّل دورةٌ بعد/.test(w.jobsCardHtml()), 'قبل أوّل دورة: «لم تُسجَّل دورةٌ بعد»');
+  S.v = { at:Date.now() - 120000, ok:true, steps:[{ name:'provision', code:0, ms:4000 }, { name:'photos-sync', code:0, ms:61000 }] };
+  const h1 = w.jobsCardHtml();
+  T(/تعمل/.test(h1) && /الحسابات/.test(h1) && /الصور إلى الدرايف/.test(h1) && !/<pre/.test(h1), 'دورةٌ سليمةٌ قبل دقيقتين: «تعمل»، وكلُّ خطوةٍ بزمنها، بلا تفاصيل خطأ');
+  S.v = { at:Date.now() - 60000, ok:false, steps:[{ name:'provision', code:0, ms:4000 }, { name:'photos-sync', code:1, ms:9000, tail:'Drive: invalid_grant' }] };
+  const h2 = w.jobsCardHtml();
+  T(/تعثّرت/.test(h2) && /invalid_grant/.test(h2), 'وخطوةٌ تعثّرت: تُقال، وآخرُ سطورها ظاهر');
+  S.v = { at:Date.now() - 40 * 60000, ok:true, steps:[] };
+  T(/متأخرة/.test(w.jobsCardHtml()), 'ولا دورةَ منذ أكثر من ربع ساعة: «متأخرة»');
+  S.v = v0; S.at = at0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

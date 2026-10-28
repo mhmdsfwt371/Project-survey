@@ -16,3 +16,4 @@ nusuk-app-*.zip
 test-artifacts/
 # (V37.84) نسخةُ سجلّ النقاط الخاصة للأدوات — لا تدخل المستودعَ العامَّ أبدًا
 data/registry.json
+functions/jobs/

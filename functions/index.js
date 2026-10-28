@@ -12,6 +12,9 @@
 const { onSchedule } = require('firebase-functions/v2/scheduler');
 const { onCall, HttpsError } = require('firebase-functions/v2/https');
 const { setGlobalOptions } = require('firebase-functions/v2');
+const { defineSecret } = require('firebase-functions/params');
+const { spawn } = require('child_process');
+const path = require('path');
 const admin = require('firebase-admin');
 admin.initializeApp();
 const db = admin.firestore();
@@ -105,4 +108,35 @@ exports.integNow = onCall(async req => {
   const st = ((await db.collection('settings').doc('integStatus').get()).data() || {}).pro || {};
   if (st.at && Date.now() - st.at < 60000 && st.why === 'button') return { state:st.state, cached:true, at:st.at, matched:st.matched || 0 };
   return proPull('button');
+});
+
+/* ═══ (V39.89) the accounts-and-photos job, moved from GitHub's best-effort cron to an exact 5-minute schedule ═══
+   The same scripts that ran on GitHub (provision.mjs, photos-sync.mjs — copied into functions/jobs/ at deploy) run here as
+   child processes with the same environment, read from Secret Manager (copied there by secrets-to-gsm.yml; nobody saw a
+   value). A lease in settings/jobsLock stops two runs overlapping; settings/jobsStatus records each run for the app. */
+const JOBS_SA = defineSecret('JOBS_FIREBASE_SA'), G_OAUTH = defineSecret('GDRIVE_OAUTH'), G_FOLDER = defineSecret('GDRIVE_FOLDER');
+function runJob(file, env, ms){
+  return new Promise(res => {
+    const t0 = Date.now(); let out = '';
+    const keep = d => { out += d; if (out.length > 20000) out = out.slice(-20000); };
+    const p = spawn(process.execPath, [file], { cwd:path.join(__dirname, 'jobs'), env:Object.assign({}, process.env, env) });
+    const k = setTimeout(() => p.kill('SIGKILL'), ms);
+    p.stdout.on('data', keep); p.stderr.on('data', keep);
+    p.on('close', code => { clearTimeout(k); res({ name:file.replace(/\.mjs$/, ''), code:code == null ? -1 : code, ms:Date.now() - t0, tail:out.split('\n').filter(Boolean).slice(-8).join('\n').slice(0, 1500) }); });
+    p.on('error', e => { clearTimeout(k); res({ name:file, code:-1, ms:Date.now() - t0, tail:String(e.message || e).slice(0, 300) }); });
+  });
+}
+exports.jobsTick = onSchedule({ schedule:'every 5 minutes', timeZone:'Asia/Riyadh', timeoutSeconds:540, memory:'1GiB', maxInstances:1, secrets:[JOBS_SA, G_OAUTH, G_FOLDER] }, async () => {
+  const db = admin.firestore(), lock = db.collection('settings').doc('jobsLock'), now = Date.now();
+  const got = await db.runTransaction(async tx => { const d = (await tx.get(lock)).data() || {}; if (d.until && d.until > now) return false; tx.set(lock, { until:now + 510000, by:'cloud', at:now }, { merge:true }); return true; });
+  if (!got) return;
+  const env = { FIREBASE_SERVICE_ACCOUNT:JOBS_SA.value(), GDRIVE_OAUTH:G_OAUTH.value(), GDRIVE_FOLDER:G_FOLDER.value(), JOBS_RUNNER:'cloud' };
+  const steps = [];
+  try {
+    steps.push(await runJob('provision.mjs', env, 150000));
+    steps.push(await runJob('photos-sync.mjs', env, 330000));
+  } finally {
+    await db.collection('settings').doc('jobsStatus').set({ at:Date.now(), started:now, ok:steps.length === 2 && steps.every(x => x.code === 0), by:'cloud', steps }).catch(() => {});
+    await lock.set({ until:0 }, { merge:true }).catch(() => {});
+  }
 });

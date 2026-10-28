@@ -2,7 +2,7 @@
    FILE    : src/09-integ/09-integ-01-connections-tab.js
    DOMAIN  : Integrations — external platforms read by the cloud bridge
    PURPOSE : The office «Connections» tab: AFAQY PRO account (stored write-only), bridge status, «Refresh now».
-   DEFINES : integPubLoad, integPubOf, integAcctHtml, integStatusLoad, integStateLine, integProHtml, integNusukHtml, integStepsHtml, integMissing, integMissingHtml, integTabHtml, mayIntegEdit, integSave, integOff, integNow
+   DEFINES : jobsStatusLoad, jobsCardHtml, integPubLoad, integPubOf, integAcctHtml, integStatusLoad, integStateLine, integProHtml, integNusukHtml, integStepsHtml, integMissing, integMissingHtml, integTabHtml, mayIntegEdit, integSave, integOff, integNow
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              design notes.
    ============================================================================ */
@@ -118,7 +118,7 @@ function integMissingHtml(){
 }
 function integTabHtml(){
   if (!mayIntegEdit()) return card(t('الربط'), '<p class="hint" style="margin:0">' + esc(t('هذا التبويب للمهندس والمدير')) + '</p>');
-  return integStepsHtml() + integProHtml() + integNusukHtml() + integMissingHtml();   /* (V39.72) */
+  return integStepsHtml() + integProHtml() + integNusukHtml() + integMissingHtml() + jobsCardHtml();   /* (V39.72 · V39.89) */
 }
 function mayIntegEdit(){ return ROLE === 'admin' || ROLE === 'engineer'; }
 function integSave(name){
@@ -161,4 +161,29 @@ function integNow(){
     })
     .catch(function(e){ toast(t('لم يُحدَّث') + ': ' + String(e && e.message || e).slice(0, 80)); })
     .then(function(){ integNow.busy = false; render(1); });
+}
+
+/* (V39.89) the accounts-and-photos job now runs as a cloud function every 5 minutes (functions/index.js · jobsTick); its
+   last run is written to settings/jobsStatus — shown here so the office sees it is alive without opening GitHub */
+function jobsStatusLoad(force){
+  var P = jobsStatusLoad.S || (jobsStatusLoad.S = { at:0, v:null, busy:false });
+  if (!force && (P.busy || Date.now() - P.at < 30000)) return P;
+  if (!FB.ready || !FB.db || !STATE.meta.online) return P;
+  P.busy = true;
+  DB.col('settings').doc('jobsStatus').get().then(function(doc){ P.v = doc && doc.exists ? doc.data() : null; P.at = Date.now(); P.busy = false; if (CUR === 'sys' && tabCur('sys') === 'integ') render(1); })
+    .catch(function(e){ P.busy = false; P.at = Date.now(); LS_ERR = e; });
+  return P;
+}
+function jobsCardHtml(){
+  var v = jobsStatusLoad().v;
+  if (!v || !v.at) return card('\u{1F501} ' + t('الحسابات والصور على السحابة'), '<p class="hint" style="margin:0">' + esc(t('لم تُسجَّل دورةٌ بعد — تعمل كلَّ ٥ دقائق بعد النشر.')) + '</p>');
+  var age = Math.round((Date.now() - v.at) / 60000), late = age > 15;
+  var head = '<span class="pill" style="border-color:' + (v.ok && !late ? '#22C55E;color:#22C55E' : '#EF4444;color:#EF4444') + '">' + (v.ok && !late ? '\u{1F7E2} ' + esc(t('تعمل')) : late ? '\u{1F534} ' + esc(t('متأخرة')) : '\u{1F534} ' + esc(t('آخر دورةٍ تعثّرت'))) + '</span> '
+    + '<span class="hint" style="margin:0">' + esc(t('آخر دورة')) + ': ' + esc(fmtDT(v.at)) + ' \u00b7 ' + nm(age) + ' ' + esc(t('دقيقة')) + '</span>';
+  var steps = (v.steps || []).map(function(x){
+    var nmL = x.name === 'provision' ? t('الحسابات') : x.name === 'photos-sync' ? t('الصور إلى الدرايف') : x.name;
+    return '<div style="display:flex;justify-content:space-between;margin:4px 0"><span>' + (x.code === 0 ? '\u2705' : '\u274C') + ' ' + esc(nmL) + '</span><span class="hint num" style="margin:0">' + nm(Math.round((x.ms || 0) / 1000)) + ' ' + esc(t('ث')) + '</span></div>'
+      + (x.code !== 0 && x.tail ? '<pre class="hint" style="white-space:pre-wrap;margin:0 0 6px;font-size:11px" dir="auto">' + esc(x.tail) + '</pre>' : '');
+  }).join('');
+  return card('\u{1F501} ' + t('الحسابات والصور على السحابة'), '<div style="margin:0 0 6px">' + head + '</div>' + steps);
 }
