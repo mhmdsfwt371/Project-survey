@@ -2415,6 +2415,9 @@ console.log('\n══ ١٠٤ · الحساسات والجيت واي ══');
   { /* (V41.1) RSSI: bands, and an offline sensor told apart — weak last signal = coverage, good = battery/fault */
     const mk = (x, st) => ({ kind:'s', st, v:{ rssi:x } });
     T(w.iotDashHtml.sig(mk(-80, 'ok')).rs === 'g' && w.iotDashHtml.sig(mk(-115, 'ok')).rs === 'g' && w.iotDashHtml.sig(mk(-120, 'ok')).rs === 'y' && w.iotDashHtml.sig(mk(-130, 'ok')).rs === 'r' && w.iotDashHtml.sig({ kind:'s', v:{ rssi:-80, snr:-18 } }).sn === 'r' && w.iotDashHtml.sig({ kind:'s', v:{ rssi:-80, snr:-5 } }).sn === 'y', '(V41.2) إشارة SF12 بتلات ألوان: أخضر ≥ ‎−١١٥ · أصفر لحد ‎−١٢٥ · أحمر أقل — والـSNR: أخضر ≥ ٠ · أصفر لحد ‎−١٥ · أحمر أقل');
+    { const bars = h => (h.match(/width:4px/g) || []).length, lit = h => (h.match(/#22C55E|#EAB308|#EF4444/g) || []).length;
+      const g3 = w.iotDashHtml.bars({ rssi:-80 }, 40), y2 = w.iotDashHtml.bars({ rssi:-120 }, 40), r1 = w.iotDashHtml.bars({ rssi:-130 }, 40), n0 = w.iotDashHtml.bars({}, 40);
+      T(bars(g3) === 3 && lit(g3) === 3 && lit(y2) === 2 && lit(r1) === 1 && bars(n0) === 0 && g3.indexOf(w.nm(40)) > -1 && /dBm/.test(g3), '(V41.3) شَرطُ الإشارة: أخضر ٣ · أصفر ٢ · أحمر ١ · بلا قراءة «—» — والوقوفُ عليها يقول الـdBm والمسافة'); }
     T(w.iotDashHtml.sig({ kind:'s', dist:30, v:{ rssi:-122 } }).flag === 'cw' && w.iotDashHtml.sig({ kind:'s', dist:180, v:{ rssi:-90 } }).flag === 'fs' && w.iotDashHtml.sig({ kind:'s', dist:90, v:{ rssi:-122 } }).flag === '', '(V41.2) الإشارة قصاد المسافة: قريب (≤ ٥٠ م) وضعيف · بعيد (> ١٥٠ م) وقوي');
     T(/مشكلة تغطية/.test(w.iotDashHtml.sigWhy(mk(-118, 'off'))) && /بطارية/.test(w.iotDashHtml.sigWhy(mk(-75, 'off'))), 'والحساس المنقطع: إشارته الأخيرة بتفرّق بين مشكلة تغطية وعطل/بطارية');
   }

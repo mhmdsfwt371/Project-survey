@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V41.2",
+  "app_version": "V41.3",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2374,7 +2374,8 @@
   "V40.9": "iotDashHtml: iotLoad() · F.tab camps|s|g · F.zone · .camps/.campsHtml/.devHtml/.popHtml/.save (iotPersist) · bad يستثني nos · سيناريو ١٠٤ مُعاد",
   "V41.0": "map-fab: data-fab · PV.FAB_ON · nsk14.fab · CSP connect-src += api/event/livefeed.nusukcard.net · integNusukHtml.test (data-nsktest)",
   "V41.1": "mapTopFold (PV.MTOP: stage|map|layers|more، '*' للفحص) · data-mtop · iotDashHtml.sig/.SIG/.sigCell/.sigWhy · فلتر sig · c.wr أضعف حساس للمخيم",
-  "V41.2": "iotDashHtml.sig → {rs, sn, flag} (SF12: RSSI −115/−125 · SNR 0/−15 · cw ≤٥٠م · fs >١٥٠م) · rows.dist (iotM لأقرب جيت واي) · .legend · valuesOf: snr · سيناريو ١٠٤ مُحدَّث"
+  "V41.2": "iotDashHtml.sig → {rs, sn, flag} (SF12: RSSI −115/−125 · SNR 0/−15 · cw ≤٥٠م · fs >١٥٠م) · rows.dist (iotM لأقرب جيت واي) · .legend · valuesOf: snr · سيناريو ١٠٤ مُحدَّث",
+  "V41.3": "iotDashHtml.bars(v, dist) · iotValHtml: الحرارة والرطوبة والبطارية والشَرط (title = الجودة · dBm · المسافة) · sigCell بالشَرط · سيناريو ١٠٤"
   },
   "map_and_geolocation": {
     "tile_layers": {

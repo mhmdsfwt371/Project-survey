@@ -67,11 +67,14 @@ function iotValHtml(camp, i){
   else if (typeof liveSensor === 'function'){ var ls = liveSensor(camp, did); if (ls){ v = (ls.v && typeof ls.v === 'object') ? ls.v : { temp:ls.v }; at = +ls.at || 0; } }
   liveIotLoad();   /* the first hover brings the snapshot (at most every ten minutes) */
   var big = function(ic, val, unit){ return '<span style="display:inline-flex;align-items:baseline;gap:3px;margin-inline-end:12px"><span>' + ic + '</span><b class="num" style="font-size:16px">' + (val != null && val !== '' ? esc(nm(+val)) + unit : '\u2014') + '</b></span>'; };
-  var vals = '<div style="margin:5px 0 2px" dir="rtl">' + big('\u{1F321}', v && v.temp, '\u00B0') + big('\u{1F4A7}', v && v.hum, '\u066A') + '</div>';
+  var gws = typeof iotAllGw === 'function' ? iotAllGw(c) : [], q = (c.sensors || [])[i], dist = q && gws.length && typeof iotM === 'function' ? Math.round(Math.min.apply(null, gws.map(function(g){ return iotM(g, q); }))) : null;
+  /* (V41.3) temperature, humidity, battery — and the signal as bars with its distance on hover, never a raw RSSI number */
+  var sigB = v && v.rssi != null && typeof iotDashHtml === 'function' && iotDashHtml.bars ? '<span style="display:inline-flex;align-items:center;gap:4px;margin-inline-end:12px"><span>\u{1F4F6}</span>' + iotDashHtml.bars(v, dist) + '</span>' : '';
+  var vals = '<div style="margin:5px 0 2px" dir="rtl">' + big('\u{1F321}', v && v.temp, '\u00B0') + big('\u{1F4A7}', v && v.hum, '\u066A') + big('\u{1F50B}', v && v.bat, '') + sigB + '</div>';
   if (v){
     var age = at ? Date.now() - at : Infinity, col = age < 1200000 ? '#3FB27F' : age < 7200000 ? '#E0A100' : '#E05252';
     return vals + '<div class="hint" style="margin:0"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + col + '"></span> '
-      + esc(age === Infinity ? t('بلا وقت') : age < 7200000 ? t('منذ') + ' ' + nm(Math.max(1, Math.round(age / 60000))) + ' ' + t('د') : t('غير متصل')) + (v.bat != null ? ' \u00b7 \u{1F50B} ' + esc(nm(+v.bat)) : '') + '</div>';
+      + esc(age === Infinity ? t('بلا وقت') : age < 7200000 ? t('منذ') + ' ' + nm(Math.max(1, Math.round(age / 60000))) + ' ' + t('د') : t('غير متصل')) + '</div>';   /* (V41.3) the battery moved up beside the temperature */
   }
   return vals + '<div class="hint" style="margin:0">' + esc(m.serial ? t('لا قراءة بعد — بانتظار الجسر') : t('سجّل سيريال الحساس ليُربط بأفاقي برو')) + '</div>';
 }

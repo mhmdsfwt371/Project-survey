@@ -491,7 +491,7 @@ iotDashHtml.sig = function(r){
 iotDashHtml.dot = function(c){ return c ? '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + ({ g:'#22C55E', y:'#EAB308', r:'#EF4444' })[c] + ';vertical-align:middle"></span> ' : ''; };
 iotDashHtml.sigCell = function(r){
   var v = r.v || {}, S = iotDashHtml.sig(r); if (v.rssi == null && v.snr == null) return '\u2014';
-  return (v.rssi != null ? iotDashHtml.dot(S.rs) + '<span dir="ltr">' + nm(v.rssi) + ' dBm</span>' : '') + (v.snr != null ? ' \u00b7 ' + iotDashHtml.dot(S.sn) + '<span dir="ltr">SNR ' + nm(v.snr) + ' dB</span>' : '')
+  return (v.rssi != null ? iotDashHtml.bars(v, r.dist) : '')   /* (V41.3) bars; the number and distance are in the tooltip */ + (v.snr != null ? ' \u00b7 ' + iotDashHtml.dot(S.sn) + '<span dir="ltr">SNR ' + nm(v.snr) + ' dB</span>' : '')
     + (S.flag === 'cw' ? ' <b style="color:#EF4444">\u26A0\uFE0F ' + esc(t('قريب وضعيف')) + '</b>' : S.flag === 'fs' ? ' <span class="hint" style="margin:0">\u2139\uFE0F ' + esc(t('بعيد وقوي')) + '</span>' : '');
 };
 iotDashHtml.legend = function(){
@@ -504,4 +504,17 @@ iotDashHtml.legend = function(){
     + '\u26A0\uFE0F <b>' + esc(t('قريب وضعيف')) + '</b>: ' + esc(t('على بعد ٥٠ متر أو أقل من الجيت واي وإشارته صفرا أو حمرا — غالبًا جوه معدن أو ورا جهاز أو مش في مكانه المخطط')) + '<br>'
     + '\u2139\uFE0F <b>' + esc(t('بعيد وقوي')) + '</b>: ' + esc(t('أبعد من ١٥٠ متر وإشارته خضرا — يعني حد الـ١٥٠ متر ممكن يتوسّع هناك')) + '<br>'
     + '<span style="opacity:.8">' + esc(t('المراجع: أسئلة لورا الشائعة عند Semtech، ومنتدى The Things Network')) + '</span></div></details>';
+};
+
+/* (V41.3) the owner: «على الخريطة لما أضغط الحساس ألاقي الحرارة والرطوبة والبطارية — والـRSSI ما يتكتبش رقم: جودة إشارة الحساس
+   شَرط زي الموبايل: أخضر ٣، أصفر ٢، أحمر ١، أو مفيش؛ ولما أقف عليها بالماوس تقولّي المسافة». Bars from the same grades as the
+   sensors page (iotDashHtml.sig); the tooltip carries the quality, the dBm and the metres to the nearest gateway. */
+iotDashHtml.bars = function(v, dist){
+  v = v || {}; var G = iotDashHtml.sig({ kind:'s', v:v, dist:dist }), n = G.rs === 'g' ? 3 : G.rs === 'y' ? 2 : G.rs === 'r' ? 1 : 0;
+  var col = ({ g:'#22C55E', y:'#EAB308', r:'#EF4444' })[G.rs] || '';
+  var tip = t('جودة إشارة الحساس') + ': ' + (n ? t(n === 3 ? 'كويسة' : n === 2 ? 'على الحافة' : 'ضعيفة') + ' \u00b7 ' + nm(v.rssi) + ' dBm' : t('لا قراءة'))
+    + (dist != null ? ' \u00b7 ' + t('المسافة من الجيت واي') + ': ' + nm(dist) + ' ' + t('م') : '') + (G.flag === 'cw' ? ' \u00b7 ' + t('قريب وضعيف') : '');
+  var bar = function(k, h){ return '<span style="display:inline-block;width:4px;height:' + h + 'px;margin-inline-end:2px;border-radius:1px;background:' + (k <= n ? col : 'rgba(148,163,184,.35)') + '"></span>'; };
+  return '<span dir="ltr" title="' + esc(tip) + '" aria-label="' + esc(tip) + '" style="display:inline-flex;align-items:flex-end;height:14px;vertical-align:middle;cursor:help">'
+    + (n ? bar(1, 6) + bar(2, 10) + bar(3, 14) : '<span class="hint" style="margin:0">\u2014</span>') + '</span>';
 };
