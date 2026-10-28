@@ -69,7 +69,7 @@ function iotValHtml(camp, i){
   var big = function(ic, val, unit){ return '<span style="display:inline-flex;align-items:baseline;gap:3px;margin-inline-end:12px"><span>' + ic + '</span><b class="num" style="font-size:16px">' + (val != null && val !== '' ? esc(nm(+val)) + unit : '\u2014') + '</b></span>'; };
   var gws = typeof iotAllGw === 'function' ? iotAllGw(c) : [], q = (c.sensors || [])[i], dist = q && gws.length && typeof iotM === 'function' ? Math.round(Math.min.apply(null, gws.map(function(g){ return iotM(g, q); }))) : null;
   /* (V41.3) temperature, humidity, battery — and the signal as bars with its distance on hover, never a raw RSSI number */
-  var sigB = v && v.rssi != null && typeof iotDashHtml === 'function' && iotDashHtml.bars ? '<span style="display:inline-flex;align-items:center;gap:4px;margin-inline-end:12px"><span>\u{1F4F6}</span>' + iotDashHtml.bars(v, dist) + '</span>' : '';
+  var sigB = v && v.rssi != null && typeof iotDashHtml === 'function' && iotDashHtml.bars ? '<span style="display:inline-flex;align-items:center;gap:4px;margin-inline-end:12px"><span>\u{1F4F6}</span>' + iotDashHtml.bars(v, dist) + (dist != null && window.matchMedia && window.matchMedia('(hover: none)').matches ? ' <span class="hint num" style="margin:0;font-size:11px">' + esc(nm(dist)) + ' ' + esc(t('م')) + '</span>' : '')   /* (V41.4) a phone has no hover: the metres beside the bars */ + '</span>' : '';
   var vals = '<div style="margin:5px 0 2px" dir="rtl">' + big('\u{1F321}', v && v.temp, '\u00B0') + big('\u{1F4A7}', v && v.hum, '\u066A') + big('\u{1F50B}', v && v.bat, '') + sigB + '</div>';
   if (v){
     var age = at ? Date.now() - at : Infinity, col = age < 1200000 ? '#3FB27F' : age < 7200000 ? '#E0A100' : '#E05252';
