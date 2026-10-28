@@ -325,15 +325,12 @@ iotDashHtml.LAB = { ok:['\u{1F7E2}', 'محدّث'], late:['\u{1F7E1}', 'متأخ
    above −90 post-deployment, below −120 unusable; a common LoRaWAN rule: good above −115 with SNR above −7, at the limit at
    −120 or SNR −13): strong ≥ −90 · acceptable to −110 · weak to −120 · critical below. SNR ≤ −10 means radio noise. Sensors
    only — the signal of a gateway itself is cellular, on another scale. */
-iotDashHtml.sig = function(r){ var v = r && r.v, x = v && v.rssi; if (r.kind !== 's' || x == null) return null;
-  return { k:x >= -90 ? 'good' : x > -110 ? 'ok' : x > -120 ? 'weak' : 'crit', x:x, noisy:v.snr != null && v.snr <= -10 }; };
-iotDashHtml.SIG = { good:['\u{1F7E2}', 'قوية'], ok:['\u{1F7E1}', 'مقبولة'], weak:['\u{1F7E0}', 'ضعيفة'], crit:['\u{1F534}', 'حرجة'] };
-iotDashHtml.sigCell = function(r){ var g = iotDashHtml.sig(r); return g ? iotDashHtml.SIG[g.k][0] + ' <span class="num" dir="ltr">' + nm(g.x) + '</span>' + (g.noisy ? ' \u26A1' : '') : '\u2014'; };
-iotDashHtml.sigWhy = function(r){ var g = iotDashHtml.sig(r); if (!g) return '';
-  var say = { good:'الإشارة قوية — مفيش مشكلة تغطية', ok:'الإشارة مقبولة — تابعها، ولو الحساس بيقطع قرّبه من الجيت واي', weak:'الإشارة ضعيفة — الحساس على حدود التغطية: قرّبه من الجيت واي، أو ارفع الجيت واي، أو شيل العائق اللي بينهم', crit:'الإشارة حرجة — غالبًا هيقطع: انقل الجيت واي أو ضيف واحد للمخيم' }[g.k];
+/* (V41.2) the bands below are replaced by the SF12 three-colour grades at the end of this file (iotDashHtml.sig) */
+iotDashHtml.sigWhy = function(r){ var G = iotDashHtml.sig(r); if (r.kind !== 's' || !G.rs) return ''; var g = { k:G.rs === 'g' ? 'good' : G.rs === 'y' ? 'weak' : 'crit' }; g.noisy = G.sn === 'r' || G.sn === 'y';
+  var say = { good:'الإشارة قوية — مفيش مشكلة تغطية', weak:'الإشارة على الحافة — شغّال بس الهامش بيقل: قرّبه من الجيت واي، أو ارفع الجيت واي، أو شيل العائق اللي بينهم', crit:'الإشارة قريبة من حد الاستقبال — غالبًا هيقطع: انقل الجيت واي أو ضيف واحد للمخيم' }[g.k];
   var off = r.st === 'off' || r.st === 'late';
   var why = off ? (g.k === 'weak' || g.k === 'crit' ? 'انقطع وآخر إشارة كانت ضعيفة — غالبًا مشكلة تغطية مش عطل' : 'انقطع وإشارته كانت كويسة — غالبًا بطارية أو عطل في الحساس، أو الجيت واي نفسه واقف لو كل حساسات المخيم وقفت') : '';
-  return '<div class="hint" style="margin:0 0 8px">' + iotDashHtml.SIG[g.k][0] + ' ' + esc(t(say)) + (g.noisy ? '<br>\u26A1 ' + esc(t('وفيه تشويش على الإشارة: بعّد الجيت واي عن الكهربا والمعدات')) : '') + (why ? '<br><b>' + esc(t(why)) + '</b>' : '') + '</div>'; };
+  return '<div class="hint" style="margin:0 0 8px">' + iotDashHtml.dot(G.rs) + esc(t(say)) + (g.noisy ? '<br>\u26A1 ' + esc(t('وفيه تشويش على الإشارة: بعّد الجيت واي عن الكهربا والمعدات')) : '') + (why ? '<br><b>' + esc(t(why)) + '</b>' : '') + '</div>'; };
 iotDashHtml.bad = function(st){ return st === 'late' || st === 'off' || st === 'nor' || st === 'nof'; };   /* a planned device with no serial yet is not «broken» — it is just not registered */
 iotDashHtml.val = function(r){ var v = r.v || {}, o = [];
   if (r.kind === 's'){ if (v.temp != null) o.push(nm(v.temp) + '\u00B0'); if (v.hum != null) o.push(nm(v.hum) + '\u066A'); if (v.bat != null) o.push('\u{1F50B}' + nm(v.bat)); }
@@ -368,16 +365,17 @@ iotDashHtml.campsHtml = function(list, F){
 iotDashHtml.devHtml = function(list, F){
   var cnt = { all:list.length, bad:0, ok:0, late:0, off:0, nor:0, nof:0, nos:0 }; list.forEach(function(r){ cnt[r.st]++; if (iotDashHtml.bad(r.st)) cnt.bad++; });
   var LB = iotDashHtml.LAB, chip = function(k, ic, lab){ return '<button class="btn btn-sm ' + (F.st === k ? 'btn-primary' : 'btn-secondary') + '" data-iotd="st:' + k + '">' + ic + ' ' + esc(t(lab)) + ' <b class="num">' + nm(cnt[k] || 0) + '</b></button>'; };
-  cnt.sig = list.filter(function(r){ var g = iotDashHtml.sig(r); return g && (g.k === 'weak' || g.k === 'crit'); }).length;
-  var rows = list.filter(function(r){ if (F.st === 'sig'){ var g = iotDashHtml.sig(r); return !!(g && (g.k === 'weak' || g.k === 'crit')); } return F.st === 'all' || (F.st === 'bad' ? iotDashHtml.bad(r.st) : r.st === F.st); });
+  var weakSig = function(r){ var G = iotDashHtml.sig(r); return r.kind === 's' && (G.rs === 'y' || G.rs === 'r' || G.sn === 'r'); };
+  cnt.sig = list.filter(weakSig).length; cnt.cw = list.filter(function(r){ return iotDashHtml.sig(r).flag === 'cw'; }).length;   /* (V41.2) */
+  var rows = list.filter(function(r){ if (F.st === 'sig') return weakSig(r); if (F.st === 'cw') return iotDashHtml.sig(r).flag === 'cw'; return F.st === 'all' || (F.st === 'bad' ? iotDashHtml.bad(r.st) : r.st === F.st); });
   var rank = { off:0, late:1, nof:2, nor:3, ok:4, nos:5 };
   rows.sort(F.sort === 'name' ? function(a, b){ return a.pn < b.pn ? -1 : a.pn > b.pn ? 1 : (a.did < b.did ? -1 : 1); } : function(a, b){ return (rank[a.st] - rank[b.st]) || ((a.at || 0) - (b.at || 0)); });
   var tr = rows.slice(0, F.n).map(function(r){
     return '<tr data-iotd="pop:dev:' + esc(r.camp) + ':' + r.kind + ':' + r.i + '" style="cursor:pointer"><td>' + esc(r.pn) + '</td><td dir="ltr">' + esc(r.did) + (r.room ? ' <span class="hint" style="margin:0">' + esc(r.room) + '</span>' : '') + '</td>'
-      + '<td dir="ltr">' + (r.ser ? esc(r.ser) : '\u2014') + '</td><td>' + (r.at ? iotDashHtml.age(Date.now() - r.at) : '\u2014') + '</td><td>' + (esc(iotDashHtml.val(r)) || '\u2014') + '</td><td>' + iotDashHtml.sigCell(r) + '</td><td>' + LB[r.st][0] + ' ' + esc(t(LB[r.st][1])) + '</td></tr>'; }).join('');
+      + '<td dir="ltr">' + (r.ser ? esc(r.ser) : '\u2014') + '</td><td>' + (r.at ? iotDashHtml.age(Date.now() - r.at) : '\u2014') + '</td><td>' + (esc(iotDashHtml.val(r)) || '\u2014') + '</td><td>' + iotDashHtml.sigCell(r) + '</td><td class="num">' + (r.dist != null ? nm(r.dist) + ' ' + esc(t('م')) : '\u2014') + '</td><td>' + LB[r.st][0] + ' ' + esc(t(LB[r.st][1])) + '</td></tr>'; }).join('');
   return '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px">' + chip('all', '\u{1F4CB}', 'الكل') + chip('bad', '\u26A0\uFE0F', 'محتاج تدخّل') + (cnt.sig ? chip('sig', '\u{1F4F6}', 'إشارة ضعيفة') : '') + chip('ok', '\u{1F7E2}', 'محدّث') + chip('late', '\u{1F7E1}', 'متأخر') + chip('off', '\u{1F534}', 'منقطع')
-    + chip('nof', '\u26AB', 'السيريال مش على المنصة') + chip('nor', '\u26AA', 'على المنصة بلا قراءة') + chip('nos', '\u25FB', 'بلا سيريال') + '</div>'
-    + (rows.length ? '<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>' + [t('المخيم'), t('الجهاز'), t('السيريال'), t('آخر تحديث'), t('القراءة الحالية'), t('الإشارة'), t('الحالة')].map(esc).join('</th><th>') + '</th></tr></thead><tbody>' + tr + '</tbody></table></div>'
+    + chip('nof', '\u26AB', 'السيريال مش على المنصة') + chip('nor', '\u26AA', 'على المنصة بلا قراءة') + chip('nos', '\u25FB', 'بلا سيريال') + (cnt.cw ? chip('cw', '\u26A0\uFE0F', 'قريب وضعيف') : '') + '</div>' + iotDashHtml.legend()
+    + (rows.length ? '<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>' + [t('المخيم'), t('الجهاز'), t('السيريال'), t('آخر تحديث'), t('القراءة الحالية'), t('الإشارة'), t('المسافة من الجيت واي'), t('الحالة')].map(esc).join('</th><th>') + '</th></tr></thead><tbody>' + tr + '</tbody></table></div>'
       + iotDashHtml.more(rows.length, F) : '<div class="hint">' + esc(t('مفيش أجهزة بالفلتر ده')) + '</div>');
 };
 iotDashHtml.more = function(n, F){ return '<div class="hint" style="margin:6px 0 0">' + esc(t('معروض')) + ' ' + nm(Math.min(F.n, n)) + ' ' + esc(t('من')) + ' ' + nm(n) + (n > F.n ? ' ' + btn(t('اعرض ١٠٠ كمان'), 'btn-secondary btn-sm', ' data-iotd="more"') : '') + '</div>'; };
@@ -398,12 +396,13 @@ iotDashHtml.popHtml = function(F, all){
   var r = all.filter(function(q2){ return q2.camp === P.camp && q2.kind === P.k && q2.i === +P.i; })[0]; if (!r) return '';
   var c = iotOf(P.camp) || {}, m = (P.k === 's' ? (c.sm || [])[r.i] : (c.gm || [])[r.i]) || {}, v = r.v || {}, ed = mayIot();
   var big = function(ic, lab, val, unit){ return '<div style="flex:1;min-width:110px;border:1px solid rgba(148,163,184,.3);border-radius:10px;padding:8px;text-align:center"><div class="hint" style="margin:0">' + ic + ' ' + esc(t(lab)) + '</div><div style="font-size:1.4em;font-weight:700">' + (val != null ? nm(val) + (unit || '') : '\u2014') + '</div></div>'; };
-  var cards = P.k === 's' ? big('\u{1F321}', 'درجة الحرارة', v.temp, '\u00B0') + big('\u{1F4A7}', 'الرطوبة', v.hum, '\u066A') + big('\u{1F50B}', 'البطارية', v.bat, '') + big('\u{1F4F6}', 'الإشارة', v.rssi, '')
+  var cards = P.k === 's' ? big('\u{1F321}', 'درجة الحرارة', v.temp, '\u00B0') + big('\u{1F4A7}', 'الرطوبة', v.hum, '\u066A') + big('\u{1F50B}', 'البطارية', v.bat, '') + big('\u{1F4F6}', 'الإشارة', v.rssi, ' dBm')
     : big('\u{1F50C}', 'بطارية خارجية', v.ext_bat, '') + big('\u{1F50B}', 'بطارية داخلية', v.int_bat, '') + (v.ext_bat == null && v.int_bat == null ? big('\u{1F50B}', 'البطارية', v.bat, '') : '');
   var fld = function(id, lab, val){ return '<div class="field" style="margin:6px 0"><label>' + esc(t(lab)) + '</label><input class="in" id="' + id + '" dir="auto" value="' + esc(val || '') + '"' + (ed ? '' : ' disabled') + '></div>'; };
   return box((P.k === 's' ? '\u{1F321} ' : '\u{1F4F6} ') + '<span dir="ltr">' + esc(r.did) + '</span> \u00b7 ' + esc(pn),
     '<div style="display:flex;flex-wrap:wrap;gap:8px;margin:0 0 8px">' + cards + '</div>' + iotDashHtml.sigWhy(r)
     + '<div class="hint" style="margin:0 0 8px">' + LB[r.st][0] + ' ' + esc(t(LB[r.st][1])) + ' \u00b7 ' + esc(t('آخر تحديث')) + ': ' + (r.at ? iotDashHtml.age(Date.now() - r.at) + ' (' + fmtDT(r.at) + ')' : '\u2014') + (r.pnm ? ' \u00b7 ' + esc(t('الاسم على المنصة')) + ': <span dir="ltr">' + esc(r.pnm) + '</span>' : '') + '</div>'
+    + (P.k === 's' ? '<div class="hint" style="margin:0 0 8px">' + esc(t('الإشارة')) + ': ' + iotDashHtml.sigCell(r) + (r.dist != null ? ' \u00b7 ' + esc(t('المسافة من الجيت واي')) + ': ' + nm(r.dist) + ' ' + esc(t('م')) : '') + (v.snr == null ? ' \u00b7 ' + esc(t('الـSNR مش بيوصل من المنصة حاليًا')) : '') + '</div>' + iotDashHtml.legend() : '')
     + fld('iotdSer', 'السيريال', m.serial) + fld('iotdMod', 'الطراز', m.model) + (P.k === 's' ? fld('iotdRoom', 'الغرفة', m.room) : '') + fld('iotdTag', 'العلامة على الجهاز', m.tag) + fld('iotdNote', 'ملاحظة', m.note)
     + '<div class="actions" style="margin-top:8px">' + (ed ? btn('\u{1F4BE} ' + t('احفظ'), 'btn-primary', ' data-iotd="save:' + esc(P.camp) + ':' + P.k + ':' + r.i + '"') : '<span class="hint">' + esc(t('تعديلُ الحساسات للمهندس فما فوق والمشرف')) + '</span>')
     + ' ' + btn('\u2190 ' + t('المخيم'), 'btn-quiet', ' data-iotd="pop:camp:' + esc(P.camp) + '"') + '</div>');
@@ -415,7 +414,8 @@ iotDashHtml.rows = function(){
       out.push({ camp:id, pn:String(pn), zone:zn, i:ix, did:did, kind:kind, ser:ser, room:(m && m.room) || '', pnm:L ? String(L.nm || '') : '', at:at, v:L ? (L.v || {}) : null,
         st:!ser ? 'nos' : !L ? 'nof' : !at ? 'nor' : now - at < 1200000 ? 'ok' : now - at < 7200000 ? 'late' : 'off' }); };
     iotAllGw(c).forEach(function(g, j){ add('g', iotGid(id, c, j), (c.gm || [])[j] || {}, j); });
-    (c.sensors || []).forEach(function(q2, i){ add('s', iotSid(id, c, i), (c.sm || [])[i] || {}, i); });
+    (c.sensors || []).forEach(function(q2, i){ add('s', iotSid(id, c, i), (c.sm || [])[i] || {}, i);
+      var r0 = out[out.length - 1], gws = iotAllGw(c); r0.dist = gws.length ? Math.round(Math.min.apply(null, gws.map(function(g){ return iotM(g, q2); }))) : null; });   /* (V41.2) metres to the nearest gateway of its camp */
   });
   return out;
 };
@@ -471,4 +471,37 @@ integNusukHtml.test = function(){
   var tk = typeof extTokLoad === 'function' ? extTokLoad() : Promise.resolve();
   Promise.resolve(tk).then(function(){ return Promise.all([one(PV.EXT_STREAM, false), one(PV.EXT_API + '/tents?page=1&perPage=1', true)]); })
     .then(function(x){ R.a = x[0]; R.b = x[1]; R.busy = false; R.at = Date.now(); render(1); }, function(){ R.busy = false; render(1); });
+};
+
+/* (V41.2) the owner: «اعمل الاتنين وادّي ألوان — احنا مستخدمين SF12، حساسات لورا من مايلسايت — واكتب نوت معناها إيه، والـSNR نترجمه
+   إزاي لو بيطلع في البارامتر». Signal grades for SF12 at 125 kHz, from Semtech's LoRa FAQ (sensitivity -137 dBm at SF12/125 kHz;
+   demodulates down to SNR -20 dB at SF12; above +5 dB is «plenty of signal»; typical noise floor near -120 dBm) and The Things
+   Network forum (-65 to -115 dBm at the gateway is good; below -115/-118 is marginal, depending on SF):
+     RSSI  green ≥ -115 · yellow -115…-125 · red < -125 (within 12 dB of the SF12 limit)
+     SNR   green ≥ 0 · yellow -15…0 (below the noise, still decoded at SF12) · red < -15 (within 5 dB of the -20 dB limit)
+   Our units report rssi but no snr today (diagnosis, 28 Oct) — the SNR grade shows the day it arrives. And signal against
+   distance: within 50 m of its gateway yet yellow/red = «close but weak» (inside metal, behind equipment, or not where planned);
+   beyond 150 m yet green = «far but strong» (the 150 m rule may be conservative there). */
+iotDashHtml.sig = function(r){
+  var v = r.v || {}, g = function(x, a, b){ return x == null ? '' : x >= a ? 'g' : x >= b ? 'y' : 'r'; };
+  var rs = g(v.rssi, -115, -125), sn = g(v.snr, 0, -15);
+  var flag = r.kind === 's' && r.dist != null && v.rssi != null ? (r.dist <= 50 && rs !== 'g' ? 'cw' : r.dist > 150 && rs === 'g' ? 'fs' : '') : '';
+  return { rs:rs, sn:sn, flag:flag };
+};
+iotDashHtml.dot = function(c){ return c ? '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + ({ g:'#22C55E', y:'#EAB308', r:'#EF4444' })[c] + ';vertical-align:middle"></span> ' : ''; };
+iotDashHtml.sigCell = function(r){
+  var v = r.v || {}, S = iotDashHtml.sig(r); if (v.rssi == null && v.snr == null) return '\u2014';
+  return (v.rssi != null ? iotDashHtml.dot(S.rs) + '<span dir="ltr">' + nm(v.rssi) + ' dBm</span>' : '') + (v.snr != null ? ' \u00b7 ' + iotDashHtml.dot(S.sn) + '<span dir="ltr">SNR ' + nm(v.snr) + ' dB</span>' : '')
+    + (S.flag === 'cw' ? ' <b style="color:#EF4444">\u26A0\uFE0F ' + esc(t('قريب وضعيف')) + '</b>' : S.flag === 'fs' ? ' <span class="hint" style="margin:0">\u2139\uFE0F ' + esc(t('بعيد وقوي')) + '</span>' : '');
+};
+iotDashHtml.legend = function(){
+  return '<details style="margin:0 0 8px"><summary class="hint" style="cursor:pointer">\u2139\uFE0F ' + esc(t('معنى ألوان الإشارة (لورا SF12)')) + '</summary><div class="hint" style="margin:6px 0 0;line-height:1.8">'
+    + '<b>RSSI</b> ' + esc(t('قوة الإشارة اللي الجيت واي استقبل بيها الحساس (dBm) — كل ما الرقم أقرب للصفر كل ما الإشارة أقوى')) + ':<br>'
+    + iotDashHtml.dot('g') + esc(t('أخضر: من ‎-115 وأعلى — إشارة كويسة')) + '<br>' + iotDashHtml.dot('y') + esc(t('أصفر: من ‎-115 لـ‎-125 — شغّال بس الهامش بيقل')) + '<br>' + iotDashHtml.dot('r') + esc(t('أحمر: أقل من ‎-125 — قريب من حد الاستقبال في SF12 (‎-137)، ممكن رسائل تضيع')) + '<br>'
+    + '<b>SNR</b> ' + esc(t('الإشارة أعلى من التشويش بكام (dB) — لو موجب الإشارة أعلى من التشويش، ولورا في SF12 بتفك لحد ‎-20')) + ':<br>'
+    + iotDashHtml.dot('g') + esc(t('أخضر: صفر وأعلى')) + ' \u00b7 ' + iotDashHtml.dot('y') + esc(t('أصفر: من ‎-15 لصفر')) + ' \u00b7 ' + iotDashHtml.dot('r') + esc(t('أحمر: أقل من ‎-15')) + '<br>'
+    + esc(t('RSSI كويس مع SNR وحش = تشويش في المكان (أبراج اتصالات مثلًا) مش بُعد. والـSNR مش بيوصل من أفاقي برو حاليًا — هيظهر أول ما يوصل.')) + '<br>'
+    + '\u26A0\uFE0F <b>' + esc(t('قريب وضعيف')) + '</b>: ' + esc(t('على بعد ٥٠ متر أو أقل من الجيت واي وإشارته صفرا أو حمرا — غالبًا جوه معدن أو ورا جهاز أو مش في مكانه المخطط')) + '<br>'
+    + '\u2139\uFE0F <b>' + esc(t('بعيد وقوي')) + '</b>: ' + esc(t('أبعد من ١٥٠ متر وإشارته خضرا — يعني حد الـ١٥٠ متر ممكن يتوسّع هناك')) + '<br>'
+    + '<span style="opacity:.8">' + esc(t('المراجع: أسئلة لورا الشائعة عند Semtech، ومنتدى The Things Network')) + '</span></div></details>';
 };

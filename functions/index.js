@@ -106,6 +106,7 @@ function valuesOf(u){
   set('int_bat', pick(/int(?!er)|internal|داخل/i, ['int_battery', 'pwr_int']));
   set('bat', pick(/batt|بطار|volt/i, ['battery', 'bat', 'battery_level']));
   set('rssi', pick(/rssi|signal|إشار/i, ['rssi']));
+  set('snr', pick(/snr/i, ['snr', 'lsnr']));   /* (V41.2) not reported by our units today (rssi, protocol, temp, humidity, battery, speed) — taken the moment it appears */
   return v;
 }
 
