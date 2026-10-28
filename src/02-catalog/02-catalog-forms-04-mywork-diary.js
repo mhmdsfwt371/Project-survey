@@ -28,7 +28,7 @@ function fieldDayStart(){
 }
 /* what this phone still holds for the office — photos and edits not uploaded yet — with «ادفع الآن» */
 function myQueueCard(){
-  var ph = (typeof PHOTO_Q !== 'undefined' && PHOTO_Q) ? PHOTO_Q.length : 0, fl = (typeof PHOTO_FAIL !== 'undefined' && PHOTO_FAIL) ? PHOTO_FAIL.length : 0;
+  var ph = (typeof PHOTO_Q !== 'undefined' && PHOTO_Q) ? PHOTO_Q.length : 0, fl = (typeof PV.PHOTO_FAIL !== 'undefined' && PV.PHOTO_FAIL) ? PV.PHOTO_FAIL.length : 0;
   var ed = (STATE.queue || []).length;
   if (!ph && !ed && !fl) return '<div class="hint" style="margin:0 0 10px">\u2705 ' + esc(t('كلُّ شغلك وصل المكتب — لا شيء ينتظر على جهازك')) + '</div>';
   return card('\u{1F4E4} ' + t('على جهازك ولم يصل المكتب بعد'),
@@ -99,7 +99,7 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
     var peers = stageList(e.stage);
     var myRank = peers.findIndex(function(p){ return p.name === me; }) + 1;
     var tgt = stageTarget(e.stage);
-    var R = STAGE_ROLES[e.stage] || { n:'—', i:'' };
+    var R = PV.STAGE_ROLES[e.stage] || { n:'—', i:'' };
 
     return stats([['نقاطي', N(e.total), 'acc'],
                   ['ترتيبي', myRank ? (nm(myRank) + ' / ' + nm(peers.length)) : '—',
@@ -192,12 +192,12 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
       var all = underNames(me).filter(function(n2){ return effRole(roleOf[n2] || 'tech') !== 'viewer'; });
       if (!all.length) return card('لا أحدَ تحت إشرافك بعد', '<p class="hint" style="margin:0">' + esc(t('حقلُ «مديره» في سجل كلِّ موظفٍ هو ما يربطه بك.')) + '</p>');
       var byRole = {}; all.forEach(function(n){ var r = effRole(roleOf[n] || 'tech'); byRole[r] = (byRole[r] || 0) + 1; });
-      if (BOARD_ROLE && !byRole[BOARD_ROLE]) BOARD_ROLE = '';
-      var names = BOARD_ROLE ? all.filter(function(n){ return effRole(roleOf[n] || 'tech') === BOARD_ROLE; }) : all;
+      if (PV.BOARD_ROLE && !byRole[PV.BOARD_ROLE]) PV.BOARD_ROLE = '';
+      var names = PV.BOARD_ROLE ? all.filter(function(n){ return effRole(roleOf[n] || 'tech') === PV.BOARD_ROLE; }) : all;
       var chips = '<div class="chips">'
-        + '<button type="button" class="chip' + (BOARD_ROLE ? '' : ' on') + '" data-boardrole="">' + esc(t('الكل')) + ' <span class="num">' + nm(all.length) + '</span></button>'
+        + '<button type="button" class="chip' + (PV.BOARD_ROLE ? '' : ' on') + '" data-boardrole="">' + esc(t('الكل')) + ' <span class="num">' + nm(all.length) + '</span></button>'
         + Object.keys(byRole).sort(function(a, b){ return rankOf(b) - rankOf(a); }).map(function(r){
-            return '<button type="button" class="chip' + (BOARD_ROLE === r ? ' on' : '') + '" data-boardrole="' + esc(r) + '">'
+            return '<button type="button" class="chip' + (PV.BOARD_ROLE === r ? ' on' : '') + '" data-boardrole="' + esc(r) + '">'
               + esc(t((ROLES[r] || {}).n || r)) + ' <span class="num">' + nm(byRole[r]) + '</span></button>'; }).join('')
         + '</div>';
       var seen = {}; Object.keys(P).forEach(function(k){ var p = P[k]; if (p && p.name && (!seen[p.name] || p.at > seen[p.name])) seen[p.name] = p.at || 0; });
@@ -215,7 +215,7 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
           if (dayKey(r.at) === today) visits++; if (svReview(r) === 'pending') pend++; });
         Object.keys(STATE.inss || {}).forEach(function(k){ var r = STATE.inss[k]; if (r && r.by === n && r.status === 'مُركّب') inst++; });
         var ago = seen[n] ? Math.round((Date.now() - seen[n]) / 60000) : -1;
-        var kinds = Object.keys(byKind).map(function(k){ return nm(byKind[k]) + ' ' + t((WO_KINDS[k] || { n:k }).n); }).join(' · ');
+        var kinds = Object.keys(byKind).map(function(k){ return nm(byKind[k]) + ' ' + t((PV.WO_KINDS[k] || { n:k }).n); }).join(' · ');
         return { n:n, role:roleOf[n] || '', open:open, kinds:kinds, done:doneToday, visits:visits, pend:pend, inst:inst, dis:dis, mnt:mnt, appr:appr, ago:ago };
       }).sort(function(a, b){ return (b.open + b.pend) - (a.open + a.pend) || arCmp(a.n, b.n); });
       var tot = rows.reduce(function(a, r){ a.open += r.open; a.visits += r.visits; a.pend += r.pend; return a; }, { open:0, visits:0, pend:0 });
@@ -233,12 +233,12 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
         + (tot.pend && may('approve') ? '<div class="actions">' + btn('\u2705 ' + t('اعتماد الزيارات') + ' (' + nm(tot.pend) + ')','btn-primary btn-sm',' data-p="svappr"') + '</div>' : '');
     })();
     if (cur === 'mycrew') return head + (function(){
-    var c = crewOf(CREW_VIEW) || crewOf('');   /* (V38.69) a view may show the first crew; a write never does */
+    var c = crewOf(PV.CREW_VIEW) || crewOf('');   /* (V38.69) a view may show the first crew; a write never does */
     var S = crewStat(c);
-    var K = c.kind === '*' ? null : WO_KINDS[c.kind];
-    return '<div class="chips">' + CREWS.filter(function(x){ return x.kind !== '*'; }).map(function(x){
-        return '<button type="button" class="chip' + (CREW_VIEW===x.id?' on':'') + '" data-crew="' + x.id + '">'
-          + (WO_KINDS[x.kind] ? WO_KINDS[x.kind].i + ' ' : '') + esc(t(x.n)) + '</button>';
+    var K = c.kind === '*' ? null : PV.WO_KINDS[c.kind];
+    return '<div class="chips">' + PV.CREWS.filter(function(x){ return x.kind !== '*'; }).map(function(x){
+        return '<button type="button" class="chip' + (PV.CREW_VIEW===x.id?' on':'') + '" data-crew="' + x.id + '">'
+          + (PV.WO_KINDS[x.kind] ? PV.WO_KINDS[x.kind].i + ' ' : '') + esc(t(x.n)) + '</button>';
       }).join('') + '</div>'
       + stats([['اليوم','<span class="num">'+nm(S.day)+'</span>','ok'],
                ['هذا الأسبوع','<span class="num">'+nm(S.week)+'</span>'],
@@ -313,7 +313,7 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
               return cardFlush(esc(dispName(sp)) + ' — ' + nm(L.length) + ' ' + t('نقطة'),
                 table(['النقطة','النوع','الموعد','الحالة'],
                   L.slice(0, lim).map(function(x){
-                    var st = siteFind(x.site), k = WO_KINDS[x.kind] || { i:'', n:x.kind };
+                    var st = siteFind(x.site), k = PV.WO_KINDS[x.kind] || { i:'', n:x.kind };
                     return ['<strong>' + esc(x.site) + '</strong><br><span class="hint" style="margin:0">'
                               + esc(((st && st.name) || '').slice(0, 28)) + '</span>',
                             k.i + ' ' + esc(t(k.n)),
@@ -346,7 +346,7 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
             '<div class="list">' + mine.slice(0, 60).map(function(x){
               var s = siteFind(x.site);
               if (!s) return '';
-              var k = WO_KINDS[x.kind] || { i:'', n:x.kind };
+              var k = PV.WO_KINDS[x.kind] || { i:'', n:x.kind };
               var rr = STATE.recs[x.site];
               var insR = x.kind === 'install' ? (STATE.inss[x.site] || {}) : null;   /* (V38.59) the return reason of an installation */
               var why = (rr && svReview(rr) === 'revisit' && rr.revisitNote)
@@ -373,9 +373,9 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
 ;
 
 /* ── تبويبُ كل مرحلة: فريقُها وأعمالُهم ── */
-var STAGE_TAB = 'ins';
+PV.STAGE_TAB = 'ins';
 
-var PERF_VIEW = 'rank';
+PV.PERF_VIEW = 'rank';
 
 /* ── الترتيب العام: كلُّ من عمل، برقمه ومرتبته ومستحقّه ── */
 function perfRankTable(){
@@ -393,7 +393,7 @@ function perfRankTable(){
       ? cardFlush(t('الترتيب العام') + ' — ' + nm(S.n),
           table(['#','الاسم','المرحلة','زيارة','تركيب','فك','زيادة','الإجمالي','من التارجت','متوسط اليوم','المستحَق'],
             S.list.map(function(e){
-              var R = STAGE_ROLES[e.stage] || { n:e.stage, i:'' };
+              var R = PV.STAGE_ROLES[e.stage] || { n:e.stage, i:'' };
               return [e.rank <= 3 ? '<b>' + nm(e.rank) + '</b>' : nm(e.rank),
                       '<strong>' + esc(dispName(e.name)) + '</strong>',
                       R.i + ' ' + esc(t(R.n)),
@@ -437,8 +437,8 @@ function perfRankTable(){
       })()
     + card('توزيع النقاط على المراحل',
         table(['المرحلة','أفراد','أعمال','النقاط','٪'],
-          Object.keys(STAGE_ROLES).map(function(k){
-            var R = STAGE_ROLES[k], L = stageList(k);
+          Object.keys(PV.STAGE_ROLES).map(function(k){
+            var R = PV.STAGE_ROLES[k], L = stageList(k);
             var p = L.reduce(function(a,e){ return a + e.total; }, 0);
             return [R.i + ' ' + esc(t(R.n)), N(L.length),
                     N(L.reduce(function(a,e){ return a + e.acts; }, 0)),

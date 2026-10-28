@@ -6,7 +6,7 @@
    NOTE    : Edit these functions here. audit-core-alone.mjs fails if code the core runs alone starts calling one without checking typeof first.
    ============================================================================ */
 function stepDone(kind, siteId, detail, pts){
-  var K = STEP_KINDS[kind] || { n:kind, i:'', code:'' };
+  var K = PV.STEP_KINDS[kind] || { n:kind, i:'', code:'' };
   var who = STATE.meta.name || '';
   var rec = { at:Date.now(), kind:kind, site:siteId || '', by:who,
               detail:String(detail || ''), pts:cfgN(pts) || 0 };

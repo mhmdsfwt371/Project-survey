@@ -16,7 +16,7 @@ function onDocClickPart8(e){
     toast(nm(n) + ' ' + t('صفًّا حُفظ'));
     return;
   }
-  if (e.target.closest('[data-impx]')){ IMP_PREVIEW = null; render(); return; }
+  if (e.target.closest('[data-impx]')){ PV.IMP_PREVIEW = null; render(); return; }
 
   var ucr = e.target.closest('[data-ucr]');   /* (V38.80) database-cost period presets */
   if (ucr){ USAGE.costF.r = ucr.getAttribute('data-ucr'); USAGE.costF.from = ''; USAGE.costF.to = ''; render(1); return; }
@@ -25,10 +25,10 @@ function onDocClickPart8(e){
   if (urf){ USR.role = urf.getAttribute('data-usrrolef'); render(1); return; }
 
   var mo = e.target.closest('[data-months]');
-  if (mo){ PLAN_MONTHS = +mo.getAttribute('data-months'); render(); return; }
+  if (mo){ PV.PLAN_MONTHS = +mo.getAttribute('data-months'); render(); return; }
 
   var cw = e.target.closest('[data-crew]');
-  if (cw){ CREW_VIEW = cw.getAttribute('data-crew'); render(); return; }
+  if (cw){ PV.CREW_VIEW = cw.getAttribute('data-crew'); render(); return; }
 
   /* الحجبُ في العرض وحده يسقط بأداة المطوّر — فالمعالجُ يسأل أيضًا */
   var rl0 = e.target.closest('[data-role]');
@@ -36,7 +36,7 @@ function onDocClickPart8(e){
   if (e.target.closest('[data-kmz]') && !may('exportAll')){
     toast(t('التصديرُ الشامل للمهندس وحده')); return; }
   var rl = e.target.closest('[data-role]');
-  if (rl){ ROLE = rl.getAttribute('data-role'); OPEN = {}; render(); return; }
+  if (rl){ ROLE = rl.getAttribute('data-role'); PV.OPEN = {}; render(); return; }
 
   /* ── الإسناد ── */
   var rs = e.target.closest('[data-repside]');
@@ -46,7 +46,7 @@ function onDocClickPart8(e){
   var rp = e.target.closest('[data-reppack]');
   if (rp){ repPack(rp.getAttribute('data-reppack')); return; }
   var sp = e.target.closest('[data-sop]');
-  if (sp){ SOP_CUR = sp.getAttribute('data-sop'); render(1); return; }
+  if (sp){ PV.SOP_CUR = sp.getAttribute('data-sop'); render(1); return; }
 
   if (e.target.closest('[data-hseadd]')){ hseAdd(); return; }
   if (e.target.closest('[data-ncradd]')){ ncrAdd(); return; }
@@ -68,9 +68,9 @@ function onDocClickPart8(e){
   if (cno){ chgDecide(+cno.getAttribute('data-chgno'), 0); return; }
 
   var stb = e.target.closest('[data-stab]');
-  if (stb){ STAGE_TAB = stb.getAttribute('data-stab'); render(1); return; }
+  if (stb){ PV.STAGE_TAB = stb.getAttribute('data-stab'); render(1); return; }
   var pfv = e.target.closest('[data-perfview]');
-  if (pfv){ PERF_VIEW = pfv.getAttribute('data-perfview'); render(1); return; }
+  if (pfv){ PV.PERF_VIEW = pfv.getAttribute('data-perfview'); render(1); return; }
 
   var la = e.target.closest('[data-lasn]');
   if (la){ FIELD_MODE = la.getAttribute('data-lasn'); selClear(); ASN_OPEN = true;
@@ -116,7 +116,7 @@ function onDocClickPart8(e){
   if (e.target.closest('[data-newsite]')){ CUR = 'newsite'; render(1); return; }
   if (e.target.closest('[data-nsloc]')){ nsCapture(); return; }
   var nco = e.target.closest('[data-nsco]');
-  if (nco){ NS_CO_OPEN = nco.getAttribute('data-nsco') === '1'; NS_CO_Q = ''; render(1); return; }
+  if (nco){ NS_CO_OPEN = nco.getAttribute('data-nsco') === '1'; PV.NS_CO_Q = ''; render(1); return; }
   var ncp = e.target.closest('[data-nscopick]');
   if (ncp){ NEWSITE.co = ncp.getAttribute('data-nscopick'); NEWSITE.coReq = '';
             NS_CO_OPEN = false; render(1); return; }
@@ -183,8 +183,8 @@ function onDocClickPart9(e){
   var sal = e.target.closest('[data-sitesall]');
   if (sal){ SITES_ALL = sal.getAttribute('data-sitesall') === '1'; render(1); return; }
   var my = e.target.closest('[data-myonly]');
-  if (my){ MY_ONLY = my.getAttribute('data-myonly') === '1'; render(1); if (MAP) mapPaint(); return; }
-  if (e.target.closest('[data-mymap]')){ MY_ONLY = true; CUR = 'map'; render(1); return; }
+  if (my){ PV.MY_ONLY = my.getAttribute('data-myonly') === '1'; render(1); if (MAP) mapPaint(); return; }
+  if (e.target.closest('[data-mymap]')){ PV.MY_ONLY = true; CUR = 'map'; render(1); return; }
   var tko = e.target.closest('[data-tkok]');
   if (tko){ var tk = STATE.tasks[tko.getAttribute('data-tkok')];
             if (tk){ tk.status = 'معتمد'; CORE.set('tasks', tk.id, tk);
@@ -201,7 +201,7 @@ function onDocClickPart9(e){
   if (e.target.closest('[data-gmsave]') || e.target.closest('[data-gmclear]')){   /* (V27.6) مفتاحُ خرائط جوجل */
     if (!may('settings')){ toast(t('الإعداداتُ للمهندس فما فوق')); return; }
     var gi = document.getElementById('gmKey'), gv = e.target.closest('[data-gmclear]') ? '' : String((gi && gi.value) || '').trim().slice(0, 80);
-    CFG.gmaps = { key:gv }; CORE.set('cfg', 'gmaps', { key:gv }); GMAP.fail = false; GMAP.api = null;
+    CFG.gmaps = { key:gv }; CORE.set('cfg', 'gmaps', { key:gv }); PV.GMAP.fail = false; PV.GMAP.api = null;
     logEvent(gv ? 'مفتاحُ خرائط جوجل — ضُبط' : 'مفتاحُ خرائط جوجل — أُزيل', ''); toast(t(gv ? 'حُفظ المفتاح — تُعرَض خرائطُ جوجل على الأجهزة كلِّها' : 'أُزيل المفتاح'));
     if (MAP) basemapSwap(); render(1); return; }
   if (e.target.closest('[data-m3]')){ m3Toggle(); return; }
@@ -218,16 +218,16 @@ function onDocClickPart9(e){
   if (co){
     CO_OPEN = co.getAttribute('data-co') === '1';
     /* من فتح الاختيارَ أراد أن يرى الألوانَ — فتُشعَل الطبقةُ معه */
-    if (CO_OPEN) CO_MODE = true;
+    if (CO_OPEN) PV.CO_MODE = true;
     statBump(); render(); return;
   }
   var cg = e.target.closest('[data-cogo]');
   if (cg){
     if (cg.getAttribute('data-cogo') === '1'){
-      CO_SEL = Array.prototype.filter.call(document.querySelectorAll('.coRow'), function(r){
+      PV.CO_SEL = Array.prototype.filter.call(document.querySelectorAll('.coRow'), function(r){
         return r.querySelector('.coCk').checked;
       }).map(function(r){ return r.getAttribute('data-c'); });
-    } else { CO_SEL = []; }
+    } else { PV.CO_SEL = []; }
     CO_OPEN = false; render(); return;
   }
   var ex = e.target.closest('[data-exp]');

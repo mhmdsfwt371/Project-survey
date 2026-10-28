@@ -39,12 +39,12 @@ function photoDelete(id, why){
 
 function phErr(why){
   var w = String(why || '');
-  for (var i = 0; i < PH_ERR.length; i++) if (PH_ERR[i].re.test(w)) return PH_ERR[i];
+  for (var i = 0; i < PV.PH_ERR.length; i++) if (PV.PH_ERR[i].re.test(w)) return PV.PH_ERR[i];
   return { s:w.slice(0, 60) || 'تعذّر النقل', fix:'' };
 }
 
 function photoGalleryHtml(siteId){
-  var L = photosOf(siteId), Q = PHOTO_Q.filter(function(q){ return q.site === siteId; }), Fq = PHOTO_FAIL.filter(function(q){ return q.site === siteId; });
+  var L = photosOf(siteId), Q = PHOTO_Q.filter(function(q){ return q.site === siteId; }), Fq = PV.PHOTO_FAIL.filter(function(q){ return q.site === siteId; });
   if (!L.length && !Q.length && !Fq.length) return '<p class="hint" style="margin:8px 0 0">' + esc(t('لا صورَ لهذه النقطة على هذا الجهاز ولا في القاعدة.')) + '</p>';
   /* رابطُ العرض على الدرايف يطلب إذنًا ممن لم يُشارَك معه — والتنزيلُ المباشرُ
      (uc?export=download) يعمل لكلِّ من عنده الرابطُ متى شورك الملفُ برابط. وما زال
@@ -82,7 +82,7 @@ function photoGalleryHtml(siteId){
   Q.forEach(function(q, qi){ html += tile(q.data ? { src:q.data } : null, pill('في طابور هذا الجهاز — لم تُرفَع بعد', 'wrn'), q.kind, '', q.data ? ('q' + PHOTO_Q.indexOf(q)) : ''); });
   Fq.forEach(function(q){
     var e2 = phErr(q.why); if (e2.fix) fixes[e2.s] = e2.fix;
-    html += tile(q.data ? { src:q.data } : null, pill('تعذّر رفعُها', 'bad'), q.kind, '<p class="hint" style="margin:4px 0 0">' + esc(t(e2.s)) + '</p>', q.data ? ('f' + PHOTO_FAIL.indexOf(q)) : '');
+    html += tile(q.data ? { src:q.data } : null, pill('تعذّر رفعُها', 'bad'), q.kind, '<p class="hint" style="margin:4px 0 0">' + esc(t(e2.s)) + '</p>', q.data ? ('f' + PV.PHOTO_FAIL.indexOf(q)) : '');
   });
   html += '</div>';
   /* لافتةٌ واحدةٌ فوق المعرض: السببُ وما يُفعَل — بدل تكرارِ نصِّ جوجل تحت كلِّ صورة */

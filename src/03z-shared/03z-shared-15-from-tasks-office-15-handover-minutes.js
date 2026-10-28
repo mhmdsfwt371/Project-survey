@@ -12,18 +12,18 @@
    الضمان، وقبله لا يُفكُّ شيء — فالفكُّ إرجاعُ ما سُلِّم.
      ويُحفَظ المحضرُ على سجل التركيب نفسِه (`inss[id].hand`): هو الوثيقةُ
    التي تصف ما رُكِّب، والتسليمُ خاتمتُها لا سجلٌّ منفصلٌ يُتَتبَّع. */
-var HAND_SEQ = 0;
+PV.HAND_SEQ = 0;
 
 function handReady(x){
   var r = STATE.inss[x.id];
   return !!(r && r.status === 'مُركّب' && r.approved && !r.hand);
 }
 
-var HO_PARTIES = { owner:'وزارة الحج والعمرة', agency:'وكالة التخطيط والتحول الرقمي',
+PV.HO_PARTIES = { owner:'وزارة الحج والعمرة', agency:'وكالة التخطيط والتحول الرقمي',
                    contractor:'آفاقي', consultant:'شركة علم',
                    project:'مشروع قارئات أفاقي' };
 
-var HO_SIGNERS = [
+PV.HO_SIGNERS = [
   { n:'', role:'مدير برامج رقمية', org:'وزارة الحج والعمرة' },
   { n:'', role:'مدير البرنامج',    org:'شركة آفاقي' },
   { n:'', role:'مدير المشروع',     org:'شركة آفاقي' },
@@ -50,11 +50,11 @@ var HO_TPL = {
 
 function hoTpl(x){ return HO_TPL[x && x.type] || HO_TPL['مخيم']; }
 
-function hoParty(k){ return (CFG.hoParties || {})[k] || HO_PARTIES[k]; }
+function hoParty(k){ return (CFG.hoParties || {})[k] || PV.HO_PARTIES[k]; }
 
 function hoSigners(){
   var L = CFG.hoSigners;
-  return (Array.isArray(L) && L.length) ? L : HO_SIGNERS;
+  return (Array.isArray(L) && L.length) ? L : PV.HO_SIGNERS;
 }
 
 function hoLocOf(x){

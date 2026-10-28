@@ -6,7 +6,7 @@
    NOTE    : Edit these functions here. audit-core-alone.mjs fails if code the core runs alone starts calling one without checking typeof first.
    ============================================================================ */
 function impApply(){
-  var p = IMP_PREVIEW;
+  var p = PV.IMP_PREVIEW;
   if (!p || !p.ok.length) return 0;
   var n = 0;
   p.ok.forEach(function(r){
@@ -73,7 +73,7 @@ function impApply(){
     } else { n++; }
   });
   CORE.dirty(p.kind, 'import', { at:Date.now(), n:n });
-  IMP_PREVIEW = null;
+  PV.IMP_PREVIEW = null;
   return n;
 }
 
@@ -82,7 +82,7 @@ function syncAllNow(){
   if (!FB.ready || !FB.db){ toast(t('يحتاج شبكة')); return false; }
   var n = Date.now();
   CORE.set('cfg', 'app', { syncAll:n, syncAllBy:STATE.meta.name || '', syncAllAt:n });
-  SYNC_ALL_SEEN = n;
+  PV.SYNC_ALL_SEEN = n;
   logEvent('مزامنةٌ فوريةٌ للجميع');
   toast(t('أُرسل الأمرُ — كلُّ جهازٍ مفتوحٍ يسحب الآن، والمغلقُ حين يُفتَح'));
   SYNC.pullAsk = true; syncCycle();

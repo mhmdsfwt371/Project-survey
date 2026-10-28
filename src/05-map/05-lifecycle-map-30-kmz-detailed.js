@@ -31,7 +31,7 @@ function kmzFullBuild(){
     var tard = typeof siteTard === 'function' && siteTard(x), tbar = tard && typeof siteTbar === 'function' ? siteTbar(x) : '';
     var r = (STATE.recs || {})[x.id] || {}, sid = 's' + String(life || 'x').replace(/[^\w]/g, '') + (L.c || '').replace('#', '');
     if (!styles[sid]) styles[sid] = '<Style id="' + sid + '"><IconStyle><scale>0.9</scale><color>' + kmzColor(L.c) + '</color><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle><LabelStyle><scale>0.7</scale></LabelStyle></Style>';
-    var typeL = (typeof TAX_DEF !== 'undefined' && TAX_DEF[tx.t] && TAX_DEF[tx.t].l) || tx.t || x.type;
+    var typeL = (typeof PV.TAX_DEF !== 'undefined' && PV.TAX_DEF[tx.t] && PV.TAX_DEF[tx.t].l) || tx.t || x.type;
     var desc = '<div dir="rtl" style="font-family:Tahoma,Arial;font-size:13px"><table>'
       + kmzRow('المعرّف', X(x.id)) + kmzRow('الاسم', X(x.name)) + kmzRow('المشعر', X(tx.g || x.zone)) + kmzRow('نوع النقطة', X(typeL))
       + kmzRow('المربع', X(x.sq)) + kmzRow('الشاخص', X(x.sign)) + kmzRow('الشركة', X(x.co)) + kmzRow('وجه العمل', X(x.work))

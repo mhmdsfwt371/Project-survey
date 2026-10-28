@@ -88,15 +88,15 @@ function localStoreCard(){
 
 function sysReportCard(){
   if (!(may('users') || rankOf(ROLE) >= rankOf('engineer') || effRole(ROLE) === 'exec')) return '';
-  if (!SYSREP.v && !SYSREP.err) sysReportFetch();
-  var v = SYSREP.v || {};
+  if (!PV.SYSREP.v && !PV.SYSREP.err) sysReportFetch();
+  var v = PV.SYSREP.v || {};
   var one = function(k, title){
     var x = v[k]; if (!x || !x.text) return '<p class="hint" style="margin:0">' + esc(t(title)) + ': ' + esc(t('لم يصل بعد')) + '</p>';
     return '<details><summary><b>' + esc(t(title)) + '</b> \u00b7 <span class="num">' + esc(fmtDT(x.at)) + '</span></summary>'
       + '<pre style="white-space:pre-wrap;font-family:inherit;font-size:13px;line-height:1.7;margin:8px 0 0">' + esc(String(x.text).slice(0, 12000)) + '</pre></details>';
   };
   return card('ملخّصُ الصباح وتقريرُ النظام', one('pulse', 'ملخّصُ الصباح') + one('report', 'تقريرُ النظام')
-    + (SYSREP.err ? '<p class="hint" style="margin:6px 0 0">' + esc(SYSREP.err) + '</p>' : ''));
+    + (PV.SYSREP.err ? '<p class="hint" style="margin:6px 0 0">' + esc(PV.SYSREP.err) + '</p>' : ''));
 }
 /* ═══ بطاقةُ استعمال الصفحات وقراءات اليوم (V17.95) ═══
    الأيامُ الثلاثون يجمعها النبضُ الصباحيُّ في settings/usage (كتابةٌ واحدةٌ في
@@ -331,7 +331,7 @@ function devActRows(){
     if (+x.pz > 0){ iss.push(nm(+x.pz) + ' ' + t('كتابة مرفوضة')); act.push(t('يراجعها المهندس من «ما ينتظر الرفع»')); sev += 2; }
     if (+x.err > 0){ iss.push(nm(+x.err) + ' ' + t('خطأ اليوم')); sev += 1; }
     var slowPg = Object.keys((x.pf && x.pf.pages) || {}).map(function(k){ return [k, x.pf.pages[k] && x.pf.pages[k].p75]; }).filter(function(e){ return e[1] > 1500; }).sort(function(a, b){ return b[1] - a[1]; })[0];   /* (V37.34) أيُّ صفحة */
-    if (slowPg){ var pgName = (SPEED_PAGES.filter(function(p){ return p[0] === slowPg[0]; })[0] || [0, (PAGE[slowPg[0]] && PAGE[slowPg[0]].t) || slowPg[0]])[1]; iss.push(t(pgName) + ' ' + t('بطيئة') + ' ' + nm(Math.round(slowPg[1] / 100) / 10) + t('ث')); if (!(v && v < cloud)) act.push(t('«الوضع الخفيف» من المساعد')); sev += 1; }
+    if (slowPg){ var pgName = (PV.SPEED_PAGES.filter(function(p){ return p[0] === slowPg[0]; })[0] || [0, (PAGE[slowPg[0]] && PAGE[slowPg[0]].t) || slowPg[0]])[1]; iss.push(t(pgName) + ' ' + t('بطيئة') + ' ' + nm(Math.round(slowPg[1] / 100) / 10) + t('ث')); if (!(v && v < cloud)) act.push(t('«الوضع الخفيف» من المساعد')); sev += 1; }
     return { name:x.name, role:x.role || '', ver:x.ver || '', at:+x.at || 0, iss:iss, act:act.filter(function(a, i, A){ return A.indexOf(a) === i; }), sev:sev };
   }).filter(function(r){ return r.iss.length; }).sort(function(a, b){ return b.sev - a.sev || b.at - a.at; });
 }

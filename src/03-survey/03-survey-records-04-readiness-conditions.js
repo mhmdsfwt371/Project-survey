@@ -15,7 +15,7 @@
      صار في «توزيع الفرق» صفٌّ لكلِّ نوع: كم نقطةً جاهزةً له الآن، وما
    الشرطُ الذي يجعلها جاهزة، وزرٌّ واحدٌ يحدّدها كلَّها ويفتح لوحَ الإسناد
    على نوعها. والخريطةُ تبقى الطريقَ الآخر لمن أراد اختيارًا بعينه. */
-var ASN_READY = {
+PV.ASN_READY = {
   visit:   { layer:'survey',  why:'لم تُزر ولم تُسنَد بعد',
              ok:function(x){ return !svDone(STATE.recs[x.id]); } },
   install: { layer:'install', why:'اعتمدت الوزارةُ إعدادَها وحلُّها معتمدٌ ولم تُركَّب',
@@ -27,7 +27,7 @@ var ASN_READY = {
              ok:function(x){ return (typeof handDone === 'function') && handDone(x.id) && !disDone(x.id); } }
 };
 function asnReadyList(kind){
-  var R = ASN_READY[kind];
+  var R = PV.ASN_READY[kind];
   if (!R) return [];
   /* الحجبُ بالنوع لا بأيِّ إسنادٍ مفتوح: كان `asnOf` يُرجِع أيَّ مهمةٍ
      مفتوحةٍ على النقطة أيًّا كان نوعُها — فنقطةٌ رُكِّبت وسُلِّمت ومهمةُ
@@ -39,11 +39,11 @@ function asnReadyList(kind){
   });
 }
 /* زرٌّ واحد: يحدّد الجاهزَ ويفتح اللوحَ على نوعه في الخريطة */
-var ASN_QCAP = 300;
+PV.ASN_QCAP = 300;
 
 function asnReadyCard(){
-  var rows = Object.keys(ASN_READY).map(function(k){
-    var K = WO_KINDS[k] || { i:'', n:k };
+  var rows = Object.keys(PV.ASN_READY).map(function(k){
+    var K = PV.WO_KINDS[k] || { i:'', n:k };
     var n = asnReadyList(k).length;
     var open = 0;
     Object.keys(STATE.tasks || {}).forEach(function(t2){
@@ -51,7 +51,7 @@ function asnReadyCard(){
       if (x && x.kind === k && x.status !== 'معتمد') open++;
     });
     return [K.i + ' <strong>' + esc(t(K.n)) + '</strong><br>'
-              + '<span class="hint" style="margin:0">' + esc(t(ASN_READY[k].why)) + '</span>',
+              + '<span class="hint" style="margin:0">' + esc(t(PV.ASN_READY[k].why)) + '</span>',
             n ? '<b class="num">' + nm(n) + '</b>' : N(0),
             N(open),
             n && may('approve')
@@ -163,9 +163,9 @@ function asnCommit(){
     return;
   }
   logEvent('إسناد ' + to + ' · +' + nm(add) + (rm ? ' \u2212' + nm(rm) : '')
-           + ' \u00b7 ' + t(WO_KINDS[kind].n));
+           + ' \u00b7 ' + t(PV.WO_KINDS[kind].n));
   selClear();
-  ASN_BASE = [];
+  PV.ASN_BASE = [];
   ASN_OPEN = false;
   statBump();
   toast(to + ' \u00b7 ' + (add ? '+' + nm(add) + ' ' : '') + (rm ? '\u2212' + nm(rm) + ' ' : '')
@@ -191,10 +191,10 @@ PAGE.req = { m:'الميدان', t:'الطلبات والتوزيع',
     var L0 = regList();
     var byKind = {};
     L0.forEach(function(x){ byKind[x.kind] = (byKind[x.kind] || 0) + 1; });
-    var kinds = Object.keys(WO_KINDS).filter(function(k){ return byKind[k]; });
+    var kinds = Object.keys(PV.WO_KINDS).filter(function(k){ return byKind[k]; });
     var L = L0.filter(function(x){
       if (REG_KIND && x.kind !== REG_KIND) return false;
-      if (REG_ST && regStatus(x).t !== REG_ST) return false;
+      if (PV.REG_ST && regStatus(x).t !== PV.REG_ST) return false;
       if (REG_Q && (x.site + ' ' + (x.no || '') + ' ' + (x.to || '')).indexOf(REG_Q) < 0) return false;
       return true;
     });
@@ -206,15 +206,15 @@ PAGE.req = { m:'الميدان', t:'الطلبات والتوزيع',
       + '<button type="button" class="chip' + (REG_KIND ? '' : ' on') + '" data-regk="">'
       +   esc(t('كل الأنواع')) + ' <span class="num">' + nm(L0.length) + '</span></button>'
       + kinds.map(function(k){
-          var K = WO_KINDS[k];
+          var K = PV.WO_KINDS[k];
           return '<button type="button" class="chip' + (REG_KIND === k ? ' on' : '') + '" data-regk="' + k + '">'
             + K.i + ' ' + esc(t(K.n)) + ' <span class="num">' + nm(byKind[k]) + '</span></button>';
         }).join('') + '</div>'
 
       + '<div class="chips">'
-      + '<button type="button" class="chip' + (REG_ST ? '' : ' on') + '" data-regs="">' + esc(t('كل الحالات')) + '</button>'
+      + '<button type="button" class="chip' + (PV.REG_ST ? '' : ' on') + '" data-regs="">' + esc(t('كل الحالات')) + '</button>'
       + Object.keys(sts).map(function(st){
-          return '<button type="button" class="chip' + (REG_ST === st ? ' on' : '') + '" data-regs="' + esc(st) + '">'
+          return '<button type="button" class="chip' + (PV.REG_ST === st ? ' on' : '') + '" data-regs="' + esc(st) + '">'
             + esc(t(st)) + ' <span class="num">' + nm(sts[st]) + '</span></button>';
         }).join('') + '</div>'
 
@@ -226,9 +226,9 @@ PAGE.req = { m:'الميدان', t:'الطلبات والتوزيع',
         ? cardFlush(t('السجل') + ' — ' + nm(L.length) + ' ' + t('من') + ' ' + nm(L0.length),
             table(['الطلب','النقطة','المُسنَد إليه','الموعد','الحالة',''],
               capList(L, 200).map(function(x){
-                var st = regStatus(x), K = WO_KINDS[x.kind] || { i:'', n:x.kind };
+                var st = regStatus(x), K = PV.WO_KINDS[x.kind] || { i:'', n:x.kind };
                 var site = siteFind(x.site);
-                var on = REG_EDIT === x.id;
+                var on = PV.REG_EDIT === x.id;
                 return ['<span class="num">' + esc(x.no || '—') + '</span><br>'
                           + '<span class="hint" style="margin:0">' + K.i + ' ' + esc(t(K.n)) + '</span>',
                         '<span class="num">' + esc(x.site) + '</span><br>'
@@ -304,7 +304,7 @@ PAGE.req = { m:'الميدان', t:'الطلبات والتوزيع',
   })();
     return head + (function(){
     var T = STATE.tasks, by = {};
-    TK_ST.forEach(function(s){ by[s] = 0; });
+    PV.TK_ST.forEach(function(s){ by[s] = 0; });
     var rows = [];
     Object.keys(T).forEach(function(k){
       var x = T[k];
@@ -318,7 +318,7 @@ PAGE.req = { m:'الميدان', t:'الطلبات والتوزيع',
                   ['منفّذ', N(by['منفّذ']||0), 'acc'],
                   ['معتمد', N(by['معتمد']||0), 'ok']])
       + card('دورة الطلب',
-          flow(TK_ST.slice(0,4), 0)
+          flow(PV.TK_ST.slice(0,4), 0)
           + '<p class="hint">' + esc(t('والإعادة ترجعه للمنفِّذ بحالة «مُعاد» مع سبب.')) + '</p>',
           '<div class="actions">'
           + btn('➕ إنشاء طلب','btn-primary btn-sm',' data-asn="1"')
@@ -328,7 +328,7 @@ PAGE.req = { m:'الميدان', t:'الطلبات والتوزيع',
         ? cardFlush(t('الطلبات') + ' — ' + nm(rows.length),
             table(['الرقم','النقطة','النوع','الفني','الموعد','الحالة',''],
               rows.slice(0, 60).map(function(x){
-                var s = siteFind(x.site), k = WO_KINDS[x.kind] || { i:'', n:x.kind };
+                var s = siteFind(x.site), k = PV.WO_KINDS[x.kind] || { i:'', n:x.kind };
                 return ['<span class="num">' + esc(x.no || '—') + '</span>',
                         '<strong>' + esc(x.site) + '</strong><br>'
                         + '<span class="hint" style="margin:0">' + esc((s && s.name || '').slice(0,32)) + '</span>',
@@ -369,7 +369,7 @@ function mapSelBar(){
 ;
 
 /* الفنيُّ يرى ما أُسند إليه وحده على الخريطة */
-var MY_ONLY = false;
+PV.MY_ONLY = false;
 
 function mineFiltered(){
   var me = STATE.meta.name || '';

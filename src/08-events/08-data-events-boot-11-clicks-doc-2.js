@@ -17,8 +17,8 @@ function onDocClickPart4(e){
   var cpk = e.target.closest('[data-copick]');
   if (cpk){
     var ix = cpk.getAttribute('data-copick').split(':');
-    var rawK = (CO_CMP_KEYS || [])[+ix[0]];
-    var grp = rawK && (CO_CMP || {})[rawK];
+    var rawK = (PV.CO_CMP_KEYS || [])[+ix[0]];
+    var grp = rawK && (PV.CO_CMP || {})[rawK];
     if (grp) coPick(rawK, grp.parts[+ix[1]]);
     return;
   }
@@ -35,17 +35,17 @@ function onDocClickPart4(e){
   var rgk = e.target.closest('[data-regk]');
   if (rgk){
     var kv = rgk.getAttribute('data-regk');
-    if (kv === REG_KIND){ toast(t(kv ? (WO_KINDS[kv] ? WO_KINDS[kv].n : kv) : 'كل الأنواع') + ' \u00b7 ' + t('معروضٌ الآن')); return; }
-    REG_KIND = kv; REG_EDIT = ''; render(1); return;
+    if (kv === REG_KIND){ toast(t(kv ? (PV.WO_KINDS[kv] ? PV.WO_KINDS[kv].n : kv) : 'كل الأنواع') + ' \u00b7 ' + t('معروضٌ الآن')); return; }
+    REG_KIND = kv; PV.REG_EDIT = ''; render(1); return;
   }
   var rgs = e.target.closest('[data-regs]');
   if (rgs){
     var sv2 = rgs.getAttribute('data-regs');
-    if (sv2 === REG_ST){ toast(t(sv2 || 'كل الحالات') + ' \u00b7 ' + t('معروضٌ الآن')); return; }
-    REG_ST = sv2; REG_EDIT = ''; render(1); return;
+    if (sv2 === PV.REG_ST){ toast(t(sv2 || 'كل الحالات') + ' \u00b7 ' + t('معروضٌ الآن')); return; }
+    PV.REG_ST = sv2; PV.REG_EDIT = ''; render(1); return;
   }
   var rge = e.target.closest('[data-regedit]');
-  if (rge){ REG_EDIT = rge.getAttribute('data-regedit'); render(1); return; }
+  if (rge){ PV.REG_EDIT = rge.getAttribute('data-regedit'); render(1); return; }
   var rgv = e.target.closest('[data-regsave]');
   if (rgv){
     var rid = rgv.getAttribute('data-regsave');
@@ -55,7 +55,7 @@ function onDocClickPart4(e){
     if (tEl) pat.to = tEl.value, pat.assignedTo = tEl.value;
     if (wEl) pat.when = wEl.value || '';
     regSet(rid, pat);
-    REG_EDIT = ''; render(1); return;
+    PV.REG_EDIT = ''; render(1); return;
   }
   var rgd = e.target.closest('[data-regdel]');
   if (rgd){ regDel(rgd.getAttribute('data-regdel')); return; }
@@ -87,7 +87,7 @@ function onDocClickPart4(e){
                      : 'لا شركةَ لها نقاطٌ مُركّبةٌ معتمدةٌ بعد'));
       return;
     }
-    if (isSite){ HO_DOC = pick; HO_CO = ''; } else { HO_CO = pick; HO_DOC = ''; }
+    if (isSite){ HO_DOC = pick; PV.HO_CO = ''; } else { PV.HO_CO = pick; HO_DOC = ''; }
     render(1); return;
   }
   if (e.target.closest('[data-pkadd]')){ pkAdd(); return; }
@@ -98,8 +98,8 @@ function onDocClickPart4(e){
   var pdl = e.target.closest('[data-patdel]');
   if (pdl){ patDel(pdl.getAttribute('data-patdel')); return; }
   var svr = e.target.closest('[data-svreopen]');
-  if (svr){ SURV_REOPEN = svr.getAttribute('data-svreopen'); render(1); return; }
-  if (e.target.closest('[data-svreopencancel]')){ SURV_REOPEN = ''; render(1); return; }
+  if (svr){ PV.SURV_REOPEN = svr.getAttribute('data-svreopen'); render(1); return; }
+  if (e.target.closest('[data-svreopencancel]')){ PV.SURV_REOPEN = ''; render(1); return; }
   return onDocClickPart4Tail(e, rid);   /* (V39.38) the rest lives in onDocClickPart4Tail — kept under 150 lines (audit-health) */
 }
 /* (V39.38) the second half of onDocClickPart4, moved out whole to keep each under 150 lines — same statements, same order */
@@ -223,8 +223,8 @@ function onDocClickPart4b(e){
   var crc = e.target.closest('[data-crewcur]');
   if (crc){
     var cid = crc.getAttribute('data-crewcur');
-    if (cid === CREW_CUR){ toast(t('هذا الفريقُ معروضٌ الآن')); return; }
-    CREW_CUR = cid; CTEAM_CUR = ''; render(1); return;
+    if (cid === PV.CREW_CUR){ toast(t('هذا الفريقُ معروضٌ الآن')); return; }
+    PV.CREW_CUR = cid; CTEAM_CUR = ''; render(1); return;
   }
   var dtn = e.target.closest('[data-depteamnew]');
   if (dtn){ depTeamNew(dtn.getAttribute('data-depteamnew')); return; }
@@ -371,11 +371,11 @@ function onDocClickPart4bTail(e){
   var cal = e.target.closest('[data-coall]');
   if (cal){
     var on2 = cal.getAttribute('data-coall') === '1';
-    CO_LIST.filter(function(c){ return coHit(c, CO_Q); })
+    CO_LIST.filter(function(c){ return coHit(c, PV.CO_Q); })
       .forEach(function(c){
-        var k = CO_SEL.indexOf(c);
-        if (on2 && k < 0) CO_SEL.push(c);
-        if (!on2 && k > -1) CO_SEL.splice(k, 1);
+        var k = PV.CO_SEL.indexOf(c);
+        if (on2 && k < 0) PV.CO_SEL.push(c);
+        if (!on2 && k > -1) PV.CO_SEL.splice(k, 1);
       });
     statBump(); render(1);
     toast(t(on2 ? 'حُدِّد الكل' : 'أُزيل التحديد'));
@@ -383,9 +383,9 @@ function onDocClickPart4bTail(e){
   }
   var cmo = e.target.closest('[data-comode]');
   if (cmo){
-    CO_MODE = cmo.getAttribute('data-comode') === '1';
+    PV.CO_MODE = cmo.getAttribute('data-comode') === '1';
     statBump(); render(1);
-    toast(t(CO_MODE ? 'الخريطةُ بألوان الشركات' : 'عاد لونُ الطبقة'));
+    toast(t(PV.CO_MODE ? 'الخريطةُ بألوان الشركات' : 'عاد لونُ الطبقة'));
     return;
   }
   var srm = e.target.closest('[data-selrm]');
@@ -410,12 +410,12 @@ function onDocClickPart4bTail(e){
    يعالج: pretry، acc، chal، fst */
 function onDocClickPart5(e){
     if (e.target.closest('[data-pretry]')){
-    while (PHOTO_FAIL.length) PHOTO_Q.push(PHOTO_FAIL.shift());
+    while (PV.PHOTO_FAIL.length) PHOTO_Q.push(PV.PHOTO_FAIL.shift());
     toast(t('أُعيدت إلى الطابور'));
     photoFlush(); render(1); return;
   }
   var wy = e.target.closest('[data-why]');   /* (V37.1) سببُ عدم المسح — يحدّد حالةَ الوصول القديمة للتوافق */
-  if (wy){ FORM.why = wy.getAttribute('data-why'); FORM.access = WHY_ACCESS[FORM.why] || 'منع دخول'; render(1); return; }
+  if (wy){ FORM.why = wy.getAttribute('data-why'); FORM.access = PV.WHY_ACCESS[FORM.why] || 'منع دخول'; render(1); return; }
   var ac = e.target.closest('[data-acc]');
   if (ac){ FORM.access = ac.getAttribute('data-acc'); render(1); return; }
   var ch = e.target.closest('[data-chal]');
@@ -479,11 +479,11 @@ function onDocClickPart7(e){
   var wc = e.target.closest('[data-wacopy]');
   if (wc){ waSend(wc.getAttribute('data-wacopy'), 1); return; }
   if (e.target.closest('[data-fhpos]')){   /* (V29.4) */
-    try { navigator.geolocation.getCurrentPosition(function(p){ MYPOS = { lat:p.coords.latitude, lng:p.coords.longitude, acc:p.coords.accuracy, at:Date.now() }; render(1); }, function(){ toast(t('تعذّر تحديدُ الموقع — فعِّل الموقع للتطبيق')); }, { enableHighAccuracy:true, timeout:15000, maximumAge:30000 }); } catch (er){ toast(t('تعذّر تحديدُ الموقع')); }
+    try { navigator.geolocation.getCurrentPosition(function(p){ PV.MYPOS = { lat:p.coords.latitude, lng:p.coords.longitude, acc:p.coords.accuracy, at:Date.now() }; render(1); }, function(){ toast(t('تعذّر تحديدُ الموقع — فعِّل الموقع للتطبيق')); }, { enableHighAccuracy:true, timeout:15000, maximumAge:30000 }); } catch (er){ toast(t('تعذّر تحديدُ الموقع')); }
     return; }
   if (e.target.closest('[data-fhcopy]')){ var tx1 = fhTodayText(fhToday()); try { navigator.clipboard.writeText(tx1); toast(t('نُسخ الملخّص')); } catch (er){ toast(t('تعذّر النسخ')); } return; }
   if (e.target.closest('[data-fhwa]')){ try { window.open('https://wa.me/?text=' + encodeURIComponent(fhTodayText(fhToday())), '_blank', 'noopener'); toast(t('فُتح واتساب بالملخّص — اختر المشرف')); } catch (er){ toast(t('تعذّر الفتح')); } return; }
-  if (e.target.closest('[data-fhprep]')){ FH_PREP = Date.now();
+  if (e.target.closest('[data-fhprep]')){ PV.FH_PREP = Date.now();
     if (typeof basemapDownload === 'function' && typeof BASEMAP === 'object' && BASEMAP && !BASEMAP.have && !BASEMAP.loading) basemapDownload().then(function(){ render(1); });
     var pb = document.querySelector('[data-pull]'); if (pb && pb.click) pb.click();
     toast(t('يُجهَّز اليوم: خريطةُ الجهاز وآخرُ البيانات — أبقِ التطبيقَ مفتوحًا على الشبكة دقيقة')); render(1); return; }
@@ -494,7 +494,7 @@ function onDocClickPart7(e){
     NEWSITE.chals = L; render(1); return; }
   var msd = e.target.closest('[data-mailsend]');   /* (V29.0) */
   if (msd){ var mp = msd.getAttribute('data-mailsend').split('|'); mailGo(mp[1], mp[0], ''); return; }
-  if (e.target.closest('[data-mailco]')){ mailGo((document.getElementById('waCo') || {}).value || WA_CO, (document.getElementById('waKind') || {}).value || WA_KIND, (document.getElementById('waWhen') || {}).value || ''); return; }
+  if (e.target.closest('[data-mailco]')){ mailGo((document.getElementById('waCo') || {}).value || PV.WA_CO, (document.getElementById('waKind') || {}).value || PV.WA_KIND, (document.getElementById('waWhen') || {}).value || ''); return; }
   var wsd = e.target.closest('[data-wasend]');
   if (wsd){
     pr = wsd.getAttribute('data-wasend').split('|');

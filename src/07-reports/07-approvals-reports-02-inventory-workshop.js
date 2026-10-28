@@ -222,13 +222,13 @@ function itemAdd(){
 /* ── المخزن: الميزانُ من الحركات ──
    توريدٌ يزيد المخزن. وصرفٌ ينقله إلى عهدة المنفِّذ. واستهلاكٌ يُخرجه من
    العهدة إلى الميدان. وإرجاعٌ يعيده. وشطبٌ يعزله تالفًا. */
-var MOVE_KINDS = ['توريد','صرف','استهلاك','إرجاع','شطب'];
+PV.MOVE_KINDS = ['توريد','صرف','استهلاك','إرجاع','شطب'];
 
 function moveAdd(){
   if (!may('inventory')){ toast(t('المخزونُ للمهندس وحده')); return; }
   var g = function(id){ var el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; };
   var kind = g('mvKind'), item = g('mvItem'), qty = +g('mvQty') || 0;
-  if (!kind || MOVE_KINDS.indexOf(kind) < 0){ toast(t('اختر نوع الحركة')); return; }
+  if (!kind || PV.MOVE_KINDS.indexOf(kind) < 0){ toast(t('اختر نوع الحركة')); return; }
   if (!item){ toast(t('اختر الصنف')); return; }
   if (qty <= 0){ toast(t('الكميةُ أكبرُ من صفر')); return; }
   /* الصرفُ وما بعده لا يتجاوز المتاح — والرصيدُ السالب عطلٌ لا حالة */

@@ -10,10 +10,10 @@
    بكلماتها، ثم ينفّذ الحلَّ بزرٍّ حيث يملكه، ويشرح الخطواتِ حيث لا يملكه. */
 function assistDiag(){
   var q = (STATE.queue || []).filter(function(it){ return it && it.kind !== 'presence' && it.kind !== 'stats'; }).length;
-  var pq = (typeof PHOTO_Q === 'object' && PHOTO_Q) ? PHOTO_Q.length : 0, pf = (typeof PHOTO_FAIL === 'object' && PHOTO_FAIL) ? PHOTO_FAIL.length : 0;
+  var pq = (typeof PHOTO_Q === 'object' && PHOTO_Q) ? PHOTO_Q.length : 0, pf = (typeof PV.PHOTO_FAIL === 'object' && PV.PHOTO_FAIL) ? PV.PHOTO_FAIL.length : 0;
   var pz = (STATE.poison || []).length, on = !!STATE.meta.online, rms = typeof perfAvg === 'function' ? perfAvg('r') : 0, pms = typeof perfAvg === 'function' ? perfAvg('p') : 0;
-  var bad = typeof IDB_WHY !== 'undefined' && IDB_WHY;
-  return { q:q, pq:pq, pf:pf, pz:pz, on:on, rms:rms, pms:pms, lite:!!LITE, idbBad:!!bad, ver:(typeof APP_VER !== 'undefined' ? APP_VER : ''), role:ROLE };
+  var bad = typeof PV.IDB_WHY !== 'undefined' && PV.IDB_WHY;
+  return { q:q, pq:pq, pf:pf, pz:pz, on:on, rms:rms, pms:pms, lite:!!PV.LITE, idbBad:!!bad, ver:(typeof APP_VER !== 'undefined' ? APP_VER : ''), role:ROLE };
 }
 
 /* ═══ (V38.14) مساعدُ البيانات — أسئلةٌ عن بيانات المشروع تُجاب بالرقم من الجهاز نفسِه ═══

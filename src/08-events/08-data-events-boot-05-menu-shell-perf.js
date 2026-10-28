@@ -56,7 +56,7 @@ function navIco(s){
 }
 
 var CUR = 'map';
-var OPEN = {};
+PV.OPEN = {};
 
 var NAV_Q = '';
 
@@ -128,7 +128,7 @@ function navHtml(){
       items = items.filter(function(i){ return main.indexOf(i[0]) > -1; });
     }
     if (!items.length) return '';
-    var open = NAV_Q ? true : (items.some(function(i){ return i[0] === CUR; }) || OPEN[s.g]);
+    var open = NAV_Q ? true : (items.some(function(i){ return i[0] === CUR; }) || PV.OPEN[s.g]);
     var hc = items.some(function(i){ return i[0] === CUR; });   /* (V24.0) وحدةُ الصفحة الحالية تُضاء في شريط الأيقونات */
     return '<div class="nav-section'+(hc?' has-cur':'')+'" data-open="'+(open?'true':'false')+'" data-g="'+esc(s.g)+'">'
       + '<button type="button" class="group-toggle" data-gt aria-expanded="'+(open?'true':'false')+'" aria-label="'+esc(t(s.g))+'">'
@@ -171,7 +171,7 @@ function navLiveHint(){
 /* (V39.3) the folded last group: the screens opened less than five times in five weeks — never removed, one tap away */
 function navMoreHtml(more){
   if (!more.length) return '';
-  var g = 'المزيد', hc = more.some(function(i){ return i[0] === CUR; }), open = hc || OPEN[g];
+  var g = 'المزيد', hc = more.some(function(i){ return i[0] === CUR; }), open = hc || PV.OPEN[g];
   return '<div class="nav-section'+(hc?' has-cur':'')+'" data-open="'+(open?'true':'false')+'" data-g="'+esc(g)+'">'
     + '<button type="button" class="group-toggle" data-gt aria-expanded="'+(open?'true':'false')+'" aria-label="'+esc(t(g))+'">'
     + '<span class="group-label"><span class="item-icon" aria-hidden="true">\u22EF</span><span class="nav-t">'+esc(t(g))+'</span></span>'
@@ -192,7 +192,7 @@ var FIELD_PAGES = {
    السابق. ويُقتصَر على عشرين خطوةً فلا ينمو بلا حدٍّ في يومِ عملٍ طويل.
    ولم يكن في التطبيق سجلٌّ أصلًا: من دخل تفاصيلَ نقطةٍ من الخريطة لم يجد
    طريقًا يعود به إلا القائمةَ الجانبية، فيفتحها ويبحث عن اسم ما جاء منه. */
-var NAV_HIST = [];
+PV.NAV_HIST = [];
 
 
 /* ═══ الموضعُ لا يضيع مع كلِّ ضغطة ═══
@@ -246,7 +246,7 @@ function scrollBack(sameScreen){
 /* ═══ الأداءُ يُقاس لا يُحكى (V17.34) ═══
    زمنُ كلِّ رسمٍ وكلِّ سحبٍ يُقاس على الجهاز ويُرفَع مع نبضة الحضور —
    فيُرى من المكتب أيُّ جهازٍ بطيءٌ وأيُّ سحبٍ طويل، قبل أن يُشكى. */
-PV.PERF = { r:[], p:[] }; var COLD_N = 0;
+PV.PERF = { r:[], p:[] }; PV.COLD_N = 0;
 function perfNote(kind, ms){ var L = PV.PERF[kind]; if (!L) return; L.push(Math.round(ms)); if (L.length > 30) L.shift(); if (kind === 'r'){ try { liteMeasure(ms); } catch (eLM){ LS_ERR = eLM; } } }   /* (V37.23) القياسُ يغذّي الوضعَ الخفيف */
 function perfAvg(kind){ var L = PV.PERF[kind] || []; return L.length ? Math.round(L.reduce(function(a, b){ return a + b; }, 0) / L.length) : 0; }
 /* ═══ مؤشّراتُ الأداء الأصليةُ في المتصفّح (V17.98) ═══
@@ -283,7 +283,7 @@ function perfVitalsInit(){
 /* أوّلُ رسمٍ للخريطة بعد الفتح — علامةٌ خاصةٌ بالتطبيق */
 function vitMapReady(){
   if (VIT.open !== null) return;
-  var t = (typeof performance === 'object' && performance.now) ? performance.now() : (Date.now() - BOOT_AT);
+  var t = (typeof performance === 'object' && performance.now) ? performance.now() : (Date.now() - PV.BOOT_AT);
   VIT.open = Math.round(t);
   try { if (typeof performance === 'object' && performance.mark) performance.mark('nsk-map-ready'); } catch (e){ VIT.err = 1; }
 }

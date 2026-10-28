@@ -263,8 +263,8 @@ PAGE.exec = { m:'المتابعة', t:'التقارير التنفيذية',
     var S = siteStats(), v = (typeof evm === 'function') ? evm() : null;
     var SC = scores();
     var pay = SC.list.reduce(function(a,e){ return a + e.money; }, 0);
-    var open = (typeof RISKS !== 'undefined')
-      ? RISKS.filter(function(r){ return r.st === 'مفتوح' && riskScore(r) >= 12; }) : [];
+    var open = (typeof PV.RISKS !== 'undefined')
+      ? PV.RISKS.filter(function(r){ return r.st === 'مفتوح' && riskScore(r) >= 12; }) : [];
 
     return stats([['الإنجاز', nm(S.total ? Math.round(S.surveyed / S.total * 100) : 0) + '٪',
                    'acc'],

@@ -41,13 +41,13 @@ function asnOfTech(who, kind){
 }
 
 
-var ASN_BASE = [];
+PV.ASN_BASE = [];
 var ASN_MODE = 'tech';   /* لفنيٍّ واحدٍ أو لفريقٍ يُوزَّع على أعضائه */
 var ASN_PICK = false;    /* لوحُ اختيار نوع الإسناد على الخريطة */
 
 /* لكلِّ نوعٍ وجهتُه الطبيعية: الزيارةُ لفنيٍّ يمشي وحده،
    والتركيبُ والفكُّ لفريقٍ لأنهما عملُ أيدٍ لا يدٍ واحدة. */
-var ASN_KIND_DEST = { visit:'tech', install:'team', dis:'team', maint:'team' };
+PV.ASN_KIND_DEST = { visit:'tech', install:'team', dis:'team', maint:'team' };
 /* اسمُ نوع المهمة بالعربية وأيقونته — يُشتقّ من LAYERS فلا يُكتب مرتين */
 function kindLabel(kind){
   var k = Object.keys(LAYERS).filter(function(n){ return LAYERS[n].kind === kind; })[0];
@@ -157,10 +157,10 @@ function asnPickHtml(){
        خامسًا يفتح طبقةَ التركيب ويضبط النوعَ صيانةً. */
     + Object.keys(LAYERS).concat(['maint']).map(function(k){
         var isM = k === 'maint';
-        var L = isM ? { n:WO_KINDS.maint.n, i:WO_KINDS.maint.i, c:LIFE.maint.c, kind:'maint' } : LAYERS[k];
+        var L = isM ? { n:PV.WO_KINDS.maint.n, i:PV.WO_KINDS.maint.i, c:LIFE.maint.c, kind:'maint' } : LAYERS[k];
         var ready = isM ? (typeof asnReadyList === 'function' ? asnReadyList('maint').length : 0)
                         : layerStats(k).ready;
-        var dest = ASN_KIND_DEST[L.kind] || 'tech';
+        var dest = PV.ASN_KIND_DEST[L.kind] || 'tech';
         return '<button type="button" class="list-item" style="width:100%;text-align:inherit;'
           + 'background:none;border:0;border-bottom:1px solid var(--line-2);cursor:pointer"'
           + ' data-akind="' + esc(k) + '">'
@@ -311,7 +311,7 @@ function asnSheetTail(L, view){
       ? '<div class="grid cols-2" style="margin:0 0 10px">'
         + '<div class="field" style="margin:0"><label>' + esc(t('الفريق')) + '</label>'
         + '<select id="asnTeam">' + TEAMS.map(function(tm){
-            return '<option value="' + esc(tm.id) + '"' + (ASN_TEAM===tm.id?' selected':'') + '>'
+            return '<option value="' + esc(tm.id) + '"' + (PV.ASN_TEAM===tm.id?' selected':'') + '>'
               + esc(tm.n) + ' — ' + nm(tm.members.length) + ' ' + esc(t('أعضاء')) + '</option>';
           }).join('') + '</select></div>'
         + '<div class="field" style="margin:0"><label>' + esc(t('التوزيع')) + '</label>'
@@ -320,7 +320,7 @@ function asnSheetTail(L, view){
         + '<option value="even">' + esc(t('بالتساوي')) + '</option>'
         + '</select></div></div>'
         + (function(){
-            var tm = teamOf(ASN_TEAM);
+            var tm = teamOf(PV.ASN_TEAM);
             return tm && tm.members.length
               ? '<p class="hint" style="margin:0 0 10px">' + esc(t('سيُوزَّع'))
                 + ' <b>' + nm(SEL_N) + '</b> ' + esc(t('نقطة على'))
@@ -339,9 +339,9 @@ function asnSheetTail(L, view){
       : '')
     + '<div class="grid cols-2" style="margin:10px 0 0">'
     +   '<div class="field" style="margin:0"><label>' + esc(t('نوع المهمة')) + '</label>'
-    +   '<select id="asnKind">' + Object.keys(WO_KINDS).map(function(k){
+    +   '<select id="asnKind">' + Object.keys(PV.WO_KINDS).map(function(k){
           return '<option value="' + k + '"' + (ASN_KIND===k?' selected':'') + '>'
-            + WO_KINDS[k].i + ' ' + esc(t(WO_KINDS[k].n)) + '</option>'; }).join('')
+            + PV.WO_KINDS[k].i + ' ' + esc(t(PV.WO_KINDS[k].n)) + '</option>'; }).join('')
     +   '</select></div>'
     +   '<div class="field" style="margin:0"><label>' + esc(t('الموعد')) + '</label>'
     +   '<input type="date" id="asnWhen" value="' + esc(ASN_WHEN) + '"></div>'
@@ -375,12 +375,12 @@ function curTech(){
 
 /* الحفظُ توفيقٌ لا إنشاءٌ فقط: ما زِيد يُنشَأ وما نُقص يُلغى —
    فيُفتَح اللوحُ على خمسٍ فتُجعَل سبعًا أو ثلاثًا بالتحديد نفسه. */
-var ASN_TEAM = 'T1';
+PV.ASN_TEAM = 'T1';
 
 /* التوزيعُ على أعضاء الفريق: بالنسب المعرَّفة أو بالتساوي —
    فيأخذ القائدُ نصيبَه والمساعدُ نصيبَه، ولا تُترَك نقطةٌ بلا صاحب. */
 function asnTeamCommit(){
-  var tm = teamOf((document.getElementById('asnTeam') || {}).value || ASN_TEAM);
+  var tm = teamOf((document.getElementById('asnTeam') || {}).value || PV.ASN_TEAM);
   if (!tm || !tm.members.length){ toast(t('لا أعضاءَ في هذا الفريق')); return; }
   var split = (document.getElementById('asnSplit') || {}).value || 'share';
   var kind  = (document.getElementById('asnKind') || {}).value || LAYER().kind;

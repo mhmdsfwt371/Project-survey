@@ -18,7 +18,7 @@ function iotCentroid(R){ var a = 0, b = 0; R.forEach(function(p){ a += p[0]; b +
 
 function iotMakePlan(id, R, keep){   /* keep: {sensors, sm} حساساتٌ قائمةٌ داخل الجزء — يُكمَّل إلى IOT_N */
   keep = keep || { sensors:[], sm:[] }; var S = keep.sensors.slice(), M = keep.sm.slice();
-  if (S.length < IOT_N) iotGrid(R, IOT_N - S.length, S).forEach(function(p){ S.push(p); M.push({}); });
+  if (S.length < PV.IOT_N) iotGrid(R, PV.IOT_N - S.length, S).forEach(function(p){ S.push(p); M.push({}); });
   var used = {}; M.forEach(function(m){ if (m && m.id) used[m.id] = 1; }); var nx = 1;
   M = M.map(function(m){ m = Object.assign({}, m || {}); if (!m.id || m.id.indexOf(id + '-S') !== 0){ while (used[id + '-S' + iotPad(nx)]) nx++; m.id = id + '-S' + iotPad(nx); used[m.id] = 1; } if (!m.status) m.status = 'مخطط'; return m; });
   var gw = keep.gw && polyIn(keep.gw, R) ? keep.gw : iotCentroid(R);
@@ -179,24 +179,24 @@ function splitParts(ring, n){   /* ring: [[lng,lat]…] من campFoot → أجز
 }
 
 function splitStart(id){ var x = siteFind(id), ring = x && campFoot(x); if (!x || x.type !== 'مخيم'){ toast(t('التقسيمُ للمخيمات وحدَها')); return; } if (!maySiteEdit()){ toast(t('تقسيمُ المخيم للمهندس فما فوق')); return; } if (!ring){ toast(t('ارسم حدودَ المخيم أوّلًا')); return; }
-  SPLIT = { id:id, n:3, parts:splitParts(ring, 3) }; POP_OPEN = false; render(1); if (typeof mapPaint === 'function') mapPaint(); }
+  PV.SPLIT = { id:id, n:3, parts:splitParts(ring, 3) }; POP_OPEN = false; render(1); if (typeof mapPaint === 'function') mapPaint(); }
 
-function splitN(n){ if (!SPLIT) return; var x = siteFind(SPLIT.id); SPLIT.n = n; SPLIT.parts = splitParts(campFoot(x), n); render(1); if (typeof mapPaint === 'function') mapPaint(); }
+function splitN(n){ if (!PV.SPLIT) return; var x = siteFind(PV.SPLIT.id); PV.SPLIT.n = n; PV.SPLIT.parts = splitParts(campFoot(x), n); render(1); if (typeof mapPaint === 'function') mapPaint(); }
 
 function splitSuffix(base, k){ var L0 = 'BCDEFGHIJ', id = base + '-' + L0[k - 1]; var g = 0; while (siteFind(id) && g < 30){ g++; id = base + '-' + L0[(k - 1 + g) % L0.length] + (g >= L0.length ? g : ''); } return id; }
 
 function splitSave(){
-  if (!SPLIT) return false; if (!maySiteEdit()){ toast(t('تقسيمُ المخيم للمهندس فما فوق')); return false; }
-  var x = siteFind(SPLIT.id); if (!x || SPLIT.parts.length < 2){ toast(t('التقسيمُ جزءان على الأقل')); return false; }
+  if (!PV.SPLIT) return false; if (!maySiteEdit()){ toast(t('تقسيمُ المخيم للمهندس فما فوق')); return false; }
+  var x = siteFind(PV.SPLIT.id); if (!x || PV.SPLIT.parts.length < 2){ toast(t('التقسيمُ جزءان على الأقل')); return false; }
   var flat = function(pp){ var f = []; pp.forEach(function(q){ f.push(+(+q[0]).toFixed(6), +(+q[1]).toFixed(6)); }); return f; };
   var cen = function(pp){ var a = 0, b = 0; pp.forEach(function(q){ a += q[0]; b += q[1]; }); return [+(a / pp.length).toFixed(6), +(b / pp.length).toFixed(6)]; };
   var made = [], now = Date.now(), who = (STATE.meta && STATE.meta.name) || '';
-  SPLIT.parts.slice(1).forEach(function(pp, i){ var k = i + 1, id = splitSuffix(x.id, k), c = cen(pp), lab = ' (' + nm(k + 1) + ')';
+  PV.SPLIT.parts.slice(1).forEach(function(pp, i){ var k = i + 1, id = splitSuffix(x.id, k), c = cen(pp), lab = ' (' + nm(k + 1) + ')';
     var site = { id:id, name:(x.name || x.id) + lab, zone:x.zone, type:'مخيم', co:x.co || '', sq:x.sq || '', sign:(x.sign || '') + lab, lat:c[0], lng:c[1], region:x.region || ('منطقة ' + (x.zone || '')),
       poly:flat(pp), polyBy:who, polyAt:now, tents:x.tents || 0, fstat:'لم يبدأ', inout:'', isNew:true, approved:true, appBy:who, appAt:now, by:who, at:now, origin:'office', splitOf:x.id, note:t('من تقسيم المخيم') + ' ' + x.id };
     STATE.sites.push(site); CORE.set('newsites', id, site); made.push(id); });
-  if (x.zone === 'منى' || iotOf(x.id)){ try { iotSplit(x.id, [x.id].concat(made).map(function(pid, pi){ return { id:pid, ring:SPLIT.parts[pi] }; })); } catch (eI){ LS_ERR = eI; } }   /* (V37.70) حساساتُ المخيم تتوزّع على الأجزاء وتُكمَّل إلى ١٢ */
-  bedCommit(x, flat(SPLIT.parts[0]), 'تقسيمُ مخيم — ' + x.id + ' إلى ' + SPLIT.parts.length + ' أجزاء: ' + made.join('، '));   /* الجزءُ الأوّلُ بحدوده الجديدة — ويُعيد الرسمَ والعدّ */
-  SPLIT = null; SITE_IX = null; SITE_TOK = null; statBump(); render(1); if (typeof mapPaint === 'function') mapPaint();
+  if (x.zone === 'منى' || iotOf(x.id)){ try { iotSplit(x.id, [x.id].concat(made).map(function(pid, pi){ return { id:pid, ring:PV.SPLIT.parts[pi] }; })); } catch (eI){ LS_ERR = eI; } }   /* (V37.70) حساساتُ المخيم تتوزّع على الأجزاء وتُكمَّل إلى ١٢ */
+  bedCommit(x, flat(PV.SPLIT.parts[0]), 'تقسيمُ مخيم — ' + x.id + ' إلى ' + PV.SPLIT.parts.length + ' أجزاء: ' + made.join('، '));   /* الجزءُ الأوّلُ بحدوده الجديدة — ويُعيد الرسمَ والعدّ */
+  PV.SPLIT = null; SITE_IX = null; SITE_TOK = null; statBump(); render(1); if (typeof mapPaint === 'function') mapPaint();
   toast(t('قُسِّم المخيم') + ' — ' + nm(made.length + 1) + ' ' + t('مخيمات')); return made;
 }

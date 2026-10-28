@@ -14,7 +14,7 @@ function asnLoad(who){
   var kind = LAYER().kind;
   selClear();
   asnOfTech(who, kind).forEach(function(id){ SEL[id] = 1; SEL_N++; });
-  ASN_BASE = asnOfTech(who, kind);
+  PV.ASN_BASE = asnOfTech(who, kind);
   render(1);
 }
 
@@ -69,10 +69,10 @@ function solutionAppr(site, ok){
 function asnPickKind(k){
   /* الصيانةُ تستعير طبقةَ التركيب لأن نقاطَها نقاطُه المُركَّبة */
   var isM = k === 'maint';
-  var L = isM ? { n:WO_KINDS.maint.n, i:WO_KINDS.maint.i, kind:'maint' } : LAYERS[k];
+  var L = isM ? { n:PV.WO_KINDS.maint.n, i:PV.WO_KINDS.maint.i, kind:'maint' } : LAYERS[k];
   if (!L) return;
   FIELD_MODE = isM ? 'install' : k;
-  ASN_MODE = ASN_KIND_DEST[L.kind] || 'tech';
+  ASN_MODE = PV.ASN_KIND_DEST[L.kind] || 'tech';
   ASN_KIND = L.kind;
   selClear();
   ASN_PICK = false;

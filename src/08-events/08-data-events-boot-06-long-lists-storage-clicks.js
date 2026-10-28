@@ -11,7 +11,7 @@
    صفحةٌ تبني ثلاثَمئة صفٍّ (أربعةُ آلافِ عنصر) تأخذ ربعَ ثانيةٍ على المكتب وثانيةً على الهاتف مع كلِّ ضغطة — وهو أقربُ
    شيءٍ إلى «التعليق». صارت كلُّ قائمةٍ تبني مئةً، وزرٌّ واحدٌ أسفلَ الصفحة يزيد مئتين كلَّ ضغطة؛ والبحثُ في الصفحة
    يفتح الكلَّ كما كان (حتى خمسة آلاف). المفتاحُ صفحةٌ وشريحة، فلا يحمل عدُّ صفحةٍ إلى أخرى. */
-var MORE_SHOWN = {}; PV.MORE_FIRST = 100; var MORE_STEP = 200, MORE_CUT = 0;
+var MORE_SHOWN = {}; PV.MORE_FIRST = 100; PV.MORE_STEP = 200; var MORE_CUT = 0;
 function moreKey(){ return CUR + ':' + ((typeof PTAB === 'object' && PTAB && PTAB[CUR]) || ''); }
 /* (V37.80) توكنُ نظام البطاقات يُحمَّل عند فتح «المخيمات المركزية» أو قائمة التجارب فقط — لا لكلِّ مستخدمٍ عند الدخول */
 function capList(L, base){
@@ -22,7 +22,7 @@ function capList(L, base){
 }
 function moreHtml(){
   if (!MORE_CUT) return '';
-  return '<div style="padding:10px 16px 18px;text-align:center">' + btn('\u2B07 ' + t('اعرض المزيد') + ' (' + nm(Math.min(MORE_STEP, MORE_CUT)) + ' ' + t('من') + ' ' + nm(MORE_CUT) + ')', 'btn-secondary btn-sm', ' data-morek="1"') + '</div>';
+  return '<div style="padding:10px 16px 18px;text-align:center">' + btn('\u2B07 ' + t('اعرض المزيد') + ' (' + nm(Math.min(PV.MORE_STEP, MORE_CUT)) + ' ' + t('من') + ' ' + nm(MORE_CUT) + ')', 'btn-secondary btn-sm', ' data-morek="1"') + '</div>';
 }
 function render(force){   /* (V31.8) ذاكرةُ الرسمة: تُفتَح هنا وتُغلَق بعد الرسم مهما كان المخرج */
   DB.open();
@@ -85,17 +85,17 @@ function render0(force){
   try { assistBadgeSync(); } catch (eA){ LS_ERR = eA; }   /* (V37.30) */
   try { skinRowSync(); } catch (eS2){ LS_ERR = eS2; }   /* (V37.33) */
   if (CUR === 'trials' || CUR === 'chain'){ try { trialLinkExisting(); } catch (eT){ LS_ERR = eT; } }   /* (V37.44) ربطُ ما عُلِّم من قبل — بلا إنشاء */
-  if (!CFG.execOvSeeded && CFG_PULLED){ try { execOvSeed(); } catch (eXS){ LS_ERR = eXS; } }   /* (V37.61) بذرُ قرارات التقرير مرةً — بعد وصول إعدادات السحابة */
+  if (!CFG.execOvSeeded && PV.CFG_PULLED){ try { execOvSeed(); } catch (eXS){ LS_ERR = eXS; } }   /* (V37.61) بذرُ قرارات التقرير مرةً — بعد وصول إعدادات السحابة */
   var rsB = document.getElementById('resetBtn'); if (rsB && !rsB.textContent) rsB.textContent = '\u{1F9F9} ' + t('إعادة ضبط التطبيق');   /* (V36.1) فورًا، ومرةً بعد الرسمة لما تغيّر فيها */
   try { setTimeout(gedInject, 0); } catch (eG){ LS_ERR = eG; }   /* (V36.2) «✎ تعديل» بجوار كلِّ حذفٍ مسجَّل */
   try { setTimeout(gdelInject, 0); } catch (eD){ LS_ERR = eD; }   /* (V36.5) «🗑 حذف» بجوار خطوة السجلّات التي كانت بلا حذف */
-  try { if (typeof KK_MAP !== 'undefined' && KK_MAP && !document.getElementById('kkSat')){ KK_MAP.remove(); KK_MAP = null; } } catch (eK){ LS_ERR = eK; }   /* (V34.2) */
+  try { if (typeof PV.KK_MAP !== 'undefined' && PV.KK_MAP && !document.getElementById('kkSat')){ PV.KK_MAP.remove(); PV.KK_MAP = null; } } catch (eK){ LS_ERR = eK; }   /* (V34.2) */
   if (typeof SVD === 'object' && !SVD.checked && document.getElementById('nav')){ SVD.checked = true; setTimeout(svDraftRestore, 1500); }   /* (V25.9) مسودةُ مسحٍ انقطع — بعد الإقلاع لا في أثنائه */
-  var wasCur = RENDER_CUR, wasTab = TABS[CUR] ? tabCur(CUR) : '';
+  var wasCur = PV.RENDER_CUR, wasTab = TABS[CUR] ? tabCur(CUR) : '';
   /* فهرسُ المهامِّ عمرُه رسمةٌ واحدة (V17.47): بناؤه جزءان من الألف، وإبقاؤه
      أطولَ يجعل صحّتَه رهينةَ تذكُّرِ كلِّ كاتبٍ أن يُبطِله — وذلك عهدٌ يُنسى.
      فيُبنى مرةً في الرسمة ويُستهلَك آلافَ المرات فيها، ويموت معها. */
-  TK_IX = null; FUP_MEMO = {}; CO_BK = null; MORE_CUT = 0;
+  TK_IX = null; FUP_MEMO = {}; PV.CO_BK = null; MORE_CUT = 0;
   try { wakeSync(); } catch (e){ LS_ERR = e; }   /* قفلُ الشاشة يتبع الصفحةَ المرسومة (V17.99) */
   var FOCUS_G = focusGrab();
   var T_R0 = (typeof performance === 'object' && performance.now) ? performance.now() : Date.now();
@@ -147,22 +147,22 @@ function render0(force){
     document.body.appendChild(wnEl);
   }
   var key = (typeof renderKey === 'function') ? renderKey() : String(Math.random());
-  if (!force && key === RENDER_KEY && document.getElementById('content')
+  if (!force && key === PV.RENDER_KEY && document.getElementById('content')
       && document.getElementById('content').children.length) return;
-  RENDER_KEY = key; RENDER_N++;
+  PV.RENDER_KEY = key; PV.RENDER_N++;
 
   /* معرِّفُ شريحةٍ قديمٌ — من رابطٍ أو قائمةٍ أو زرٍّ — يصل إلى أمِّه على شريحته.
      والوصولُ بمعرِّف الأمِّ نفسِه (وهو معرِّفُ شريحتها الأولى) يفتح تلك الشريحة
      — فمن قصد «المستخدمين» لا يجد نفسَه في «الوظائف» لأنها آخرُ ما فُتح.
      أمّا إعادةُ الرسم في المكان (CUR لم يتغيّر) فتُبقي الشريحةَ المفتوحة. */
   if (PARENT[CUR] && PARENT[CUR] !== CUR){ PTAB[PARENT[CUR]] = CUR; CUR = PARENT[CUR]; }
-  else if (TABS[CUR] && PARENT[CUR] === CUR && CUR !== RENDER_CUR) PTAB[CUR] = CUR;
+  else if (TABS[CUR] && PARENT[CUR] === CUR && CUR !== PV.RENDER_CUR) PTAB[CUR] = CUR;
   if (!seesPage(CUR)){
     var n = R().nav;
     CUR = (n === '*') ? 'map' : n[0];
     if (PARENT[CUR] && PARENT[CUR] !== CUR){ PTAB[PARENT[CUR]] = CUR; CUR = PARENT[CUR]; }
   }
-  RENDER_CUR = CUR;
+  PV.RENDER_CUR = CUR;
   var p = FIELD_PAGES[CUR] || PAGE[CUR];
   /* (V38.39) core + chunks: the office/ministry/reports screens arrive in app-office.js after first paint.
      Until then a request for one of them shows a loading card; the chunk re-renders when it lands (nskChunkReady). */
@@ -177,7 +177,7 @@ function render0(force){
 
   document.getElementById('nav').innerHTML = navHtml();
   var bk = document.getElementById('backBtn');
-  if (bk) bk.hidden = !NAV_HIST.length;
+  if (bk) bk.hidden = !PV.NAV_HIST.length;
   document.getElementById('crumb').textContent = t(p.t);
   return render0Tail(wasCur, p, pl, wasTab);   /* (V39.38) the rest lives in render0Tail — kept under 150 lines (audit-health) */
 }
@@ -223,7 +223,7 @@ function render0Tail(wasCur, p, pl, wasTab){
     uh.innerHTML = USR.log ? userLogHtml(USR.log) : ''; }
   { var dh = document.getElementById('dosHost');
     if (!dh){ dh = document.createElement('div'); dh.id = 'dosHost'; document.body.appendChild(dh); }
-    dh.innerHTML = (WBS_DOS && CUR === 'wbs') ? wbsDosSheet() : ''; }
+    dh.innerHTML = (PV.WBS_DOS && CUR === 'wbs') ? wbsDosSheet() : ''; }
   /* جولةُ البداية: لوحٌ على الجسد وإضاءةُ بندِ الشاشة في القائمة */
   { var th = document.getElementById('tourHost');
     if (!th){ th = document.createElement('div'); th.id = 'tourHost'; document.body.appendChild(th); }

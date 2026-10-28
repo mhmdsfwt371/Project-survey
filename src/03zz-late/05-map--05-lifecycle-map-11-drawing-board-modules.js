@@ -123,7 +123,7 @@ function svdXls(){
   var out = [['رقم الشاخص / الاسم','المعرّف','الاسم','المشعر','النوع','الشركة','المربع','الشاخص','الغرف/الخيام','مصدر العدد','الحالة','التحديات','مَن زار','متى','خط العرض','خط الطول']];
   svdPicked().forEach(function(o){
     out.push([siteKey(o.x), o.x.id, o.x.name || '', o.x.zone || '', o.x.type || '', o.x.co || '', o.x.sq || '', o.x.sign || '',
-              o.rooms || '', SVD_SRC[o.src] || '', (LIFE[o.life] && LIFE[o.life].n) || '',
+              o.rooms || '', PV.SVD_SRC[o.src] || '', (LIFE[o.life] && LIFE[o.life].n) || '',
               o.ch.join(' | ') || (o.r ? 'لا توجد تحديات' : ''), (o.r && o.r.by) || '', o.r ? dayKey(o.r.at || 0) : '',
               o.x.lat || '', o.x.lng || '']);
   });
@@ -171,7 +171,7 @@ function svdashBody(){
                                 + (o.x.name ? '<br><span class="hint" style="margin:0">' + esc(o.x.name) + '</span>' : ''),
                               esc(t(o.x.zone || '')) + '<br><span class="hint" style="margin:0">' + esc(t(o.x.type || '')) + '</span>',
                               (o.rooms ? N(o.rooms) : '\u2014')
-                                + (o.camp ? '<br><span class="hint" style="margin:0">' + esc(t(SVD_SRC[o.src] || '')) + '</span>' : ''),
+                                + (o.camp ? '<br><span class="hint" style="margin:0">' + esc(t(PV.SVD_SRC[o.src] || '')) + '</span>' : ''),
                               lf ? '<span class="pill" style="border-color:' + esc(lf.c) + ';color:' + esc(lf.c) + '">' + esc(t(lf.n)) + '</span>' : '\u2014',
                               '<span class="hint" style="margin:0">' + esc(o.r ? svdWhy(o) : t('لم تُزر بعد')) + '</span>',
                               esc((o.r && o.r.by) || '\u2014'), esc(o.r ? dayKey(o.r.at || 0) : '\u2014'),

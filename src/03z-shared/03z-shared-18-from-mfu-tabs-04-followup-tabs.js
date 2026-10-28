@@ -8,18 +8,18 @@
 /* ═══ (V37.62) تبويباتُ متابعة الوزارة الخمسة بفكرة الملخّص — قرارُ المالك: «الوزارة عاوزة تتابع بأسهل طريقة ممكنة» ═══
    القالبُ الواحد: حلقةٌ كبيرة (كم من كم) ← مربعاتٌ بأيقونةٍ ورقمٍ وكلمة ← كلُّ مربعٍ يفتح لوحتَه وإكسلَه (والمهامُّ تُصفّى في مكانها).
    القواعد: كلُّ نقطةٍ (أو مهمةٍ) في مربعٍ واحدٍ من كلِّ قسم فالأرقامُ تجمع؛ لا عمرَ معوِّقٍ ولا مقارنةً تُدين المشغّل؛ والتفاصيلُ القديمةُ كاملةً في قسمٍ مطويّ. */
-var MT_TILE = 'background:var(--surface-2);border-radius:14px;padding:12px;touch-action:manipulation';
+PV.MT_TILE = 'background:var(--surface-2);border-radius:14px;padding:12px;touch-action:manipulation';
 
 
 /* (V37.64) توحيد: الأسماءُ من تعريف المالك CC_GROUPS نفسِه، والألوانُ بمعنى واحدٍ في الخريطة واللوحات */
-var MT_GRP = [ { k:'make', e:'\u{1F3ED}', c:'#F59E0B', w:[0, 2, 4] }, { k:'study', e:'\u{1F50E}', c:'#E67E22', w:[1, 5] }, { k:'owner', e:'\u{1F91D}', c:'#EF4444', w:[3] }, { k:'access', e:'\u{1F501}', c:'#8D6E63', w:[] } ];
+PV.MT_GRP = [ { k:'make', e:'\u{1F3ED}', c:'#F59E0B', w:[0, 2, 4] }, { k:'study', e:'\u{1F50E}', c:'#E67E22', w:[1, 5] }, { k:'owner', e:'\u{1F91D}', c:'#EF4444', w:[3] }, { k:'access', e:'\u{1F501}', c:'#8D6E63', w:[] } ];
 
 /* (V38.76) the single definition: a point scheduled for installation keeps its challenge until it is installed (svStOf says
    «sched» first and dropped it from this tab while the hall screen and the follow-up counted it) */
 function mtGrpOf(id){
   if (insDone(id)) return ''; var r = STATE.recs[id]; if (!r || !svVisited(r)) return ''; if (!svDone(r)) return 'access';
   var pw = svPrimWhyAny(r); if (pw < 0) return '';
-  for (var i = 0; i < MT_GRP.length; i++) if (MT_GRP[i].w.indexOf(pw) > -1) return MT_GRP[i].k; return 'study';
+  for (var i = 0; i < PV.MT_GRP.length; i++) if (PV.MT_GRP[i].w.indexOf(pw) > -1) return PV.MT_GRP[i].k; return 'study';
 }
 
 /* (V38.26) كلُّ النقاط عدا المخيمات ومراكز التفويج */
@@ -49,16 +49,16 @@ function obsLocTags(x){
 
 
 /* ── ٣ · شركات الخدمة ── */
-var MT_COB = [ { k:'ready', n:'مخيماتها جاهزة', e:'\u2705', c:'#22C55E' }, { k:'prep', n:'فيها تجهيز', e:'\u{1F6E0}', c:'#F59E0B' }, { k:'coord', n:'محتاجة تنسيق', e:'\u26A0\uFE0F', c:'#EF4444' }, { k:'todo', n:'لسه', e:'\u23F3', c:'#475569' } ];
+PV.MT_COB = [ { k:'ready', n:'مخيماتها جاهزة', e:'\u2705', c:'#22C55E' }, { k:'prep', n:'فيها تجهيز', e:'\u{1F6E0}', c:'#F59E0B' }, { k:'coord', n:'محتاجة تنسيق', e:'\u26A0\uFE0F', c:'#EF4444' }, { k:'todo', n:'لسه', e:'\u23F3', c:'#475569' } ];
 
 
 /* ── ١ · المهام الأسبوعية — تُصفّى في مكانها، والإكسلُ بما تراه ── */
-var MT_WF = '', MT_WPOP = false;
+PV.MT_WF = ''; PV.MT_WPOP = false;
 
 
 /* (V37.63) مربعُ المهام يفتح نافذتَه */
-var MT_WST = [ { k:'done', n:'خلصت', e:'\u2705', c:'#22C55E' }, { k:'late', n:'متأخرة', e:'\u23F0', c:'#EF4444' }, { k:'run', n:'شغالين عليها', e:'\u{1F504}', c:'#2E86DE' }, { k:'wait', n:'لسه', e:'\u23F3', c:'#475569' } ];
+PV.MT_WST = [ { k:'done', n:'خلصت', e:'\u2705', c:'#22C55E' }, { k:'late', n:'متأخرة', e:'\u23F0', c:'#EF4444' }, { k:'run', n:'شغالين عليها', e:'\u{1F504}', c:'#2E86DE' }, { k:'wait', n:'لسه', e:'\u23F3', c:'#475569' } ];
 
-var MT_WWHO = [ { k:'afaqy', n:'أفاقي', e:'\u{1F3E2}' }, { k:'min', n:'الوزارة', e:'\u{1F3DB}' }, { k:'co', n:'شركة الخدمة', e:'\u26FA' }, { k:'other', n:'أخرى', e:'\u{1F465}' } ];
+PV.MT_WWHO = [ { k:'afaqy', n:'أفاقي', e:'\u{1F3E2}' }, { k:'min', n:'الوزارة', e:'\u{1F3DB}' }, { k:'co', n:'شركة الخدمة', e:'\u26FA' }, { k:'other', n:'أخرى', e:'\u{1F465}' } ];
 
 

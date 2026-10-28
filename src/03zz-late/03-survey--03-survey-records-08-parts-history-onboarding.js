@@ -22,7 +22,7 @@ function patSave(name){
   CORE.set('cfg', 'patterns', L.slice());
   logEvent('حفظ نمط قطع — ' + name + ' \u00b7 ' + nm(Object.keys(items).length) + ' صنف');
   toast(t('حُفظ النمطُ') + ' \u00b7 ' + name);
-  PAT_NAME = '';
+  PV.PAT_NAME = '';
   return true;
 }
 
@@ -63,7 +63,7 @@ function itemPickerHtml(){
         + '<div class="field"><label>&nbsp;</label>' + btn('\u2699 ' + t('طبّق النمط'),'btn-secondary btn-sm',' data-patapply="1"' + (pats.length ? '' : ' disabled')) + '</div>'
         + (may('settings')
           ? '<div class="field"><label>' + esc(t('احفظ الأسطرَ الحاليةَ نمطًا')) + '</label>'
-            + '<div class="actions" style="margin:0"><input id="patName" value="' + esc(PAT_NAME) + '" placeholder="' + esc(t('مثلًا: مخيم قياسي')) + '" dir="auto" style="flex:1">'
+            + '<div class="actions" style="margin:0"><input id="patName" value="' + esc(PV.PAT_NAME) + '" placeholder="' + esc(t('مثلًا: مخيم قياسي')) + '" dir="auto" style="flex:1">'
             + btn('\u{1F4BE} ' + t('احفظ نمطًا'),'btn-quiet btn-sm',' data-patsave="1"') + '</div></div>'
           : '')
         + '</div>'
@@ -173,21 +173,21 @@ function probeOne(ip){
 }
 
 function probeRun(){
-  if (PROBE.on) { PROBE.on = false; render(1); return; }
+  if (PV.PROBE.on) { PV.PROBE.on = false; render(1); return; }
   var targets = STATE.sites
     .map(function(s){ return { s:s, ip:probeIp(s) }; })
     .filter(function(x){ return x.ip; });
   if (!targets.length){ toast(t('لا عناوين مسجّلة — أدخل بادئة الشبكة عند التركيب')); return; }
 
-  PROBE.on = true; PROBE.done = 0; PROBE.up = 0; PROBE.down = 0; PROBE.log = [];
-  PROBE.t = Date.now();
+  PV.PROBE.on = true; PV.PROBE.done = 0; PV.PROBE.up = 0; PV.PROBE.down = 0; PV.PROBE.log = [];
+  PV.PROBE.t = Date.now();
   render(1);
 
   var i = 0;
   function step(){
-    if (!PROBE.on || i >= targets.length){
-      PROBE.on = false;
-      logEvent('فحص الأجهزة — ' + nm(PROBE.up) + ' حيّ · ' + nm(PROBE.down) + ' صامت');
+    if (!PV.PROBE.on || i >= targets.length){
+      PV.PROBE.on = false;
+      logEvent('فحص الأجهزة — ' + nm(PV.PROBE.up) + ' حيّ · ' + nm(PV.PROBE.down) + ' صامت');
       render(1);
       return;
     }
@@ -195,15 +195,15 @@ function probeRun(){
     i += 6;
     Promise.all(batch.map(function(x){
       return probeOne(x.ip).then(function(alive){
-        PROBE.done++;
-        if (alive) PROBE.up++; else PROBE.down++;
+        PV.PROBE.done++;
+        if (alive) PV.PROBE.up++; else PV.PROBE.down++;
         STATE.hb = STATE.hb || {};
         STATE.hb[x.s.id] = { ip:x.ip, alive:alive, at:Date.now() };
-        if (PROBE.log.length < 60)
-          PROBE.log.unshift({ id:x.s.id, ip:x.ip, alive:alive });
+        if (PV.PROBE.log.length < 60)
+          PV.PROBE.log.unshift({ id:x.s.id, ip:x.ip, alive:alive });
       });
     })).then(function(){
-      if (PROBE.done % 24 === 0) render(1);
+      if (PV.PROBE.done % 24 === 0) render(1);
       setTimeout(step, 60);
     });
   }
@@ -211,13 +211,13 @@ function probeRun(){
 }
 
 function siteLogFetch(id){
-  if (!FB.ready || !FB.db || SITE_LOG_MORE[id] || SITE_LOG_BUSY === id) return;
-  SITE_LOG_BUSY = id;
+  if (!FB.ready || !FB.db || PV.SITE_LOG_MORE[id] || PV.SITE_LOG_BUSY === id) return;
+  PV.SITE_LOG_BUSY = id;
   DB.col('events').where('site', '==', id).limit(200).get().then(function(sn){
     var L = []; sn.forEach(function(dd){ L.push(dd.data()); });
     FB.readCount = (FB.readCount || 0) + sn.size;
-    SITE_LOG_MORE[id] = L; SITE_LOG_BUSY = ''; render(1);
-  }).catch(function(e){ SITE_LOG_MORE[id] = []; SITE_LOG_BUSY = ''; softErr('سجل النقطة', e, ''); });
+    PV.SITE_LOG_MORE[id] = L; PV.SITE_LOG_BUSY = ''; render(1);
+  }).catch(function(e){ PV.SITE_LOG_MORE[id] = []; PV.SITE_LOG_BUSY = ''; softErr('سجل النقطة', e, ''); });
 }
 
 function tourStart(){ TOUR.i = 0; TOUR.open = true; render(1); }

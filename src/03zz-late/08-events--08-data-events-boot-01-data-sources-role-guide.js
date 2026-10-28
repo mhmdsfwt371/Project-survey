@@ -44,7 +44,7 @@ function roleGuide(k){
     /* مئةٌ وخمسُ شاشاتٍ في قائمةٍ واحدةٍ لا تُقرأ — ولا تُقاس على شاشة هاتف.
        فالمجموعاتُ مطويّةٌ بأعدادها، وتُفتَح واحدةً واحدة. */
     + groups.map(function(g){
-        var open = GUIDE.g === g;
+        var open = PV.GUIDE.g === g;
         return card('',
           '<button type="button" class="btn btn-quiet" data-guideg="' + esc(open ? '' : g) + '" style="width:100%;justify-content:space-between;font-weight:700">'
           + '<span>' + (open ? '\u25BE ' : '\u25B8 ') + esc(t(g)) + '</span><span class="num">' + nm(byGroup[g].length) + '</span></button>'

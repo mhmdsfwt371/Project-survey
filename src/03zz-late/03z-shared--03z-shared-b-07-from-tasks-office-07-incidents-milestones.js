@@ -81,7 +81,7 @@ function mileAdd(name, w, d, dep){
   name = String(name || '').trim(); if (!name){ toast(t('اسمُ المعلَم مطلوب')); return false; }
   var id = 'X' + Date.now().toString(36).slice(-5).toUpperCase();
   mileUpsert(id, { custom:true, n:name, w:+w || 0, d:d || '', dep:dep || '', prog:0 });
-  toast(t('أُضيف المعلَم') + ' ' + name); MILE_EDIT = ''; render(1); return true;
+  toast(t('أُضيف المعلَم') + ' ' + name); PV.MILE_EDIT = ''; render(1); return true;
 }
 
 function mileRemove(id){
@@ -89,5 +89,5 @@ function mileRemove(id){
   var o = mileOv(id);
   if (o.custom){ STATE.mileDates = mileDates().filter(function(x){ return x.id !== id; }); CORE.set('cfg', 'miles', STATE.mileDates.slice()); CORE.saveSoon(); }
   else mileUpsert(id, { hidden:true });
-  logEvent('حذفُ معلَم — ' + id, id); toast(t('حُذف المعلَم')); MILE_EDIT = ''; render(1); return true;
+  logEvent('حذفُ معلَم — ' + id, id); toast(t('حُذف المعلَم')); PV.MILE_EDIT = ''; render(1); return true;
 }

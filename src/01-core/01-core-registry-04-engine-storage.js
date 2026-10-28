@@ -11,7 +11,7 @@
    الكتابة تنجح على الجهاز دائمًا، والشبكة تفصيلٌ لاحقٌ لا شرطٌ مسبق.
    وما لم يُرفع يبقى في طابورٍ يُعاد إرساله حين تعود الشبكة. */
 
-var FB_CFG = {
+PV.FB_CFG = {
   apiKey: "AIzaSyAo6s6Btxb7Nl1Eam_UBDNQUfUteNBRhMw",
   authDomain: "project-survey-60600.firebaseapp.com",
   projectId: "project-survey-60600",
@@ -21,7 +21,7 @@ var FB_CFG = {
 };
 
 /* ── المخزن المحلي: IndexedDB وإن تعذّر فذاكرةٌ حيّة ── */
-var IDB_NAME = 'nusuk-v14'; PV.IDB_STORE = 'kv'; var _idb = null, _mem = null;
+PV.IDB_NAME = 'nusuk-v14'; PV.IDB_STORE = 'kv'; var _idb = null, _mem = null;
 
 /* ═══ المخزنُ المحلي لا يستسلم (V17.93) ═══
    كان الفتحُ إن أبطأ أربعَ ثوانٍ أو أخطأ يقلب الجلسةَ كلَّها إلى ذاكرةٍ لا
@@ -30,9 +30,9 @@ var IDB_NAME = 'nusuk-v14'; PV.IDB_STORE = 'kv'; var _idb = null, _mem = null;
    (١ · ٣ · ١٠ · ٣٠ ثوانٍ ثم كلَّ دقيقة)، وما كُتب في الذاكرة يُدفَق إلى القاعدة
    حين تُفتَح لأنه الأحدث، وما دام الحفظُ المحليُّ لا يعمل تظهر لافتةٌ حمراءُ
    لا تُغلَق ويُسأل قبل إغلاق الصفحة. */
-var IDB_LOG_ERR = null; PV.IDB_TIMEOUT = (typeof window === 'object' && +window.NSK_IDB_TIMEOUT) || 4000; PV.IDB_BACKOFF = (typeof window === 'object' && Array.isArray(window.NSK_IDB_BACKOFF)) ? window.NSK_IDB_BACKOFF : [1000, 3000, 10000, 30000, 60000]; PV.IDB_TRY = 0; var IDB_RETRY_T = 0, IDB_BAD = false; PV.IDB_PENDING = null;
+PV.IDB_LOG_ERR = null; PV.IDB_TIMEOUT = (typeof window === 'object' && +window.NSK_IDB_TIMEOUT) || 4000; PV.IDB_BACKOFF = (typeof window === 'object' && Array.isArray(window.NSK_IDB_BACKOFF)) ? window.NSK_IDB_BACKOFF : [1000, 3000, 10000, 30000, 60000]; PV.IDB_TRY = 0; var IDB_RETRY_T = 0, IDB_BAD = false; PV.IDB_PENDING = null;
 /* (V19.5) سببُ تعطّل الحفظ بلغةٍ يفهمها الفنيّ — وما يفعله */
-var IDB_WHY = '';
+PV.IDB_WHY = '';
 function idbWhyText(w){
   w = String(w || '');
   if (/connection to indexed database server lost|connection is closing|closing|InvalidStateError|UnknownError/i.test(w)) return 'انقطع اتصالُ المتصفّح بمخزنه بعد رجوع التطبيق من الخلفية (عيبٌ معروفٌ في آيفون) — يُعاد فتحُه تلقائيًّا.';
@@ -61,7 +61,7 @@ function idbBannerUpdate(){
     if (!ib){ ib = document.createElement('div'); ib.id = 'idbBanner'; ib.setAttribute('role', 'alert'); document.body.insertBefore(ib, document.body.firstChild); }
     var ibN = (CORE && CORE.pending) ? CORE.pending() : 0;
     ib.innerHTML = '\u26A0 ' + esc(t('الحفظُ المحليُّ على هذا الجهاز لا يعمل: زامن الآن ولا تغلق التطبيق حتى يُرفَع عملُك.'))   /* بلغة اللحظة */
-      + '<div style="font-weight:600;font-size:13px;margin-top:4px">' + esc(t('السبب')) + ': ' + esc(t(idbWhyText(IDB_WHY))) + ' ' + esc(t('وعملُك يُرفَع تلقائيًّا لحظةَ حفظه ما دامت الشبكة.')) + '</div>'
+      + '<div style="font-weight:600;font-size:13px;margin-top:4px">' + esc(t('السبب')) + ': ' + esc(t(idbWhyText(PV.IDB_WHY))) + ' ' + esc(t('وعملُك يُرفَع تلقائيًّا لحظةَ حفظه ما دامت الشبكة.')) + '</div>'
       + ' <button type="button" class="ib-sync" data-pull="1">\u{1F504} ' + esc(t('زامن الآن')) + ' <span id="idbBannerN">' + (ibN ? '(' + nm(ibN) + ' ' + esc(t('بانتظار الرفع')) + ')' : '') + '</span></button>'
       + ' <button type="button" class="ib-sync" data-idbretry="1">\u21BB ' + esc(t('أعد المحاولة')) + '</button>';
   } else if (ib){ ib.parentNode.removeChild(ib); }
@@ -76,13 +76,13 @@ function idbWatchStart(){
   }, 10000);
 }
 function idbTellBad(on, why){
-  if (on) IDB_WHY = String(why || IDB_WHY || '');
+  if (on) PV.IDB_WHY = String(why || PV.IDB_WHY || '');
   if (on) idbWatchStart();
   if (IDB_BAD === on) return;
   IDB_BAD = on;
-  try { boxNote('idb', on ? 'bad:' + String(why || '').slice(0, 30) : 'ok'); } catch (e){ BOX_ERR = e; }
-  try { if (typeof logEvent === 'function') logEvent(on ? 'الحفظُ المحليُّ لا يعمل — ' + String(why || '').slice(0, 40) : 'عاد الحفظُ المحلي', ''); } catch (e){ IDB_LOG_ERR = e; }
-  try { if (typeof render === 'function') render(1); } catch (e){ IDB_LOG_ERR = e; }
+  try { boxNote('idb', on ? 'bad:' + String(why || '').slice(0, 30) : 'ok'); } catch (e){ PV.BOX_ERR = e; }
+  try { if (typeof logEvent === 'function') logEvent(on ? 'الحفظُ المحليُّ لا يعمل — ' + String(why || '').slice(0, 40) : 'عاد الحفظُ المحلي', ''); } catch (e){ PV.IDB_LOG_ERR = e; }
+  try { if (typeof render === 'function') render(1); } catch (e){ PV.IDB_LOG_ERR = e; }
 }
 function idbAdopt(db){
   _idb = db;
@@ -100,13 +100,13 @@ function idbAdopt(db){
   } else { _mem = null; idbTellBad(false); }
 }
 function idbDrop(){
-  if (_idb){ try { _idb.close(); } catch (e){ IDB_LOG_ERR = e; } _idb = null; }
+  if (_idb){ try { _idb.close(); } catch (e){ PV.IDB_LOG_ERR = e; } _idb = null; }
   idbRetryLater();
 }
 function idbRetryNow(){
   PV.IDB_TRY = 0;
   if (IDB_RETRY_T){ clearTimeout(IDB_RETRY_T); IDB_RETRY_T = 0; }
-  if (_idb){ try { _idb.close(); } catch (e){ IDB_LOG_ERR = e; } _idb = null; }
+  if (_idb){ try { _idb.close(); } catch (e){ PV.IDB_LOG_ERR = e; } _idb = null; }
   return idbStart().catch(function(){ return null; });
 }
 /* الرجوعُ من الخلفية والحفظُ معطّل: محاولةُ فتحٍ فورية (V19.5) */
@@ -128,7 +128,7 @@ function idbStart(){
     };
     /* متصفّحٌ بلا IndexedDB أصلًا (بيئاتُ الفحص): ذاكرةٌ بصمتٍ كما كان — لا إعادةَ ولا لافتة، فلا شيءَ يُنتظَر */
     if (typeof indexedDB === 'undefined'){ PV.IDB_PENDING = null; if (!_mem) _mem = new Map(); rej(new Error('no-idb')); return; }
-    try { q = indexedDB.open(IDB_NAME, 1); } catch (e){ fail(e); return; }
+    try { q = indexedDB.open(PV.IDB_NAME, 1); } catch (e){ fail(e); return; }
     q.onupgradeneeded = function(){ q.result.createObjectStore(PV.IDB_STORE); };
     q.onsuccess = function(){ PV.IDB_PENDING = null; idbAdopt(q.result); res(_idb); };   /* ولو بعد المهلة: يُتبنّى ويُدفَق */
     q.onerror = function(){ fail(q.error || new Error('idb-error')); };
@@ -216,5 +216,5 @@ var STATE = {
   meta:    { lastSync:0, uid:'', role:'', name:'', online:false }
 };
 
-var QUEUE_CAP = 2000, _saveT = 0;
+var QUEUE_CAP = 2000; PV._saveT = 0;
 

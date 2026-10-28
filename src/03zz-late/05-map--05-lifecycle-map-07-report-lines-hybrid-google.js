@@ -23,7 +23,7 @@ function fontsFace(F){
 }
 
 function basemapRemove(){
-  return caches.open(BASEMAP_CACHE).then(function(c){ return Promise.all([BASEMAP_FILE].concat(BASEMAP_JS).map(function(u){ return c.delete(u); })); }).then(function(){ BASEMAP.have = false; if (BASEMAP.layer && MAP){ try { MAP.removeLayer(BASEMAP.layer); } catch (e){ LS_ERR = e; } BASEMAP.layer = null; } BASEMAP.arc = null; basemapSwap(); toast(t('أُزيلت خريطةُ المشاعر من الجهاز')); render(1); });
+  return caches.open(PV.BASEMAP_CACHE).then(function(c){ return Promise.all([PV.BASEMAP_FILE].concat(BASEMAP_JS).map(function(u){ return c.delete(u); })); }).then(function(){ BASEMAP.have = false; if (BASEMAP.layer && MAP){ try { MAP.removeLayer(BASEMAP.layer); } catch (e){ LS_ERR = e; } BASEMAP.layer = null; } BASEMAP.arc = null; basemapSwap(); toast(t('أُزيلت خريطةُ المشاعر من الجهاز')); render(1); });
 }
 
 function kmzExport(kind){
@@ -33,13 +33,13 @@ function kmzExport(kind){
     f = function(x){ return x.zone === 'منى' || x.zone === 'عرفات'; };
     title = 'أفاقي — منى وعرفات · ١٤٤٨هـ'; name = 'nusuk-mina-arafat.kmz';
   } else if (kind === 'co'){
-    f = function(x){ return !CO_SEL.length || CO_SEL.indexOf(x.co) > -1; };
+    f = function(x){ return !PV.CO_SEL.length || PV.CO_SEL.indexOf(x.co) > -1; };
     title = 'أفاقي — بلون الشركة'; name = 'nusuk-companies.kmz';
   } else if (kind === 'redo'){
     f = function(x){ return x.work === 'إعادة تركيب ١٤٤٧'; };
     title = 'أفاقي — إعادة تركيب ١٤٤٧'; name = 'nusuk-redo-1447.kmz';
   } else if (kind === 'sel'){
-    f = function(x){ return SEL_IDS.indexOf(x.id) > -1; };
+    f = function(x){ return PV.SEL_IDS.indexOf(x.id) > -1; };
     title = 'أفاقي — المحدَّد'; name = 'nusuk-selected.kmz';
   }
   var b = kmzBuild(f, title);
@@ -53,7 +53,7 @@ function kmzExport(kind){
 function impTemplate(kind){
   return xlsxLoad().then(function(ok){
     if (!ok){ toast('تعذّر تحميل محرّك إكسل'); return false; }
-    var cols = IMP_COLS[kind] || [];
+    var cols = PV.IMP_COLS[kind] || [];
     var rows = [cols];
     /* صفٌّ نموذجيٌّ من بياناتٍ حقيقيةٍ يُحتذى */
     if (kind === 'sites' && STATE.sites.length){

@@ -11,14 +11,14 @@ function boxText(){
               'idb ' + (IDB_BAD ? 'bad' : (_idb ? 'ok' : 'mem')) + ' persist ' + (typeof PERSIST === 'object' ? PERSIST.st : ''), 'q ' + ((STATE.queue || []).length) + ' pz ' + ((STATE.poison || []).length), '---'];
   var lines = B.e.map(function(x){ return new Date(x.t).toISOString().slice(11, 19) + ' ' + x.k + ' ' + x.w; });
   var out = head.concat(lines).join('\n');
-  while (out.length > BOX_BYTES && lines.length){ lines.shift(); out = head.concat(lines).join('\n'); }
+  while (out.length > PV.BOX_BYTES && lines.length){ lines.shift(); out = head.concat(lines).join('\n'); }
   return out;
 }
 
 function boxCopy(){
   var txt = boxText();
   var done = function(){ toast(t('نُسخ التشخيص — أرسله للمهندس')); };
-  try { if (navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done, function(){ toast(t('تعذّر النسخ')); }); return; } } catch (e){ BOX_ERR = e; }
+  try { if (navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done, function(){ toast(t('تعذّر النسخ')); }); return; } } catch (e){ PV.BOX_ERR = e; }
   try { var ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); done(); } catch (e){ toast(t('تعذّر النسخ')); }
 }
 

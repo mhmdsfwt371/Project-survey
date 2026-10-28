@@ -10,7 +10,7 @@
    ولا أين ولا بمَ انتهت. فصار لكلِّ تجربةٍ عُدّتُها (بوابةٌ وحساساتٌ بأعدادها)
    وموضعُها ونتيجتُها وتقريرُها على الدرايف وصورُها — تُرفَع بالخطِّ نفسِه الذي
    ترفع به صورُ النقاط (الهاتفُ يكتب والخادمُ ينقل) تحت معرّفٍ للتجربة. */
-var TRIAL_OUT = { 'جارية':'', 'ناجحة':'ok', 'تحتاج إعادة':'warn', 'لم تنجح':'bad' };
+PV.TRIAL_OUT = { 'جارية':'', 'ناجحة':'ok', 'تحتاج إعادة':'warn', 'لم تنجح':'bad' };
 
 function trialKitHtml(r, me){
   var kit = [];
@@ -20,7 +20,7 @@ function trialKitHtml(r, me){
   var ph = photosOf('TRIAL-' + r.id), q = (typeof PHOTO_Q !== 'undefined' ? PHOTO_Q : []).filter(function(p){ return p.site === 'TRIAL-' + r.id; });
   var out = r.out || 'جارية';
   return '<div class="wt-row" style="margin:6px 0 0;gap:6px;flex-wrap:wrap">'
-    + pill(t(out), TRIAL_OUT[out] || '')
+    + pill(t(out), PV.TRIAL_OUT[out] || '')
     + (kit.length ? '<span class="hint" style="margin:0">' + kit.join(' \u00b7 ') + '</span>' : '')
     + (r.site && siteFind(r.site) ? btn('\u{1F4CD} ' + (siteFind(r.site).name || r.site) + ' \u2190', 'btn-quiet btn-sm', ' data-site="' + esc(r.site) + '" title="' + esc(t('نقطة التجربة')) + '"') : (r.where ? '<span class="hint" style="margin:0">\u{1F4CD} ' + esc(r.where) + '</span>' : ''))   /* (V37.44) */
     + (r.report ? '<a class="btn btn-quiet btn-sm" href="' + esc(r.report) + '" target="_blank" rel="noopener">\u{1F4C4} ' + esc(t('التقرير')) + '</a>' : '')

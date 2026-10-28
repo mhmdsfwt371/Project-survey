@@ -13,9 +13,9 @@
      فالميدانُ ثلاثةٌ لا غير: فنيٌّ ومشرفٌ ومهندس — ومعهم أطقمُ التركيب
    والتجميع والتهيئة لأن عملَهم ميدانيٌّ كذلك. ومن سواهم يبقى في حسابه
    ولا يُسنَد إليه. */
-var FIELD_ROLES = { tech:1, supervisor:1, engineer:1, cins:1, casm:1, cprep:1 };
+PV.FIELD_ROLES = { tech:1, supervisor:1, engineer:1, cins:1, casm:1, cprep:1 };
 
-function isFieldRole(r){ return !!FIELD_ROLES[effRole(r)]; }
+function isFieldRole(r){ return !!PV.FIELD_ROLES[effRole(r)]; }
 
 /* الطاقمُ المنفِّذ: يرى على الخريطة وفي القائمة ما أُسند إليه وحده —
    والمشرفُ يرى الخريطةَ كلَّها وقائمتَه مُسنَدةً مع مفتاحٍ يفتح الكلّ */
@@ -56,7 +56,7 @@ function techSet(name, patch){
 
 /* الفرق: تُنشأ وتُحذَف، وأعضاؤها من سجل الفنيين لا من نصٍّ حرّ */
 function crewsList(){
-  if (!Array.isArray(STATE.crews) || !STATE.crews.length) STATE.crews = CREWS.slice();
+  if (!Array.isArray(STATE.crews) || !STATE.crews.length) STATE.crews = PV.CREWS.slice();
   return STATE.crews;
 }
 
@@ -98,7 +98,7 @@ function unassignedTechs(){
    والوظيفةُ تتغيّر في أثناء الموسم: من كان في التهيئة ينتقل إلى التركيب.
    فتُسجَّل النقلةُ بتاريخها ولا تُمحى الأولى — وإلا ضاع من عمل ماذا ومتى. */
 
-var JOBS_SEED = [
+PV.JOBS_SEED = [
   /* الوظيفةُ ما يعمله الشخص، والدورُ ما تسمح به القاعدة. وهذه الوظائفُ
      الإحدى عشرةُ هي هيكلُ الفريق كما هو في الأرض — ولكلٍّ دورٌ من السبعة
      التي تعرفها قواعدُ القاعدة، فلا يُنشَأ دورٌ لا تعرفه فتُرفَض كتابتُه. */
@@ -121,10 +121,10 @@ var JOBS_SEED = [
 ];
 
 function jobsList(){
-  if (!Array.isArray(STATE.jobs) || !STATE.jobs.length) STATE.jobs = JOBS_SEED.slice();
+  if (!Array.isArray(STATE.jobs) || !STATE.jobs.length) STATE.jobs = PV.JOBS_SEED.slice();
   /* وظيفةٌ زِيدت في البذرة بعد أن حُفظت القائمةُ في القاعدة لا تظهر — فتُلحَق
      بموضعها (الإدارةُ العليا أوّلًا) دون أن تمسَّ ما عدّله المكتب */
-  JOBS_SEED.forEach(function(j, i){
+  PV.JOBS_SEED.forEach(function(j, i){
     if (!STATE.jobs.some(function(x){ return x.id === j.id; })) STATE.jobs.splice(Math.min(i, STATE.jobs.length), 0, Object.assign({}, j));
   });
   return STATE.jobs;
@@ -146,7 +146,7 @@ var LESS_SHOW = false;
 
 
 function lessList(){
-  if (!Array.isArray(STATE.lessons) || !STATE.lessons.length) STATE.lessons = LESSONS.slice();
+  if (!Array.isArray(STATE.lessons) || !STATE.lessons.length) STATE.lessons = PV.LESSONS.slice();
   return STATE.lessons;
 }
 

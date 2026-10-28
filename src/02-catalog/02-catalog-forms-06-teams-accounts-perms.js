@@ -11,7 +11,7 @@
    المجموعةُ تنجز معًا، والنقاطُ تُقسَّم بنسبٍ تُكتب لكلِّ عضو:
    قائدُ الفريق أكبرُ نصيبًا من الفني، والفنيُّ من المساعد. */
 
-var TEAM_ROLE = {
+PV.TEAM_ROLE = {
   lead:   { n:'قائد الفريق', i:'\u2605', def:35 },
   tech:   { n:'فني',         i:'\u25CF', def:25 },
   helper: { n:'مساعد',       i:'\u25CB', def:15 }
@@ -44,7 +44,7 @@ function teamPoints(tm){
 
 /* أنواعُ الفرق: كانت أربعةً ميدانيةً فقط — والمشروعُ فيه مستودعٌ ومشترياتٌ
    وفكٌّ ونقل، ولا فريقَ لهم فلا يُتابَعون ولا تُسنَد إليهم سيارة. */
-var WO_KINDS = {
+PV.WO_KINDS = {
   visit:   { n:'زيارة',   i:'\u{1F50D}', c:'#E8C34B', tgt:'survey' },
   prep:    { n:'تهيئة',   i:'\u{1F6E0}', c:'#8FD3E8', tgt:'prep' },
   asm:     { n:'تجميع',   i:'\u{1F9F0}', c:'#C77DFF', tgt:'asm' },
@@ -59,9 +59,9 @@ var WO_KINDS = {
 };
 /* (V39.12) a task written with kind «survey» (an older name of the visit) read its kind raw in the tables — «survey» on an
    Arabic screen. It is the visit; the alias is hidden from Object.keys so no picker grows a second «زيارة». */
-Object.defineProperty(WO_KINDS, 'survey', { value:WO_KINDS.visit, enumerable:false });
+Object.defineProperty(PV.WO_KINDS, 'survey', { value:PV.WO_KINDS.visit, enumerable:false });
 
-var CREWS = [
+PV.CREWS = [
   { id:'eng',   n:'المهندسون',     base:'engineer',   kind:'*',
     d:'يديرون المشروع ويعتمدون ما يرفعه الفرق.',
     members:[] },
@@ -119,7 +119,7 @@ function crewSet(name, patch){
   statBump();
 }
 
-var CREW_CUR = '';
+PV.CREW_CUR = '';
 
 
 function crewNewCard(){
@@ -129,8 +129,8 @@ function crewNewCard(){
       +   '<input id="crN" dir="auto" placeholder="' + esc(t('فريق المستودع')) + '"></div>'
       + '<div class="field"><label>' + esc(t('نوع العمل')) + '</label>'
       +   '<select id="crKind">'
-      +   Object.keys(WO_KINDS).map(function(k){
-            return '<option value="' + esc(k) + '">' + esc(t(WO_KINDS[k].n)) + '</option>';
+      +   Object.keys(PV.WO_KINDS).map(function(k){
+            return '<option value="' + esc(k) + '">' + esc(t(PV.WO_KINDS[k].n)) + '</option>';
           }).join('') + '</select></div>'
       + '<div class="field"><label>' + esc(t('الوصف')) + '</label>'
       +   '<input id="crD" dir="auto"></div>'
@@ -140,13 +140,13 @@ function crewNewCard(){
 
 
 /* ── التقارير الدورية ───────────────────────────── */
-var PERIODS = [
+PV.PERIODS = [
   ['day',   'يومي',    'نهاية كل يوم عمل',      '١٧:٠٠'],
   ['week',  'أسبوعي',  'صباح أول يوم في الأسبوع','٠٧:٠٠'],
   ['month', 'شهري',    'أول يوم في الشهر',       '٠٧:٠٠']
 ];
 
-var CREW_REPORTS = [
+PV.CREW_REPORTS = [
   ['نقاط اليوم لكل منفِّذ',      'day',   'كل الفرق', 'ما أنجزه كلُّ فردٍ اليوم بنوع مهمته'],
   ['المفتوح والمتأخر',           'day',   'كل الفرق', 'المهام التي لم تُقفل ومَن عندها'],
   ['الفريق مقابل تارجته',        'week',  'كل الفرق', 'الأسبوعي مقابل ما أُنجز فعلًا'],
@@ -162,7 +162,7 @@ var CREW_REPORTS = [
 /* ── شغل الفريق — ما يراه عضوه ──────────────────── */
 ;
 
-var CREW_VIEW = 'cprep';
+PV.CREW_VIEW = 'cprep';
 
 /* ═══ حسابات الفنيين — إنشاءٌ جماعيٌّ وفرديّ ═══
    الفني يعمل تحت مشرفه: يرى المُسند إليه وينفّذه ولا يعتمد شيئًا.
@@ -184,7 +184,7 @@ var TECHS = [];
    الزيارة: عشرون مخيمًا أو عشر نقاط ممرٍّ يوميًّا.
    وتارجت التركيب يُحسب على قطع النقطة لا على عددها. */
 
-var CREW_SPEC = [
+PV.CREW_SPEC = [
   { k:'ins_camp', n:'فريق تركيب — مخيمات', kind:'install', zone:'camp',
     sup:1, tech:3, gear:0, rate:2,
     d:'مشرفٌ وثلاثة فنيين — مخيمان في اليوم.' },
@@ -213,7 +213,7 @@ function crewNeed(spec, months){
            people:crews * (sup + tec), gear:crews * ger, sup:sup, tech:tec, rate:rate };
 }
 
-var PLAN_MONTHS = 4;
+PV.PLAN_MONTHS = 4;
 
 
 /* ═══ موديول الصلاحيات — واجهةً وقواعدَ Firebase ═══ */
@@ -390,7 +390,7 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
             '<div class="grid cols-3">'
             + '<div class="field" style="margin:0"><label>' + esc(t('اسم الدور')) + '</label><input id="nrName" dir="auto" placeholder="' + esc(t('مندوب شركة الخدمة')) + '"></div>'
             + '<div class="field" style="margin:0"><label>' + esc(t('يرث')) + '</label><select id="nrBase">'
-            +   BASE_ROLES.map(function(k){ return '<option value="' + esc(k) + '"' + (k === 'tech' ? ' selected' : '') + '>' + esc(t(ROLES[k].n)) + '</option>'; }).join('')
+            +   PV.BASE_ROLES.map(function(k){ return '<option value="' + esc(k) + '"' + (k === 'tech' ? ' selected' : '') + '>' + esc(t(ROLES[k].n)) + '</option>'; }).join('')
             + '</select></div>'
             + '<div class="field" style="margin:0"><label>' + esc(t('الرتبة')) + '</label><input id="nrRank" type="number" inputmode="numeric" placeholder="' + esc(t('فارغةٌ = رتبةُ الأساس')) + '"></div>'
             + '</div>'

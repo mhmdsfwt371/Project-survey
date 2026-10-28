@@ -7,9 +7,9 @@
    ============================================================================ */
 /* (V37.61) بعد البذر: السحابةُ وحدَها، فما يمسحه المهندسُ يبقى ممسوحًا */
 function execOvSeed(){   /* (V37.61) قراراتُ المالك المكتوبةُ في الكود تُنقل إلى السحابة مرةً واحدة — أوّلُ مهندسٍ يفتح التطبيق */
-  if (CFG.execOvSeeded || typeof may !== 'function' || !may('settings') || (typeof CFG_PULLED !== 'undefined' && !CFG_PULLED)) return 0;   /* لا بذرَ قبل وصول إعدادات السحابة — وإلا طغى على قراراتٍ موجودة */
+  if (CFG.execOvSeeded || typeof may !== 'function' || !may('settings') || (typeof PV.CFG_PULLED !== 'undefined' && !PV.CFG_PULLED)) return 0;   /* لا بذرَ قبل وصول إعدادات السحابة — وإلا طغى على قراراتٍ موجودة */
   CFG.execOv = CFG.execOv || {}; var n = 0;
-  Object.keys(EXEC_OV).forEach(function(id){ if (!CFG.execOv[id]){ CFG.execOv[id] = { s:EXEC_OV[id], by:'قرار المالك — الملف ٣', at:Date.now() }; n++; } });
+  Object.keys(PV.EXEC_OV).forEach(function(id){ if (!CFG.execOv[id]){ CFG.execOv[id] = { s:PV.EXEC_OV[id], by:'قرار المالك — الملف ٣', at:Date.now() }; n++; } });
   CFG.execOvSeeded = Date.now(); cfgPushSoon('execOv'); cfgPushSoon('execOvSeeded'); CFG_VER = (typeof CFG_VER === 'number' ? CFG_VER : 0) + 1;
   if (n) logEvent('نُقلت ' + n + ' من قرارات التقرير التنفيذي إلى السحابة'); return n;
 }

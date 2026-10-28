@@ -31,7 +31,7 @@ function xlsxLoad(){
    تنسيقًا شرطيًّا — تكتب قيمًا. وملفُّ الخطة التفصيلية ليس قيمًا: صيغٌ تحسب
    المدةَ والحالةَ والموقفَ الزمنيَّ من تاريخ اليوم، وآباءٌ يجمعون أبناءهم،
    ومستوياتُ طيٍّ، وألوانٌ شرطية. فتُحمَّل مكتبةٌ ثانيةٌ لهذا الملفِّ وحدَه. */
-var EXLJS_READY = false, EXLJS_LOADING = null;
+PV.EXLJS_READY = false; PV.EXLJS_LOADING = null;
 
 /* ═══ (V33.7) بلاغُ المالك: «لما بعمل إكسبورت وورد بيطلّعني برّه السيستم ويدخّلني تاني» ═══
    على الآيفون والتطبيقُ مثبّتٌ على الشاشة الرئيسية، رابطُ التنزيل يفتح الملفَّ في معاينةٍ تحلّ محلَّ التطبيق نفسِه — فإذا رجع
@@ -221,7 +221,7 @@ var SHEETS = {
   },
   reps: function(){
     var out = [['التقرير','الجهة','إلى','الدورية','موعده','محتواه','أوراقه']];
-    REPORTS.forEach(function(r){
+    PV.REPORTS.forEach(function(r){
       out.push([r.n, r.side === 'co' ? 'الشركة' : 'الوزارة', r.to, r.per, r.when, r.what,
                 r.sheets.join(' · ')]);
     });
@@ -263,7 +263,7 @@ var SHEETS = {
   },
   less: function(){
     return [['المرحلة','ما وقع','ما فُعل']].concat(
-      LESSONS.map(function(l){ return [l.p, l.w, l.a]; }));
+      PV.LESSONS.map(function(l){ return [l.p, l.w, l.a]; }));
   },
   evm: function(){
     var v = evm();
@@ -420,7 +420,7 @@ var SHEETS = {
   },
   pmi: function(){
     var out = [['الإطار','البند','العنوان','الدليل في النظام','القياس','الحالة']], F = { pmbok:'دليل المعرفة ٨', acp:'المنهج الرشيق', ai:'إدارة مشاريع الذكاء الاصطناعي' };
-    pmiRows().forEach(function(r){ out.push([F[r.fw], r.code, r.title, r.ev, r.note, PMI_ST[r.st][0]]); });
+    pmiRows().forEach(function(r){ out.push([F[r.fw], r.code, r.title, r.ev, r.note, PV.PMI_ST[r.st][0]]); });
     return out;
   },
   diary: function(){
@@ -437,7 +437,7 @@ var SHEETS = {
                 'أعمال','أيام','النقاط','متوسط اليوم','نقاط المسح','نقاط المسح / يوم','المستحَق']
                .concat(cols.map(function(c){ return 'مسح ' + c; })).concat(cols.map(function(c){ return 'نقاط ' + c; }))];
     S.list.forEach(function(e){
-      var R = STAGE_ROLES[e.stage] || { n:e.stage };
+      var R = PV.STAGE_ROLES[e.stage] || { n:e.stage };
       out.push([e.rank, e.name, R.n, e.survey, e.install, e.dis, e.prep, e.asm,
                 e.acts, e.nDays, e.total, e.perDay, Math.round(e.pSurvey * 10) / 10, e.nDays ? Math.round(e.pSurvey / e.nDays * 10) / 10 : 0, e.money]
                .concat(cols.map(function(c){ return e.surveyT[c] ? e.surveyT[c].n : 0; })).concat(cols.map(function(c){ return e.surveyT[c] ? Math.round(e.surveyT[c].pts * 10) / 10 : 0; })));
@@ -501,7 +501,7 @@ var SHEETS = {
         var v = vehOf(a.veh);
         var days = Math.max(1, Math.round(((a.end || Date.now()) - (a.at || Date.now())) / 86400000));
         out.push([v ? v.plate : a.veh, v ? vehKindName(v.kind) : '', a.to,
-                  ASN_LABEL[a.kind] || a.kind || '', msDay(a.at),
+                  PV.ASN_LABEL[a.kind] || a.kind || '', msDay(a.at),
                   a.end ? msDay(a.end) : 'جارٍ', days,
                   (v && a.kind && !vehFits(v.kind, a.kind)) ? 'لا تناسب' : 'مناسبة']);
       });
@@ -522,7 +522,7 @@ var SHEETS = {
       var a = vehAsnOf(v.id);
       out.push([v.plate, vehKindName(v.kind), v.model || '', v.year || '', v.lic || '',
                 v.licExp || '', v.insExp || '', v.own || '', v.cost || 0, v.start || '',
-                v.st || '', a ? a.to : '', a ? (ASN_LABEL[a.kind] || a.kind) : '']);
+                v.st || '', a ? a.to : '', a ? (PV.ASN_LABEL[a.kind] || a.kind) : '']);
     });
     return out;
   },
@@ -587,20 +587,20 @@ var SHEETS = {
 
   /* المرحلةُ المفتوحةُ وحدها — كان الزرُّ يطلب «stage» ولا ورقةَ بهذا الاسم */
   stage: function(){
-    var k = (typeof STAGE_TAB !== 'undefined' && STAGE_TAB) || Object.keys(STAGE_ROLES)[0];
+    var k = (typeof PV.STAGE_TAB !== 'undefined' && PV.STAGE_TAB) || Object.keys(PV.STAGE_ROLES)[0];
     var out = [['المرحلة','المنفِّذ','أعمال','النقاط','المستحَق']];
     stageList(k).forEach(function(e){
-      out.push([STAGE_ROLES[k].n, e.name, e.acts,
+      out.push([PV.STAGE_ROLES[k].n, e.name, e.acts,
                 Math.round(e.total), Math.round(e.total * cfgGet('ph'))]);
     });
     return out;
   },
   stages: function(){
     var out = [['المرحلة','أفراد','أعمال','النقاط','المستحَق']];
-    Object.keys(STAGE_ROLES).forEach(function(k){
+    Object.keys(PV.STAGE_ROLES).forEach(function(k){
       var L = stageList(k);
       var p = L.reduce(function(a,e){ return a + e.total; }, 0);
-      out.push([STAGE_ROLES[k].n, L.length,
+      out.push([PV.STAGE_ROLES[k].n, L.length,
                 L.reduce(function(a,e){ return a + e.acts; }, 0),
                 Math.round(p), Math.round(p * cfgGet('ph'))]);
     });
@@ -618,7 +618,7 @@ var SHEETS = {
   tasks: function(){
     var out = [['المعرّف','النقطة','النوع','الفني','الموعد','الحالة','أُسند في']];
     Object.keys(STATE.tasks).forEach(function(k){
-      var x = STATE.tasks[k], K = WO_KINDS[x.kind] || { n:x.kind };
+      var x = STATE.tasks[k], K = PV.WO_KINDS[x.kind] || { n:x.kind };
       /* تاريخٌ غائبٌ أو تالفٌ كان يُسقط التصديرَ كلَّه بـInvalid time value */
       var at = x.at ? new Date(x.at) : null;
       out.push([x.id, x.site, K.n, x.to || '', x.when || x.due || '',
@@ -672,8 +672,8 @@ techx: function(){
   },
   crews: function(){
     var out = [['الفريق','مشرف','فنيون','معدّات','المعدل/يوم','النقاط','فرق لازمة','أفراد']];
-    CREW_SPEC.forEach(function(s){
-      var r = crewNeed(s, PLAN_MONTHS);
+    PV.CREW_SPEC.forEach(function(s){
+      var r = crewNeed(s, PV.PLAN_MONTHS);
       out.push([s.n, r.sup, r.tech, r.gear, r.rate, r.units, r.crews, r.people]);
     });
     return out;
@@ -697,7 +697,7 @@ techx: function(){
   }
 };
 
-var SHEET_NAMES = {
+PV.SHEET_NAMES = {
   over:'نظرة عامة', sites:'المواقع', work:'أوجه العمل', co:'الشركات',
   score:'أداء الفنيين', stages:'أداء المراحل', recs:'المسح الميداني', tasks:'المهام', budm:'الملخّص المالي',
   evm:'القيمة المكتسبة', risks:'سجل المخاطر', hse:'السلامة', ncr:'عدم المطابقة',

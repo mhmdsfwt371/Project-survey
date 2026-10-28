@@ -48,19 +48,19 @@ function actList(){
 function clickTables(e){
   /* نافذةُ مخيّمات الشركة: تُفتَح برقمٍ، وتُغلَق بالإكس أو بالضغط خارجَها */
   var cop = e.target.closest('[data-copop]');
-  if (cop){ CO_POP = { co:cop.getAttribute('data-copop'), kind:cop.getAttribute('data-cok') || 'all' }; render(1); return true; }
-  if (e.target.closest('[data-copopx]')){ CO_POP = null; render(1); return true; }
+  if (cop){ PV.CO_POP = { co:cop.getAttribute('data-copop'), kind:cop.getAttribute('data-cok') || 'all' }; render(1); return true; }
+  if (e.target.closest('[data-copopx]')){ PV.CO_POP = null; render(1); return true; }
   if (e.target.closest('[data-copopxls]')){ coPopXls(); return true; }
   var cogo = e.target.closest('[data-comap]');
-  if (cogo){ var gid = cogo.getAttribute('data-comap'); CO_POP = null;
+  if (cogo){ var gid = cogo.getAttribute('data-comap'); PV.CO_POP = null;
              POP_SITE = gid; POP_OPEN = true; CUR = 'map'; render();
              mapFlySoon(gid); return true; }   /* (V38.20) */
   var cst = e.target.closest('[data-copopsite]');
-  if (cst){ DETAIL_ID = cst.getAttribute('data-copopsite'); CO_POP = null; goPage('site'); render(1); return true; }
-  if (CO_POP && e.target.id === 'coPopWrap'){ CO_POP = null; render(1); return true; }
+  if (cst){ DETAIL_ID = cst.getAttribute('data-copopsite'); PV.CO_POP = null; goPage('site'); render(1); return true; }
+  if (PV.CO_POP && e.target.id === 'coPopWrap'){ PV.CO_POP = null; render(1); return true; }
   if (e.target.closest('[data-bell]')){ bellToggle(); return true; }
   if (e.target.closest('[data-bellclose]')){ bellToggle(false); /* ثم يكمل إلى data-p */ }
-  if (BELL_OPEN && !e.target.closest('#bellPop') && !e.target.closest('[data-bell]')) bellToggle(false);
+  if (PV.BELL_OPEN && !e.target.closest('#bellPop') && !e.target.closest('[data-bell]')) bellToggle(false);
   if (e.target.closest('[data-nreadall]')){ notifStore().forEach(function(n){ n.read = true; }); CORE.saveSoon(); syncBadge(); bellToggle(false); if (CUR === 'notif') render(1); return true; }
   if (e.target.closest('[data-npopx]')){ e.preventDefault(); var px = e.target.closest('.notif-pop'); if (px) px.remove(); return true; }   /* (V20.8) إغلاقٌ بلا انتقال */
   if (e.target.closest('[data-nmute]')){ e.preventDefault(); lsSet('nsk14.nmute', String(Date.now() + 3600000)); var pw = document.getElementById('notifPop'); if (pw) pw.innerHTML = ''; toast(t('كُتمت الإشعاراتُ ساعةً على هذا الجهاز')); return true; }
@@ -74,22 +74,22 @@ function clickTables(e){
   }
   var npo = e.target.closest('[data-npop]');
   if (npo){ bellToggle(false); notifPopGo(npo.getAttribute('data-npop')); return true; }
-  if (e.target.closest('[data-kmix]')){ KMI = null; render(1); return true; }
+  if (e.target.closest('[data-kmix]')){ PV.KMI = null; render(1); return true; }
   if (e.target.closest('[data-kmigo]')){ kmiApply(); return true; }
   var kma = e.target.closest('[data-kmiall]');
-  if (kma && KMI){
+  if (kma && PV.KMI){
     var mode = kma.getAttribute('data-kmiall');
-    KMI.rows.forEach(function(r){ r.take = (mode === 'new') ? (r.st === 'new') : false; });
+    PV.KMI.rows.forEach(function(r){ r.take = (mode === 'new') ? (r.st === 'new') : false; });
     render(1); return true;
   }
   var gg = e.target.closest('[data-guideg]');
-  if (gg){ GUIDE.g = gg.getAttribute('data-guideg') || ''; render(1); return true; }
+  if (gg){ PV.GUIDE.g = gg.getAttribute('data-guideg') || ''; render(1); return true; }
   var lg = e.target.closest('[data-legend]');
   if (lg){ LEGEND_ON = lg.getAttribute('data-legend') === '1'; lsSet('nsk14.legend', LEGEND_ON ? '1' : '0'); render(1); if (CUR === 'map' && MAP) mapPaint(); return true; }
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return true; }
   if (e.target.closest('[data-phfull]')){ STATE.meta.phFull = 0; photosBackfill(true); toast(t('جارٍ فحصُ صور الدرايف…')); render(1); return true; }   /* (V37.8) */
   if (e.target.closest('[data-appreset]')){ appResetGo(); return true; }   /* (V37.18) */
-  if (e.target.closest('[data-buyphx]')){ BUY_PH = null; var pvx = document.getElementById('byPhPrev'); if (pvx) pvx.innerHTML = buyPhPrevHtml(); return true; }   /* (V37.43) */
+  if (e.target.closest('[data-buyphx]')){ PV.BUY_PH = null; var pvx = document.getElementById('byPhPrev'); if (pvx) pvx.innerHTML = buyPhPrevHtml(); return true; }   /* (V37.43) */
   var skb = e.target.closest('#skinRow [data-skin]');   /* (V37.33) */
   if (skb){ skinSet(skb.getAttribute('data-skin')); toast(t('تغيّر المظهر — على هذا الجهاز فقط')); return true; }
   if (e.target.closest('[data-assistback]')){ assistGoHome(); return true; }   /* (V37.40) */
@@ -160,33 +160,33 @@ function clickTables(e){
   if (e.target.closest('[data-phstalex]')){ phStaleSync.snooze = Date.now() + 30 * 60000; var ps0 = document.getElementById('phStale'); if (ps0) ps0.remove(); return true; }   /* (V37.13) */
   if (e.target.closest('[data-phflushnow]')){ if (!STATE.meta.online){ toast(t('افتح الشبكة أولًا')); return true; } photoFlush(); toast(t('جارٍ رفعُ الصور — اترك التطبيق مفتوحًا')); return true; }
   var phrf = e.target.closest('[data-phrefetch]');   /* (V37.7) أعد جلبَ صور النقطة */
-  if (phrf){ var pid0 = phrf.getAttribute('data-phrefetch'); delete PH_FETCH[pid0]; photosFetchSite(pid0); render(1); return true; }
+  if (phrf){ var pid0 = phrf.getAttribute('data-phrefetch'); delete PV.PH_FETCH[pid0]; photosFetchSite(pid0); render(1); return true; }
   var svph = e.target.closest('[data-svphotos]');   /* (V37.6) صورُ النقطة من صفّ القائمة */
-  if (svph){ SV_PHO = svph.getAttribute('data-svphotos'); var hostP = (svph.closest('.svpop') || {}).parentNode || document.getElementById('content');   /* (V37.8) بلا إعادة رسم */
-    if (hostP){ var tmpP = document.createElement('div'); tmpP.innerHTML = svPhoPanel(SV_PHO); while (tmpP.firstChild) hostP.appendChild(tmpP.firstChild); } else render(1); return true; }
-  if (e.target.closest('[data-svphoclose]')){ SV_PHO = ''; ['svPhoVeil', 'svPhoBox'].forEach(function(i0){ var el0 = document.getElementById(i0); if (el0) el0.remove(); }); return true; }
+  if (svph){ PV.SV_PHO = svph.getAttribute('data-svphotos'); var hostP = (svph.closest('.svpop') || {}).parentNode || document.getElementById('content');   /* (V37.8) بلا إعادة رسم */
+    if (hostP){ var tmpP = document.createElement('div'); tmpP.innerHTML = svPhoPanel(PV.SV_PHO); while (tmpP.firstChild) hostP.appendChild(tmpP.firstChild); } else render(1); return true; }
+  if (e.target.closest('[data-svphoclose]')){ PV.SV_PHO = ''; ['svPhoVeil', 'svPhoBox'].forEach(function(i0){ var el0 = document.getElementById(i0); if (el0) el0.remove(); }); return true; }
   var phv = e.target.closest('[data-phview]');
   if (phv && phv.getAttribute('data-phview')){ photoView(phv.getAttribute('data-phview')); return true; }
   var phd = e.target.closest('[data-phdl]');
   if (phd){ photoDownload(phd.getAttribute('data-phdl')); return true; }
   if (e.target.closest('[data-phclose]')){ var pv = document.getElementById('phView'); if (pv) pv.remove(); return true; }
   var mle = e.target.closest('[data-mledit]');
-  if (mle){ MILE_EDIT = mle.getAttribute('data-mledit'); MILE_NEW = false; render(1); return true; }
-  if (e.target.closest('[data-mlcancel]')){ MILE_EDIT = ''; render(1); return true; }
+  if (mle){ PV.MILE_EDIT = mle.getAttribute('data-mledit'); PV.MILE_NEW = false; render(1); return true; }
+  if (e.target.closest('[data-mlcancel]')){ PV.MILE_EDIT = ''; render(1); return true; }
   var mls = e.target.closest('[data-mlsave]');
   if (mls){
     var mid = mls.getAttribute('data-mlsave'), tr = mls.closest('tr'), g = function(k){ var el = tr && tr.querySelector('[data-mle="' + k + '"]'); return el ? el.value : ''; };
     var w = +g('w'), pr = g('prog');
-    if (mileUpsert(mid, { n:g('n').trim(), w:isNaN(w) ? undefined : w, dep:g('dep').trim(), prog:(pr === '' ? undefined : +pr) })){ toast(t('حُفظ المعلَم')); MILE_EDIT = ''; render(1); }
+    if (mileUpsert(mid, { n:g('n').trim(), w:isNaN(w) ? undefined : w, dep:g('dep').trim(), prog:(pr === '' ? undefined : +pr) })){ toast(t('حُفظ المعلَم')); PV.MILE_EDIT = ''; render(1); }
     return true;
   }
   var mld = e.target.closest('[data-mldel]');
   if (mld){ mileRemove(mld.getAttribute('data-mldel')); return true; }
-  if (e.target.closest('[data-mlnew]')){ MILE_NEW = true; MILE_EDIT = ''; render(1); return true; }
-  if (e.target.closest('[data-mlncancel]')){ MILE_NEW = false; render(1); return true; }
+  if (e.target.closest('[data-mlnew]')){ PV.MILE_NEW = true; PV.MILE_EDIT = ''; render(1); return true; }
+  if (e.target.closest('[data-mlncancel]')){ PV.MILE_NEW = false; render(1); return true; }
   if (e.target.closest('[data-mlnsave]')){
     var v = function(id){ var el = document.getElementById(id); return el ? el.value : ''; };
-    if (mileAdd(v('mlnN'), v('mlnW'), v('mlnD'), v('mlnDep').trim())) MILE_NEW = false;
+    if (mileAdd(v('mlnN'), v('mlnW'), v('mlnD'), v('mlnDep').trim())) PV.MILE_NEW = false;
     return true;
   }
   return false;

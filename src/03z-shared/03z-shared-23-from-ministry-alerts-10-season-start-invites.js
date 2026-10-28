@@ -74,7 +74,7 @@ function readyRows(){
   var wKeys = Object.keys(CFG.w || {}).length;
   var signed = hoSigners().some(function(g){ return g.n; });
   var cmp = Object.keys(coCompounds()).length;
-  var bk = (BK_STATE.meta && BK_STATE.meta.ok) === true;
+  var bk = (PV.BK_STATE.meta && PV.BK_STATE.meta.ok) === true;
   return [
     { ok:wKeys > 0,                 t:'أوزانُ الزيارة',        why:t('بلا وزنٍ لا تُحتسَب نقطةٌ لأحدٍ — والأداءُ كلُّه صفر'), p:'pts' },
     { ok:!!cfgGet('insCamp') || !!cfgGet('insCor'), t:'نقاطُ التركيب', why:t('بلا نقاطٍ للتركيب لا يُقاس عملُ فرق التركيب'), p:'pts' },
@@ -143,7 +143,7 @@ function normAr(x){
     .replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي').replace(/\s+/g, ' ').trim().toLowerCase();
 }
 
-var ROLE_ALIAS = {
+PV.ROLE_ALIAS = {
   viewer:['مطلع','وزاره','مراقب','مراقب وزاري','ministry','observer'],
   exec:['اداره عليا','الاداره العليا','تنفيذي','executive','senior'],
   admin:['مدير','مدير المشروع','pm','project manager'],
@@ -164,9 +164,9 @@ function roleGuess(x){
     if (normAr(ROLES[k].n) === q) hit = k;
   });
   if (hit) return hit;
-  Object.keys(ROLE_ALIAS).forEach(function(k){
+  Object.keys(PV.ROLE_ALIAS).forEach(function(k){
     if (hit) return;
-    if (ROLE_ALIAS[k].some(function(a){ return normAr(a) === q; })) hit = k;
+    if (PV.ROLE_ALIAS[k].some(function(a){ return normAr(a) === q; })) hit = k;
   });
   return hit;
 }
@@ -258,9 +258,9 @@ function provList(){
    وعُدِّلت هناك ولم يصل التعديل). فصار للمكتب ثلاثةُ أزرارٍ تقول الحقيقة:
    يجلب الطلباتِ من القاعدة كما هي، ويلغي المعلّقَ كلَّه، ويرى طابورَ الجهاز
    ويدفعه. ومن الصفِّ المؤقت في الحسابات يُعاد الطلبُ بكلمةٍ جديدة. */
-var PROV_CANCEL = 0;
+PV.PROV_CANCEL = 0;
 
-var BOARD_ROLE = '';
+PV.BOARD_ROLE = '';
 
 /* مرشِّحُ الدور في لوحة الفريق */
 function provQueued(){
@@ -304,7 +304,7 @@ function provCard(){
       +   (pend ? btn('\u26A1 ' + t('شغّل الخادمَ الآن'),'btn-primary btn-sm',' data-ghrun="1"') : '')
       +   (provQueued() ? btn('\u2B06 ' + t('ادفع الآن'),'btn-secondary btn-sm',' data-pull="1"') : '')
       +   (may('users') ? btn('\u{1F504} ' + t('أعد الجلب من القاعدة'),'btn-quiet btn-sm',' data-provsync="1"') : '')
-      +   (pend && may('users') ? (PROV_CANCEL ? btn('\u{1F5D1} ' + t('تأكيد إلغاء المعلّق') + ' (' + nm(pend) + ')','btn-danger btn-sm',' data-provcancelgo="1"')
+      +   (pend && may('users') ? (PV.PROV_CANCEL ? btn('\u{1F5D1} ' + t('تأكيد إلغاء المعلّق') + ' (' + nm(pend) + ')','btn-danger btn-sm',' data-provcancelgo="1"')
                                              : btn('\u{1F5D1} ' + t('ألغِ المعلّق'),'btn-quiet btn-sm',' data-provcancel="1"')) : '')
       +   ((done || err) && may('users') ? btn('\u{1F9F9} ' + t('امسح المنتهية') + ' (' + nm(done + err) + ')','btn-quiet btn-sm',' data-provclear="1"') : '')
       +   (withPw ? btn('\u2B07 ' + t('إكسل — ورقةُ الدخول') + ' (' + nm(withPw) + ')','btn-primary btn-sm',' data-xls="provsheet"') : '')

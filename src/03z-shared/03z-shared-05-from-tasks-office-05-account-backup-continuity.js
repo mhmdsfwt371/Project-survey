@@ -95,19 +95,19 @@ function myDocFetch(force){
    أن النسخَ يعمل وهو لا يعمل. صار يكتب حالتَه في ملفّين علنيَّين لا بياناتَ
    فيهما (_meta.json و_drive.json)، والتطبيقُ يقرؤهما ويعرضهما حيث يُرى:
    هل أُخذت نسخةُ اليوم؟ وهل وصلت درايف؟ وإن لا — ما الذي ينقص بالحرف. */
-var BK_STATE = { at:0, meta:null, drive:null, err:'' };
+PV.BK_STATE = { at:0, meta:null, drive:null, err:'' };
 
 var BK_RAW = 'https://raw.githubusercontent.com/mhmdsfwt371/-Project-survey/main/backups/latest/';
 
 function bkFetch(force){
-  if (!force && Date.now() - BK_STATE.at < 30 * 60 * 1000) return;
-  BK_STATE.at = Date.now();
+  if (!force && Date.now() - PV.BK_STATE.at < 30 * 60 * 1000) return;
+  PV.BK_STATE.at = Date.now();
   if (typeof fetch !== 'function' || !navigator.onLine) return;
   var got = 0;
   ['_meta.json','_drive.json'].forEach(function(f){
     fetch(BK_RAW + f + '?t=' + Date.now(), { cache:'no-store' }).then(function(r){ return r.ok ? r.json() : null; })
-      .then(function(j){ if (f === '_meta.json') BK_STATE.meta = j; else BK_STATE.drive = j; got++; if (got === 2 && CUR === 'sys') render(1); })
-      .catch(function(e){ BK_STATE.err = String(e && e.message || e); });
+      .then(function(j){ if (f === '_meta.json') PV.BK_STATE.meta = j; else PV.BK_STATE.drive = j; got++; if (got === 2 && CUR === 'sys') render(1); })
+      .catch(function(e){ PV.BK_STATE.err = String(e && e.message || e); });
   });
 }
 

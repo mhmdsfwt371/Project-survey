@@ -12,18 +12,18 @@ EXP.repSide = 'co';
 /* شرائحُ مركز التقارير: الشركةُ والوزارةُ والدوريات — الثالثةُ كانت صفحةً
    مستقلةً «التقارير الدورية» في مجموعة الفرق تضبط متى يُرسَل ما يُعرَض هنا. */
 function repChips(){
-  var co = REPORTS.filter(function(r){ return r.side==='co'; }).length;
-  var cl = REPORTS.filter(function(r){ return r.side==='cl'; }).length;
+  var co = PV.REPORTS.filter(function(r){ return r.side==='co'; }).length;
+  var cl = PV.REPORTS.filter(function(r){ return r.side==='cl'; }).length;
   return [['co','\u{1F3E2} ' + t('تقارير الشركة'), co],
           ['cl','\u{1F54B} ' + t('تقارير الوزارة'), cl],
-          ['sched','\u23F0 ' + t('الدوريات'), PERIODS.length]].map(function(c){
+          ['sched','\u23F0 ' + t('الدوريات'), PV.PERIODS.length]].map(function(c){
     return '<button type="button" class="chip' + (EXP.repSide===c[0]?' on':'') + '" data-repside="' + c[0] + '">'
       + esc(c[1]) + ' <span class="num">' + nm(c[2]) + '</span></button>';
   }).join('');
 }
 
 function repGen(id){
-  var r = REPORTS.filter(function(x){ return x.id === id; })[0];
+  var r = PV.REPORTS.filter(function(x){ return x.id === id; })[0];
   if (!r){ toast(t('تقريرٌ غير معرَّف')); return; }
   var keys = r.sheets.filter(function(s){ return SHEETS[s]; });
   if (!keys.length){ toast(t('لا أوراقَ لهذا التقرير')); return; }
@@ -34,7 +34,7 @@ function repGen(id){
 
 function repPack(side){
   var keys = {};
-  REPORTS.filter(function(r){ return r.side === side; })
+  PV.REPORTS.filter(function(r){ return r.side === side; })
          .forEach(function(r){ r.sheets.forEach(function(s){ if (SHEETS[s]) keys[s] = 1; }); });
   var list = Object.keys(keys);
   if (!list.length){ toast(t('لا أوراق')); return; }
@@ -52,7 +52,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
     if (cur === 'guide') return head + (function(){
     /* المهندسُ يقرأ دليلَ أيِّ دورٍ ليعرف ما يراه فريقُه؛ وغيرُه يقرأ دليلَه */
     var pick = may('roles') || may('users');
-    var cur = (pick && GUIDE.role && ROLES[GUIDE.role]) ? GUIDE.role : ROLE;
+    var cur = (pick && PV.GUIDE.role && ROLES[PV.GUIDE.role]) ? PV.GUIDE.role : ROLE;
 
     return (pick
       ? '<div class="chips">' + Object.keys(ROLES).map(function(k){
@@ -98,9 +98,9 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
       + '<p class="hint">'+esc(t('كل دليل يُولَّد برقم النسخة نفسه — فلا يقرأ أحدٌ دليلًا لنسخةٍ غير التي بين يديه.'))+'</p>';
   })();
     return head + (function(){
-    var s = SOPS.filter(function(x){ return x.id === SOP_CUR; })[0] || SOPS[0];
+    var s = SOPS.filter(function(x){ return x.id === PV.SOP_CUR; })[0] || SOPS[0];
     return '<div class="chips">' + SOPS.map(function(x){
-        return '<button type="button" class="chip' + (SOP_CUR===x.id?' on':'') + '" data-sop="' + esc(x.id) + '">'
+        return '<button type="button" class="chip' + (PV.SOP_CUR===x.id?' on':'') + '" data-sop="' + esc(x.id) + '">'
           + x.i + ' ' + esc(t(x.n)) + '</button>';
       }).join('') + '</div>'
 

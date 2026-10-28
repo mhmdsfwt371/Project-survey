@@ -8,7 +8,7 @@
 function wtMeetStart(){
   if (!wtMay()) return;
   if (!wtMeetList().length){ toast(t('لا مهامَّ مفتوحةً للاجتماع')); return; }
-  WT_MEET = true; WT_MI = 0; WT_MEND = 0; WT_OPEN = ''; WT_NEW = false; WT_TAB = 'list';
+  WT_MEET = true; WT_MI = 0; WT_MEND = 0; WT_OPEN = ''; PV.WT_NEW = false; WT_TAB = 'list';
   logEvent('اجتماعُ الأسبوع — بدأ'); render(1);
 }
 
@@ -40,7 +40,7 @@ function wtAdd(o){
                           due:o.due || '', src:o.src || '', upd:o.upd || '', wbs:o.wbs || '', chal:o.chal || '', req:o.req || '', plan:o.plan || '',
                           log:[{ at:Date.now(), by:STATE.meta.name || '', note:'أُنشئت' }] });
   STATE.wtask.lastId = mx + 1;   /* (V20.5) رقمُ المهمة الجديدة — لربطها بتحدّيها */
-  if (wtSave()){ logEvent('مهمةٌ أسبوعية — إضافة: ' + o.n); toast(t('أُضيفت المهمة')); WT_NEW = false; render(1); }
+  if (wtSave()){ logEvent('مهمةٌ أسبوعية — إضافة: ' + o.n); toast(t('أُضيفت المهمة')); PV.WT_NEW = false; render(1); }
   return true;
 }
 
@@ -54,5 +54,5 @@ function wtRemove(id){
 function wtClear(){
   if (!may('settings')){ toast(t('المهامُّ الأسبوعية للمهندس فما فوق')); return; }
   STATE.wtask = { rows:[] };
-  if (wtSave()){ logEvent('مسحُ المهام الأسبوعية'); toast(t('مُسحت المهام')); WT_RESET = 0; render(1); }
+  if (wtSave()){ logEvent('مسحُ المهام الأسبوعية'); toast(t('مُسحت المهام')); PV.WT_RESET = 0; render(1); }
 }

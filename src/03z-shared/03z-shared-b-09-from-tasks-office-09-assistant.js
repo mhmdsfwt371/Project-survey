@@ -38,7 +38,7 @@ function glossaryHits(q){
 }
 
 /* كلماتٌ يكتبها الناسُ ولا تظهر في عنوان الصفحة أو وصفها حرفيًّا */
-var HELP_KEYWORDS = {
+PV.HELP_KEYWORDS = {
   mfu:       ['ملخص الوزارة','بطاقات الملخص','نسبة المسح','نقاط بلا عوائق','نقاط بعوائق','تصدير اسبوعي','تقرير الاجتماع','باوربوينت الوزارة'],
   kiosk:     ['شاشة القاعة','عرض كامل','الاجتماع','بعوائق وبدونها','العرض الكبير'],
   crewman:   ['اضافة فني','فني جديد','موظف جديد','اضافة موظف','عمل فريق','فريق جديد','حذف فني','تعديل فريق','نسب الفريق','الانصبة'],
@@ -144,7 +144,7 @@ function helpSearch(q, minScore){   /* (V37.37) minScore: المساعدُ لا 
   var out = [];
   helpIndexAll().forEach(function(e){
     if (!seesPage(e.id)) return;
-    var kw = (HELP_KEYWORDS[e.id] || []).join(' ');
+    var kw = (PV.HELP_KEYWORDS[e.id] || []).join(' ');
     /* كان الفهرسُ عربيًّا صرفًا، فمن بحث بالإنجليزية لم يجد شيئًا وإن كانت
        الشاشةُ أمامه مترجَمةً بالاسم الذي كتبه. فصار يفهرس الأصلَ وترجمتَه
        معًا — يبحث المرءُ باللغة التي يقرأ بها، وبالعربية إن عرفها. */
@@ -197,12 +197,12 @@ function assistHtml(){
 /* ═══ نافذةُ ما ينتظر الرفع ═══ */
 var QUEUE_OPEN = false;
 
-var Q_LBL = { recs:'مسح', inss:'تركيب', diss:'فك', tasks:'إسناد', moves:'حركة مخزون',
+PV.Q_LBL = { recs:'مسح', inss:'تركيب', diss:'فك', tasks:'إسناد', moves:'حركة مخزون',
               buys:'مشترى', cfg:'إعداد', sites:'موقع', photos:'صورة', ships:'شحنة',
               teams:'فريق', evlog:'حدث', notifs:'إشعار', accounts:'حساب',
               bonus:'نقاط زيادة', workReqs:'طلب ورشة', users:'مستخدم' };
 
-var ASSIST_INTENTS = [
+PV.ASSIST_INTENTS = [
   { k:'photos', rx:/صور|صوره|رفع|اترفع|ترفع|الدرايف|photo|upload/i, t:'الصور لا تُرفع أو لا تظهر' },
   { k:'slow',   rx:/بطي|بطيء|بطيئ|تقيل|تهنيج|هنج|يهنج|بيقع|وقع|يقفل|كاش|الذاكرة|slow|crash|cache/i, t:'التطبيق بطيء أو يقع' },
   { k:'sync',   rx:/مزامن|يزامن|الطابور|ما اتحفظ|مش بيحفظ|ماتحفظش|ضاع|ضاعت|اتمسح|sync|save/i, t:'بيانات لم تُرفع أو لم تُحفظ' },
@@ -212,7 +212,7 @@ var ASSIST_INTENTS = [
   { k:'map',    rx:/الخريطة|خريطه|map|النقط مش ظاهر|العلامات/i, t:'الخريطة' }
 ];
 
-function assistIntent(q){ q = String(q || ''); var hits = ASSIST_INTENTS.filter(function(i){ return i.rx.test(q); }); return hits.length ? hits : null; }
+function assistIntent(q){ q = String(q || ''); var hits = PV.ASSIST_INTENTS.filter(function(i){ return i.rx.test(q); }); return hits.length ? hits : null; }
 
 function assistFixHtml(kind, d){
   var row = function(lbl, val, okv){ return '<div class="kk-zl" style="margin:3px 0"><span>' + esc(t(lbl)) + '</span><b class="' + (okv ? 'ok' : 'wrn') + '">' + val + '</b></div>'; };
@@ -270,7 +270,7 @@ function askEngClick(e){
      and the button looked dead. The box itself is redrawn now. */
   if (al.length > 1){ askEngWho.pick = true; var rsA = document.getElementById('assistRes'); if (rsA) rsA.innerHTML = assistResHtml(); else render(1); return; }
   if (al.length){ askEngOpen(al[0]); return; }
-  BUG_FROM_ASSIST = String(ASSIST_Q || ''); BUG_KIND = 'عطل'; BUG_OPEN = true; ASSIST_OPEN = false; render(1);
+  PV.BUG_FROM_ASSIST = String(ASSIST_Q || ''); BUG_KIND = 'عطل'; BUG_OPEN = true; ASSIST_OPEN = false; render(1);
 }
 /* the conversation with one engineer, the question and the device's state in its box */
 function askEngOpen(name){
@@ -323,9 +323,9 @@ function assistDiagCard(q){
    (١٣٥: منع دخول ٧٤، غير موجود ٤٦)، ثم فشلُ التحديث (٥٤). وبلاغاتُ التطبيق كلُّها منذ البداية اثنان فقط — والمساعدُ لم يُسجَّل له سؤالٌ واحد:
    فالمشكلةُ أن لا أحدَ يعرف أن الطريقَ موجود. فصار: أسئلةٌ سريعةٌ بنقرة، وشارةٌ على الزرّ حين يكون في الجهاز ما يحتاج حلًّا، وتعريفٌ بالمساعد
    مرةً بعد التحديث، وكلُّ سؤالٍ يُسجَّل (ومعه «بلا جواب») ليتعلّم المهندسُ ما يُضاف إلى «المشاكل المعروفة». */
-var ASSIST_QUICK = ['الصور مش بتترفع', 'التطبيق بيقع أو بطيء', 'ما اتحفظش', 'المخيم مش لاقيه', 'التصوير ممنوع', 'القارئ ساقط', 'النسخة قديمة'];
+PV.ASSIST_QUICK = ['الصور مش بتترفع', 'التطبيق بيقع أو بطيء', 'ما اتحفظش', 'المخيم مش لاقيه', 'التصوير ممنوع', 'القارئ ساقط', 'النسخة قديمة'];
 
-var ASSIST_LOGGED = {};
+PV.ASSIST_LOGGED = {};
 
 /* (V37.38) البندُ ٦ — اكتُشف أن logEventQuiet لا يرفع شيئًا (سجلٌّ صامتٌ على الجهاز)، فلم يصل سؤالٌ واحد. صار حدثًا حقيقيًّا يصل المكتب،
    ويُسجَّل السؤالُ حين يتوقّف صاحبُه عن الكتابة ثانيتين ونصفًا (لا كلُّ حرفٍ وكلمةٍ ناقصة)، أو حين يختار سؤالًا جاهزًا أو يضغط «اسأل المهندس». */
@@ -333,7 +333,7 @@ function assistLog(q, answered, now){
   q = String(q || '').trim(); if (q.length < 6) return;
   if (!now && assistLog.pq === q && assistLog.t) return;   /* السؤالُ نفسُه ينتظر — لا يُعاد ضبطُ المؤقّت مع كلِّ تحديثٍ حيّ للنتائج */
   clearTimeout(assistLog.t); assistLog.pq = q;
-  var go = function(){ if (ASSIST_LOGGED[q]) return; ASSIST_LOGGED[q] = 1; try { logEvent('سؤال المساعد — ' + q.slice(0, 80) + (answered ? '' : ' · بلا جواب')); } catch (e){ LS_ERR = e; } };
+  var go = function(){ if (PV.ASSIST_LOGGED[q]) return; PV.ASSIST_LOGGED[q] = 1; try { logEvent('سؤال المساعد — ' + q.slice(0, 80) + (answered ? '' : ' · بلا جواب')); } catch (e){ LS_ERR = e; } };
   if (now) go(); else assistLog.t = setTimeout(function(){ assistLog.t = 0; go(); }, 2500);
 }
 
@@ -357,7 +357,7 @@ function assistBadgeSync(){
 /* ═══ (V37.40) «خليه ذكي لأبعد الحدود واستخدم سلوك المستخدمين وبياناتهم» ═══
    المساعدُ يعرف: من أنت (دورك)، وأين أنت (الصفحة)، وماذا يكثر أن تفعل (صفحاتك اليوم)، وما عليك الآن (من بياناتك وبيانات جهازك) —
    فتبدأ نافذتُه بما يخصّك لا بقائمةٍ عامة. كلُّه من بياناتٍ على الجهاز: بلا شبكةٍ ولا كلفة ولا قراءاتٍ إضافية. */
-var ASSIST_PAGE_Q = {
+PV.ASSIST_PAGE_Q = {
   map:['النقاط مش ظاهرة على الخريطة', 'موقعي مش ظاهر', 'حدود المخيم غلط'],
   forms:['الصور مش بتترفع', 'ما اتحفظش', 'التصوير ممنوع', 'المخيم مش لاقيه'],
   svForm:['الصور مش بتترفع', 'ما اتحفظش', 'التصوير ممنوع'],

@@ -144,7 +144,7 @@ function provCancelAll(){
   });
   /* وما في الطابور من طلباتٍ لم تُرفَع يُسقَط معها — وإلا رُفعت بعد الإلغاء */
   if (STATE.queue) STATE.queue = STATE.queue.filter(function(q){ return !(q && q.kind === 'provision' && q.v && q.v.status === 'pending'); });
-  PROV_CANCEL = 0; CORE.saveSoon(); statBump();
+  PV.PROV_CANCEL = 0; CORE.saveSoon(); statBump();
   logEvent('إلغاءُ الطلبات المعلّقة — ' + nm(n));
   toast(nm(n) + ' ' + t('طلبًا أُلغي'));
   render(1);

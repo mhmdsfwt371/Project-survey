@@ -41,7 +41,7 @@ function jszipLoad(){
 }
 
 
-var KMZ_STY = {
+PV.KMZ_STY = {
   'مخيم':'camp', 'ممر':'cor', 'كاميرا':'cam', 'محطة':'stn',
   'جسر':'jam', 'بوابة':'gte', 'مبنى':'bld'
 };
@@ -56,7 +56,7 @@ var KMZ_STY = {
    خمسةَ عشرَ مترًا فأقلُّ = النقطةُ نفسُها مهما اختلف الاسم؛ وما بين خمسةَ
    عشرَ وخمسةٍ وسبعين مع اسمٍ يشبه = مشكوكٌ فيه يُعرَض ولا يُقرَّر؛ وما فوق
    ذلك جديدٌ يُضاف بمعرِّفٍ من نظامنا. ولا يُكتَب شيءٌ قبل المعاينة. */
-var KMI = null, KMI_ZONE = 'منى', KMI_TYPE = 'مخيم', KMI_WORK = 'موقع جديد', KMI_BUSY = false;
+PV.KMI = null; PV.KMI_ZONE = 'منى'; PV.KMI_TYPE = 'مخيم'; PV.KMI_WORK = 'موقع جديد'; PV.KMI_BUSY = false;
 PV.KMI_NEAR = 15; PV.KMI_DOUBT = 75;
 
 /* المسافةُ بالمتر — هافرساين مبسَّطٌ يكفي في نطاق المشاعر */
@@ -175,20 +175,20 @@ function kmiClassify(places){
 }
 function kmiImport(file){
   if (!may('edit')){ toast(t('الاستيراد لمن يكتب في الميدان')); return; }
-  KMI_BUSY = true; render(1);
+  PV.KMI_BUSY = true; render(1);
   var fr = new FileReader();
   fr.onload = function(){
     var buf = fr.result;
     var isZip = new Uint8Array(buf, 0, 2)[0] === 0x50 && new Uint8Array(buf, 0, 2)[1] === 0x4B;
     (isZip ? unzipKml(buf) : Promise.resolve(new TextDecoder().decode(buf))).then(function(xml){
-      KMI_BUSY = false;
+      PV.KMI_BUSY = false;
       if (!xml){ toast(t('تعذّرت قراءةُ الملف — تأكّد أنه KMZ أو KML')); render(1); return; }
       var places = kmlPlaces(xml);
       if (!places.length){ toast(t('لا نقاطَ في الملف')); render(1); return; }
-      KMI = { rows:kmiClassify(places), file:file.name || '' };
+      PV.KMI = { rows:kmiClassify(places), file:file.name || '' };
       logEvent('معاينةُ استيراد KMZ — ' + places.length + ' نقطة');
       render(1);
-    }).catch(function(e){ KMI_BUSY = false; softErr('استيراد KMZ', e, 'تعذّرت قراءةُ الملف'); render(1); });
+    }).catch(function(e){ PV.KMI_BUSY = false; softErr('استيراد KMZ', e, 'تعذّرت قراءةُ الملف'); render(1); });
   };
   fr.readAsArrayBuffer(file);
 }

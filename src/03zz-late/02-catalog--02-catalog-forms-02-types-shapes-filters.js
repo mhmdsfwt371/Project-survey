@@ -70,7 +70,7 @@ function tfwPath(N, s, t){
 function tfwCampCalc(id){
   var f = tfwFloorOf(id), x = siteFind(id), R = TFW.routes && TFW.routes.floors ? TFW.routes.floors[String(f)] : null;
   if (f == null || !x || !R) return null;
-  var c = [x.lat, x.lng], ex = siteFind('NSK-JMR-PNT-' + TFW_JEX[f]), E = ex ? [ex.lat, ex.lng] : TFW_JIN;
+  var c = [x.lat, x.lng], ex = siteFind('NSK-JMR-PNT-' + PV.TFW_JEX[f]), E = ex ? [ex.lat, ex.lng] : TFW_JIN;
   var G = tfwNet((R.go || []).concat(R.train || [])), B = tfwNet((R.back || []).concat(R.train || [])), EN = (TFW.routes.ends || {}).en || {}, EX = (TFW.routes.ends || {}).ex || {};   /* (V26.0) خطُّ القطار جزءٌ من شبكة الدور الرابع */
   var a = tfwNear(G, c), h = tfwNear(B, c), p1 = null, p2 = null;
   /* (V24.8) الذهابُ ينتهي عند أقرب مدخلٍ من مداخل دوره، والعودةُ تبدأ من أقرب مخرجٍ من مخارجه — لا عند نقطةٍ ثابتة */

@@ -31,11 +31,11 @@ function coReqList(){
 
 /* طلبُ تصويبٍ من الميدان — كان زرًّا يقول «طُلب» ولا يكتب شيئًا،
    فيمضي الفنيُّ مطمئنًّا والخطأُ باقٍ في السجل. */
-var FIX_OPEN = '';
+PV.FIX_OPEN = '';
 
 
 function fixCard(siteId){
-  if (FIX_OPEN !== siteId) return '';
+  if (PV.FIX_OPEN !== siteId) return '';
   var FIELDS = [['sq','رقم المربع'], ['sign','رقم الشاخص'], ['co','شركة تقديم الخدمة'],
                 ['inout','تصنيف الحجاج'], ['work','وجه العمل'], ['zone','المشعر'],
                 ['type','نوع الموقع'], ['name','اسم الموقع']];

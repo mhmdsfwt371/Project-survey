@@ -15,7 +15,7 @@ function propApprove(id){
   STATE.props = propList().filter(function(q){ return q.id !== id; });
   if (!siteFind(id)){ STATE.sites.push(p); SITE_IX = null; SITE_TOK = null; }
   CORE.set('newsites', id, p); statBump(); logEvent('اعتمادُ مقترحةِ الوزارة — ' + id + ' \u00b7 ' + (p.zone || ''), id);
-  PROP_POP = ''; PROP_SHEET = false; toast(id + ' \u00b7 ' + t('اعتُمدت — صارت نقطةً في السجل، جدوِل زيارتَها'));
+  PROP_POP = ''; PV.PROP_SHEET = false; toast(id + ' \u00b7 ' + t('اعتُمدت — صارت نقطةً في السجل، جدوِل زيارتَها'));
   if (typeof visitAsnOpen === 'function') visitAsnOpen(id, true); else render(1);
   if (typeof mapPaint === 'function') mapPaint(); return true;
 }
@@ -28,4 +28,4 @@ function propReject(id){
   PROP_POP = ''; toast(id + ' \u00b7 ' + t('رُفضت المقترحة')); render(1); if (typeof mapPaint === 'function') mapPaint(); return true;
 }
 
-function propGo(id){ var p = propFind(id); if (!p || !(+p.lat && +p.lng)) return; PROP_SHEET = false; PROP_POP = id; if (typeof MAP !== 'undefined' && MAP){ try { MAP.setView([+p.lat, +p.lng], Math.max(MAP.getZoom(), 17)); } catch (e){ LS_ERR = e; } } render(1); if (typeof mapPaint === 'function') mapPaint(); }
+function propGo(id){ var p = propFind(id); if (!p || !(+p.lat && +p.lng)) return; PV.PROP_SHEET = false; PROP_POP = id; if (typeof MAP !== 'undefined' && MAP){ try { MAP.setView([+p.lat, +p.lng], Math.max(MAP.getZoom(), 17)); } catch (e){ LS_ERR = e; } } render(1); if (typeof mapPaint === 'function') mapPaint(); }

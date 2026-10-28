@@ -136,7 +136,7 @@ function buyAdd(){
             st: (cap && amt > cap) ? 'بانتظار الاعتماد' : 'معتمد' };
   if (old){ b.edAt = Date.now(); b.edBy = STATE.meta.name || ''; BUY_ED = ''; }
   if (old && old.inv) b.inv = old.inv;
-  if (BUY_PH && BUY_PH.data){ b.inv = 'BUY-' + id; try { photoQueue(b.inv, 'invoice', BUY_PH.data); } catch (eP){ softErr('صورة الفاتورة', eP, 'تعذّر حفظ صورة الفاتورة — أعد اختيارها'); } BUY_PH = null; }   /* (V37.43) */
+  if (PV.BUY_PH && PV.BUY_PH.data){ b.inv = 'BUY-' + id; try { photoQueue(b.inv, 'invoice', PV.BUY_PH.data); } catch (eP){ softErr('صورة الفاتورة', eP, 'تعذّر حفظ صورة الفاتورة — أعد اختيارها'); } PV.BUY_PH = null; }   /* (V37.43) */
   if (!STATE.buys) STATE.buys = {};
   STATE.buys[id] = b;
   CORE.set('buys', id, b);
@@ -313,7 +313,7 @@ PAGE.inv = { m:'الورشة والمخزون', t:'المخزون',
   })();
     if (cur === 'ships') return head + (function(){
     var L = shipList().filter(function(x){
-      return !SHIP_Q || (x.ref + ' ' + (x.item || '') + ' ' + (x.sup || '')).indexOf(SHIP_Q) > -1;
+      return !PV.SHIP_Q || (x.ref + ' ' + (x.item || '') + ' ' + (x.sup || '')).indexOf(PV.SHIP_Q) > -1;
     });
     var late = shipList().filter(function(x){ return shipLate(x) > 0; });
     var open = shipList().filter(function(x){ return !x.got; });
@@ -330,7 +330,7 @@ PAGE.inv = { m:'الورشة والمخزون', t:'المخزون',
         : '')
 
       + '<form class="inline-form" onsubmit="return false" style="margin:0 0 14px">'
-      +   '<input type="search" id="shQ" data-shq="1" value="' + esc(SHIP_Q) + '" placeholder="'
+      +   '<input type="search" id="shQ" data-shq="1" value="' + esc(PV.SHIP_Q) + '" placeholder="'
       +     esc(t('ابحث برقم الشحنة أو الصنف أو المورّد')) + '" dir="auto">'
       + '</form>'
 
@@ -345,7 +345,7 @@ PAGE.inv = { m:'الورشة والمخزون', t:'المخزون',
                             + '" data-shqy="' + esc(x.id) + '" style="max-width:86px">',
                           '<input value="' + esc(x.sup || '') + '" data-shs="' + esc(x.id) + '" dir="auto">',
                           '<select data-shst="' + esc(x.id) + '">'
-                            + SHIP_ST.map(function(v){
+                            + PV.SHIP_ST.map(function(v){
                                 return '<option value="' + esc(v) + '"' + (x.st === v ? ' selected' : '') + '>' + esc(t(v)) + '</option>';
                               }).join('') + '</select>',
                           '<input type="date" value="' + esc(x.sent || '') + '" data-shsn="' + esc(x.id) + '">',
@@ -395,7 +395,7 @@ PAGE.inv = { m:'الورشة والمخزون', t:'المخزون',
       ? card('تسجيل حركة',
           '<div class="grid cols-3">'
           + '<div class="field"><label>' + esc(t('الحركة')) + '</label><select id="mvKind">'
-          +   MOVE_KINDS.map(function(k){ return '<option value="' + esc(k) + '">' + esc(t(k)) + '</option>'; }).join('')
+          +   PV.MOVE_KINDS.map(function(k){ return '<option value="' + esc(k) + '">' + esc(t(k)) + '</option>'; }).join('')
           + '</select></div>'
           + '<div class="field"><label>' + esc(t('الصنف')) + '</label><select id="mvItem">'
           +   '<option value="">— ' + esc(t('اختر')) + ' —</option>'

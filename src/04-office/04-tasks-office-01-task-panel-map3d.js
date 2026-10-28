@@ -33,7 +33,7 @@ function chalUpdBox(key){
   var h = '<div class="chup" style="margin:4px 0 0">';
   if (last) h += '<div class="hint" style="margin:0">' + (last.dir === 'office' ? '\u{1F4CB} ' : '\u{1F6E0} ') + esc(chalUpdNote(last)) + ' <span class="num">\u2014 ' + esc(dispName(last.by) || last.by || '') + ' \u00b7 ' + esc(last.day || '') + '</span>' + (U.length > 1 ? ' <details style="display:inline"><summary class="hint" style="display:inline;cursor:pointer">+' + nm(U.length - 1) + '</summary>' + U.slice(1).map(function(e){ return '<div class="hint" style="margin:2px 0 0">' + (e.dir === 'office' ? '\u{1F4CB} ' : '\u{1F6E0} ') + esc(chalUpdNote(e)) + ' <span class="num">\u2014 ' + esc(dispName(e.by) || e.by || '') + ' \u00b7 ' + esc(e.day || '') + '</span></div>'; }).join('') + '</details>' : '') + '</div>';
   if (can){
-    h += CHUP_OPEN === key
+    h += PV.CHUP_OPEN === key
       ? '<div class="wt-row" style="gap:6px;margin:4px 0 0;flex-wrap:wrap"><textarea data-chupdtxt="' + esc(key) + '" rows="2" style="flex:1;min-width:180px" placeholder="' + esc(t('ما الذي حدث في الميدان؟')) + '"></textarea>' + btn(t('أرسل'), 'btn-primary btn-sm', ' data-chupdgo="' + esc(key) + '"') + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-chupdx="1"') + '</div>'
       : '<div style="margin:4px 0 0">' + btn('\uFF0B ' + t('تحديث'), 'btn-quiet btn-sm', ' data-chupd="' + esc(key) + '"') + '</div>';
   }
@@ -52,19 +52,19 @@ function chalAssignBox(cat){
 
 function m3Load(){
   if (M3_READY || (typeof window !== 'undefined' && window.maplibregl)){ M3_READY = true; return Promise.resolve(true); }
-  if (M3_LOADING) return M3_LOADING;
-  M3_LOADING = new Promise(function(res){
+  if (PV.M3_LOADING) return PV.M3_LOADING;
+  PV.M3_LOADING = new Promise(function(res){
     var css = document.createElement('link');
     css.rel = 'stylesheet'; css.href = 'vendor/maplibre/maplibre-gl.css';
     document.head.appendChild(css);
     var js = document.createElement('script');
     js.src = 'vendor/maplibre/maplibre-gl.js';
     js.onload = function(){ M3_READY = true; res(true); };
-    js.onerror = function(){ M3_ERR = 'تعذّر تحميلُ محرّك العرض الثلاثي'; M3_LOADING = null; res(false); };
+    js.onerror = function(){ PV.M3_ERR = 'تعذّر تحميلُ محرّك العرض الثلاثي'; PV.M3_LOADING = null; res(false); };
     document.head.appendChild(js);
-    setTimeout(function(){ if (!M3_READY){ M3_ERR = 'تأخّر تحميلُ محرّك العرض'; M3_LOADING = null; res(false); } }, 15000);
+    setTimeout(function(){ if (!M3_READY){ PV.M3_ERR = 'تأخّر تحميلُ محرّك العرض'; PV.M3_LOADING = null; res(false); } }, 15000);
   });
-  return M3_LOADING;
+  return PV.M3_LOADING;
 }
 
 /* النقاطُ هي نقاطُ الخريطة المسطّحة حرفًا: القائمةُ نفسُها بعد الطبقة
@@ -146,7 +146,7 @@ function m3Click(id, ev){
   popOpenAt(id, ev);
 }
 function m3Init(){
-  if (LITE){ toast(t('الوضعُ الخفيف: بلا خريطةٍ مجسَّمة')); return false; }   /* (V37.18) */
+  if (PV.LITE){ toast(t('الوضعُ الخفيف: بلا خريطةٍ مجسَّمة')); return false; }   /* (V37.18) */
   var el = document.getElementById('m3Box');
   if (!el || !window.maplibregl) return false;
   if (M3){ try { M3.resize(); } catch (e){ LS_ERR = e; } m3Paint(); return true; }
@@ -156,7 +156,7 @@ function m3Init(){
       center:[39.89, 21.41], zoom:14.2, pitch:50, bearing:0, maxPitch:80,   /* (V39.28) standard tilt, north up */
       attributionControl:{ compact:true }
     });
-  } catch (e){ M3_ERR = String(e && e.message || e).slice(0, 90); M3 = null; return false; }
+  } catch (e){ PV.M3_ERR = String(e && e.message || e).slice(0, 90); M3 = null; return false; }
   M3.addControl(new maplibregl.NavigationControl({ visualizePitch:true }), 'bottom-right');
   M3.on('error', function(ev){ if (ev && ev.error) LS_ERR = ev.error; });
   M3.on('style.load', m3Layers);
@@ -250,7 +250,7 @@ function m3Toggle(){
   render(1);
   var b3 = document.getElementById('m3Box'); if (b3) b3.hidden = false;
   m3Load().then(function(ok){
-    if (!ok || !m3Init()){ toast(t(M3_ERR || 'تعذّر تحميلُ محرّك العرض الثلاثي')); m3Off(); return; }
+    if (!ok || !m3Init()){ toast(t(PV.M3_ERR || 'تعذّر تحميلُ محرّك العرض الثلاثي')); m3Off(); return; }
     m3From2D(); m3Paint();
     if (mvdState().id) mvdPaint();   /* (V39.31) the pins move to the 3D map */
     /* حدودُ المخيمات تُطلَب مع الثلاثيِّ لا مع التقريب وحده — فتُرفَع كما تُرسَم */
@@ -311,7 +311,7 @@ PAGE.co = { m:'المتابعة', t:'الشركات',
             if (!keys.length) return '';
             /* المفتاحُ رقمان لا نصّان: حرفُ الفصل NUL يستبدله محلِّلُ HTML
                بمحرفِ الاستبدال، فلا تعود القيمةُ كما كُتبت ولا تُطابَق. */
-            CO_CMP = CM; CO_CMP_KEYS = keys;
+            PV.CO_CMP = CM; PV.CO_CMP_KEYS = keys;
             var rows = [];
             keys.forEach(function(raw, ri){
               var g = CM[raw];
@@ -371,9 +371,9 @@ PAGE.co = { m:'المتابعة', t:'الشركات',
     return head + (function(){
     var S = siteStats();
     var cos = Object.keys(S.byCo).sort(function(a,b){ return S.byCo[b] - S.byCo[a]; });
-    CO_STALL = {}; mfuObstacles().forEach(function(o){ if (o.x.co) CO_STALL[o.x.co] = (CO_STALL[o.x.co] || 0) + 1; });   /* (V28.5) المتعثر: نقاطُها التي عليها عائقٌ ولم تُركَّب — بتعريف متابعة الوزارة */
+    PV.CO_STALL = {}; mfuObstacles().forEach(function(o){ if (o.x.co) PV.CO_STALL[o.x.co] = (PV.CO_STALL[o.x.co] || 0) + 1; });   /* (V28.5) المتعثر: نقاطُها التي عليها عائقٌ ولم تُركَّب — بتعريف متابعة الوزارة */
     var withTel = cos.filter(function(c){ return !!coTelOf(c); }).length;
-    var sel = WA_CO && cos.indexOf(WA_CO) > -1 ? WA_CO : (cos[0] || '');
+    var sel = PV.WA_CO && cos.indexOf(PV.WA_CO) > -1 ? PV.WA_CO : (cos[0] || '');
     return stats([['شركات', N(cos.length), 'acc'],
                   ['لها جوالٌ محفوظ', N(withTel), withTel ? 'ok' : 'wrn'],
                   ['بلا جوال', N(cos.length - withTel), cos.length - withTel ? 'wrn' : 'ok']])
@@ -386,9 +386,9 @@ PAGE.co = { m:'المتابعة', t:'الشركات',
               + esc(c.length > 34 ? c.slice(0, 33) + '\u2026' : c)
               + '</option>'; }).join('') + '</select></div>'
         + '<div class="field"><label>' + esc(t('نوع الإشعار')) + '</label>'
-        + '<select id="waKind">' + Object.keys(WA_KINDS).map(function(k){
-            return '<option value="' + k + '"' + (WA_KIND === k ? ' selected' : '') + '>'
-              + WA_KINDS[k].i + ' ' + esc(t(WA_KINDS[k].n)) + '</option>'; }).join('') + '</select></div>'
+        + '<select id="waKind">' + Object.keys(PV.WA_KINDS).map(function(k){
+            return '<option value="' + k + '"' + (PV.WA_KIND === k ? ' selected' : '') + '>'
+              + PV.WA_KINDS[k].i + ' ' + esc(t(PV.WA_KINDS[k].n)) + '</option>'; }).join('') + '</select></div>'
         + '<div class="field"><label>' + esc(t('الموعد')) + '</label>'
         + '<input id="waWhen" type="date"></div>'
         + '</div>'
@@ -410,7 +410,7 @@ PAGE.co = { m:'المتابعة', t:'الشركات',
       + cardFlush(t('الشركات') + ' — ' + nm(cos.length),
           table(['الشركة','ضابط الاتصال','نقاطها','تمت الزيارة','المنجز','المتبقي','متعثر','سُلِّم','جوالها','بريدها',''],   /* (V28.5، والبريد V29.0) */
             cos.slice(0, PG_Q ? 5000 : 200).map(function(c){
-              var st = coStat(c), ph = coTelOf(c), lz = coLiaisonOf(c), cs = CO_STALL ? (CO_STALL[c] || 0) : 0;
+              var st = coStat(c), ph = coTelOf(c), lz = coLiaisonOf(c), cs = PV.CO_STALL ? (PV.CO_STALL[c] || 0) : 0;
               return [esc(c.length > 30 ? c.slice(0, 29) + '\u2026' : c),
                       may('approve') ? '<input value="' + esc(lz) + '" data-coliaison="' + esc(c) + '" dir="auto" placeholder="' + esc(t('الاسم')) + '" style="width:140px">' : (lz ? esc(lz) : '\u2014'),
                       N(st.n), N(st.sv), N(st.ins), N(Math.max(0, st.n - st.ins)), cs ? '<span class="pill wrn">' + nm(cs) + '</span>' : N(0), N(st.hd),
@@ -430,8 +430,8 @@ PAGE.co = { m:'المتابعة', t:'الشركات',
   }};
 
 function waSend(kind, copy){
-  var co = (document.getElementById('waCo') || {}).value || WA_CO;
-  var kd = (document.getElementById('waKind') || {}).value || WA_KIND;
+  var co = (document.getElementById('waCo') || {}).value || PV.WA_CO;
+  var kd = (document.getElementById('waKind') || {}).value || PV.WA_KIND;
   var wn = (document.getElementById('waWhen') || {}).value || '';
   waGo(co, kd, wn, copy);
 }

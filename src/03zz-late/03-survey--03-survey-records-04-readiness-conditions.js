@@ -9,15 +9,15 @@ function asnQuick(kind){
   if (!may('approve')){ toast(t('إنشاءُ الطلب للمهندس وحده')); return; }
   var L = asnReadyList(kind);
   if (!L.length){
-    toast(t('لا نقطةَ جاهزةً لهذا النوع') + ' — ' + t(ASN_READY[kind].why));
+    toast(t('لا نقطةَ جاهزةً لهذا النوع') + ' — ' + t(PV.ASN_READY[kind].why));
     return;
   }
   selClear();
   var n = 0;
-  L.forEach(function(x){ if (n < ASN_QCAP){ SEL[x.id] = 1; SEL_N++; n++; } });
+  L.forEach(function(x){ if (n < PV.ASN_QCAP){ SEL[x.id] = 1; SEL_N++; n++; } });
   ASN_KIND = kind;
-  FIELD_MODE = ASN_READY[kind].layer;
-  ASN_MODE = (ASN_KIND_DEST[kind] === 'team') ? 'team' : 'tech';
+  FIELD_MODE = PV.ASN_READY[kind].layer;
+  ASN_MODE = (PV.ASN_KIND_DEST[kind] === 'team') ? 'team' : 'tech';
   ASN_OPEN = true;
   goPage('map');
   render(1);

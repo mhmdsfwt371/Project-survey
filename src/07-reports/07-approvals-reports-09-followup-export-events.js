@@ -17,7 +17,7 @@
    بايتًا ببايت — وإعادةُ البناء تُضيّعها ولو بدت الأرقامُ صحيحة. */
 
 /* الصفُّ الطرفيُّ: نطاقٌ × مرحلة. الأرقامُ من قراءة القالب نفسِه. */
-var FUP_ROWS = [
+PV.FUP_ROWS = [
   /* [صفّ, مشعر, نوع, مرحلة] */
   [73,'منى','مخيم','sv'],   [74,'منى','مخيم','asn'], [75,'منى','مخيم','ins'],
   [76,'منى','مخيم','ip'],   [77,'منى','مخيم','ok'],
@@ -179,7 +179,7 @@ function fupExport(){
     if (!sheet) throw new Error('sheet');
     var xml = new TextDecoder().decode(sheet.data), wrote = 0;
 
-    FUP_ROWS.forEach(function(r){
+    PV.FUP_ROWS.forEach(function(r){
       var pct = fupPct(r[1], r[2], r[3], r[4]);
       if (pct === null) return;
       var ref = 'F' + r[0];

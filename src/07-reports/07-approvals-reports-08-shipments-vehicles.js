@@ -12,7 +12,7 @@
    وبلا موعدٍ متوقَّعٍ لا يُعرَف المتأخّرُ إلا حين يُسأل عنه، وحينئذٍ يكون قد
    تأخّر أسبوعين. فيُكتَب المتوقَّعُ يومَ الشحن، ويُحسَب التأخّرُ بنفسه. */
 
-var SHIP_ST = ['قيد التصنيع','شُحنت','في التخليص','وصلت المستودع','متأخرة'];
+PV.SHIP_ST = ['قيد التصنيع','شُحنت','في التخليص','وصلت المستودع','متأخرة'];
 
 function shipAdd(){
   if (!may('inventory') && !may('money')){ toast(t('الشحناتُ للمشتريات والمستودع')); return; }
@@ -21,7 +21,7 @@ function shipAdd(){
   if (!ref){ toast(t('اكتب رقم الشحنة')); return; }
   if (shipList().some(function(x){ return x.ref === ref; })){ toast(t('رقمُ الشحنة موجودٌ بالفعل')); return; }
   shipSave({ id:'sh' + Date.now().toString(36), ref:ref, item:g('shItem'), qty:+g('shQty') || 0,
-             sup:g('shSup'), st:g('shSt') || SHIP_ST[0], sent:g('shSent'), eta:g('shEta'),
+             sup:g('shSup'), st:g('shSt') || PV.SHIP_ST[0], sent:g('shSent'), eta:g('shEta'),
              got:'', at:Date.now(), by:STATE.meta.name || '' });
   logEvent('شحنة جديدة — ' + ref);
   notifPush('توريد', 'شحنةٌ جديدة: ' + ref + ' — ' + (g('shItem') || '') + ' · ' + nm(+g('shQty') || 0),
@@ -295,7 +295,7 @@ function vehAsnAdd(){
   var vv = vehOf(vid);
   if (vv && kind && !vehFits(vv.kind, kind)){
     /* لا يُمنَع — قد لا يجد غيرَها — لكن يُقال ويبقى في السجل */
-    toast(t('تنبيه: ') + vehKindName(vv.kind) + ' ' + t('لا تناسب') + ' ' + t(ASN_LABEL[kind] || kind));
+    toast(t('تنبيه: ') + vehKindName(vv.kind) + ' ' + t('لا تناسب') + ' ' + t(PV.ASN_LABEL[kind] || kind));
   }
   var cur = vehAsnOf(vid);
   if (cur){ toast(t('مُسنَدةٌ إلى') + ' ' + cur.to + ' — ' + t('أنهِ الإسنادَ أولًا')); return; }
@@ -378,8 +378,8 @@ PAGE.fleet = { m:'الميدان', t:'السيارات',
             +     people.map(function(p){ return '<option>' + esc(p) + '</option>'; }).join('')
             +   '</optgroup></select></div>'
             + '<div class="field"><label>' + esc(t('لأيِّ عمل')) + '</label><select id="vaKind">'
-            +   Object.keys(ASN_LABEL).map(function(k){
-                  return '<option value="' + esc(k) + '">' + esc(t(ASN_LABEL[k])) + '</option>'; }).join('')
+            +   Object.keys(PV.ASN_LABEL).map(function(k){
+                  return '<option value="' + esc(k) + '">' + esc(t(PV.ASN_LABEL[k])) + '</option>'; }).join('')
             +   '</select></div>'
             + '</div>',
             btn('➕ أسنِد','btn-primary btn-sm',' data-vaadd="1"'))
@@ -393,7 +393,7 @@ PAGE.fleet = { m:'الميدان', t:'السيارات',
                   var days = Math.max(0, Math.round((Date.now() - (a.at || Date.now())) / 86400000));
                   return ['<span class="num">' + esc(v.plate) + '</span>',
                           esc(vehKindName(v.kind)), esc(a.to),
-                          pill(t(ASN_LABEL[a.kind] || a.kind), 'off'),
+                          pill(t(PV.ASN_LABEL[a.kind] || a.kind), 'off'),
                           '<span class="num">' + nm(days) + ' ' + esc(t('يوم')) + '</span>',
                           (may('fleet') || may('settings'))
                             ? btn('أنهِ','btn-quiet btn-sm',' data-vaend="' + esc(a.id) + '"') : ''];
@@ -405,12 +405,12 @@ PAGE.fleet = { m:'الميدان', t:'السيارات',
     if (cur === 'fleetLog') return head + (function(){
     var all = vehAsnAll().slice().sort(function(a, b){ return (b.at || 0) - (a.at || 0); });
     var mis = vehMismatch();
-    var dayMs = VLOG_D ? new Date(VLOG_D + 'T12:00:00').getTime() : 0;
+    var dayMs = PV.VLOG_D ? new Date(PV.VLOG_D + 'T12:00:00').getTime() : 0;
     var onDay = dayMs ? vehOnDay(dayMs) : [];
     var shown = all.filter(function(a){
-      if (!VLOG_Q) return true;
+      if (!PV.VLOG_Q) return true;
       var v = vehOf(a.veh);
-      return ((v ? v.plate : '') + ' ' + a.to).indexOf(VLOG_Q) > -1;
+      return ((v ? v.plate : '') + ' ' + a.to).indexOf(PV.VLOG_Q) > -1;
     });
 
     return stats([['إسناداتٌ في السجل', N(all.length)],
@@ -423,7 +423,7 @@ PAGE.fleet = { m:'الميدان', t:'السيارات',
             + mis.map(function(a){
                 var v = vehOf(a.veh);
                 return (v ? v.plate : a.veh) + ' — ' + vehKindName(v ? v.kind : '')
-                  + ' مع ' + a.to + ' في ' + t(ASN_LABEL[a.kind] || a.kind);
+                  + ' مع ' + a.to + ' في ' + t(PV.ASN_LABEL[a.kind] || a.kind);
               }).join(' · ')
             + '. العدّةُ تحتاج بيك أب أو فان، والتنقّلُ سيدان — ومن معه سيدانٌ وحدَه لا يحمل عدّتَه فيقف في الموقع بلا قطع.')
         : '')
@@ -431,18 +431,18 @@ PAGE.fleet = { m:'الميدان', t:'السيارات',
       + card('من كانت معه سيارةٌ في يومٍ بعينه',
           '<div class="grid cols-2">'
           + '<div class="field"><label>' + esc(t('التاريخ')) + '</label>'
-          +   '<input type="date" id="vlD" data-vlgd="1" value="' + esc(VLOG_D) + '"></div>'
+          +   '<input type="date" id="vlD" data-vlgd="1" value="' + esc(PV.VLOG_D) + '"></div>'
           + '<div class="field"><label>' + esc(t('بحث بلوحةٍ أو اسم')) + '</label>'
-          +   '<input type="search" id="vlQ" data-vlgq="1" value="' + esc(VLOG_Q) + '" dir="auto"></div>'
+          +   '<input type="search" id="vlQ" data-vlgq="1" value="' + esc(PV.VLOG_Q) + '" dir="auto"></div>'
           + '</div>'
-          + (VLOG_D
+          + (PV.VLOG_D
             ? (onDay.length
               ? table(['اللوحة','النوع','كانت مع','العمل','من','إلى'],
                   onDay.map(function(x){
                     return ['<span class="num">' + esc(x.veh.plate) + '</span>',
                             esc(vehKindName(x.veh.kind)),
                             '<strong>' + esc(x.asn.to) + '</strong>',
-                            esc(t(ASN_LABEL[x.asn.kind] || x.asn.kind || '—')),
+                            esc(t(PV.ASN_LABEL[x.asn.kind] || x.asn.kind || '—')),
                             '<span class="num">' + esc(msDay(x.asn.at)) + '</span>',
                             x.asn.end ? '<span class="num">' + esc(msDay(x.asn.end)) + '</span>'
                                       : pill(t('جارٍ'), 'ok')];
@@ -462,7 +462,7 @@ PAGE.fleet = { m:'الميدان', t:'السيارات',
                   return ['<span class="num">' + esc(v ? v.plate : a.veh) + '</span>',
                           esc(v ? vehKindName(v.kind) : '—'),
                           esc(a.to),
-                          esc(t(ASN_LABEL[a.kind] || a.kind || '—')),
+                          esc(t(PV.ASN_LABEL[a.kind] || a.kind || '—')),
                           '<span class="num">' + esc(msDay(a.at)) + '</span>',
                           a.end ? '<span class="num">' + esc(msDay(a.end)) + '</span>' : pill(t('جارٍ'), 'ok'),
                           '<span class="num">' + nm(days) + ' ' + esc(t('يوم')) + '</span>',
@@ -517,7 +517,7 @@ PAGE.fleet = { m:'الميدان', t:'السيارات',
         + '<div><span class="k">' + esc(t('النوع')) + '</span><span>' + esc(vehKindName(v.kind)) + '</span></div>'
         + '<div><span class="k">' + esc(t('الموديل')) + '</span><span>' + esc(v.model || '—') + '</span></div>'
         + '<div><span class="k">' + esc(t('لأيِّ عمل')) + '</span><span>'
-        +   esc(t(ASN_LABEL[a.kind] || a.kind)) + '</span></div>'
+        +   esc(t(PV.ASN_LABEL[a.kind] || a.kind)) + '</span></div>'
         + '<div><span class="k">' + esc(t('انتهاء الرخصة')) + '</span><span class="num">'
         +   esc(v.licExp || '—') + '</span></div>'
         + '</div>');
@@ -525,8 +525,8 @@ PAGE.fleet = { m:'الميدان', t:'السيارات',
   })();
     return head + (function(){
     var L = vehList().filter(function(v){
-      if (!VEH_Q) return true;
-      return (v.plate + ' ' + (v.model || '') + ' ' + vehKindName(v.kind)).indexOf(VEH_Q) > -1;
+      if (!PV.VEH_Q) return true;
+      return (v.plate + ' ' + (v.model || '') + ' ' + vehKindName(v.kind)).indexOf(PV.VEH_Q) > -1;
     });
     var need = vehNeed(), exp = vehExpiring(30);
     var byKind = {};
@@ -556,7 +556,7 @@ PAGE.fleet = { m:'الميدان', t:'السيارات',
           + '</div>')
 
       + '<form class="inline-form" onsubmit="return false" style="margin:0 0 14px">'
-      +   '<input type="search" id="vhQ" data-vhq="1" value="' + esc(VEH_Q) + '" placeholder="'
+      +   '<input type="search" id="vhQ" data-vhq="1" value="' + esc(PV.VEH_Q) + '" placeholder="'
       +     esc(t('ابحث باللوحة أو الموديل أو النوع')) + '" dir="auto">'
       + '</form>'
 
@@ -578,7 +578,7 @@ PAGE.fleet = { m:'الميدان', t:'السيارات',
                           pill(t(v.st || 'متاحة'), v.st === 'متاحة' ? 'ok'
                                 : v.st === 'مُسندة' ? 'acc' : 'warn'),
                           a ? esc(a.to) + '<br><span class="hint" style="margin:0">'
-                              + esc(t(ASN_LABEL[a.kind] || a.kind)) + '</span>' : '—',
+                              + esc(t(PV.ASN_LABEL[a.kind] || a.kind)) + '</span>' : '—',
                           (may('fleet') || may('settings'))
                             ? (a ? btn('أنهِ الإسناد','btn-quiet btn-sm',' data-vaend="' + esc(a.id) + '"')
                                  : btn('حذف','btn-quiet btn-sm',' data-vhdel="' + esc(v.id) + '"'))

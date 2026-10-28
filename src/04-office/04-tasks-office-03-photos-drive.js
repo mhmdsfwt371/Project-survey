@@ -43,7 +43,7 @@ function drvSave(){
     lsSet('nsk14.drv.client', c.trim());
     lsSet('nsk14.drv.folder', f.trim());
   }catch(e){ LS_ERR = e; }
-  DRV.clientId = c.trim(); DRV.folderId = f.trim();
+  PV.DRV.clientId = c.trim(); PV.DRV.folderId = f.trim();
   logEvent('وصل درايف — ' + (c ? 'مُعرَّف' : 'أُفرغ'));
   toast(c ? t('حُفظ — جرّب الإذن') : t('أُفرغ الوصل'));
   render(1);

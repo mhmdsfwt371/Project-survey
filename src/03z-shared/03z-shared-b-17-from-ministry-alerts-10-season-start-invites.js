@@ -17,7 +17,7 @@ var GH_REPO = 'mhmdsfwt371/Project-survey';
 function ghToken(){ return String((CFG.gh || {}).tok || ''); }
 
 
-var GH_RAN = 0;
+PV.GH_RAN = 0;
 
 function ghCard(){
   if (!may('roles')) return '';

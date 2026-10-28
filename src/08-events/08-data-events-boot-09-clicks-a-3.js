@@ -11,13 +11,13 @@ function clickAPart6(e){
   var bst = e.target.closest('[data-bst]');   /* بحثٌ صرف — يُعاد حسابُه */
   var bgf = e.target.closest('[data-bugf]');   /* بحثٌ صرف — يُعاد حسابُه */
   var wid;   /* تُكتب هنا قبل أن تُقرأ */
-    if (bgf){ BUG_F = bgf.getAttribute('data-bugf'); render(1); return true; }
+    if (bgf){ PV.BUG_F = bgf.getAttribute('data-bugf'); render(1); return true; }
   var bdn = e.target.closest('[data-bugdone]');
   if (bdn){ bugClose(bdn.getAttribute('data-bugdone')); return true; }
   var bok = e.target.closest('[data-bugok]');
   if (bok){ bugDecide(bok.getAttribute('data-bugok'), true, ''); return true; }
   var bdc = e.target.closest('[data-bugdec]');
-  if (bdc){ BUG_DEC = bdc.getAttribute('data-bugdec'); render(1); return true; }
+  if (bdc){ PV.BUG_DEC = bdc.getAttribute('data-bugdec'); render(1); return true; }
   var bno = e.target.closest('[data-bugno]');
   if (bno){
     var w = document.getElementById('bgWhy');
@@ -33,20 +33,20 @@ function clickAPart6(e){
   if (e.target.closest('[data-wtmeetend]')){ if (WT_MEND) wtMeetEnd(); else { WT_MEND = 1; render(1); } return true; }
   if (e.target.closest('[data-wtmeetexit]')){ WT_MEET = false; WT_MEND = 0; WT_MI = 0; toast(t('خرجتَ من الاجتماع — ما حُدِّث محفوظ')); render(1); return true; }
   var wgo = e.target.closest('[data-wtgo]');
-  if (wgo){ WT_WBS = wgo.getAttribute('data-wtgo') || ''; WT_F = ''; WT_Q = ''; WT_TAB = 'list'; WT_OPEN = ''; goPage('wtask'); render(1); return true; }
+  if (wgo){ WT_WBS = wgo.getAttribute('data-wtgo') || ''; WT_F = ''; PV.WT_Q = ''; WT_TAB = 'list'; WT_OPEN = ''; goPage('wtask'); render(1); return true; }
   var wwb = e.target.closest('[data-wtwbs]');
   if (wwb){ WT_WBS = wwb.getAttribute('data-wtwbs') || ''; render(1); return true; }
-  if (e.target.closest('[data-wtdone]')){ WT_DONE_OPEN = !WT_DONE_OPEN; render(1); return true; }
+  if (e.target.closest('[data-wtdone]')){ PV.WT_DONE_OPEN = !PV.WT_DONE_OPEN; render(1); return true; }
   var wtd = e.target.closest('[data-wtdel]');
   if (wtd){ wtRemove(wtd.getAttribute('data-wtdel')); return true; }
-  if (e.target.closest('[data-wtnew]')){ WT_NEW = true; WT_OPEN = ''; toast(t('املأ المهمة الجديدة ثم احفظ')); render(1); return true; }
-  if (e.target.closest('[data-wtncancel]')){ WT_NEW = false; render(1); return true; }
+  if (e.target.closest('[data-wtnew]')){ PV.WT_NEW = true; WT_OPEN = ''; toast(t('املأ المهمة الجديدة ثم احفظ')); render(1); return true; }
+  if (e.target.closest('[data-wtncancel]')){ PV.WT_NEW = false; render(1); return true; }
   if (e.target.closest('[data-wtnsave]')){
     var v = function(id){ var el = document.getElementById(id); return el ? el.value.trim() : ''; };
     wtAdd({ n:v('wtN'), track:v('wtTr'), who:v('wtWho'), due:v('wtDue'), d:v('wtD'), wbs:v('wtWbs') });
     return true;
   }
-  if (e.target.closest('[data-wtreset]')){ if (WT_RESET) wtClear(); else { WT_RESET = 1; render(1); } return true; }
+  if (e.target.closest('[data-wtreset]')){ if (PV.WT_RESET) wtClear(); else { PV.WT_RESET = 1; render(1); } return true; }
   var wtg = e.target.closest('[data-wbstog]');
   if (wtg){ wid = wtg.getAttribute('data-wbstog'); WBS_OPEN[wid] = !WBS_OPEN[wid]; render(1); return true; }
   var wed = e.target.closest('[data-wbsedit]');
@@ -61,27 +61,27 @@ function clickAPart6(e){
   }
   var wdl = e.target.closest('[data-wbsdel]');
   if (wdl){ wbsRemove(wdl.getAttribute('data-wbsdel')); return true; }
-  if (e.target.closest('[data-wbsreset]')){ if (WBS_RESET) wbsClear(); else { WBS_RESET = 1; render(1); } return true; }
+  if (e.target.closest('[data-wbsreset]')){ if (PV.WBS_RESET) wbsClear(); else { PV.WBS_RESET = 1; render(1); } return true; }
   var wf = e.target.closest('[data-wbsf]');
-  if (wf){ WBS_F = wf.getAttribute('data-wbsf') || ''; render(1); return true; }
+  if (wf){ PV.WBS_F = wf.getAttribute('data-wbsf') || ''; render(1); return true; }
   var flf = e.target.closest('[data-fl]');
-  if (flf){ FILT.life = flf.getAttribute('data-fl') || ''; LIST_SHOWN = LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }
+  if (flf){ FILT.life = flf.getAttribute('data-fl') || ''; PV.LIST_SHOWN = PV.LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }
   var fsh = e.target.closest('[data-fsech]');   /* (V37.54) فتحُ القسم في مكانه — بلا إعادة رسم */
   if (fsh){ var sec = fsh.closest('.fsec'), body = sec && sec.querySelector('.fsec-b'); if (sec && body){ var openNow = sec.classList.toggle('open'); body.hidden = !openNow; fsh.setAttribute('aria-expanded', openNow ? 'true' : 'false'); fsecSet(fsh.getAttribute('data-fsech'), openNow); } return true; }
   var fcl = e.target.closest('[data-fclr]');
-  if (fcl){ var fk = fcl.getAttribute('data-fclr'); if (fk === 'all'){ FILT.zone = ''; FILT.type = ''; FILT.route = ''; FILT.floor = ''; FILT.work = ''; FILT.life = ''; FILT.exec = ''; FILT.ccg = ''; } else FILT[fk] = ''; LIST_SHOWN = LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }
-  var fxf = e.target.closest('[data-fx]'); if (fxf){ var fxv = fxf.getAttribute('data-fx') || ''; FILT.exec = (fxv === FILT.exec) ? '' : fxv;   /* (V39.69) a second tap clears */ LIST_SHOWN = LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }   /* (V37.52) */
-  var fgf = e.target.closest('[data-fg]'); if (fgf){ var fgv = fgf.getAttribute('data-fg') || ''; FILT.ccg = (fgv === FILT.ccg) ? '' : fgv; LIST_SHOWN = LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }
+  if (fcl){ var fk = fcl.getAttribute('data-fclr'); if (fk === 'all'){ FILT.zone = ''; FILT.type = ''; FILT.route = ''; FILT.floor = ''; FILT.work = ''; FILT.life = ''; FILT.exec = ''; FILT.ccg = ''; } else FILT[fk] = ''; PV.LIST_SHOWN = PV.LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }
+  var fxf = e.target.closest('[data-fx]'); if (fxf){ var fxv = fxf.getAttribute('data-fx') || ''; FILT.exec = (fxv === FILT.exec) ? '' : fxv;   /* (V39.69) a second tap clears */ PV.LIST_SHOWN = PV.LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }   /* (V37.52) */
+  var fgf = e.target.closest('[data-fg]'); if (fgf){ var fgv = fgf.getAttribute('data-fg') || ''; FILT.ccg = (fgv === FILT.ccg) ? '' : fgv; PV.LIST_SHOWN = PV.LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }
   var tdn = e.target.closest('[data-techdone]'); if (tdn){ if (techDoneSet(tdn.getAttribute('data-techdone'), true)){ logEvent('تمت الزيارةُ التقنية — ' + tdn.getAttribute('data-techdone')); toast(t('صارت زيارةً تمّت — تنتظر الاعتماد')); render(1); if (typeof mapPaint === 'function' && MAP) mapPaint(); } return true; }
   var tdu = e.target.closest('[data-techundo]'); if (tdu){ if (techDoneSet(tdu.getAttribute('data-techundo'), false)){ logEvent('أُعيدت «تحتاج زيارة تقنية» — ' + tdu.getAttribute('data-techundo')); render(1); if (typeof mapPaint === 'function' && MAP) mapPaint(); } return true; }
   if (e.target.closest('[data-seltech]')){ var nT = selTechDone(); toast(nm(nT) + ' ' + t('نقطة صارت «زيارة تمّت — تنتظر الاعتماد»')); render(1); if (typeof mapPaint === 'function' && MAP) mapPaint(); return true; }
   if (e.target.closest('[data-selexec]')){ var sx = (document.getElementById('selExec') || {}).value || ''; var nX = selExecSet(sx); toast(nm(nX) + ' ' + t('نقطة صُنّفت في التقرير التنفيذي')); render(1); if (typeof mapPaint === 'function' && MAP) mapPaint(); return true; }
   var fr = e.target.closest('[data-fr]');
   if (fr){ var rv = fr.getAttribute('data-fr');
-           FILT.route = (FILT.route === rv) ? '' : rv; LIST_SHOWN = LIST_PAGE; render(1);
+           FILT.route = (FILT.route === rv) ? '' : rv; PV.LIST_SHOWN = PV.LIST_PAGE; render(1);
            if (CUR === 'map' && MAP) mapPaint(); return true; }
   var fz = e.target.closest('[data-fz]');
-  if (fz){ FILT.zone = fz.getAttribute('data-fz'); LIST_SHOWN = LIST_PAGE; render(1);
+  if (fz){ FILT.zone = fz.getAttribute('data-fz'); PV.LIST_SHOWN = PV.LIST_PAGE; render(1);
            if (CUR === 'map' && MAP){ mapPaint(); mapFitFiltered(); } return true; }   /* (V29.8) */
   var tfb = e.target.closest('[data-tfw]');   /* (V23.2) */
   if (tfb){ TFW.camp = null; var tv = tfb.getAttribute('data-tfw'); TFW.f = tv === 'show' ? ((FILT.floor !== '' && FILT.floor != null) ? +FILT.floor : TFW_ALL) : +tv; if (TFW.f >= 0) tfwLoad(); tfwPaint(); render(1); return true; }   /* (V26.5) الإظهارُ على الدور المختار في صف الأدوار */
@@ -119,13 +119,13 @@ function clickAPart6(e){
     if (IOT.on && MAP && MAP.getZoom() < IOT.Z) toast(t('قرّب أكثر لتظهر الحساسات'));
     return true; }
   var ffl = e.target.closest('[data-ffl]');
-  if (ffl){ var fv = ffl.getAttribute('data-ffl'); FILT.floor = (fv === '' || String(FILT.floor) === fv) ? '' : fv; LIST_SHOWN = LIST_PAGE;
+  if (ffl){ var fv = ffl.getAttribute('data-ffl'); FILT.floor = (fv === '' || String(FILT.floor) === fv) ? '' : fv; PV.LIST_SHOWN = PV.LIST_PAGE;
     if (typeof TFW === 'object' && TFW.f >= 0){ TFW.camp = null; TFW.f = (FILT.floor === '' || FILT.floor === '*' ? TFW_ALL : +FILT.floor); tfwPaint(); }   /* (V26.5) الدورُ الواحدُ يحكم المسارَ والنقاط */
     render(1);
            if (CUR === 'map' && MAP) mapPaint(); return true; }   /* (V22.2) */
   var ft = e.target.closest('[data-ft]');
   if (ft){ v = ft.getAttribute('data-ft');
-           FILT.type = (FILT.type === v) ? '' : v; LIST_SHOWN = LIST_PAGE; render(1);
+           FILT.type = (FILT.type === v) ? '' : v; PV.LIST_SHOWN = PV.LIST_PAGE; render(1);
            if (CUR === 'map' && MAP){ mapPaint(); mapFitFiltered(); } return true; }
   return CLICK_NEXT;
 }
@@ -135,7 +135,7 @@ function clickAPart7(e){
   var pr, sk;   /* تُكتب هنا قبل أن تُقرأ */
      /* (V29.8) */
   var fw = e.target.closest('[data-fw]');
-  if (fw){ FILT.work = fw.getAttribute('data-fw'); LIST_SHOWN = LIST_PAGE; render(1);
+  if (fw){ FILT.work = fw.getAttribute('data-fw'); PV.LIST_SHOWN = PV.LIST_PAGE; render(1);
            if (CUR === 'map' && MAP) mapPaint(); return true; }
   var ovz = e.target.closest('[data-ovz]');
   if (ovz){ var zk = ovz.getAttribute('data-ovz'); OVER_ZONE = (OVER_ZONE === zk ? '' : zk); render(1); return true; }
@@ -178,19 +178,19 @@ function clickAPart7(e){
   var m3e = e.target.closest('[data-m3enter]'); if (m3e){ POP_OPEN = false; render(); if (m3Enter(m3e.getAttribute('data-m3enter')) && typeof teWalkOn === 'function') teWalkOn(); return true; }   /* (V39.21/V39.25) enter, then walk */
   var twk = e.target.closest('[data-tewalk]'); if (twk && typeof teWalkDo === 'function'){ teWalkDo(twk.getAttribute('data-tewalk')); return true; }
   var fl = e.target.closest('[data-fly]');
-  if (fl){ if (mapUIHtml.s) mapUIHtml.s.open = false; POP_SITE = fl.getAttribute('data-fly'); POP_OPEN = true; if (typeof SV_POP !== 'undefined'){ SV_POP = ''; SV_PHO = ''; } CUR = 'map'; render();   /* (V38.75) the list window closes — it would cover the map */
+  if (fl){ if (mapUIHtml.s) mapUIHtml.s.open = false; POP_SITE = fl.getAttribute('data-fly'); POP_OPEN = true; if (typeof SV_POP !== 'undefined'){ SV_POP = ''; PV.SV_PHO = ''; } CUR = 'map'; render();   /* (V38.75) the list window closes — it would cover the map */
            if (typeof MAP === 'undefined' || !MAP) toast('\u23F3 ' + t('تُفتَح الخريطةُ على النقطة…'));   /* (V38.21) يرى أن الضغطة وصلت */
            mapFlySoon(POP_SITE); return true; }   /* (V38.20) ينتظر الخريطة */
   var fm = e.target.closest('[data-form]');
   if (fm && !/^(INPUT|SELECT|TEXTAREA|OPTION|LABEL)$/.test(fm.tagName)){
     formGo(fm.getAttribute('data-form')); CUR = 'svForm'; render(1); return true; }
   if (e.target.closest('[data-edit]')){
-    if (maySiteEditBasic()){ SITE_ED = 1; render(1);   /* (V28.6) المشرفُ أيضًا */ var fk = e.target.closest('[data-edit]').getAttribute('data-edit') || 'name', fid = { name:'seName', sq:'seSq', sign:'seSign', zone:'seZone', type:'seType', work:'seWork', region:'seRegion', lat:'seLat', floor:'seFloor', co:'seCo', inout:'seInout', net:'seNet', ipRtr:'seIpRtr', ipRdr:'seIpRdr', ipCam:'seIpCam' }[fk] || (/^s47/.test(fk) ? 'seS47' + fk.slice(3) : 'seName');   /* (V37.89) */ var ne = document.getElementById(fid) || document.getElementById('seName'); if (ne && ne.closest && ne.closest('details')) ne.closest('details').open = true; if (ne){ ne.focus(); if (ne.scrollIntoView) ne.scrollIntoView({ block:'center' }); } }   /* (V27.4) يفتح النموذجَ على الحقل المطلوب */
+    if (maySiteEditBasic()){ PV.SITE_ED = 1; render(1);   /* (V28.6) المشرفُ أيضًا */ var fk = e.target.closest('[data-edit]').getAttribute('data-edit') || 'name', fid = { name:'seName', sq:'seSq', sign:'seSign', zone:'seZone', type:'seType', work:'seWork', region:'seRegion', lat:'seLat', floor:'seFloor', co:'seCo', inout:'seInout', net:'seNet', ipRtr:'seIpRtr', ipRdr:'seIpRdr', ipCam:'seIpCam' }[fk] || (/^s47/.test(fk) ? 'seS47' + fk.slice(3) : 'seName');   /* (V37.89) */ var ne = document.getElementById(fid) || document.getElementById('seName'); if (ne && ne.closest && ne.closest('details')) ne.closest('details').open = true; if (ne){ ne.focus(); if (ne.scrollIntoView) ne.scrollIntoView({ block:'center' }); } }   /* (V27.4) يفتح النموذجَ على الحقل المطلوب */
     else toast(t('التعديل يمرّ باعتماد المهندس'));
     return true; }
   var sts = e.target.closest('[data-sitesave]');
   if (sts){ if (siteEditSave(sts.getAttribute('data-sitesave'))) render(1); return true; }
-  if (e.target.closest('[data-sitecancel]')){ SITE_ED = 0; SITE_HIDE = ''; SITE_DEL = ''; render(1); return true; }
+  if (e.target.closest('[data-sitecancel]')){ PV.SITE_ED = 0; PV.SITE_HIDE = ''; SITE_DEL = ''; render(1); return true; }
   var std = e.target.closest('[data-sitedel]');   /* (V25.5) حذفُ المضافة نهائيًّا — بتأكيدٍ واحد */
   if (std){ SITE_DEL = std.getAttribute('data-sitedel'); render(1); return true; }
   var stdg = e.target.closest('[data-sitedelgo]');
@@ -198,7 +198,7 @@ function clickAPart7(e){
   var mvd = e.target.closest('[data-mvdel]');   /* (V36.6) حركةُ مخزنٍ خاطئةٌ خلال يومها */
   if (mvd){ if (window.confirm(t('حذف') + ' ' + t('حركة مخزون') + '؟')) gdelRun('mv', mvd.getAttribute('data-mvdel')); render(1); return true; }
   var gdl = e.target.closest('[data-gdel]');   /* (V36.5) الحذفُ الموحّد */
-  if (gdl){ var dp = gdl.getAttribute('data-gdel').split('|'), dR = GDEL_REG[dp[0]];
+  if (gdl){ var dp = gdl.getAttribute('data-gdel').split('|'), dR = PV.GDEL_REG[dp[0]];
     if (dR && window.confirm(t('حذف') + ' ' + t(dR.t) + '؟')) gdelRun(dp[0], dp.slice(1).join('|'));
     render(1); return true; }
   var ged = e.target.closest('[data-ged]');   /* (V36.2) التعديلُ الموحّد */
@@ -219,19 +219,19 @@ function clickAPart7(e){
     if (window.confirm(msg) && siteHide(pid)){ POP_OPEN = false; POP_SITE = ''; }
     render(1); return true; }
   var sth = e.target.closest('[data-sitehide]');
-  if (sth){ SITE_HIDE = sth.getAttribute('data-sitehide'); render(1); return true; }
+  if (sth){ PV.SITE_HIDE = sth.getAttribute('data-sitehide'); render(1); return true; }
   var sthg = e.target.closest('[data-sitehidego]');
   if (sthg){ if (siteHide(sthg.getAttribute('data-sitehidego'))){ DETAIL_ID = ''; CUR = 'sites'; } render(1); return true; }
   var str = e.target.closest('[data-siterestore]');
   if (str){ siteRestore(str.getAttribute('data-siterestore')); render(1); return true; }
 
-  if (e.target.closest('[data-more]')){ LIST_SHOWN += LIST_PAGE; render(); return true; }
-  if (e.target.closest('[data-morek]')){ MORE_SHOWN[moreKey()] = (MORE_SHOWN[moreKey()] || 0) + MORE_STEP; render(1); return true; }   /* (V26.2) رسمٌ فوريٌّ فيظهر الأثرُ مع الضغطة */
+  if (e.target.closest('[data-more]')){ PV.LIST_SHOWN += PV.LIST_PAGE; render(); return true; }
+  if (e.target.closest('[data-morek]')){ MORE_SHOWN[moreKey()] = (MORE_SHOWN[moreKey()] || 0) + PV.MORE_STEP; render(1); return true; }   /* (V26.2) رسمٌ فوريٌّ فيظهر الأثرُ مع الضغطة */
   if (e.target.closest('[data-sq]')){
     var q = document.getElementById('siteQ');
     if (q && !q.value.trim() && !SITE_Q){ toast(t('اكتب ما تبحث عنه: المعرّف أو الشاخص أو المربع')); try { q.focus(); } catch (e2){ LS_ERR = e2; } return true; }   /* (V22.2) */
     SITE_Q = q ? q.value : '';
-    LIST_SHOWN = LIST_PAGE;
+    PV.LIST_SHOWN = PV.LIST_PAGE;
     render();
     var nq = document.getElementById('siteQ');
     if (nq){ nq.focus(); nq.setSelectionRange(nq.value.length, nq.value.length); }
@@ -273,9 +273,9 @@ function clickAPart7(e){
   var wrc = e.target.closest('[data-wrcancel]');
   if (wrc){ workReqCancel(wrc.getAttribute('data-wrcancel')); return true; }
   var sst = e.target.closest('[data-survst]');
-  if (sst){ SURV_ST = sst.getAttribute('data-survst'); render(1); return true; }
+  if (sst){ PV.SURV_ST = sst.getAttribute('data-survst'); render(1); return true; }
   var grl = e.target.closest('[data-grole]');
-  if (grl){ GUIDE.role = grl.getAttribute('data-grole'); render(1); return true; }
+  if (grl){ PV.GUIDE.role = grl.getAttribute('data-grole'); render(1); return true; }
   return false;
 }
 

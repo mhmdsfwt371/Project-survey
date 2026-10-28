@@ -113,8 +113,8 @@ function mapColorOf(x){
      والكاميراتُ تحت لونٍ واحدٍ باهت، ويظنُّ الناظرُ أنها خرجت من الطبقة.
      وليست خارجَها: هي بلا شركةٍ فقط. والترشيحُ فعلٌ آخر يقع عند اختيار
      شركاتٍ بعينها — لا عند التلوين. */
-  if ((CO_OPEN || CO_MODE) && x.co) return coColor(x.co);
-  if (CO_SEL.length && x.co) return coColor(x.co);
+  if ((CO_OPEN || PV.CO_MODE) && x.co) return coColor(x.co);
+  if (PV.CO_SEL.length && x.co) return coColor(x.co);
   /* لونُ التصنيف كان يفوز متى رُشِّح نوعٌ — فتصير كلُّ النقاط لونًا واحدًا
      ويختفي ما زير مما لم يُزَر. والتصنيفُ معلومٌ حين يُرشَّح، والحالةُ هي
      المطلوبة. فصار لونُ التصنيف لغير طبقات الميدان وحدَها. */
@@ -139,19 +139,19 @@ function mapColorOf(x){
     return '#E8C34B';
   }
   if (FIELD_MODE === 'survey')
-    return MAP_COL.survey[STATE.recs[x.id] ? 'تمت الزيارة' : 'لم يُزر'];
+    return PV.MAP_COL.survey[STATE.recs[x.id] ? 'تمت الزيارة' : 'لم يُزر'];
   var st = (STATE.inss[x.id] || {}).status || x.fstat || 'لم يبدأ';
-  return MAP_COL.install[st] || MAP_COL.install['لم يبدأ'];
+  return PV.MAP_COL.install[st] || PV.MAP_COL.install['لم يبدأ'];
 }
 
 /* تحميل Leaflet كسولًا — لا يُثقل الإقلاع ولا يُطلَب قبل فتح الخريطة */
 function mapLoad(){
-  if (MAP_READY) return Promise.resolve(true);
+  if (PV.MAP_READY) return Promise.resolve(true);
   if (typeof window === 'undefined') return Promise.resolve(false);
-  if (window.L){ MAP_READY = true; return Promise.resolve(true); }
-  if (MAP_LOADING) return MAP_LOADING;
+  if (window.L){ PV.MAP_READY = true; return Promise.resolve(true); }
+  if (PV.MAP_LOADING) return PV.MAP_LOADING;
 
-  MAP_LOADING = new Promise(function(res){
+  PV.MAP_LOADING = new Promise(function(res){
     /* ═══ Leaflet من المستودع لا من شبكةٍ عامة ═══
        كانت تُحمَّل من unpkg: خدمةٌ ثالثةٌ لا يُخزّنها عاملُ الخلفية، فإن
        انقطعت الشبكةُ في المشاعر أو سقط الموقعُ العامُّ ماتت الخريطةُ وحدَها —
@@ -164,13 +164,13 @@ function mapLoad(){
 
     var js = document.createElement('script');
     js.src = 'vendor/leaflet/leaflet.js';
-    js.onload  = function(){ MAP_READY = true; res(true); };
+    js.onload  = function(){ PV.MAP_READY = true; res(true); };
     js.onerror = function(){ res(false); };
     document.head.appendChild(js);
 
-    setTimeout(function(){ if (!MAP_READY) res(false); }, 9000);
+    setTimeout(function(){ if (!PV.MAP_READY) res(false); }, 9000);
   });
-  return MAP_LOADING;
+  return PV.MAP_LOADING;
 }
 
 function mapInit(){
@@ -181,7 +181,7 @@ function mapInit(){
     setTimeout(function(){ try{ MAP.invalidateSize(); mapPaint(true); }catch(e){} }, 60);   /* (V30.9) تصحيحُ القياس لا يغيّر الزوم — رسمةٌ خفيفة */
     /* (V30.9) رسمُ الصفحة لا يعني تغيّرَ النقاط: إن لم يتغيّر الإحصاءُ ولا المرشِّحُ ولا الطبقةُ ولا التحديدُ ولا الشركاتُ ولا الوضعُ
        فرسمةٌ خفيفة — وما يغيّر هذه يستدعي mapPaint() بنفسه (المزامنةُ والفلاترُ والطبقاتُ والتحديدُ والوضع) */
-    var sig = STAT_VER + '|' + JSON.stringify(FILT) + '|' + (typeof MAP_LAYER === 'undefined' ? '' : MAP_LAYER) + '|' + SEL_N + '|' + CO_SEL.join(',') + '|' + FIELD_MODE + '|' + ((typeof SUN_ON !== 'undefined' && SUN_ON) ? 1 : 0) + '|' + ((typeof KIOSK_ON !== 'undefined' && KIOSK_ON) ? 1 : 0) + '|' + '|' + dayKey(Date.now());   /* (V32.4) يومُ مكة في البصمة: «غدًا» تصير «اليوم» بعد منتصف الليل */   /* (V31.1) */
+    var sig = STAT_VER + '|' + JSON.stringify(FILT) + '|' + (typeof MAP_LAYER === 'undefined' ? '' : MAP_LAYER) + '|' + SEL_N + '|' + PV.CO_SEL.join(',') + '|' + FIELD_MODE + '|' + ((typeof SUN_ON !== 'undefined' && SUN_ON) ? 1 : 0) + '|' + ((typeof KIOSK_ON !== 'undefined' && KIOSK_ON) ? 1 : 0) + '|' + '|' + dayKey(Date.now());   /* (V32.4) يومُ مكة في البصمة: «غدًا» تصير «اليوم» بعد منتصف الليل */   /* (V31.1) */
     if (sig === MK.sig && MK.list && !MAP_3D){ mapPaint(true); basemapKick(); return true; }
     MK.sig = sig;
     mapPaint();
@@ -220,7 +220,7 @@ function mapInit(){
      فأُعطي: اثنا عشرَ بكسلًا حول كلِّ شكلٍ في اللوح، لا يُرى ولا يُبطئ،
      ويجعل هدفَ اللمس أربعةً وعشرين بكسلًا فأكثرَ لأصغر نقطة. */
   MAP_CV    = L.canvas({ padding:0.3, tolerance:12 });
-  MAP_POLY  = L.layerGroup().addTo(MAP);
+  PV.MAP_POLY  = L.layerGroup().addTo(MAP);
   MAP_LAYER = L.layerGroup().addTo(MAP);
   MAP_TMP   = L.layerGroup().addTo(MAP);   /* (V24.1) المؤقّتاتُ: موضعُك ومسارُ الرسم — تُمسَح وحدَها */
   MK.by = {};
@@ -235,7 +235,7 @@ function mapInit(){
     if (IOT.edit){ iotMapClick(e.latlng); return; }   /* (V25.8) */
     if (BED){ if (BED.draw){ bedSnap(); BED.pts.push([+e.latlng.lat.toFixed(6), +e.latlng.lng.toFixed(6)]); bedPaint(); render(1); return; }   /* (V37.17) */
       if (BED.sel >= 0){ BED.sel = -1; bedPaint(); render(1); } return; }   /* (V25.9) النقرُ خارج المقابض يُلغي التحديد لا غير */
-    if (typeof TFD === 'object' && TFD.on){ tfdAdd(e.latlng.lat, e.latlng.lng); return; }   /* (V28.0) */
+    if (typeof PV.TFD === 'object' && PV.TFD.on){ tfdAdd(e.latlng.lat, e.latlng.lng); return; }   /* (V28.0) */
     if (typeof MOVE_ID !== 'undefined' && MOVE_ID) moveApply(e.latlng.lat, e.latlng.lng);
     else if (typeof PIN_ON !== 'undefined' && PIN_ON) pinApply(e.latlng.lat, e.latlng.lng);
     else if (typeof ROUTE === 'object' && ROUTE.on) routeAdd(e.latlng.lat, e.latlng.lng);

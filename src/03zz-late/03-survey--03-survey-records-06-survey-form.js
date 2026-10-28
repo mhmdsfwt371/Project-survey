@@ -15,7 +15,7 @@ function ipFillMissing(zoneOnly, typeOnly){
     if (zoneOnly && x.zone !== zoneOnly) return;
     if (typeOnly && x.type !== typeOnly) return;
     if (ipPreset(x)){ held++; return; }
-    var o2 = IP_OCT2[x.zone], o3b = IP_OCT3[x.type];
+    var o2 = PV.IP_OCT2[x.zone], o3b = PV.IP_OCT3[x.type];
     if (o2 == null || o3b == null){ skipped++; return; }
     /* الشريحةُ للنوع في مشعره — والتسلسلُ يتقدّم في المشعر كلِّه لا في كلِّ
        نوعٍ على حدة، وإلا تصادمت أنواعٌ تتجاور شرائحُها عند الامتلاء. */

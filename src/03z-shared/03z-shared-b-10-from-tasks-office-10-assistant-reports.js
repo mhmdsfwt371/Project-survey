@@ -11,8 +11,8 @@ function aqExamples(){
 }
 
 function assistHomeHtml(){
-  var fy = assistForYou(), tp = assistTopPages(), pq = ASSIST_PAGE_Q[CUR] || [];
-  var base = (ROLE === 'viewer' ? ASSIST_QUICK.filter(function(q){ return !/ممنوع|لاقيه|القارئ/.test(q); }) : ASSIST_QUICK).filter(function(q){ return pq.indexOf(q) < 0; });
+  var fy = assistForYou(), tp = assistTopPages(), pq = PV.ASSIST_PAGE_Q[CUR] || [];
+  var base = (ROLE === 'viewer' ? PV.ASSIST_QUICK.filter(function(q){ return !/ممنوع|لاقيه|القارئ/.test(q); }) : PV.ASSIST_QUICK).filter(function(q){ return pq.indexOf(q) < 0; });
   var chips = function(L){ return '<div class="chips" style="margin:0 0 10px">' + L.map(function(q){ return '<button type="button" class="chip" data-assistq="' + esc(q) + '">' + esc(t(q)) + '</button>'; }).join('') + '</div>'; };
   return (fy.length ? '<div class="card" style="margin:0 0 10px"><div class="pid">' + esc(t('لك الآن')) + '</div>' + fy.map(function(x){ return '<button type="button" class="btn btn-quiet btn-block" style="justify-content:flex-start;text-align:start;margin:4px 0"' + x[2] + '>' + x[0] + ' ' + esc(x[1]) + '</button>'; }).join('') + '</div>' : '')
     + (typeof rbPinnedHtml === 'function' ? rbPinnedHtml() : '')   /* (V38.49) pinned reports with their counts and the change since the previous day */
@@ -79,7 +79,7 @@ function queueHtml(){
     + '</div>'
     + '<div class="pop-body">'
     + stats([['بانتظار الرفع', N(Q.length), Q.length ? 'wrn' : 'ok']]
-            .concat(Object.keys(by).map(function(k){ return [t(Q_LBL[k] || k), N(by[k])]; })))
+            .concat(Object.keys(by).map(function(k){ return [t(PV.Q_LBL[k] || k), N(by[k])]; })))
     + (Q.length ? '' : alertBox('success','لا شيءَ بانتظار الرفع على هذا الجهاز — كلُّ ما سُجِّل هنا وصل.'))
     /* (V38.30) ما تُجوهل بالمهلة يُرى ويُصدَّر — لا يُمحى صامتًا */
     + ((STATE.stale || []).length ? alertBox('warn', t('تُجوهل') + ' ' + nm((STATE.stale || []).length) + ' ' + t('مما كان ينتظر الرفع لأنه أقدمُ من المهلة') + ' (' + nm(CORE.queueTtlDays()) + ' ' + t('يوم') + ') — ' + t('محفوظٌ على الجهاز: صدّره ليستورده المكتب، أو امحُه')) + '<div class="actions" style="margin:4px 0 8px">' + btn('\u{1F5D1} ' + t('امحُ المتجاهَل'), 'btn-quiet btn-sm', ' data-qstaleclear="1"') + '</div>' : '')
@@ -102,7 +102,7 @@ function queueHtml(){
           /* «بواسطة» صاحبُ العمل المسجَّل في السجل نفسه لا حاملُ الجهاز:
              الجهازُ الواحد قد يحمل عملَ أكثرَ من فنيٍّ في يومٍ واحد. */
           var who = v.by || v.user || v.doneBy || v.reopenBy || STATE.meta.name || '\u2014';
-          return [pill(t(Q_LBL[x.kind] || x.kind), 'acc'),
+          return [pill(t(PV.Q_LBL[x.kind] || x.kind), 'acc'),
                   '<strong>' + esc(String(x.id || '\u2014')) + '</strong>',
                   esc(dispName(who)),
                   '<span class="num">' + esc(fmtDT(x.at || 0)) + '</span>',

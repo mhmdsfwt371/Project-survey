@@ -30,7 +30,7 @@ function coDash(){
 
 /* (V26.2) كانت تُحسَب لكلِّ شركةٍ بحلقةٍ على المواقع كلِّها (٤٢ شركة × ١٬٨٠٠ موقع في الرسمة) — صارت حلقةً واحدةً تُصفَّر مع الرسمة */
 function coBucketsAll(){
-  if (CO_BK) return CO_BK;
+  if (PV.CO_BK) return PV.CO_BK;
   var M = {};
   (STATE.sites || []).forEach(function(x){
     var co = x.co; if (!co) return;
@@ -42,7 +42,7 @@ function coBucketsAll(){
     var i2 = STATE.inss[x.id];
     if ((i2 && i2.status === 'مُركّب') || x.fstat === 'مُركّب') out.ins.push(x);
   });
-  CO_BK = M; return M;
+  PV.CO_BK = M; return M;
 }
 
 function coBuckets(co){ return coBucketsAll()[co] || { all:[], sv:[], stuck:[], ins:[] }; }
@@ -61,8 +61,8 @@ function coPopRows(co, kind){
 }
 
 function coPopHtml(){
-  if (!CO_POP) return '';
-  var co = CO_POP.co, kind = CO_POP.kind, L = coPopRows(co, kind);
+  if (!PV.CO_POP) return '';
+  var co = PV.CO_POP.co, kind = PV.CO_POP.kind, L = coPopRows(co, kind);
   var rows = L.map(function(o){
     var x = o.x;
     return ['<strong>' + esc(siteKey(x) !== x.id ? siteKey(x) : (x.name || x.id)) + '</strong><br><span class="num hint">' + esc(x.id) + '</span>',
@@ -81,7 +81,7 @@ function coPopHtml(){
     + '<div class="co-pop" role="dialog" aria-modal="true">'
     + '<div class="co-pop-head">'
     +   '<div><strong>' + esc(coName(co)) + '</strong>'
-    +   '<div class="hint" style="margin:2px 0 0">' + esc(t(CO_POP_LBL[kind] || '')) + ' \u00b7 ' + nm(L.length) + ' ' + esc(t('مخيّم')) + '</div></div>'
+    +   '<div class="hint" style="margin:2px 0 0">' + esc(t(PV.CO_POP_LBL[kind] || '')) + ' \u00b7 ' + nm(L.length) + ' ' + esc(t('مخيّم')) + '</div></div>'
     +   '<div class="actions" style="margin:0">'
     +     btn('\u2B07 ' + t('إكسل'),'btn-secondary btn-sm',' data-copopxls="1"')
     +     btn('\u2715','btn-quiet btn-sm',' data-copopx="1" aria-label="' + esc(t('إغلاق')) + '"')
@@ -93,12 +93,12 @@ function coPopHtml(){
 }
 
 function coPopXls(){
-  if (!CO_POP) return;
-  var L = coPopRows(CO_POP.co, CO_POP.kind);
+  if (!PV.CO_POP) return;
+  var L = coPopRows(PV.CO_POP.co, PV.CO_POP.kind);
   var out = [['المخيّم','المعرّف','الشاخص','المشعر','المربع','التحديات/السبب','مَن','متى','الحالة','خط العرض','خط الطول']];
   L.forEach(function(o){ var x = o.x;
     out.push([x.name || '', x.id, x.sign || '', x.zone || '', x.sq || '', o.why, o.who, o.when, o.st, x.lat || '', x.lng || '']); });
-  xlsSheets([[t(CO_POP_LBL[CO_POP.kind] || 'مخيّمات'), out]], 'أفاقي — ' + coName(CO_POP.co));
+  xlsSheets([[t(PV.CO_POP_LBL[PV.CO_POP.kind] || 'مخيّمات'), out]], 'أفاقي — ' + coName(PV.CO_POP.co));
 }
 
 function coDashCard(){

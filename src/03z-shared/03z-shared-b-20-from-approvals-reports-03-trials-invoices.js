@@ -44,6 +44,6 @@ function trialPick(id, key, val){
 }
 
 /* ═══ (V37.43) صورةُ الفاتورة — تُضغَط بدقّةٍ تُقرأ بها الأرقام، وترتفع في طابور الصور نفسِه (الدرايف عبر الخادم)، والمشترى يحمل مفتاحَها ═══ */
-var BUY_PH = null;
+PV.BUY_PH = null;
 
-function buyPhPrevHtml(){ return BUY_PH ? '\u2713 ' + esc(t('اختيرت صورة الفاتورة')) + ' \u00b7 ' + nm(Math.round((BUY_PH.size || String(BUY_PH.data || '').length * 0.75) / 1024)) + ' ' + esc(t('كيلو')) + ' <button type="button" class="btn btn-quiet btn-sm" data-buyphx="1" style="color:#E05252">\u{1F5D1} ' + esc(t('احذفها')) + '</button>' : esc(t('اختيارية — تُرفع مع حفظ الشراء')); }
+function buyPhPrevHtml(){ return PV.BUY_PH ? '\u2713 ' + esc(t('اختيرت صورة الفاتورة')) + ' \u00b7 ' + nm(Math.round((PV.BUY_PH.size || String(PV.BUY_PH.data || '').length * 0.75) / 1024)) + ' ' + esc(t('كيلو')) + ' <button type="button" class="btn btn-quiet btn-sm" data-buyphx="1" style="color:#E05252">\u{1F5D1} ' + esc(t('احذفها')) + '</button>' : esc(t('اختيارية — تُرفع مع حفظ الشراء')); }

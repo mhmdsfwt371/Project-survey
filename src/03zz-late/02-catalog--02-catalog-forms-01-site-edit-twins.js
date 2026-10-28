@@ -116,13 +116,13 @@ function siteEditSave(id){
     patch.name = jmrNameApply(name, gt, fl === '' ? null : +fl);
   }
   var chg = Object.keys(patch).filter(function(k){ return k !== 'edBy' && k !== 'edAt' && (k === 's47o' ? JSON.stringify(x.s47o || {}) !== JSON.stringify(patch.s47o) : String(x[k] == null ? '' : x[k]) !== String(patch[k])); });
-  if (!chg.length){ toast(t('لا تغيير')); SITE_ED = 0; return true; }
+  if (!chg.length){ toast(t('لا تغيير')); PV.SITE_ED = 0; return true; }
   Object.assign(x, patch);
   siteOvSet(id, patch);
-  SITE_IX = null; SITE_TOK = null; TAX_V++; FILT_CACHE = null;
+  SITE_IX = null; SITE_TOK = null; PV.TAX_V++; FILT_CACHE = null;
   logEvent('تعديل بيانات نقطة — ' + id + ' \u00b7 ' + chg.join('،'), id);
   toast(t('حُفظ') + ' — ' + nm(chg.length) + ' ' + t('حقلًا'));
-  SITE_ED = 0; statBump();
+  PV.SITE_ED = 0; statBump();
   return true;
 }
 
@@ -144,7 +144,7 @@ function siteHide(id){
   SITE_IX = null; SITE_TOK = null;
   logEvent('حذف نقطة (قابلٌ للاستعادة) — ' + id + ' \u00b7 ' + (x.name || '') + (had ? ' \u00b7 ' + t('لها زيارةٌ أو تركيب') : ''), id);
   toast(siteKey(x) + ' \u00b7 ' + t('حُذفت — تُستعاد من «نقاطٌ مخفية» أسفل قائمة المواقع'));
-  SITE_HIDE = ''; SITE_ED = 0; statBump();
+  PV.SITE_HIDE = ''; PV.SITE_ED = 0; statBump();
   return true;
 }
 
@@ -177,7 +177,7 @@ function siteDelete(id){
   CORE.dirty('newsites', id, { id:String(id), deleted:true, at:Date.now(), by:STATE.meta.name || '' });
   logEvent('حذفُ نقطةٍ مضافةٍ نهائيًّا — ' + id + ' \u00b7 ' + (x.name || '') + (links.length ? ' \u00b7 ' + links.join('، ') : ''), id);
   toast(id + ' \u00b7 ' + t('حُذفت نهائيًّا'));
-  SITE_DEL = ''; SITE_ED = 0; statBump();
+  SITE_DEL = ''; PV.SITE_ED = 0; statBump();
   return true;
 }
 
@@ -195,5 +195,5 @@ function siteDeleteFinal(id){
   logEvent('حذفٌ نهائيّ — ' + id + ' \u00b7 ' + (x.name || '') + (links.length ? ' \u00b7 ' + links.join('، ') : ''), id);
   toast(id + ' \u00b7 ' + t('حُذفت نهائيًّا'));
   if (typeof POP_SITE !== 'undefined' && POP_SITE === id){ POP_SITE = ''; POP_OPEN = false; }
-  SITE_DEL = ''; SITE_ED = 0; statBump(); return true;
+  SITE_DEL = ''; PV.SITE_ED = 0; statBump(); return true;
 }

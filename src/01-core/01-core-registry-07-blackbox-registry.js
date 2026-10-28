@@ -13,7 +13,7 @@
    ويُرفَق تلقائيًّا بكلِّ بلاغٍ في الكتابة نفسِها (سقفٌ ٢٠ كيلوبايت)، ويُنسَخ نصًّا
    من الأدوات للإرسال بلا شبكة. لا نصَّ حرًّا ولا اسمًا ولا جوالًا: معرِّفاتٌ
    وأزمنةٌ ورموزُ أخطاءٍ فقط — كلُّ سطرٍ يمرُّ بالتنقية قبل أن يُحفَظ. */
-var BOX = null, BOX_T = 0; PV.BOX_MAX = 100; var BOX_BYTES = 20000, BOX_ERR = null;
+var BOX = null, BOX_T = 0; PV.BOX_MAX = 100; PV.BOX_BYTES = 20000; PV.BOX_ERR = null;
 function boxRedact(s){
   return String(s == null ? '' : s)
     .replace(/[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]+/g, '')   /* لا حرفَ عربيًّا — النصُّ الحرُّ والأسماء */
@@ -46,7 +46,7 @@ function boxAction(e){
 function softErr(where, e, tell){
   var msg = String((e && (e.message || e.code)) || e || '').slice(0, 120);
   SOFT_ERRS.unshift({ at:Date.now(), where:where, msg:msg });
-  try { boxNote('err', where + ':' + ((e && e.code) || msg)); } catch (e3){ BOX_ERR = e3; }
+  try { boxNote('err', where + ':' + ((e && e.code) || msg)); } catch (e3){ PV.BOX_ERR = e3; }
   if (SOFT_ERRS.length > 50) SOFT_ERRS.length = 50;
   try { console.warn('[أفاقي] ' + where + ': ' + msg); } catch (e2){ LS_ERR = e2; }
   if (tell && !SOFT_SAID[where]){

@@ -81,7 +81,7 @@ function nskChunkReady(){
   /* (V38.51) the what's-new sheet waits for the release-notes log that ships in the chunk */
   try { if (typeof whatsNewMaybe === 'function' && whatsNewMaybe.pending){ whatsNewMaybe.pending = false; if (whatsNewMaybe() && typeof render === 'function') render(1); } } catch (e3){ LS_ERR = e3; }
 }
-var I18N_FILE = 'i18n/dict-2e21fc6248.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-05b285d651.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -114,10 +114,10 @@ var LANG = 'ar';
    الحركاتُ (الفتحةُ والضمةُ والكسرةُ والتنوينُ والشدّةُ والسكونُ والألفُ الخنجرية) تُنزَع من كلِّ نصٍّ يُعرَض بالعربية — عند
    t() وesc() اللتين يمرّ بهما كلُّ نصٍّ ظاهر. المصدرُ والقاموسُ كما هما (مفاتيحُ الترجمة لا تتغيّر). ولا يُنزَع في بيئات الفحص
    الآلي (jsdom وwebdriver) لأن جرودَها تطابق النصوصَ بحركاتها؛ وجردٌ مخصّصٌ يفرض النزعَ بـnoTashkeel.force. */
-var TASHKEEL_RE = /[\u064B-\u0652\u0670]/g;
+PV.TASHKEEL_RE = /[\u064B-\u0652\u0670]/g;
 function noTashkeel(){ if (noTashkeel.force != null) return noTashkeel.force; var c = noTashkeel.c; if (c == null){ var ua = (typeof navigator === 'object' && navigator.userAgent) || ''; c = noTashkeel.c = !/jsdom/i.test(ua) && !(typeof navigator === 'object' && navigator.webdriver); } return c; }
 function t(s){
-  if (LANG === 'ar') return (typeof s === 'string' && noTashkeel()) ? s.replace(TASHKEEL_RE, '') : s;
+  if (LANG === 'ar') return (typeof s === 'string' && noTashkeel()) ? s.replace(PV.TASHKEEL_RE, '') : s;
   if (I18N_STATE !== 2) i18nLoad();   /* (V21.6) القاموسُ ملفٌّ مستقلٌّ يُطلَب أوّلَ حاجة — والعربيةُ تُعرَض حتى يصل */
   var d = D[LANG] || {};
   return (d[s] != null) ? d[s] : s;

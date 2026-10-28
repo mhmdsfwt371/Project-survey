@@ -7,13 +7,13 @@
    ============================================================================ */
 function sysReportFetch(force){
   if (!(may('users') || rankOf(ROLE) >= rankOf('engineer') || effRole(ROLE) === 'exec')) return Promise.resolve(null);
-  if (!force && Date.now() - SYSREP.at < 600000) return Promise.resolve(SYSREP.v);
+  if (!force && Date.now() - PV.SYSREP.at < 600000) return Promise.resolve(PV.SYSREP.v);
   if (!FB.ready || !FB.db) return Promise.resolve(null);
-  SYSREP.at = Date.now();
+  PV.SYSREP.at = Date.now();
   return DB.col('settings').doc('sysreport').get().then(function(doc){
     FB.readCount = (FB.readCount || 0) + 1;
-    SYSREP.v = (doc && doc.exists) ? doc.data() : {}; SYSREP.err = '';
+    PV.SYSREP.v = (doc && doc.exists) ? doc.data() : {}; PV.SYSREP.err = '';
     if (CUR === 'sys') render(1);
-    return SYSREP.v;
-  }).catch(function(e){ SYSREP.err = String(e && (e.message || e.code) || e).slice(0, 80); return null; });
+    return PV.SYSREP.v;
+  }).catch(function(e){ PV.SYSREP.err = String(e && (e.message || e.code) || e).slice(0, 80); return null; });
 }

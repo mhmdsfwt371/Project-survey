@@ -122,7 +122,7 @@ function typeOfLabel(lab){
   if (CAT_DEF[lab]) return lab;
   var ks = Object.keys(CAT_DEF);
   for (var i = 0; i < ks.length; i++){ if (CAT_DEF[ks[i]] && CAT_DEF[ks[i]].l === lab) return ks[i]; }
-  for (var k in TYPES_OLD_L){ if (TYPES_OLD_L[k].indexOf(lab) > -1 && CAT_DEF[k]) return k; }
+  for (var k in PV.TYPES_OLD_L){ if (PV.TYPES_OLD_L[k].indexOf(lab) > -1 && CAT_DEF[k]) return k; }
   return lab;
 }
 
@@ -134,13 +134,13 @@ function declaredTypeKeys(){
    عائلةٌ واحدة بثلاثة أنواع. LPR نوعُ موقعٍ قائم؛ والثابتةُ والمتحرّكةُ نوعٌ واحدٌ
    («كاميرا») يُعرَف فرعُه من اسم النقطة في السجلِّ المدمج («… (PTZ) …»)، ويصحّحه
    المهندسُ من نافذة النقطة (تجاوزٌ في وثيقة الموقع — cam) فيغلب الاسم. */
-var CAM_KINDS = ['Bullet', 'PTZ', 'LPR'];
+PV.CAM_KINDS = ['Bullet', 'PTZ', 'LPR'];
 
 function camKind(x){
   if (!x) return '';
   if (x.type === 'LPR') return 'LPR';
   if (x.type !== 'كاميرا') return '';
-  if (x.cam && CAM_KINDS.indexOf(x.cam) > -1) return x.cam;
+  if (x.cam && PV.CAM_KINDS.indexOf(x.cam) > -1) return x.cam;
   return /\bPTZ\b/i.test(String(x.name || '')) ? 'PTZ' : 'Bullet';
 }
 
@@ -167,7 +167,7 @@ function siteStats(){
 }
 
 /* ── قائمةٌ افتراضية: تُرسَم دفعةٌ ويُزاد عند الطلب ── */
-var LIST_PAGE = 40, LIST_SHOWN = 40, SEL_MODE = false;
+PV.LIST_PAGE = 40; PV.LIST_SHOWN = 40; var SEL_MODE = false;
 
 /* عدٌّ بلا بناءِ مصفوفة — يُعرَف الإجمالي دون نسخِ الصفوف */
 function fieldList(){
@@ -181,15 +181,15 @@ function fieldList(){
     var hits = siteSearch(SITE_Q, 4000);
     if (filtOn()){ var allN = hits.length; hits = hits.filter(filtPass); outside = allN - hits.length; }
     total = hits.length;
-    view = hits.slice(0, LIST_SHOWN);
+    view = hits.slice(0, PV.LIST_SHOWN);
   } else {
     total = base.length;
     /* الأقربُ أولًا حين يُعرَف الموقع — والفنيُّ يبدأ بما تحت قدمه */
-    if (MYPOS && base.length <= 4000){
+    if (PV.MYPOS && base.length <= 4000){
       var arr = base.slice();
-      arr.sort(function(a, b){ return (distKm(MYPOS, a) || 9e9) - (distKm(MYPOS, b) || 9e9); });
-      view = arr.slice(0, LIST_SHOWN);
-    } else view = base.slice(0, LIST_SHOWN);
+      arr.sort(function(a, b){ return (distKm(PV.MYPOS, a) || 9e9) - (distKm(PV.MYPOS, b) || 9e9); });
+      view = arr.slice(0, PV.LIST_SHOWN);
+    } else view = base.slice(0, PV.LIST_SHOWN);
   }
   var L = { length: total };
   var scopeBar = mineOnly || (effRole(ROLE) === 'supervisor' && SITES_ALL)
@@ -220,7 +220,7 @@ function fieldList(){
         }).join('') + '</div>'
         + (L.length > view.length
           ? '<div style="padding:12px 16px;text-align:center">'
-            + btn('اعرض ' + nm(Math.min(LIST_PAGE, L.length - view.length)) + ' أخرى — '
+            + btn('اعرض ' + nm(Math.min(PV.LIST_PAGE, L.length - view.length)) + ' أخرى — '
                   + nm(L.length - view.length) + ' متبقية','btn-secondary btn-sm',' data-more="1"')
             + '</div>'
           : '')

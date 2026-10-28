@@ -25,7 +25,7 @@ function zoneList(){
    مصفوفة الأوزان لم يجده حين يضيف نقطة. فصارت القائمةُ تُشتقُّ من الأساسية
    ومما أُعلن ومما في المواقع، ورمزُ المعرِّف من دالةٍ واحدة. */
 function zoneOptions(){
-  var out = MX_ZONES.slice();
+  var out = PV.MX_ZONES.slice();
   var add = function(z){ z = String(z || '').trim(); if (z && out.indexOf(z) < 0) out.push(z); };
   ['مكة', 'المدينة', 'مواقع التفويج'].forEach(add);   /* (V29.7) مراكزُ التفويج تُختار دائمًا */
   zoneList().forEach(add);
@@ -33,7 +33,7 @@ function zoneOptions(){
   (Array.isArray(CFG.mxExtra) ? CFG.mxExtra : []).forEach(function(x){ add(String(x || '').split('|')[0]); });
   return out;
 }
-var ZONE_CODE = { 'منى':'MIN', 'عرفات':'ARF', 'مزدلفة':'MUZ', 'مكة':'MAK', 'المدينة':'MAD', 'مواقع التفويج':'TFW', 'النوارية':'NWR' };
+PV.ZONE_CODE = { 'منى':'MIN', 'عرفات':'ARF', 'مزدلفة':'MUZ', 'مكة':'MAK', 'المدينة':'MAD', 'مواقع التفويج':'TFW', 'النوارية':'NWR' };
 
 function zoneRename(oldName, newName){
   if (!may('settings')){ toast(t('المشاعرُ للمهندس وحده')); return; }
@@ -351,7 +351,7 @@ PAGE.items = { m:'الإعدادات', t:'الكتالوج والقوائم',
       + card('القوائم — تُعدَّل من هنا لا من الشيفرة',   /* (V30.3) فكرةُ المالك #٤ */
           '<p class="hint" style="margin-top:0">' + esc(t('كلُّ سطرٍ بندٌ. اتركِ المربعَ فارغًا لتعود القائمةُ الأصلية. ما سُجّل من قبلُ بنصٍّ قديمٍ يبقى مقروءًا.')) + '</p>'
           + '<div class="grid cols-2">'
-          + [['chalsCamp', 'تحديات المخيمات', CH_CAMP], ['chalsPath', 'تحديات الممرات وسائر النقاط', CH_PATH], ['reasonsCamp', 'أسباب إضافة مخيم غير مسجّل', NS_REASONS], ['reasonsPt', 'أسباب إضافة نقطة غير مسجّلة', NS_REASONS_PT]].map(function(L){
+          + [['chalsCamp', 'تحديات المخيمات', CH_CAMP], ['chalsPath', 'تحديات الممرات وسائر النقاط', CH_PATH], ['reasonsCamp', 'أسباب إضافة مخيم غير مسجّل', PV.NS_REASONS], ['reasonsPt', 'أسباب إضافة نقطة غير مسجّلة', PV.NS_REASONS_PT]].map(function(L){
               var cur = (CFG.lists && Array.isArray(CFG.lists[L[0]]) && CFG.lists[L[0]].length) ? CFG.lists[L[0]] : [];
               return '<div class="field"><label>' + esc(t(L[1])) + ' <span class="hint">(' + esc(t('الأصلية')) + ' ' + nm(L[2].length) + ')</span></label><textarea data-lists="' + L[0] + '" rows="6" dir="auto" placeholder="' + esc(L[2].map(function(x){ return t(x); }).join('\n')) + '">' + esc(cur.join('\n')) + '</textarea></div>'; }).join('')
           + '</div>',

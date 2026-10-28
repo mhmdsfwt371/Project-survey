@@ -57,14 +57,14 @@ function importCard(){
     + '<div class="hint" style="margin:4px 0 8px;font-size:12px">' + esc(t('ارفع ملفَّ الوزارة كما هو (MOHU CPE AND CAMERA REPORT) — يُطابَق بالنقاط عمودًا عمودًا، وتظهر العناوينُ في نافذة كلِّ كاميرا لمن دخل التطبيق فقط. كلمةُ المرور لا تُحفَظ.')) + '</div>'
     + '<input type="file" accept=".xlsx,.xls" data-imp="mohu" aria-label="' + esc(t('تقرير كاميرات الوزارة')) + '">'
     + '</div>'
-    + (IMP_PREVIEW ? impPreviewCard() : '')
+    + (PV.IMP_PREVIEW ? impPreviewCard() : '')
     + '<div class="alert info" style="margin:14px 0 0"><span>'
     + esc(t('الرفع يعرض معاينةً قبل الحفظ: كم صفًّا سيُقبل وكم سيُرفض ولماذا — ولا يُكتب شيء قبل موافقتك.'))
     + '</span></div>');
 }
 
 function impPreviewCard(){
-  var p = IMP_PREVIEW;
+  var p = PV.IMP_PREVIEW;
   var nm2 = p.kind === 'mohu' ? 'تقرير كاميرات الوزارة' : (PV.IMPORTS.filter(function(i){ return i[0] === p.kind; })[0] || ['',''])[1];
   return card(t('معاينة ما رُفع') + ' — ' + t(nm2),
       (p.missing.length
@@ -90,8 +90,8 @@ function repcenterBody(){ return (function(){
       return '<div class="chips">' + repChips() + '</div>' + (function(){
     return card('الدوريات',
         table(['الدورية','متى تُرسَل','الوقت','تقارير'],
-          PERIODS.map(function(p){
-            var n = CREW_REPORTS.filter(function(r){ return r[1] === p[0]; }).length;
+          PV.PERIODS.map(function(p){
+            var n = PV.CREW_REPORTS.filter(function(r){ return r[1] === p[0]; }).length;
             return [pill(p[1],'acc'), '<span class="hint" style="margin:0">' + esc(t(p[2])) + '</span>',
                     '<input type="time" data-crtime="' + p[0] + '" value="'
                       + ((CFG.crTime && CFG.crTime[p[0]]) || (p[0]==='day'?'17:00':'07:00'))
@@ -101,8 +101,8 @@ function repcenterBody(){ return (function(){
         btn('حفظ المواعيد','btn-primary btn-sm',' data-crsave="1"'))
       + alertBox('warn',
           t('الإرسالُ التلقائيُّ في الموعد يحتاج خادمًا مجدولًا — لم يُبنَ بعد. الأوقاتُ تُحفَظ الآن، والتقريرُ نفسُه يُصدَّر يدويًّا في «مركز التقارير».'))
-      + PERIODS.map(function(p){
-          var L = CREW_REPORTS.filter(function(r){ return r[1] === p[0]; });
+      + PV.PERIODS.map(function(p){
+          var L = PV.CREW_REPORTS.filter(function(r){ return r[1] === p[0]; });
           return cardFlush(t(p[1]) + ' — ' + nm(L.length),
             table(['التقرير','لمن','ما يحويه',''],
               L.map(function(r){
@@ -123,13 +123,13 @@ function repcenterBody(){ return (function(){
       + '<p class="hint">' + esc(t('التقرير يُبنى من الأرقام نفسها التي على الشاشة — فلا يفترق تقريرٌ عن لوحة.')) + '</p>';
       })();
     }
-    var list = REPORTS.filter(function(r){ return r.side === EXP.repSide; });
+    var list = PV.REPORTS.filter(function(r){ return r.side === EXP.repSide; });
     var pers = {};
-    REPORTS.forEach(function(r){ pers[r.per] = (pers[r.per] || 0) + 1; });
+    PV.REPORTS.forEach(function(r){ pers[r.per] = (pers[r.per] || 0) + 1; });
 
     return '<div class="chips">' + repChips() + '</div>'
 
-      + stats([['تقارير معرَّفة', N(REPORTS.length), 'acc'],
+      + stats([['تقارير معرَّفة', N(PV.REPORTS.length), 'acc'],
                ['يومية', N(pers['يومي'] || 0)],
                ['أسبوعية', N(pers['أسبوعي'] || 0)],
                ['شهرية', N(pers['شهري'] || 0)]])
@@ -145,7 +145,7 @@ function repcenterBody(){ return (function(){
             + '<div><span class="k">' + esc(t('محتواه')) + '</span><span>' + esc(t(r.what)) + '</span></div>'
             + '<div><span class="k">' + esc(t('صيغته')) + '</span><span>' + esc(t(r.how)) + '</span></div>'
             + '<div><span class="k">' + esc(t('أوراقه')) + '</span><span>'
-            +   ready.map(function(s){ return '<span class="pill">' + esc(t(SHEET_NAMES[s] || s)) + '</span>'; }).join(' ')
+            +   ready.map(function(s){ return '<span class="pill">' + esc(t(PV.SHEET_NAMES[s] || s)) + '</span>'; }).join(' ')
             +   '</span></div>'
             + '</div>',
             '<div class="actions">'
@@ -174,13 +174,13 @@ PAGE.exp = { m:'الأدوات', t:'التصدير والتقارير', l:'ما 
         + '<div class="pop-rows" style="margin:0">'
         +   (function(){
               var done = 0, all = 0;
-              FUP_ROWS.forEach(function(r){
+              PV.FUP_ROWS.forEach(function(r){
                 var p = fupPct(r[1], r[2], r[3], r[4]);
                 if (p === null) return;
                 all++; if (p > 0) done++;
               });
               return '<div><span class="k">' + esc(t('صفوفٌ يقرؤها النظام')) + '</span><span>'
-                + nm(all) + ' ' + esc(t('من')) + ' ' + nm(FUP_ROWS.length) + '</span></div>'
+                + nm(all) + ' ' + esc(t('من')) + ' ' + nm(PV.FUP_ROWS.length) + '</span></div>'
                 + '<div><span class="k">' + esc(t('فيها تقدّم')) + '</span><span>' + nm(done) + '</span></div>';
             })()
         + '</div>',
@@ -211,25 +211,25 @@ PAGE.exp = { m:'الأدوات', t:'التصدير والتقارير', l:'ما 
 function pmToggle(col, op, role){
   if (!may('perms')){ toast(t('ضبطُ صلاحيات القاعدة للمهندس فما فوق')); return; }
   if (pmLocked(col, op, role)){ toast(t('ثابتٌ في القاعدة لا يُفتَح من هنا')); return; }
-  if (!PM_DRAFT) PM_DRAFT = JSON.parse(JSON.stringify((CFG.perms && CFG.perms.m) || {}));
-  PM_DRAFT[col] = PM_DRAFT[col] || {}; PM_DRAFT[col][role] = PM_DRAFT[col][role] || {};
+  if (!PV.PM_DRAFT) PV.PM_DRAFT = JSON.parse(JSON.stringify((CFG.perms && CFG.perms.m) || {}));
+  PV.PM_DRAFT[col] = PV.PM_DRAFT[col] || {}; PV.PM_DRAFT[col][role] = PV.PM_DRAFT[col][role] || {};
   var ov = pmOverride(col, op, role);
   /* ضغطةٌ تقلب الافتراضيَّ إلى ضدّه، وضغطةٌ تعيده — null يعني افتراضيَّ القاعدة */
-  PM_DRAFT[col][role][op] = (ov === null) ? !pmDefault(col, op, role) : null;
+  PV.PM_DRAFT[col][role][op] = (ov === null) ? !pmDefault(col, op, role) : null;
   render(1);
 }
 
 function pmSave(){
   if (!may('perms')){ toast(t('ضبطُ صلاحيات القاعدة للمهندس فما فوق')); return false; }
-  if (!PM_DRAFT){ toast(t('لا تغييرَ يُحفَظ')); return false; }
-  var m = PM_DRAFT, changed = 0;
+  if (!PV.PM_DRAFT){ toast(t('لا تغييرَ يُحفَظ')); return false; }
+  var m = PV.PM_DRAFT, changed = 0;
   Object.keys(m).forEach(function(c){ Object.keys(m[c]).forEach(function(r){ Object.keys(m[c][r]).forEach(function(o){
     var v = m[c][r][o]; if (v === true || v === false) changed++;
   }); }); });
   var doc = { m:m, v:((CFG.perms && CFG.perms.v) || 0) + 1, at:Date.now(), by:STATE.meta.name || '' };
   CFG.perms = doc;
   CORE.set('cfg', 'perms', doc);
-  PM_DRAFT = null;
+  PV.PM_DRAFT = null;
   logEvent('مصفوفة صلاحيات القاعدة — ' + nm(changed) + ' خليةً معدَّلة · نسخة ' + nm(doc.v));
   toast(t('حُفظت — تنفذ في القاعدة الآن') + ' \u00b7 ' + nm(changed) + ' ' + t('خليةً معدَّلة'));
   render(1);
@@ -237,9 +237,9 @@ function pmSave(){
 }
 function pmResetRole(role){
   if (!may('perms')){ toast(t('ضبطُ صلاحيات القاعدة للمهندس فما فوق')); return; }
-  if (!PM_DRAFT) PM_DRAFT = JSON.parse(JSON.stringify((CFG.perms && CFG.perms.m) || {}));
-  Object.keys(PM_DRAFT).forEach(function(c){
-    if (PM_DRAFT[c][role]) Object.keys(PM_DRAFT[c][role]).forEach(function(o){ PM_DRAFT[c][role][o] = null; });
+  if (!PV.PM_DRAFT) PV.PM_DRAFT = JSON.parse(JSON.stringify((CFG.perms && CFG.perms.m) || {}));
+  Object.keys(PV.PM_DRAFT).forEach(function(c){
+    if (PV.PM_DRAFT[c][role]) Object.keys(PV.PM_DRAFT[c][role]).forEach(function(o){ PV.PM_DRAFT[c][role][o] = null; });
   });
   render(1);
 }
@@ -252,7 +252,7 @@ function roleAdd(name, base, rank){
   if (!may('roles')){ toast(t('إضافةُ الأدوار لمدير المشروع وحده')); return false; }
   name = String(name || '').trim();
   if (!name){ toast(t('اكتب اسمَ الدور')); return false; }
-  if (BASE_ROLES.indexOf(base) < 0){ toast(t('اختر الأساسَ من الأدوار الأساسية')); return false; }
+  if (PV.BASE_ROLES.indexOf(base) < 0){ toast(t('اختر الأساسَ من الأدوار الأساسية')); return false; }
   if (Object.keys(ROLES).some(function(k){ return ROLES[k].n === name; })){ toast(t('اسمُ الدور مستعملٌ من قبل')); return false; }
   var rk = cfgN(rank); if (!rk) rk = rankOf(base);
   if (rk > rankOf(ROLE)){ toast(t('لا تُنشئ دورًا أعلى من رتبتك')); return false; }
@@ -287,7 +287,7 @@ function pmSetDirect(col, op, role, val){
   var m = JSON.parse(JSON.stringify((CFG.perms && CFG.perms.m) || {}));
   m[col] = m[col] || {}; m[col][role] = m[col][role] || {}; m[col][role][op] = !!val;
   var doc = { m:m, v:((CFG.perms && CFG.perms.v) || 0) + 1, at:Date.now(), by:STATE.meta.name || '' };
-  CFG.perms = doc; PM_DRAFT = null;
+  CFG.perms = doc; PV.PM_DRAFT = null;
   CORE.set('cfg', 'perms', doc);
 }
 

@@ -70,7 +70,7 @@ function clickAPart3(e){
     var okc = svqSave(SVQ.id, sk, sv0, ntChanged);
     if (ntChanged){ okc = svqSave(SVQ.id, 'chal_note', ntv, true) || okc; if (okc) toast('\u2713 ' + t(((STATE.recs[SVQ.id] || {}).review === 'pending' && rq0.review === 'approved') ? 'حُفظت التحديات والوصف — وعاد المسحُ لانتظار الاعتماد' : 'حُفظت التحديات والوصف')); }
     if (okc){ render(1); if (typeof MAP !== 'undefined' && MAP) mapPaint(); } return true; }
-  if (e.target.closest('[data-sqall]')){ FILT.zone = FILT.type = FILT.work = FILT.life = FILT.route = FILT.floor = ''; if (typeof CO_SEL !== 'undefined' && CO_SEL.length) CO_SEL.length = 0; LIST_SHOWN = LIST_PAGE; render(1); if (CUR === 'map' && MAP) mapPaint(); return true; }   /* (V22.1) البحثُ في الكل: تُرفَع التصفيةُ وتبقى الكلمة */
+  if (e.target.closest('[data-sqall]')){ FILT.zone = FILT.type = FILT.work = FILT.life = FILT.route = FILT.floor = ''; if (typeof PV.CO_SEL !== 'undefined' && PV.CO_SEL.length) PV.CO_SEL.length = 0; PV.LIST_SHOWN = PV.LIST_PAGE; render(1); if (CUR === 'map' && MAP) mapPaint(); return true; }   /* (V22.1) البحثُ في الكل: تُرفَع التصفيةُ وتبقى الكلمة */
   if (e.target.closest('[data-mfupadd]')){ var npi = document.getElementById('mfuNewParty'), npv = npi ? String(npi.value || '').trim().slice(0, 40) : ''; if (!npv){ toast(t('اكتب اسمَ الجهة')); return true; } if (mfuParties().indexOf(npv) > -1){ toast(t('الجهةُ موجودة')); return true; } if (mfuPut('party', npv, { t:npv, at:Date.now() }) !== false){ logEvent('إضافةُ جهةٍ معالجة — ' + npv); toast(t('أُضيفت الجهة')); } render(1); return true; }   /* (V26.6) */
   var mpr = e.target.closest('[data-mfuprm]');
   if (mpr){ var rpn = mpr.getAttribute('data-mfuprm'), PL = mfuParties(); if (PL.length <= 1){ toast(t('لا بدّ من جهةٍ واحدةٍ على الأقل')); return true; }
@@ -81,12 +81,12 @@ function clickAPart3(e){
   if (mpe){ MFU.prn = mpe.getAttribute('data-mfupren'); render(1); var pi = document.querySelector('[data-mfuprn]'); if (pi){ pi.focus(); pi.select(); } return true; }
   if (e.target.closest('[data-mfuprst]')){ MFU.parties.forEach(function(k){ var r = mfuPartyRaw(k); if (r && (r.gone || r.t)) mfuPut('party', k, { at:Date.now() }); }); logEvent('استرجاعُ جهات المعالجة الأصلية'); toast(t('عادت الجهاتُ الأصلية')); render(1); return true; }
   var cu = e.target.closest('[data-chupd]');   /* (V27.0) تحديثٌ على التحدي */
-  if (cu){ CHUP_OPEN = cu.getAttribute('data-chupd'); render(1); var ta = document.querySelector('[data-chupdtxt]'); if (ta) ta.focus(); return true; }
-  if (e.target.closest('[data-chupdx]')){ CHUP_OPEN = ''; render(1); return true; }
+  if (cu){ PV.CHUP_OPEN = cu.getAttribute('data-chupd'); render(1); var ta = document.querySelector('[data-chupdtxt]'); if (ta) ta.focus(); return true; }
+  if (e.target.closest('[data-chupdx]')){ PV.CHUP_OPEN = ''; render(1); return true; }
   var cg = e.target.closest('[data-chupdgo]');
   if (cg){ var ck2 = cg.getAttribute('data-chupdgo'), ta2 = document.querySelector('[data-chupdtxt="' + ck2.replace(/"/g, '\\"') + '"]'), nt2 = ta2 ? ta2.value : '';
     if (!String(nt2 || '').trim()){ toast(t('اكتب ما حدث')); return true; }
-    if (chalUpd(ck2, nt2, (CUR === 'mfu') ? 'office' : 'field')){ CHUP_OPEN = ''; toast(t('سُجّل التحديث')); render(1); } return true; }
+    if (chalUpd(ck2, nt2, (CUR === 'mfu') ? 'office' : 'field')){ PV.CHUP_OPEN = ''; toast(t('سُجّل التحديث')); render(1); } return true; }
   var cpo = e.target.closest('[data-chalpop]');   /* (V26.9) نافذةُ نقاط التحدي */
   if (cpo){ CHAL_POP = cpo.getAttribute('data-chalpop') || ''; chalPopSync(); return true; }
   if (e.target.closest('[data-chalpopx]')){ CHAL_POP = ''; chalPopSync(); return true; }
@@ -149,25 +149,25 @@ function clickAPart4(e){
   var sid, pid, px;   /* تُكتب هنا قبل أن تُقرأ */
     if (e.target.closest('[data-lessonadd]')){
     var lt = pmoVal('lsT'); if (!lt){ toast(t('اكتب عنوان الدرس')); return true; }
-    var lid = pmoEdId('lessons', 'L' + Date.now().toString(36)), led = PMO_ED.sec === 'lessons'; PMO_ED = { sec:'', id:'' };
+    var lid = pmoEdId('lessons', 'L' + Date.now().toString(36)), led = PV.PMO_ED.sec === 'lessons'; PV.PMO_ED = { sec:'', id:'' };
     if (pmoPut('lessons', lid, { t:lt, d:pmoVal('lsD'), w:pmoVal('lsW'), c:pmoVal('lsC'), a:pmoVal('lsA'), o:pmoVal('lsO'), at:Date.now(), by:STATE.meta.name || '' })){ toast(t(led ? 'حُفظ التعديل' : 'سُجّل الدرس')); render(1); }
     return true;
   }
   if (e.target.closest('[data-retroadd]')){
     var rp = pmoVal('rtP'); if (!rp){ toast(t('اكتب الفترة')); return true; }
-    var rid = pmoEdId('retros', 'R' + Date.now().toString(36)), red = PMO_ED.sec === 'retros'; PMO_ED = { sec:'', id:'' };
+    var rid = pmoEdId('retros', 'R' + Date.now().toString(36)), red = PV.PMO_ED.sec === 'retros'; PV.PMO_ED = { sec:'', id:'' };
     if (pmoPut('retros', rid, { p:rp, g:pmoVal('rtG'), i:pmoVal('rtI'), a:pmoVal('rtA'), at:Date.now(), by:STATE.meta.name || '' })){ toast(t(red ? 'حُفظ التعديل' : 'سُجّلت المراجعة')); render(1); }
     return true;
   }
   if (e.target.closest('[data-stakeadd]')){
     var sn = pmoVal('shN'); if (!sn){ toast(t('اكتب الجهة أو الشخص')); return true; }
-    var sid0 = pmoEdId('stake', 'S' + Date.now().toString(36)), sed = PMO_ED.sec === 'stake'; PMO_ED = { sec:'', id:'' };
+    var sid0 = pmoEdId('stake', 'S' + Date.now().toString(36)), sed = PV.PMO_ED.sec === 'stake'; PV.PMO_ED = { sec:'', id:'' };
     if (pmoPut('stake', sid0, { n:sn, r:pmoVal('shR'), inf:+pmoVal('shI') || 2, int:+pmoVal('shT') || 2, cur:pmoVal('shC'), want:pmoVal('shD'), s:pmoVal('shS'), o:pmoVal('shO'), at:Date.now(), by:STATE.meta.name || '' })){ toast(t(sed ? 'حُفظ التعديل' : 'أُضيف')); render(1); }
     return true;
   }
   var pme = e.target.closest('[data-pmoedit]');
-  if (pme){ var pe = pme.getAttribute('data-pmoedit').split('|'); PMO_ED = { sec:pe[0], id:pe[1] }; render(1); pmoEdFill(); toast(t('عدّل ثم اضغط «احفظ التعديل»')); return true; }   /* (V28.2) */
-  if (e.target.closest('[data-pmoedcancel]')){ PMO_ED = { sec:'', id:'' }; render(1); return true; }
+  if (pme){ var pe = pme.getAttribute('data-pmoedit').split('|'); PV.PMO_ED = { sec:pe[0], id:pe[1] }; render(1); pmoEdFill(); toast(t('عدّل ثم اضغط «احفظ التعديل»')); return true; }   /* (V28.2) */
+  if (e.target.closest('[data-pmoedcancel]')){ PV.PMO_ED = { sec:'', id:'' }; render(1); return true; }
   if (e.target.closest('[data-pmodel]')){
     var pd = e.target.closest('[data-pmodel]').getAttribute('data-pmodel').split('|');
     if (pmoPut(pd[0], pd[1], { gone:true, at:Date.now() })){ toast(t('حُذف')); render(1); }
@@ -197,7 +197,7 @@ function clickAPart4(e){
   var pmz = e.target.closest('[data-pmz]');
   if (pmz){ var k = pmz.getAttribute('data-pmz'); if (k === 'in') pmZoomAt(1.6); else if (k === 'out') pmZoomAt(1 / 1.6); else pmReset(); return true; }
   var li = e.target.closest('[data-site]');
-  if (li && li.tagName === 'circle' && Date.now() - PM_CLICK_SKIP < 400) return true;   /* سحبٌ لا ضغطة */
+  if (li && li.tagName === 'circle' && Date.now() - PV.PM_CLICK_SKIP < 400) return true;   /* سحبٌ لا ضغطة */
   if (li && !SEL_MODE){ DETAIL_ID = li.getAttribute('data-site'); CUR = 'site'; render(); return true; }
   if (li && SEL_MODE){ lid = li.getAttribute('data-site');
                        if (!asnOf(lid)) selToggle(lid); render(1); return true; }
@@ -208,18 +208,18 @@ function clickAPart4(e){
   if (e.target.closest('[data-wbsxl]')){ wbsExcel(); return true; }
   /* اعتمادُ الوزارة */
   var mno = e.target.closest('[data-minopen]');
-  if (mno){ MIN_OPEN = mno.getAttribute('data-minopen') || ''; render(1); return true; }
+  if (mno){ PV.MIN_OPEN = mno.getAttribute('data-minopen') || ''; render(1); return true; }
   var mns = e.target.closest('[data-minst]');
-  if (mns){ MIN_ST = mns.getAttribute('data-minst') || 'pending'; MIN_OPEN = ''; render(1); return true; }
+  if (mns){ PV.MIN_ST = mns.getAttribute('data-minst') || 'pending'; PV.MIN_OPEN = ''; render(1); return true; }
   var mok = e.target.closest('[data-minok]');
   if (mok){ var mid = mok.getAttribute('data-minok'), mEl = document.querySelector('[data-minnote="' + mid + '"]');
-    if (minApprove(mid, mEl ? mEl.value : '')){ toast(t('اعتمدت الوزارةُ إعدادَ التركيب')); MIN_OPEN = ''; render(1); } return true; }
+    if (minApprove(mid, mEl ? mEl.value : '')){ toast(t('اعتمدت الوزارةُ إعدادَ التركيب')); PV.MIN_OPEN = ''; render(1); } return true; }
   var mbk = e.target.closest('[data-minback]');
   if (mbk){ var mid2 = mbk.getAttribute('data-minback'), mEl2 = document.querySelector('[data-minnote="' + mid2 + '"]');
-    if (minReturn(mid2, mEl2 ? mEl2.value : '')){ toast(t('أُعيدت للمهندس بملاحظتكم')); MIN_OPEN = ''; render(1); } return true; }
+    if (minReturn(mid2, mEl2 ? mEl2.value : '')){ toast(t('أُعيدت للمهندس بملاحظتكم')); PV.MIN_OPEN = ''; render(1); } return true; }
   var mre = e.target.closest('[data-minre]');
   if (mre){ var mid3 = mre.getAttribute('data-minre'), mEl3 = document.querySelector('[data-minnote="' + mid3 + '"]');
-    if (minResubmit(mid3, mEl3 ? mEl3.value : '')){ toast(t('رُفعت للوزارة ثانيةً')); MIN_OPEN = ''; render(1); } return true; }
+    if (minResubmit(mid3, mEl3 ? mEl3.value : '')){ toast(t('رُفعت للوزارة ثانيةً')); PV.MIN_OPEN = ''; render(1); } return true; }
   /* المتعذّر: فتحُ لوحة المراجعة، والقرار */
   var sko = e.target.closest('[data-stkopen]');
   if (sko){ STK_OPEN = sko.getAttribute('data-stkopen') || ''; render(1); return true; }
@@ -259,7 +259,7 @@ function clickAPart5(e){
   var wtf = e.target.closest('[data-wtf]');
   if (wtf){ WT_F = wtf.getAttribute('data-wtf') || ''; render(1); return true; }
   var wto = e.target.closest('[data-wtopen]');
-  if (wto){ WT_OPEN = wto.getAttribute('data-wtopen'); WT_NEW = false; render(1); return true; }
+  if (wto){ WT_OPEN = wto.getAttribute('data-wtopen'); PV.WT_NEW = false; render(1); return true; }
   if (e.target.closest('[data-wtclose]')){ WT_OPEN = ''; render(1); return true; }
   var wst = e.target.closest('[data-wtstat]');
   if (wst){ pr = wst.getAttribute('data-wtstat').split('|'); wtStatus(pr[0], pr[1]); return true; }
@@ -274,8 +274,8 @@ function clickAPart5(e){
   }
   if (e.target.closest('[data-wttools]')){ WT_TOOLS = !WT_TOOLS; render(1); return true; }
   var wdo = e.target.closest('[data-wbsdos]');
-  if (wdo){ WBS_DOS = wdo.getAttribute('data-wbsdos'); render(1); return true; }
-  if (e.target.closest('[data-dosclose]')){ WBS_DOS = ''; render(1); return true; }
+  if (wdo){ PV.WBS_DOS = wdo.getAttribute('data-wbsdos'); render(1); return true; }
+  if (e.target.closest('[data-dosclose]')){ PV.WBS_DOS = ''; render(1); return true; }
   var dsv = e.target.closest('[data-dossave]');
   if (dsv){ dosSave(dsv.getAttribute('data-dossave')); return true; }
   var dit = e.target.closest('[data-dositem]');
@@ -357,10 +357,10 @@ function clickAPart5(e){
   if (vas){ visitAsnOpen(vas.getAttribute('data-visitasn')); return true; }
   if (e.target.closest('[data-pincancel]')){ pinCancel(); return true; }
   if (e.target.closest('[data-pin]')){ pinStart(); return true; }
-  if (e.target.closest('[data-tfd]')){ if (TFD.on) tfdCancel(); else tfdStart(); return true; }   /* (V28.0) */
+  if (e.target.closest('[data-tfd]')){ if (PV.TFD.on) tfdCancel(); else tfdStart(); return true; }   /* (V28.0) */
   if (e.target.closest('[data-tfdsave]')){ tfdSave(); return true; }
   if (e.target.closest('[data-tfdundo]')){ tfdUndo(); return true; }
-  if (e.target.closest('[data-tfdfree]')){ TFD.free = !TFD.free; toast(t(TFD.free ? 'رسمٌ حرّ: النقطةُ حيث تضغط وتُوصَل بخطٍّ مستقيم' : 'عاد الالتصاقُ بالشوارع')); render(1); return true; }   /* (V28.1) */
+  if (e.target.closest('[data-tfdfree]')){ PV.TFD.free = !PV.TFD.free; toast(t(PV.TFD.free ? 'رسمٌ حرّ: النقطةُ حيث تضغط وتُوصَل بخطٍّ مستقيم' : 'عاد الالتصاقُ بالشوارع')); render(1); return true; }   /* (V28.1) */
   if (e.target.closest('[data-tfdcancel]')){ tfdCancel(); return true; }
   var tfdg = e.target.closest('[data-tfdgo]'); if (tfdg){ a = tfdg.getAttribute('data-tfdgo').split('|'); goPage('map'); tfdStart(+a[0], a[1]); return true; }
   var tfdc = e.target.closest('[data-tfdclear]'); if (tfdc){ var c2 = tfdc.getAttribute('data-tfdclear').split('|'); tfdClear(+c2[0], c2[1]); return true; }
@@ -369,8 +369,8 @@ function clickAPart5(e){
   if (e.target.closest('[data-rtsave]')){ routeSave(); return true; }
   if (e.target.closest('[data-rtundo]')){ routeUndo(); return true; }
   if (e.target.closest('[data-rtregen]')){ routeRegen(); return true; }
-  if (e.target.closest('[data-rtmin]')){ RT_MIN = !RT_MIN; render(1); return true; }
-  if (e.target.closest('[data-rtcancel]')){ RT_MIN = false; routeCancel(); return true; }
+  if (e.target.closest('[data-rtmin]')){ PV.RT_MIN = !PV.RT_MIN; render(1); return true; }
+  if (e.target.closest('[data-rtcancel]')){ PV.RT_MIN = false; routeCancel(); return true; }
   var slg = e.target.closest('[data-sitelog]');
   if (slg){ toast(t('يُجلَب سجلُّ النقطة…')); siteLogFetch(slg.getAttribute('data-sitelog')); return true; }
   return CLICK_NEXT;

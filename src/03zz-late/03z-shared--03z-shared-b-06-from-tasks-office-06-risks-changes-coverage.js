@@ -75,7 +75,7 @@ function riskSignals(){
   /* نسخةٌ احتياطيةٌ لا تُؤخَذ أو لا تصل درايف: خطرٌ صامتٌ لا يظهر إلا يومَ الحاجة */
   if (may('settings')){
     bkFetch(false);
-    var bm = BK_STATE.meta, bd = BK_STATE.drive;
+    var bm = PV.BK_STATE.meta, bd = PV.BK_STATE.drive;
     if (bm && !bm.ok) out.push(['bad', t('لا نسخةَ احتياطيةً تُؤخَذ') + ' — ' + t('BACKUP_KEY غير مضبوط'), 'hb']);
     else if (bm && bkAgeDays(bm) > 2) out.push(['bad', t('آخر نسخةٍ احتياطية منذ') + ' ' + nm(bkAgeDays(bm)) + ' ' + t('يوم'), 'hb']);
     if (bd && !bd.ok) out.push(['wrn', t('النسخةُ لا تُرفَع إلى درايف') + ' — ' + t('GDRIVE_SA غير مضبوط'), 'hb']);

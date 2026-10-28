@@ -42,7 +42,7 @@ function clickAPart1(e){
     var sec = g.closest('.nav-section');
     var key = sec.getAttribute('data-g');
     var open = sec.getAttribute('data-open') !== 'false';
-    OPEN[key] = !open;
+    PV.OPEN[key] = !open;
     sec.setAttribute('data-open', open ? 'false' : 'true');
     g.setAttribute('aria-expanded', open ? 'false' : 'true');
     return true;
@@ -161,25 +161,25 @@ function clickAPart2(e){
   if (e.target.closest('[data-boxcopy]')){ boxCopy(); return true; }
   if (e.target.closest('[data-briefcopy]')){ try { navigator.clipboard.writeText(mfuBriefText()); toast(t('نُسخ الملخّص')); } catch (er){ toast(t('تعذّر النسخ')); } return true; }   /* (V29.9) */
   var svl = e.target.closest('[data-svlist]');   /* (V29.6) */
-  if (svl){ SV_POP = svl.getAttribute('data-svlist'); SV_PHO = ''; SV_VIEW = 'dash'; SV_SHOW = 80; SV_ZF = svl.getAttribute('data-svzone') || ''; SV_SUB = svl.getAttribute('data-svsub0') || ''; SV_STACK = [];   /* (V37.62) مربعُ التبويب يفتح لوحتَه مصفّاةً */   /* (V37.49) بطاقةُ المشعر تفتح لوحتَها مصفّاةً */
+  if (svl){ SV_POP = svl.getAttribute('data-svlist'); PV.SV_PHO = ''; SV_VIEW = 'dash'; PV.SV_SHOW = 80; SV_ZF = svl.getAttribute('data-svzone') || ''; SV_SUB = svl.getAttribute('data-svsub0') || ''; PV.SV_STACK = [];   /* (V37.62) مربعُ التبويب يفتح لوحتَه مصفّاةً */   /* (V37.49) بطاقةُ المشعر تفتح لوحتَها مصفّاةً */
     if (KIOSK_ON) kioskCycleStop();   /* الضغطةُ توقف التنقّلَ التلقائي */   /* (V37.14) طلبُ المالك «الويندو بطيئة»: تُدرَج النافذةُ وحدَها بلا رسم الصفحة */
     var hostL = svl.closest('#content') || document.getElementById('content');
     if (hostL){ svPopRemove(); var tmpL = document.createElement('div'); tmpL.innerHTML = (svListPop() + supPopHtml()); while (tmpL.firstChild) hostL.appendChild(tmpL.firstChild); } else render(1);
     return true; }
-  if (e.target.closest('[data-svpopclose]')){ SV_PHO = ''; SV_POP = ''; svPopRemove(); return true; }   /* (V37.14) بلا رسم */
+  if (e.target.closest('[data-svpopclose]')){ PV.SV_PHO = ''; SV_POP = ''; svPopRemove(); return true; }   /* (V37.14) بلا رسم */
   var phd = e.target.closest('[data-phdel]');   /* (V37.17) حذفُ صورةٍ مرفوعة: تختفي من التطبيق والتقارير ويبقى ملفُّها على الدرايف */
   if (phd){ var pid1 = phd.getAttribute('data-phdel'), pp = (STATE.photos || {})[pid1];
     if (pp && window.confirm(t('حذف هذه الصورة؟ تختفي من التطبيق والتقارير عند الجميع، ويبقى ملفُّها على الدرايف.'))){
       var dv = { by:STATE.meta.name || '', at:Date.now(), why:t('رُفعت خطأً') }; pp.del = dv; phTouch(); CORE.set('photos', pid1, { del:dv }); logEvent('حذفُ صورة — ' + (pp.site || '') + ' \u00b7 ' + (pp.kind || ''), pp.site || ''); statBump(); toast(t('حُذفت الصورة'));
-      var bx1 = document.getElementById('svPhoBox'); if (bx1 && SV_PHO){ var host1 = bx1.parentNode; ['svPhoVeil', 'svPhoBox'].forEach(function(i0){ var e0 = document.getElementById(i0); if (e0) e0.remove(); }); var tm1 = document.createElement('div'); tm1.innerHTML = svPhoPanel(SV_PHO); while (tm1.firstChild) host1.appendChild(tm1.firstChild); } else render(1); }
+      var bx1 = document.getElementById('svPhoBox'); if (bx1 && PV.SV_PHO){ var host1 = bx1.parentNode; ['svPhoVeil', 'svPhoBox'].forEach(function(i0){ var e0 = document.getElementById(i0); if (e0) e0.remove(); }); var tm1 = document.createElement('div'); tm1.innerHTML = svPhoPanel(PV.SV_PHO); while (tm1.firstChild) host1.appendChild(tm1.firstChild); } else render(1); }
     return true; }
   var phc = e.target.closest('[data-phclear]');   /* (V37.16) طلبُ المالك: حذفُ صورةٍ التُقطت خطأً قبل الحفظ */
   if (phc){ var pk = phc.getAttribute('data-phclear'); if (FORM && FORM.photos && FORM.photos[pk]){ delete FORM.photos[pk]; if (typeof SVD === 'object') SVD.dirty = true; if (typeof svDraftSave === 'function') svDraftSave(); toast(t('حُذفت الصورة — اختر غيرها')); render(1); } return true; }
-  if (e.target.closest('[data-svmore]')){ SV_SHOW += 80; toast(t('عُرضت ٨٠ أخرى')); var bxM = document.querySelector('.svpop[data-keepscroll^="svpop:"]'), topM = bxM ? bxM.scrollTop : 0, hostM = (bxM && bxM.parentNode) || document.getElementById('content');   /* (V37.27) دفعةٌ أخرى في مكانها */
+  if (e.target.closest('[data-svmore]')){ PV.SV_SHOW += 80; toast(t('عُرضت ٨٠ أخرى')); var bxM = document.querySelector('.svpop[data-keepscroll^="svpop:"]'), topM = bxM ? bxM.scrollTop : 0, hostM = (bxM && bxM.parentNode) || document.getElementById('content');   /* (V37.27) دفعةٌ أخرى في مكانها */
     if (hostM){ svPopRemove(); var tmpM = document.createElement('div'); tmpM.innerHTML = svListPop(); while (tmpM.firstChild) hostM.appendChild(tmpM.firstChild); var nb = document.querySelector('.svpop[data-keepscroll^="svpop:"]'); if (nb) nb.scrollTop = topM; } else render(1); return true; }
   var mwf = e.target.closest('[data-mtwf]');   /* (V37.62) المهامُّ تُصفّى في مكانها */
-  if (mwf){ MT_WF = mwf.getAttribute('data-mtwf') || ''; MT_WPOP = !!MT_WF; render(1); return true; }
-  if (e.target.closest('[data-mtwclose]')){ MT_WPOP = false; MT_WF = ''; render(1); return true; }
+  if (mwf){ PV.MT_WF = mwf.getAttribute('data-mtwf') || ''; PV.MT_WPOP = !!PV.MT_WF; render(1); return true; }
+  if (e.target.closest('[data-mtwclose]')){ PV.MT_WPOP = false; PV.MT_WF = ''; render(1); return true; }
   if (e.target.closest('[data-mtwx]')){ mtWeekXlsx(); return true; }
   var mtx = e.target.closest('[data-mtx]'); if (mtx){ mtTabXlsx(mtx.getAttribute('data-mtx')); return true; }   /* (V37.63) */
   if (e.target.closest('[data-mtcoall]')){ MT_CO_ALL = !MT_CO_ALL; render(1); return true; }
@@ -191,16 +191,16 @@ function clickAPart2(e){
   var pno = e.target.closest('[data-propno]'); if (pno){ propReject(pno.getAttribute('data-propno')); return true; }
   var pgo = e.target.closest('[data-propgo]'); if (pgo){ propGo(pgo.getAttribute('data-propgo')); return true; }
   if (e.target.closest('[data-propclose]')){ PROP_POP = ''; render(1); return true; }
-  var psh = e.target.closest('[data-propsheet]'); if (psh){ PROP_SHEET = psh.getAttribute('data-propsheet') === '1'; PROP_POP = ''; render(1); return true; }
+  var psh = e.target.closest('[data-propsheet]'); if (psh){ PV.PROP_SHEET = psh.getAttribute('data-propsheet') === '1'; PROP_POP = ''; render(1); return true; }
   var csp = e.target.closest('[data-campsplit]'); if (csp){ splitStart(csp.getAttribute('data-campsplit')); return true; }   /* (V37.67) قسّم المخيم */
   var spn = e.target.closest('[data-splitn]'); if (spn){ splitN(+spn.getAttribute('data-splitn')); return true; }
   if (e.target.closest('[data-splitsave]')){ splitSave(); return true; }
-  if (e.target.closest('[data-splitcancel]')){ SPLIT = null; render(1); if (typeof mapPaint === 'function') mapPaint(); return true; }
+  if (e.target.closest('[data-splitcancel]')){ PV.SPLIT = null; render(1); if (typeof mapPaint === 'function') mapPaint(); return true; }
   var ssb = e.target.closest('[data-svsub]');   /* (V37.58) مربعٌ في اللوحة يُضغط: نافذتُه بلوحتها وإكسلها */
-  if (ssb){ var sv0 = ssb.getAttribute('data-svsub') || ''; if (SV_SUB === sv0) return true; SV_STACK.push({ sub:SV_SUB, zf:SV_ZF }); SV_SUB = sv0; svPopRefresh(); return true; }
+  if (ssb){ var sv0 = ssb.getAttribute('data-svsub') || ''; if (SV_SUB === sv0) return true; PV.SV_STACK.push({ sub:SV_SUB, zf:SV_ZF }); SV_SUB = sv0; svPopRefresh(); return true; }
   var szf = e.target.closest('[data-svzf]');   /* (V37.45) */
-  if (e.target.closest('[data-svback]')){ var prv = SV_STACK.pop(); if (prv){ SV_SUB = prv.sub; SV_ZF = prv.zf; } svPopRefresh(); return true; }   /* (V37.59) */
-  if (szf){ if ((szf.getAttribute('data-svzf') || '') !== SV_ZF) SV_STACK.push({ sub:SV_SUB, zf:SV_ZF }); SV_ZF = szf.getAttribute('data-svzf') || ''; svPopRefresh(); return true; }
+  if (e.target.closest('[data-svback]')){ var prv = PV.SV_STACK.pop(); if (prv){ SV_SUB = prv.sub; SV_ZF = prv.zf; } svPopRefresh(); return true; }   /* (V37.59) */
+  if (szf){ if ((szf.getAttribute('data-svzf') || '') !== SV_ZF) PV.SV_STACK.push({ sub:SV_SUB, zf:SV_ZF }); SV_ZF = szf.getAttribute('data-svzf') || ''; svPopRefresh(); return true; }
   if (e.target.closest('[data-svprint]')){ document.documentElement.classList.add('print-pop'); setTimeout(function(){ try { window.print(); } catch (ePr){ LS_ERR = ePr; } setTimeout(function(){ document.documentElement.classList.remove('print-pop'); }, 500); }, 60); return true; }
   var svv = e.target.closest('[data-svview]');   /* (V37.16) اللوحة أو القائمة — في مكانها */
   if (svv){ SV_VIEW = svv.getAttribute('data-svview') === 'list' ? 'list' : 'dash'; var hostV = svv.closest('#content') || document.getElementById('content');
@@ -224,7 +224,7 @@ function clickAPart2(e){
     }
     return true;
   }
-  if (e.target.closest('[data-wpwk]')){ WPLAN_WK = e.target.closest('[data-wpwk]').getAttribute('data-wpwk'); WPLAN_EDIT = ''; WPLAN_ACT = null; WPLAN_PREFILL = null; render(1); return true; }
+  if (e.target.closest('[data-wpwk]')){ WPLAN_WK = e.target.closest('[data-wpwk]').getAttribute('data-wpwk'); PV.WPLAN_EDIT = ''; WPLAN_ACT = null; PV.WPLAN_PREFILL = null; render(1); return true; }
   if (e.target.closest('[data-wpdo]')){ var dp = e.target.closest('[data-wpdo]').getAttribute('data-wpdo').split('|'); WPLAN_ACT = { id:dp[0], kind:dp[1] }; render(1); setTimeout(function(){ var ta = document.getElementById('wpAct'); if (ta){ try { ta.focus(); } catch (e2){ LS_ERR = e2; } } }, 30); return true; }
   if (e.target.closest('[data-wpact]')){
     var ap = e.target.closest('[data-wpact]').getAttribute('data-wpact').split('|');
@@ -234,13 +234,13 @@ function clickAPart2(e){
     var an = Object.assign({}, ax); delete an.id; an.at = Date.now();
     if (ap[1] === 'result'){ an.result = txt; an.st = 'تم'; an.hist = mfuHist(ax, 'result', txt); }
     else if (ap[1] === 'upd'){ an.st = 'بانتظار تجارب'; an.hist = mfuHist(ax, 'upd', txt); }
-    else { an.closeWhy = txt; an.st = 'مغلق'; an.hist = mfuHist(ax, 'close', txt); var mk = document.getElementById('wpActNew'); if (mk && mk.checked){ WPLAN_PREFILL = { t:'', pri:ax.pri || 'متوسطة', n:t('بدلًا من') + ': ' + (ax.t || ''), steps:'', needs:ax.needs || '', goal:ax.goal || '' }; WPLAN_WK = mfuWeekKey(); } }
+    else { an.closeWhy = txt; an.st = 'مغلق'; an.hist = mfuHist(ax, 'close', txt); var mk = document.getElementById('wpActNew'); if (mk && mk.checked){ PV.WPLAN_PREFILL = { t:'', pri:ax.pri || 'متوسطة', n:t('بدلًا من') + ': ' + (ax.t || ''), steps:'', needs:ax.needs || '', goal:ax.goal || '' }; WPLAN_WK = mfuWeekKey(); } }
     WPLAN_ACT = null;
-    if (pmoPut('wplan', ap[0], an)){ toast(t(ap[1] === 'result' ? 'تمّت بنتيجتها' : ap[1] === 'upd' ? 'سُجّل التحديث — بانتظار تجارب أخرى' : 'أُغلقت')); render(1); if (WPLAN_PREFILL) setTimeout(function(){ var el = document.getElementById('wpT'); if (el && el.scrollIntoView) el.scrollIntoView({ block:'center' }); }, 30); }
+    if (pmoPut('wplan', ap[0], an)){ toast(t(ap[1] === 'result' ? 'تمّت بنتيجتها' : ap[1] === 'upd' ? 'سُجّل التحديث — بانتظار تجارب أخرى' : 'أُغلقت')); render(1); if (PV.WPLAN_PREFILL) setTimeout(function(){ var el = document.getElementById('wpT'); if (el && el.scrollIntoView) el.scrollIntoView({ block:'center' }); }, 30); }
     return true;
   }
-  if (e.target.closest('[data-wpcancel]')){ WPLAN_EDIT = ''; WPLAN_PREFILL = null; render(1); return true; }
-  if (e.target.closest('[data-wpedit]')){ WPLAN_EDIT = e.target.closest('[data-wpedit]').getAttribute('data-wpedit'); render(1); setTimeout(function(){ var el = document.getElementById('wpT'); if (el && el.scrollIntoView) el.scrollIntoView({ block:'center' }); }, 30); return true; }
+  if (e.target.closest('[data-wpcancel]')){ PV.WPLAN_EDIT = ''; PV.WPLAN_PREFILL = null; render(1); return true; }
+  if (e.target.closest('[data-wpedit]')){ PV.WPLAN_EDIT = e.target.closest('[data-wpedit]').getAttribute('data-wpedit'); render(1); setTimeout(function(){ var el = document.getElementById('wpT'); if (el && el.scrollIntoView) el.scrollIntoView({ block:'center' }); }, 30); return true; }
   if (e.target.closest('[data-wpsave]')){
     if (!wplanMay()) return true;
     var wt0 = pmoVal('wpT'); if (!wt0){ toast(t('اكتب عنوان النقطة')); return true; }
@@ -248,7 +248,7 @@ function clickAPart2(e){
     var prev = pmoList('wplan').filter(function(x){ return x.id === wid; })[0] || {};
     var item = Object.assign({}, prev, { wk:prev.wk || wplanWeek(), t:wt0, pri:pmoVal('wpP') || 'متوسطة', n:pmoVal('wpN'), steps:pmoVal('wpS'), needs:pmoVal('wpR'), goal:pmoVal('wpG'), st:prev.st || 'مخطط', at:prev.at || Date.now(), by:STATE.meta.name || '', hist:mfuHist(prev, prev.id ? 'edit' : 'new', wt0.slice(0, 60)) });
     delete item.id; if (wplanLines(item.steps).length !== wplanLines(prev.steps).length) item.sdone = [];
-    if (pmoPut('wplan', wid, item)){ WPLAN_EDIT = ''; WPLAN_PREFILL = null; toast(t(prev.id ? 'حُفظ التعديل' : 'أُضيفت إلى الخطة')); render(1); }
+    if (pmoPut('wplan', wid, item)){ PV.WPLAN_EDIT = ''; PV.WPLAN_PREFILL = null; toast(t(prev.id ? 'حُفظ التعديل' : 'أُضيفت إلى الخطة')); render(1); }
     return true;
   }
   if (e.target.closest('[data-wpdel]')){ var did = e.target.closest('[data-wpdel]').getAttribute('data-wpdel'); if (pmoPut('wplan', did, { gone:true, at:Date.now() })){ toast(t('حُذف')); render(1); } return true; }

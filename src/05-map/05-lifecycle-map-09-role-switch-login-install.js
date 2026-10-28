@@ -121,7 +121,7 @@ setInterval(dispTick, 300000);
 function signOut(){
   var pend = (CORE && CORE.pending) ? CORE.pending() : 0;
   var pics = (typeof PHOTO_Q !== 'undefined' ? PHOTO_Q.length : 0)
-           + (typeof PHOTO_FAIL !== 'undefined' ? PHOTO_FAIL.length : 0);
+           + (typeof PV.PHOTO_FAIL !== 'undefined' ? PV.PHOTO_FAIL.length : 0);
   if (pend || pics){
     var msg = t('لم يُرفَع بعد') + ': '
       + (pend ? nm(pend) + ' ' + t('سجلًّا') : '')
@@ -228,9 +228,9 @@ function iosNudgeHtml(){
     + '</div></div></div>';
 }
 /* شرحُ التثبيت على آيفون — خطوتان لا أكثر */
-var POP_HELP = '';
+PV.POP_HELP = '';
 function iosHelpCard(){
-  if (POP_HELP !== 'ios') return '';
+  if (PV.POP_HELP !== 'ios') return '';
   return card('تثبيت التطبيق على آيفون',
     '<div class="pop-rows" style="margin:0">'
     + '<div><span class="k">١</span><span>'
@@ -276,7 +276,7 @@ function manifestInject(){
    ١٧٨٧ نقطة تُرسم على شبكة وتنوّر بالتدريج: المشروع يحكي نفسه
    بدل صورة مستعارة. خفيفة، وتحترم prefers-reduced-motion. */
 
-var LOGIN_CSS = `
+PV.LOGIN_CSS = `
 #login{position:fixed;inset:0;z-index:100;display:grid;place-items:center;
   background:#070A0D;overflow:hidden}
 #loginCv{position:absolute;inset:0;width:100%;height:100%}

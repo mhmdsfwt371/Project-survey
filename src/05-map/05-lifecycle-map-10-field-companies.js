@@ -14,11 +14,11 @@ var EXP_OPEN = false;
 var POP_SITE = '';
 var CO_OPEN = false;
 /* يبقى التلوينُ بعد إغلاق اللوح حتى يُطفأ صراحةً */
-var CO_MODE = false;
-var CO_Q = '', TK_Q = '', IT_Q = '', JB_Q = '';
+PV.CO_MODE = false;
+PV.CO_Q = ''; var TK_Q = '', IT_Q = '', JB_Q = '';
 var MAP_SAT = true;   /* (V25.1) القمرُ الصناعيُّ هو الأساس بقرار المالك — والشوارعُ بالزرّ نفسِه */
 var MAP_FILT_OPEN = false;
-var CO_SEL = [];
+PV.CO_SEL = [];
 /* القائمةُ الموحّدة — تُبنى من بيانات المشروع نفسها لا تُكتَب بيد.
    كانت عشرةَ أسماءٍ مخترعةٍ بينما الشاشةُ تقول «مئةٌ واثنتان وستون شركة»،
    والميدانُ يختار من قائمةٍ لا تشبه ما في السجل. */
@@ -37,13 +37,13 @@ var CO_SEL = [];
 /* ═══ مخيّماتُ الشركة مصنَّفةً ═══
    من حلقةٍ واحدةٍ بالتعريف نفسِه المستعمَل في «نظرة عامة»: تمَّ المسحُ = وصل
    وسجّل ولم يُردّ؛ المتعذّرُ = وصل ولم يستطع؛ تمَّ التركيبُ = حالةُ التركيب. */
-var CO_BK = null;   
+PV.CO_BK = null;   
 
-var CO_POP = null;   /* { co, kind } */
-var CO_POP_LBL = { all:'كلُّ المخيّمات', sv:'تمت الزيارة', stuck:'تحتاج زيارة أخرى', ins:'تمّ التركيب' };
+PV.CO_POP = null;   /* { co, kind } */
+PV.CO_POP_LBL = { all:'كلُّ المخيّمات', sv:'تمت الزيارة', stuck:'تحتاج زيارة أخرى', ins:'تمّ التركيب' };
 
 
-var CO_CMP = null, CO_CMP_KEYS = [];
+PV.CO_CMP = null; PV.CO_CMP_KEYS = [];
 PV.CO_HEAD = /^(شرك[ةه]|مؤسس[ةه]|مكتب|مجموع[ةه]|مصنع|جمعي[ةه])\s/;
 PV.CO_FORM = /^شرك[ةه]\s+(شخص\s+واحد|ذات\s+مسؤولي[ةه]\s+محدود[ةه]|مساهم[ةه]|تضامن|توصي[ةه]\s+بسيط[ةه])\s*$/;
 function coSplit(v){
@@ -108,8 +108,8 @@ function coFiltHtml(){
   /* الرأسُ والذيلُ ثابتان والقائمةُ وحدَها تُمرَّر: كان اللوحُ كلُّه يُمرَّر،
      فيغيب زرُّ الإغلاق ويغيب «عرض» عمن نزل في مئةٍ واثنتين وستين شركةً — فيبحث
      عنهما بالتمرير صعودًا ونزولًا في كلِّ مرة. */
-  var shown = CO_LIST.filter(function(c){ return coHit(c, CO_Q); });
-  var allOn = shown.length > 0 && shown.every(function(c){ return CO_SEL.indexOf(c) > -1; });
+  var shown = CO_LIST.filter(function(c){ return coHit(c, PV.CO_Q); });
+  var allOn = shown.length > 0 && shown.every(function(c){ return PV.CO_SEL.indexOf(c) > -1; });
   return '<div class="pop copop" id="coFilt">'
     + '<div class="pop-head">'
     +   '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px">'
@@ -117,14 +117,14 @@ function coFiltHtml(){
     +     '<button type="button" class="btn btn-quiet btn-sm" data-co="0" aria-label="'
     +       esc(t('إغلاق')) + '">✕</button>'
     +   '</div>'
-    +   '<input type="search" id="coQ" data-coq="1" value="' + esc(CO_Q) + '" placeholder="'
+    +   '<input type="search" id="coQ" data-coq="1" value="' + esc(PV.CO_Q) + '" placeholder="'
     +     esc(t('ابحث باسم الشركة')) + '" spellcheck="false" style="margin:11px 0 0">'
     + '</div>'
 
     + '<div class="pop-body" id="coL">'
     +   (shown.length
         ? shown.map(function(c){
-            var on = CO_SEL.indexOf(c) > -1;
+            var on = PV.CO_SEL.indexOf(c) > -1;
             return '<label class="coRow" data-c="' + esc(c) + '">'
               + '<input type="checkbox" class="coCk"' + (on ? ' checked' : '') + '>'
               + '<i style="background:' + coColor(c) + '"></i>'
@@ -143,7 +143,7 @@ function coFiltHtml(){
     +   '</div>'
     +   '<p class="hint" style="font-size:11.5px;margin:9px 0 0">'
     +     nm(shown.length) + ' ' + esc(t('من')) + ' ' + nm(CO_LIST.length) + ' '
-    +     esc(t('شركة')) + (CO_SEL.length ? ' · ' + nm(CO_SEL.length) + ' ' + esc(t('محدَّدة')) : '')
+    +     esc(t('شركة')) + (PV.CO_SEL.length ? ' · ' + nm(PV.CO_SEL.length) + ' ' + esc(t('محدَّدة')) : '')
     +     ' — ' + esc(t('لكل واحدة لونٌ ثابت فلا يتجاور لونان متشابهان.'))
     +   '</p>'
     + '</div></div>';
@@ -151,7 +151,7 @@ function coFiltHtml(){
 
 /* الأسطورةُ تتبع الطبقة: لكلٍّ حالاتُها، ولكلِّ نوعٍ شكلُه ولونُه */
 function legendRows(){
-  if (CO_OPEN || CO_MODE){
+  if (CO_OPEN || PV.CO_MODE){
     /* لا معنى لأسطورة الحالات ولونُ النقطة لشركتها */
     var seen = {}, out = [];
     (typeof filtered === 'function' ? filtered() : STATE.sites).forEach(function(x){
@@ -218,7 +218,7 @@ function legendRows(){
       + '<div style="font-weight:700;margin:0 0 4px">' + esc(t('إطارُ النقطة — الخلاصة')) + '</div>'
       + BRIEF_ST.map(function(k){
           return '<div class="lg-row' + (BC[k] ? '' : ' lg-off') + '">'
-            + '<i class="lg-dot" style="background:transparent;box-shadow:inset 0 0 0 2px ' + BRIEF_C[k] + '"></i>'
+            + '<i class="lg-dot" style="background:transparent;box-shadow:inset 0 0 0 2px ' + PV.BRIEF_C[k] + '"></i>'
             + '<span class="lg-n">' + esc(t(k)) + '</span><b class="num lg-c">' + nm(BC[k]) + '</b></div>';
         }).join('')
       + '<div class="lg-row' + (noB ? '' : ' lg-off') + '"><i class="lg-dot" style="background:transparent;box-shadow:inset 0 0 0 1px var(--line)"></i>'

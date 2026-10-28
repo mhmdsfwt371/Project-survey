@@ -25,9 +25,9 @@ var EXT = {
 };
 
 /* ── مفاتيح ثابتة (من env.js المكشوف عامًّا) ── */
-var EXT_API   = 'https://api.nusukcard.net/api/v1';
+PV.EXT_API = 'https://api.nusukcard.net/api/v1';
 
-var EXT_STREAM= 'https://event.nusukcard.net/api/rfid/latest/stream';
+PV.EXT_STREAM = 'https://event.nusukcard.net/api/rfid/latest/stream';
 
 /* ── قراءة التوكن من Firestore ── */
 function extTokLoad(){
@@ -58,8 +58,8 @@ function extReadersLoad(){
      «تعذّر الوصول إلى بثّ القرّاء». الطريقُ هو الجسر. */
   if (!EXT.tok){ EXT.rdErr = ''; return Promise.resolve(EXT.readers || null); }
   if (EXT.readers && Date.now() - EXT.readersAt < 300000) return Promise.resolve(EXT.readers);
-  return extFetch(EXT_STREAM, false).then(function(r){
-    if (!r.ok) return extFetch(EXT_STREAM, true).then(function(r2){ return r2.ok ? r2.json() : null; });
+  return extFetch(PV.EXT_STREAM, false).then(function(r){
+    if (!r.ok) return extFetch(PV.EXT_STREAM, true).then(function(r2){ return r2.ok ? r2.json() : null; });
     return r.json();
   }).then(function(arr){
     if (!arr || !Array.isArray(arr)){ EXT.rdErr = 'تعذّر قراءة بثّ القرّاء'; return null; }
@@ -79,7 +79,7 @@ function extTentsLoad(){
   /* perPage=50, نجمع كل الصفحات */
   var all = {}, by = {}, page = 1, per = 50;
   function fetchPage(){
-    return extFetch(EXT_API + '/tents?page=' + page + '&perPage=' + per, true)
+    return extFetch(PV.EXT_API + '/tents?page=' + page + '&perPage=' + per, true)
       .then(function(r){ return r.ok ? r.json() : null; })
       .then(function(j){
         if (!j || !j.data) return;
@@ -107,7 +107,7 @@ function extOvLoad(tentId, forceRefresh){
   if (!EXT.tok || !tentId) return Promise.resolve(null);
   if (!forceRefresh && EXT.ov[tentId] && Date.now() - EXT.ov[tentId].at < 60000)
     return Promise.resolve(EXT.ov[tentId].data);
-  return extFetch(EXT_API + '/dashboards/tents/' + tentId + '/overview', true)
+  return extFetch(PV.EXT_API + '/dashboards/tents/' + tentId + '/overview', true)
     .then(function(r){ return r.ok ? r.json() : null; })
     .then(function(j){
       var d = (j && j.data) ? j.data : null;
@@ -117,13 +117,13 @@ function extOvLoad(tentId, forceRefresh){
 }
 
 /* ── جرد التوافق: نقاطنا ↔ قرّاؤهم ↔ خيامهم ── */
-var EXT_MATCH_STATE = null;
+PV.EXT_MATCH_STATE = null;
 
 /* {matched:[{serial,tentCode,tentId,tentMeta,reader,point}], unmatched:[serial], at:ts} */
 
 function extMatchLoad(forceRefresh){
-  if (!forceRefresh && EXT_MATCH_STATE && Date.now() - EXT_MATCH_STATE.at < 300000)
-    return Promise.resolve(EXT_MATCH_STATE);
+  if (!forceRefresh && PV.EXT_MATCH_STATE && Date.now() - PV.EXT_MATCH_STATE.at < 300000)
+    return Promise.resolve(PV.EXT_MATCH_STATE);
   EXT.busy = true; EXT.err = '';   /* (V37.80) لا رسمَ من داخل الرسم — الشاشةُ تعرض «جارٍ التحميل» بنفسها */
   return Promise.all([extReadersLoad(), extTentsLoad()]).then(function(res){
     /* (V37.85) كلُّ نقطةٍ مركَّبة تُربَط بمفتاحين: المخيمُ بشاخصه وقربِه، والقارئُ بسيريالِه —
@@ -137,14 +137,14 @@ function extMatchLoad(forceRefresh){
       matched.push({ serial:L.ser, tentCode:tent ? tent.code : ((L.reader && L.reader.locationName) || ''), tentId:tent ? tent.id : '', tentMeta:tent,
                      reader:L.reader, point:{ id:x.id, name:x.name || x.id, zone:x.zone || '' }, by:L.by, warn:L.warn });
     });
-    EXT_MATCH_STATE = { matched:matched, unmatched:unmatched, at:Date.now() };
+    PV.EXT_MATCH_STATE = { matched:matched, unmatched:unmatched, at:Date.now() };
     if (EXT.rdErr) EXT.err = EXT.rdErr;
-    EXT.busy = false; render(1); return EXT_MATCH_STATE;
+    EXT.busy = false; render(1); return PV.EXT_MATCH_STATE;
   }).catch(function(e){ EXT.busy = false; EXT.err = String(e); render(1); return null; });
 }
 
 /* ── الشاشة الرئيسية ── */
-var EXT_OV_LOADED = {};
+PV.EXT_OV_LOADED = {};
 
 /* (V37.84) مفتاحُ الربط بنظام البطاقات = رقمُ القارئ. يُطبَّع على الجانبين: أرقامٌ فقط بلا أصفارٍ بادئة —
    فمسافةٌ أو شرطةٌ أو صفرٌ في أوّل ما كتبه الفنيُّ لا تقطع الربط */
@@ -268,10 +268,10 @@ function pilotAgo(at){
    الخادم. فجهازُ المكتب الذي يفتح الشاشة يحفظ «الأرقامَ وحدَها» في settings/extSnap — كلَّ ٥ دقائق
    على الأكثر — ويقرؤها الباقون مع وقت اللقطة. لا توكنَ ولا عنوانَ كاميرا ولا شيءَ غيرَ الأرقام. */
 function extSnapMaybe(){
-  if (!may('settings') || !(EXT.tok || EXT.bridge) || !EXT_MATCH_STATE) return;
+  if (!may('settings') || !(EXT.tok || EXT.bridge) || !PV.EXT_MATCH_STATE) return;
   if (EXT._snapAt && Date.now() - EXT._snapAt < 5 * 60000) return;
   var sites = {}, camps = {};
-  EXT_MATCH_STATE.matched.forEach(function(m){
+  PV.EXT_MATCH_STATE.matched.forEach(function(m){
     sites[m.point.id] = { ser:m.serial || '', code:m.tentCode || '', ts:(m.reader && m.reader.timestamp) || '', by:m.by || '', warn:m.warn || '' };
     var o = m.tentId && EXT.ov[m.tentId]; if (!o || !o.data) return;
     var c = o.data.occupancyStatus || {}, a = o.data.averageTime || {};
@@ -280,7 +280,7 @@ function extSnapMaybe(){
   });
   if (!Object.keys(sites).length) return;
   EXT._snapAt = Date.now();
-  var doc = { at:EXT._snapAt, by:STATE.meta.name || '', sites:sites, camps:camps, un:EXT_MATCH_STATE.unmatched.length };
+  var doc = { at:EXT._snapAt, by:STATE.meta.name || '', sites:sites, camps:camps, un:PV.EXT_MATCH_STATE.unmatched.length };
   STATE.extSnap = doc;
   CORE.set('cfg', 'extSnap', doc); CORE.saveSoon();
 }
@@ -350,7 +350,7 @@ function extCamCheck(x, tent){
     EXT._tdq = EXT._tdq || {};
     if (!EXT._tdq[tent.id]){
       EXT._tdq[tent.id] = 1;
-      extFetch(EXT_API + '/tents/' + tent.id, true).then(function(r){ return r.ok ? r.json() : null; }).then(function(j){
+      extFetch(PV.EXT_API + '/tents/' + tent.id, true).then(function(r){ return r.ok ? r.json() : null; }).then(function(j){
         var v = j && (j.data || j); EXT.tdet = EXT.tdet || {};
         EXT.tdet[tent.id] = { ip:String((v && v.cameraIP) || '') }; render(1);
       }).catch(function(e){ softErr('تفاصيل الخيمة', e, ''); });
@@ -416,7 +416,7 @@ function extBridgeApply(o, save){
                                             averageTime:{ insideCamp:v[5] || '\u2014', transitTime:v[6] || '\u2014' } } };
   });
   EXT.bridge = { at:at, rd:o.rd.length, tn:o.tn.length, ov:(o.ov || []).length, by:o.by || '' };
-  EXT_MATCH_STATE = null; EXT_OV_LOADED = {};
+  PV.EXT_MATCH_STATE = null; PV.EXT_OV_LOADED = {};
   if (save){
     /* القاعدةُ لا تقبل مصفوفةً داخل مصفوفة — يُحفَظ نصًّا واحدًا */
     CORE.set('cfg', 'extBridge', { at:at, by:STATE.meta.name || '', json:JSON.stringify(o) }); CORE.saveSoon();

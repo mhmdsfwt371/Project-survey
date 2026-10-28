@@ -7,4 +7,4 @@
    ============================================================================ */
 function fsi(s){ return '\u2068' + String(s == null ? '' : s) + '\u2069'; }
 
-function fsiText(s){ return String(s == null ? '' : s).replace(BDI_TOK, function(m){ return bdiNeed(m) ? '\u2068' + m + '\u2069' : m; }); }
+function fsiText(s){ return String(s == null ? '' : s).replace(PV.BDI_TOK, function(m){ return bdiNeed(m) ? '\u2068' + m + '\u2069' : m; }); }

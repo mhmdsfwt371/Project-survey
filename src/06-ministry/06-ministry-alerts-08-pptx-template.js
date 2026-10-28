@@ -644,12 +644,12 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
     var rows = all;
     /* شريحةُ الحالة: من أراد «الزياراتِ التي تمّت» وحدها ليصدّرها أو
        يراجعها كان يقرأ الجدولَ كلَّه بعينه — فصارت تُفرَز بضغطة. */
-    if (SURV_ST === 'done')  rows = rows.filter(function(x){ return x.done; });
-    if (SURV_ST === 'block') rows = rows.filter(function(x){ return svStuck(x.rec); });
-    if (SURV_ST === 'revisit') rows = rows.filter(function(x){ return svReached(x.rec) && x.rec.review === 'revisit'; });
-    if (SURV_Q) rows = rows.filter(function(x){
+    if (PV.SURV_ST === 'done')  rows = rows.filter(function(x){ return x.done; });
+    if (PV.SURV_ST === 'block') rows = rows.filter(function(x){ return svStuck(x.rec); });
+    if (PV.SURV_ST === 'revisit') rows = rows.filter(function(x){ return svReached(x.rec) && x.rec.review === 'revisit'; });
+    if (PV.SURV_Q) rows = rows.filter(function(x){
       var hay = x.id + ' ' + (x.site.name || '') + ' ' + (x.rec.by || '');
-      return hay.indexOf(SURV_Q) > -1;
+      return hay.indexOf(PV.SURV_Q) > -1;
     });
 
     var views = [['','الكل', all.length],
@@ -660,7 +660,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
                  ['block','تحتاج زيارة أخرى', blocked.length],
                  ['revisit','أعادها المهندس', revisit.length]];
     var html = '<div class="chips">' + views.map(function(v){
-        return '<button type="button" class="chip' + (SURV_ST===v[0]?' on':'')
+        return '<button type="button" class="chip' + (PV.SURV_ST===v[0]?' on':'')
           + '" data-survst="' + v[0] + '">' + esc(t(v[1]))
           + ' <span class="num">' + nm(v[2]) + '</span></button>';
       }).join('') + '</div>'
@@ -671,21 +671,21 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
                       ['أعادها المهندس', N(revisit.length), revisit.length ? 'wrn' : '']])
 
       + card('بحث في السجلّ',
-          '<input type="search" id="survQ" value="' + esc(SURV_Q)
+          '<input type="search" id="survQ" value="' + esc(PV.SURV_Q)
           + '" placeholder="' + esc(t('ابحث بالنقطة أو الاسم أو الفني')) + '" dir="auto">',
           btn('⬇ إكسل — المسح','btn-secondary btn-sm',' data-xls="recs"'));
 
-    if (SURV_REOPEN){
-      var rx = all.filter(function(x){ return x.id === SURV_REOPEN; })[0];
-      html += card('سبب تعذُّر ' + esc(SURV_REOPEN) + (rx ? ' — ' + esc((rx.site.name||'').slice(0,30)) : ''),
+    if (PV.SURV_REOPEN){
+      var rx = all.filter(function(x){ return x.id === PV.SURV_REOPEN; })[0];
+      html += card('سبب تعذُّر ' + esc(PV.SURV_REOPEN) + (rx ? ' — ' + esc((rx.site.name||'').slice(0,30)) : ''),
           '<div class="grid cols-2">'
           + '<div class="field"><label>' + esc(t('السبب')) + '</label>'
-          + '<select id="reopenReason">' + SV_ACCESS.filter(function(a){ return a !== 'تم الوصول'; }).map(function(a){
+          + '<select id="reopenReason">' + PV.SV_ACCESS.filter(function(a){ return a !== 'تم الوصول'; }).map(function(a){
               return '<option value="' + esc(a) + '">' + esc(t(a)) + '</option>'; }).join('') + '</select></div>'
           + '<div class="field"><label>' + esc(t('تفصيلٌ إضافي')) + '</label>'
           + '<input id="reopenNote" dir="auto"></div>'
           + '</div>',
-          btn('تأكيد — أعِدها متعذّرة','btn-danger btn-sm',' data-svreopengo="' + esc(SURV_REOPEN) + '"')
+          btn('تأكيد — أعِدها متعذّرة','btn-danger btn-sm',' data-svreopengo="' + esc(PV.SURV_REOPEN) + '"')
           + btn('تراجع','btn-quiet btn-sm',' data-svreopencancel="1"'));
     }
 
@@ -721,14 +721,14 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
     var all = surveyList().filter(function(x){ return x.rec && svReview(x.rec) === 'approved'; });
     var lists = { pending:[], returned:[], approved:[] };
     all.forEach(function(x){ var ms = minState(x.rec); if (lists[ms]) lists[ms].push(x); });
-    var rows = (lists[MIN_ST] || []).slice();
-    if (MIN_Q) rows = rows.filter(function(x){ return (x.id + ' ' + (x.site.name || '') + ' ' + (x.rec.by || '') + ' ' + (x.site.co || '')).indexOf(MIN_Q) > -1; });
+    var rows = (lists[PV.MIN_ST] || []).slice();
+    if (PV.MIN_Q) rows = rows.filter(function(x){ return (x.id + ' ' + (x.site.name || '') + ' ' + (x.rec.by || '') + ' ' + (x.site.co || '')).indexOf(PV.MIN_Q) > -1; });
     rows.sort(function(a, b){ return (b.rec.reviewAt || 0) - (a.rec.reviewAt || 0); });
     var views = [['pending','بانتظار اعتماد الوزارة',lists.pending.length],['returned','أعادتها الوزارة',lists.returned.length],['approved','اعتمدتها الوزارة',lists.approved.length]];
     var canMin = may('minapprove'), canEng = may('approve');
     var out = [];
     capList(rows, 150).forEach(function(x){
-      var r = x.rec, isOpen = MIN_OPEN === x.id, ms = minState(r);
+      var r = x.rec, isOpen = PV.MIN_OPEN === x.id, ms = minState(r);
       out.push([siteIdHtml(siteOf(x)) + '<br><span class="hint" style="margin:0">' + esc((x.site.name || '').slice(0, 28)) + '</span>',
                 esc(t(x.site.zone || '—')) + (x.site.sq ? ' \u00b7 ' + esc(x.site.sq) : '') + '<br><span class="hint" style="margin:0">' + esc(x.site.co || '—') + '</span>',
                 esc(dispName(r.by) || '—') + '<br><span class="hint num" style="margin:0">' + esc(r.at ? dayKey(r.at) : '') + '</span>',
@@ -765,10 +765,10 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
     return stats([['بانتظار اعتماد الوزارة', N(lists.pending.length), lists.pending.length ? 'wrn' : 'ok'],
                   ['أعادتها الوزارة', N(lists.returned.length), lists.returned.length ? 'bad' : 'ok'],
                   ['اعتمدتها الوزارة', N(lists.approved.length), 'ok']])
-      + '<div class="chips">' + views.map(function(v){ return '<button type="button" class="chip' + (MIN_ST === v[0] ? ' on' : '') + '" data-minst="' + v[0] + '">' + esc(t(v[1])) + ' <span class="num">' + nm(v[2]) + '</span></button>'; }).join('') + '</div>'
-      + card('', '<input type="search" data-minq value="' + esc(MIN_Q) + '" placeholder="' + esc(t('ابحث بالنقطة أو المشرف أو الشركة')) + '" dir="auto">')
+      + '<div class="chips">' + views.map(function(v){ return '<button type="button" class="chip' + (PV.MIN_ST === v[0] ? ' on' : '') + '" data-minst="' + v[0] + '">' + esc(t(v[1])) + ' <span class="num">' + nm(v[2]) + '</span></button>'; }).join('') + '</div>'
+      + card('', '<input type="search" data-minq value="' + esc(PV.MIN_Q) + '" placeholder="' + esc(t('ابحث بالنقطة أو المشرف أو الشركة')) + '" dir="auto">')
       + (out.length
-          ? cardFlush(t(views.filter(function(v){ return v[0] === MIN_ST; })[0][1]) + ' \u2014 ' + nm(rows.length),
+          ? cardFlush(t(views.filter(function(v){ return v[0] === PV.MIN_ST; })[0][1]) + ' \u2014 ' + nm(rows.length),
               table(['النقطة','المشعر / الشركة','المشرف','الاعتماد التقني','الحالة',''], out),
               btn('\u2B07 ' + t('إكسل'),'btn-secondary btn-sm',' data-xls="minappr"'))
           : alertBox('success', 'لا نقاطَ في هذه الخانة.'))
@@ -823,8 +823,8 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
       var nPh = photoCount(x.id);
       var body = (r.prevNote ? alertBox('info', t('سببُ الردِّ السابق') + ': ' + r.prevNote) : '')
         + table(['البند','ما أفاد به المشرف'], facts.map(function(f){ return [esc(t(f[0])), esc(f[1])]; }))
-        + '<div class="actions" style="margin:6px 0 0">' + btn('\u{1F4F7} ' + t('الصور') + ' (' + nm(nPh) + ')', (SVA_PH === x.id ? 'btn-primary' : 'btn-secondary') + ' btn-sm', ' data-svph="' + esc(x.id) + '"') + '</div>'
-        + (SVA_PH === x.id ? photoGalleryHtml(x.id) : '')
+        + '<div class="actions" style="margin:6px 0 0">' + btn('\u{1F4F7} ' + t('الصور') + ' (' + nm(nPh) + ')', (PV.SVA_PH === x.id ? 'btn-primary' : 'btn-secondary') + ' btn-sm', ' data-svph="' + esc(x.id) + '"') + '</div>'
+        + (PV.SVA_PH === x.id ? photoGalleryHtml(x.id) : '')
         + (rv === 'revisit' && r.revisitNote
             ? alertBox('warn', t('رُدَّت') + ' \u2014 ' + r.revisitNote + ' \u00b7 ' + (dispName(r.revisitBy) || '')) : '')   /* (V37.89) alertBox يهرّب بنفسه */
         + (rv === 'approved'
@@ -848,14 +848,14 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
           + btn('\u2705 ' + t('اعتمد الزيارة'),(may('edit') ? 'btn-secondary' : 'btn-primary') + ' btn-sm',' data-svappr="' + esc(x.id) + '"')
           + btn('\u21a9 ' + t('تحتاج زيارة أخرى'),'btn-danger btn-sm',' data-svrevisit="' + esc(x.id) + '"')
           + btn('\u{1F5FA} ' + t('على الخريطة'),'btn-quiet btn-sm',' data-site="' + esc(x.id) + '"') + '</div>';
-        if (SVA_REV === x.id){
+        if (PV.SVA_REV === x.id){
           actions += '<div class="field" style="margin-top:10px"><label>' + esc(t('ما ينقص الزيارة — يقرؤه المشرفُ في مهامّه')) + '</label>'
             + '<input id="svaNote" dir="auto" placeholder="' + esc(t('مثلًا: الصورة لا تُظهر نقطةَ التثبيت، وقياسُ الطول ناقص')) + '"></div>'
             + '<div class="actions">' + btn(t('تأكيد الردّ'),'btn-danger btn-sm',' data-svrevisitgo="' + esc(x.id) + '"')
             + btn(t('تراجع'),'btn-quiet btn-sm',' data-svrevisitcancel="1"') + '</div>';
         }
       } else if (rv === 'pending' && rankOf(ROLE) >= rankOf('supervisor')){   /* (V28.6) المشرفُ يردّ الزيارةَ للتصحيح بسببٍ مكتوب — والاعتمادُ يبقى للمهندس */
-        actions = SVA_REV === x.id
+        actions = PV.SVA_REV === x.id
           ? card(t('ردُّ الزيارة'), '<div class="field"><label>' + esc(t('ما الذي ينقص — يصل الفنيَّ في مهامّه')) + '</label><input id="svaNote" dir="auto"></div>'
               + '<div class="actions">' + btn(t('تأكيد الردّ'),'btn-danger btn-sm',' data-svrevisitgo="' + esc(x.id) + '"') + btn(t('تراجع'),'btn-quiet btn-sm',' data-svrevisitcancel="1"') + '</div>')
           : '<div class="actions">' + btn('\u21a9 ' + t('تحتاج زيارة أخرى'),'btn-danger btn-sm',' data-svrevisit="' + esc(x.id) + '"') + '<span class="hint" style="margin:0">' + esc(t('الاعتمادُ للمهندس')) + '</span></div>';

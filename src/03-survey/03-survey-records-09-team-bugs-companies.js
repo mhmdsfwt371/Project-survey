@@ -62,7 +62,7 @@ function bugList(){
     return b && (boss || b.by === me);
   }).sort(function(a, b){ return (b.at || 0) - (a.at || 0); });
 }
-var BUG_ST_C = { 'جديد':'warn', 'مقبول':'acc', 'مرفوض':'bad', 'مفتوح':'acc', 'قيد التنفيذ':'acc', 'مغلق':'ok' };
+PV.BUG_ST_C = { 'جديد':'warn', 'مقبول':'acc', 'مرفوض':'bad', 'مفتوح':'acc', 'قيد التنفيذ':'acc', 'مغلق':'ok' };
 /* ═══ لا يُعمَل إلا بما قُبل (V17.43) ═══
    كان البلاغُ يُفتَح في المستودع فورَ إرساله، فيختلط ما يستحقُّ العملَ بما
    لا يستحقُّه، ويبدأ الإصلاحُ قبل أن يقرّر صاحبُ القرار. صار له بابان: يصل
@@ -70,7 +70,7 @@ var BUG_ST_C = { 'جديد':'warn', 'مقبول':'acc', 'مرفوض':'bad', 'م�
    صار «مقبولًا» وهو وحدَه ما يُعمَل عليه، وإن **ردّه** صار «مرفوضًا» بسببه
    المكتوب — ويُقفَل في المستودع فلا يُشتغَل به. والقرارُ يُختَم باسم صاحبه
    ووقته، ويُرى في سجلِّ البلاغ ولا يُمحى. */
-var BUG_DEC = '', BUG_F = '';
+PV.BUG_DEC = ''; PV.BUG_F = '';
 
 
 /* اللوحُ يُفتَح من أيِّ شاشة — فيُبلَّغ العطلُ حيث وقع لا بعد أن يُنسى */
@@ -86,7 +86,7 @@ function bugSheet(){
         return '<button type="button" class="chip' + (BUG_KIND === k ? ' on' : '') + '" data-bugkind="' + esc(k) + '">' + esc(t(k)) + '</button>';
       }).join('') + '</div>'
     + '<div class="field"><label>' + esc(t('ما الذي حدث؟')) + '</label>'
-    +   '<textarea id="bgTxt" dir="auto" rows="4" placeholder="' + esc(t('اكتب ما رأيتَه بالضبط: ضغطتُ كذا فحدث كذا.')) + '">' + esc(BUG_FROM_ASSIST || '') + '</textarea></div>'   /* (V37.27) ما كتبه في المساعد */
+    +   '<textarea id="bgTxt" dir="auto" rows="4" placeholder="' + esc(t('اكتب ما رأيتَه بالضبط: ضغطتُ كذا فحدث كذا.')) + '">' + esc(PV.BUG_FROM_ASSIST || '') + '</textarea></div>'   /* (V37.27) ما كتبه في المساعد */
     + '<div class="field"><label>' + esc(t('ما الذي كنتَ تتوقّعه؟')) + ' <span class="hint">(' + esc(t('اختياري')) + ')</span></label>'
     +   '<input id="bgWant" dir="auto"></div>'
     + '<div class="alert info" style="margin:8px 0 0"><span>' + esc(t('يُرفَق تلقائيًّا')) + ': '
@@ -103,7 +103,7 @@ function bugSheet(){
         return '<div class="hint" style="margin:12px 0 4px;font-weight:700">' + esc(t('بلاغاتي')) + '</div>'
           + '<div class="wt-log">' + mine.map(function(b){
               return '<div class="wt-le"><span class="hint num" style="margin:0">' + esc(stepAgo(b.at || 0)) + '</span> '
-                + esc(String(b.txt || '').slice(0, 60)) + ' ' + pill(b.status || 'جديد', BUG_ST_C[b.status] || '')
+                + esc(String(b.txt || '').slice(0, 60)) + ' ' + pill(b.status || 'جديد', PV.BUG_ST_C[b.status] || '')
                 + (b.gh ? ' <a target="_blank" rel="noopener" href="https://github.com/mhmdsfwt371/Project-survey/issues/' + esc(b.gh) + '">#' + nm(b.gh) + '</a>' : '')
                 + '</div>';
             }).join('') + '</div>';
@@ -178,7 +178,7 @@ function coTel(){
 }
 function coTelOf(co){ return String(coTel()[co] || '').trim(); }
 /* (V28.5) ملاحظةُ «تحديثات المنصة»: ضابطُ الاتصال لكلِّ شركة — وثيقةٌ يقرؤها الكلُّ (الوزارةُ تراه في متابعتها)، والجوالُ يبقى في دفتره المحجوب */
-var CO_STALL = null;
+PV.CO_STALL = null;
 
 function coEmailSet(co, v){
   if (!may('approve')){ toast(t('دفترُ الجوالات للمهندس وحده')); return; }
@@ -207,7 +207,7 @@ function coTelSet(co, ph){
   logEvent('جوال شركة — ' + co + ' \u00b7 ' + (v || 'حُذف'));
 }
 /* نصُّ الإشعار بحسب ما جرى — لا نصٌّ واحدٌ لكلِّ حال */
-var WA_KINDS = {
+PV.WA_KINDS = {
   plan:  { n:'إشعار تركيب قادم',  i:'\u{1F4C5}' },
   hand:  { n:'إشعار تسليم',       i:'\u{1F91D}' },
   dis:   { n:'إشعار فك',          i:'\u{1F9E9}' }

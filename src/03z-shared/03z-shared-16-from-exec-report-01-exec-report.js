@@ -30,11 +30,11 @@ var EXEC_L = {   /* (V37.48) نسخةُ المالك (٣): صياغاتُه وإ
   INSTALLED:['تم التركيب', 'تم التركيب واعتماده']   /* (V37.52) */
 };
 
-var EXEC_ORDER_L = ['PERMIT', 'LOC', 'BLOCK', 'TECH', 'ELEC', 'MOUNT', 'MOUNT_SH', 'MOUNT_E', 'SCOPE', 'WAIT_RAHMA', 'WAIT_NAMIRA', 'WAIT_TRAIN', 'ARAFAT_BTH', 'SP_MINA', 'SP_ARAFAT', 'READY', 'READY_COORD', 'READY_OP', 'INSTALLED'];
+PV.EXEC_ORDER_L = ['PERMIT', 'LOC', 'BLOCK', 'TECH', 'ELEC', 'MOUNT', 'MOUNT_SH', 'MOUNT_E', 'SCOPE', 'WAIT_RAHMA', 'WAIT_NAMIRA', 'WAIT_TRAIN', 'ARAFAT_BTH', 'SP_MINA', 'SP_ARAFAT', 'READY', 'READY_COORD', 'READY_OP', 'INSTALLED'];
 
-var EXEC_PICK = ['READY', 'MOUNT', 'MOUNT_E', 'TECH', 'BLOCK', 'LOC', 'PERMIT', 'ELEC'];
+PV.EXEC_PICK = ['READY', 'MOUNT', 'MOUNT_E', 'TECH', 'BLOCK', 'LOC', 'PERMIT', 'ELEC'];
 
-function execOvOf(id){ var c = (CFG.execOv || {})[id]; if (c && c.s && EXEC_L[c.s]) return c.s; return CFG.execOvSeeded ? '' : (EXEC_OV[id] || ''); }
+function execOvOf(id){ var c = (CFG.execOv || {})[id]; if (c && c.s && EXEC_L[c.s]) return c.s; return CFG.execOvSeeded ? '' : (PV.EXEC_OV[id] || ''); }
 
 function execAutoOf(x){ return execStatus(STATE.recs[x.id], execPolicy(execT1(x), execT2(x) || '', execT3(x), execT4(x)), x, true); }
 
@@ -42,9 +42,9 @@ function execAutoOf(x){ return execStatus(STATE.recs[x.id], execPolicy(execT1(x)
 function execLabelOf(st){ return String((EXEC_L[st] || [''])[0]).split(' — ')[0].trim(); }
 
 /* (V37.53) التسميةُ الظاهرة — الحالاتُ المتعدّدةُ لتسميةٍ واحدةٍ شريحةٌ واحدة */
-var EXEC_MEMO = { v:'', m:null };
+PV.EXEC_MEMO = { v:'', m:null };
 
-function execStatusMemo(x){ var v = (typeof STAT_VER !== 'undefined' ? STAT_VER : 0) + ':' + (typeof CFG_VER !== 'undefined' ? CFG_VER : 0); if (EXEC_MEMO.v !== v){ EXEC_MEMO.v = v; EXEC_MEMO.m = {}; } var m = EXEC_MEMO.m; if (m[x.id] === undefined){ m[x.id] = execStatus(STATE.recs[x.id], execPolicy(execT1(x), execT2(x) || '', execT3(x), execT4(x)), x); } return m[x.id]; }
+function execStatusMemo(x){ var v = (typeof STAT_VER !== 'undefined' ? STAT_VER : 0) + ':' + (typeof CFG_VER !== 'undefined' ? CFG_VER : 0); if (PV.EXEC_MEMO.v !== v){ PV.EXEC_MEMO.v = v; PV.EXEC_MEMO.m = {}; } var m = PV.EXEC_MEMO.m; if (m[x.id] === undefined){ m[x.id] = execStatus(STATE.recs[x.id], execPolicy(execT1(x), execT2(x) || '', execT3(x), execT4(x)), x); } return m[x.id]; }
 
 function ccGroupsOfSite(x){ var g = typeof mtGrpOf === 'function' ? mtGrpOf(x.id) : ''; return g ? [g] : []; }
 
@@ -53,7 +53,7 @@ function execOvRow(s){
   if (!may('settings') || !s) return '';
   var r = STATE.recs[s.id], cur = execOvOf(s.id), auto = execAutoOf(s), ins = typeof insDone === 'function' && insDone(s.id);
   var sel = '<select data-execov="' + esc(s.id) + '" aria-label="' + esc(t('تصنيف التقرير التنفيذي')) + '"' + (ins ? ' disabled' : '') + '><option value=""' + (cur ? '' : ' selected') + '>' + esc(t('تلقائي')) + ' — ' + esc((EXEC_L[auto] || [''])[0]) + '</option>'
-    + EXEC_PICK.map(function(k){ return '<option value="' + k + '"' + (cur === k ? ' selected' : '') + '>' + esc(EXEC_L[k][0]) + '</option>'; }).join('') + '</select>';
+    + PV.EXEC_PICK.map(function(k){ return '<option value="' + k + '"' + (cur === k ? ' selected' : '') + '>' + esc(EXEC_L[k][0]) + '</option>'; }).join('') + '</select>';
   var tv = r && typeof techVisit === 'function' && !s.techDone && techVisit(s, r);
   return '<div class="field" style="margin:10px 0 0"><label>\u{1F4CB} ' + esc(t('تصنيف التقرير التنفيذي')) + (cur ? ' <span class="pill acc">' + esc(t('معدَّل يدويًا')) + '</span>' : '') + (ins ? ' <span class="pill ok">' + esc(t('تم التركيب')) + '</span>' : '') + '</label>' + sel + '</div>'
     + (tv ? '<div class="actions" style="margin:8px 0 0">' + btn('\u2714 ' + t('تمت الزيارة التقنية'), 'btn-secondary btn-sm', ' data-techdone="' + esc(s.id) + '" title="' + esc(t('تتحوّل من برتقالي إلى أزرق — زيارةٌ تمّت تنتظر الاعتماد')) + '"') + '</div>'
@@ -65,11 +65,11 @@ function selExecHtml(){
   return '<div class="field" style="margin:12px 0 0;padding:10px 0 0;border-top:1px solid var(--line)"><label>\u{1F4CB} ' + esc(t('المحدَّد في التقرير التنفيذي والزيارة التقنية')) + '</label>'
     + '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">'
     + (tv ? btn('\u2714 ' + t('تمت الزيارة التقنية') + ' (' + nm(tv) + ')', 'btn-secondary btn-sm', ' data-seltech="1" title="' + esc(t('من برتقالي إلى أزرق دفعةً واحدة')) + '"') : '')
-    + '<select id="selExec" aria-label="' + esc(t('تصنيف التقرير التنفيذي')) + '" style="flex:1 1 160px"><option value="">' + esc(t('تلقائي')) + '</option>' + EXEC_PICK.map(function(k){ return '<option value="' + k + '">' + esc(EXEC_L[k][0]) + '</option>'; }).join('') + '</select>'
+    + '<select id="selExec" aria-label="' + esc(t('تصنيف التقرير التنفيذي')) + '" style="flex:1 1 160px"><option value="">' + esc(t('تلقائي')) + '</option>' + PV.EXEC_PICK.map(function(k){ return '<option value="' + k + '">' + esc(EXEC_L[k][0]) + '</option>'; }).join('') + '</select>'
     + btn(t('صنّف') + ' ' + nm(SEL_N), 'btn-secondary btn-sm', ' data-selexec="1"') + '</div></div>';
 }
 
-var EXEC_POLICY = {
+PV.EXEC_POLICY = {
   'النورية|كاميرات الحافلات':{ all:'READY' }, 'الزايدي|كاميرات الحافلات':{ all:'ELEC' }, 'الهجرة 1|كاميرات الحافلات':{ all:'MOUNT_E' },
   'الهجرة 2|كاميرات الحافلات':{ chal:'MOUNT_E', ready:'READY' }, '*|كاميرات البث@تفويج':{ all:'SCOPE' },
   'منى|مخيمات':{ all:'READY' }, 'منى|جمرات':{ all:'READY' }, '*|قطار':{ all:'READY' },
@@ -82,7 +82,7 @@ var EXEC_POLICY = {
 };
 
 /* (V37.48) حكمُ المالك على كاميرات منى الثماني (ملفه ٣: ١ موقع غير صحيح · ١ عائق · ٤ زيارة تقنية · والباقي جاهزة) — من ملاحظات الفنيين */
-var EXEC_OV = { 'NSK-MIN-CAM-0012':'LOC', 'NSK-MIN-CAM-0045':'BLOCK', 'NSK-MIN-CAM-0015':'TECH', 'NSK-JMR-CAM-0004':'TECH', 'NSK-JMR-CAM-0007':'TECH', 'NSK-JMR-CAM-0008':'TECH', 'NSK-MIN-CAM-0041':'READY_OP', 'NSK-MIN-CAM-0043':'READY_OP' };
+PV.EXEC_OV = { 'NSK-MIN-CAM-0012':'LOC', 'NSK-MIN-CAM-0045':'BLOCK', 'NSK-MIN-CAM-0015':'TECH', 'NSK-JMR-CAM-0004':'TECH', 'NSK-JMR-CAM-0007':'TECH', 'NSK-JMR-CAM-0008':'TECH', 'NSK-MIN-CAM-0041':'READY_OP', 'NSK-MIN-CAM-0043':'READY_OP' };
 
 function execT1(x){ return /^(النوارية|مواقع التفويج|المدينة|الترددية)$/.test(x.zone) ? 'مراكز تفويج' : 'المشاعر المقدسة'; }
 
@@ -101,7 +101,7 @@ function execT3(x){ var n = String(x.name || ''), ty = String(x.type || '');
 /* محطةُ «منى ٣ (الجمرات)» قطار */
 function execT4(x){ if (execT3(x) !== 'ممرات') return ''; var n = String(x.name || ''); return /نمرة/.test(n) ? 'ممرات مسجد نمرة' : /الرحمة|الرحمه/.test(n) ? 'ممرات جبل الرحمه' : /القطار|قطار/.test(n) ? 'ممرات القطار' : 'ممرات الطرق'; }
 
-function execPolicy(c1, c2, c3, c4){ return EXEC_POLICY[c2 + '|' + c3 + '|' + c4] || EXEC_POLICY[c2 + '|' + c3] || (c1 === 'مراكز تفويج' && EXEC_POLICY['*|' + c3 + '@تفويج']) || EXEC_POLICY[c2 + '|*'] || EXEC_POLICY['*|' + c3] || null; }
+function execPolicy(c1, c2, c3, c4){ return PV.EXEC_POLICY[c2 + '|' + c3 + '|' + c4] || PV.EXEC_POLICY[c2 + '|' + c3] || (c1 === 'مراكز تفويج' && PV.EXEC_POLICY['*|' + c3 + '@تفويج']) || PV.EXEC_POLICY[c2 + '|*'] || PV.EXEC_POLICY['*|' + c3] || null; }
 
 function execStatus(r, pol, x, noOv){   /* (V37.60) noOv: الحسابُ التلقائيُّ دون قرار المهندس — بلا لمسٍ مؤقّتٍ لـCFG */
   if (x && typeof insDone === 'function' && insDone(x.id)) return 'INSTALLED';   /* (V37.52) الشغلُ يحدّث التقرير: ما رُكّب انتقل وحدَه */

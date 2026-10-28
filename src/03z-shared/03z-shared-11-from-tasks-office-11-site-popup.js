@@ -54,7 +54,7 @@ function popPhotosHtml(id){
     if (!listed(r)) return '';
     if (typeof photosFetchSite === 'function') photosFetchSite(id);
     var line = typeof photosMissingLine === 'function' ? photosMissingLine(id, r) : '';
-    return line ? '<div class="hint" style="margin:8px 0 0">' + esc(line) + (typeof PH_FETCH === 'object' && PH_FETCH[id] === 'err' ? ' ' + btn('\u21BB ' + t('أعد الجلب'), 'btn-quiet btn-sm', ' data-phrefetch="' + esc(id) + '"') : '') + '</div>' : '';
+    return line ? '<div class="hint" style="margin:8px 0 0">' + esc(line) + (typeof PV.PH_FETCH === 'object' && PV.PH_FETCH[id] === 'err' ? ' ' + btn('\u21BB ' + t('أعد الجلب'), 'btn-quiet btn-sm', ' data-phrefetch="' + esc(id) + '"') : '') + '</div>' : '';
   };
   var sv = svL.length ? group(svL, 'صور الزيارة') : (FIELD_MODE !== 'install' ? missing(STATE.recs[id]) : '');
   var ins = insL.length ? group(insL, 'صور التركيب') : (FIELD_MODE !== 'survey' && insR && insR.status && !insR.voided ? missing(insR) : '');
@@ -115,9 +115,9 @@ function popHtml(){
     +   kv('المنطقة', esc(s.region))
     +   kv('الدور', siteFloor(s) != null ? esc(t(floorName(siteFloor(s)))) : '')   /* (V22.2) */
     +   (isJmr(s) && siteGate(s) ? kv('البوابة', '<b>' + esc(t(siteGate(s))) + '</b>' + (siteFloor(s) != null ? ' \u2014 ' + esc(t(floorName(siteFloor(s)))) : '')) : '')   /* (V25.4) */
-    +   (s.type === 'مخيم' ? (tfwFloorOf(s.id) != null ? kv('مسار التفويج', esc(t('إلى الجمرات')) + ' \u2014 ' + esc(t('الدور') + ' ' + t(TFW_FL[tfwFloorOf(s.id)])) + ' ' + btn('اعرض مسار المخيم', 'btn-quiet btn-sm', ' data-tfwcamp="' + esc(s.id) + '"')) : (tfwLoad(), '')) : '')   /* (V23.2) */
+    +   (s.type === 'مخيم' ? (tfwFloorOf(s.id) != null ? kv('مسار التفويج', esc(t('إلى الجمرات')) + ' \u2014 ' + esc(t('الدور') + ' ' + t(PV.TFW_FL[tfwFloorOf(s.id)])) + ' ' + btn('اعرض مسار المخيم', 'btn-quiet btn-sm', ' data-tfwcamp="' + esc(s.id) + '"')) : (tfwLoad(), '')) : '')   /* (V23.2) */
     +   (s.type === 'مخيم' && maySiteEdit() ? kv('حدود المخيم', btn(campFoot(s) ? 'عدّل الحدود' : 'ارسم الحدود', 'btn-quiet btn-sm', ' data-bedstart="' + esc(s.id) + '"') + (campFoot(s) ? btn('\u2702 ' + t('قسّم المخيم'), 'btn-quiet btn-sm', ' data-campsplit="' + esc(s.id) + '"') : ''))   /* (V37.67) */ : '')   /* (V25.9) */
-    +   (s.type === 'مخيم' && s.zone === 'منى' && mayIot() ? kv('حساسات المخيم', (function(){ var c = iotOf(s.id); if (!c) return (campFoot(s) ? btn('\u2728 ' + t('ولّد خطة حساسات') + ' (' + nm(IOT_N) + ')', 'btn-quiet btn-sm', ' data-iotgen="' + esc(s.id) + '"') : esc(t('ارسم حدودَ المخيم أوّلًا'))); var o = iotOutside(s.id, c).length; return nm(c.sensors.length) + ' ' + esc(t('حساسًا')) + ' \u00b7 ' + nm(1 + (c.gws || []).length) + ' ' + esc(t('جيت واي')) + ' ' + btn(t('عدّل الحساسات'), 'btn-quiet btn-sm', ' data-iotedit="' + esc(s.id) + '"') + (o ? ' <span style="color:#E05252">\u26A0 ' + nm(o) + ' ' + esc(t('خارج الحدود')) + '</span> ' + btn(t('وزّعها من جديد'), 'btn-quiet btn-sm', ' data-iotredist="' + esc(s.id) + '"') : ''); })()) : '')   /* (V25.8 → V37.70) */
+    +   (s.type === 'مخيم' && s.zone === 'منى' && mayIot() ? kv('حساسات المخيم', (function(){ var c = iotOf(s.id); if (!c) return (campFoot(s) ? btn('\u2728 ' + t('ولّد خطة حساسات') + ' (' + nm(PV.IOT_N) + ')', 'btn-quiet btn-sm', ' data-iotgen="' + esc(s.id) + '"') : esc(t('ارسم حدودَ المخيم أوّلًا'))); var o = iotOutside(s.id, c).length; return nm(c.sensors.length) + ' ' + esc(t('حساسًا')) + ' \u00b7 ' + nm(1 + (c.gws || []).length) + ' ' + esc(t('جيت واي')) + ' ' + btn(t('عدّل الحساسات'), 'btn-quiet btn-sm', ' data-iotedit="' + esc(s.id) + '"') + (o ? ' <span style="color:#E05252">\u26A0 ' + nm(o) + ' ' + esc(t('خارج الحدود')) + '</span> ' + btn(t('وزّعها من جديد'), 'btn-quiet btn-sm', ' data-iotredist="' + esc(s.id) + '"') : ''); })()) : '')   /* (V25.8 → V37.70) */
     +   camInfoRows(s, kv) + camxRows(s, kv) + netRows(s, kv) + (function(){ try { return popPhotosHtml(s.id); } catch (e){ LS_ERR = e; return ''; } })()   /* (V37.72) صورُ الزيارة للجميع — (V38.64) ولا تُسقط النافذةَ أبدًا */   /* (V23.8) */
     /* الحالةُ من مصدر اللون نفسِه (V17.35): كانت «تمت الزيارة» تُكتَب لكلِّ
      سجلٍّ ولو كان تعذُّرَ وصول — فيبدو المخيمُ بُنيًّا على الخريطة والنافذةُ
@@ -300,7 +300,7 @@ function popNextHtml(s, rec, sv){
 function popSumHtml(s){
   var ph = briefPhase(), r = briefRec(s.id, ph); if (!r) return '';
   if (ph === 'survey' && !svDone(r) && !(r.access && r.access !== 'تم الوصول')) return '';
-  var bf = briefOf(s.id, ph), me = briefMay(), col = bf ? (BRIEF_C[bf.st] || 'var(--line)') : 'var(--line)';
+  var bf = briefOf(s.id, ph), me = briefMay(), col = bf ? (PV.BRIEF_C[bf.st] || 'var(--line)') : 'var(--line)';
   var title = ph === 'install' ? 'خلاصة التركيب' : ph === 'dis' ? 'خلاصة الفك' : 'خلاصة الزيارة';
   return '<div class="card" style="margin:8px 0;padding:10px 12px;border-inline-start:4px solid ' + col + '">'
     + '<div class="hint" style="margin:0 0 4px;font-weight:700">\u{1F4DD} ' + esc(t(title)) + '</div>'
@@ -386,7 +386,7 @@ function popFieldHtml(s){
                 if (bR && ((bR.photos || []).length || +bR.phN) && !L.some(function(x){ return !/^ins/.test(String(x[1].kind || '')); })) photosFetchSite(s.id);
                 if (!L.length) return (bR.photos || []).length   /* (V37.7) تُجلَب من القاعدة حين تُفتَح النقطة، ويُقال الصدق */
                   ? '<div class="hint" style="margin:8px 0 0">' + esc(photosMissingLine(s.id, bR))
-                    + (PH_FETCH[s.id] === 'err' ? ' ' + btn('\u21BB ' + t('أعد الجلب'), 'btn-quiet btn-sm', ' data-phrefetch="' + esc(s.id) + '"') : '') + '</div>'
+                    + (PV.PH_FETCH[s.id] === 'err' ? ' ' + btn('\u21BB ' + t('أعد الجلب'), 'btn-quiet btn-sm', ' data-phrefetch="' + esc(s.id) + '"') : '') + '</div>'
                   : '';
                 var fold = null; L.forEach(function(x){ if (!fold && x[1].folderId) fold = x[1].folderId; });
                 return '<div class="hint" style="margin:10px 0 4px;font-weight:700">\u{1F4F7} ' + esc(t('الصور')) + ' <span style="font-weight:400">\u00b7 ' + nm(L.length) + '</span></div>'

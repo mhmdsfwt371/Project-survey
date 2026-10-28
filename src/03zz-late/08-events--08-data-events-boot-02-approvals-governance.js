@@ -9,7 +9,7 @@ function buyPend(){
   return buysList().filter(function(b){ return b.st !== 'معتمد'; });
 }
 
-function fixOpen(id){ FIX_OPEN = FIX_OPEN === id ? '' : id; render(1); }
+function fixOpen(id){ PV.FIX_OPEN = PV.FIX_OPEN === id ? '' : id; render(1); }
 
 function fixSend(siteId){
   var g = function(id){ var el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; };
@@ -25,7 +25,7 @@ function fixSend(siteId){
   CORE.set('fixreqs', id, r);
   logEvent('طلب تصويب — ' + siteId + ' · ' + field + ' → ' + val);
   notifPush('تصويب بيان', 'طلبُ تصويبٍ بانتظار اعتمادك — ' + siteId, { site:siteId, lv:'مهم' });
-  FIX_OPEN = '';
+  PV.FIX_OPEN = '';
   toast(t('أُرسل الطلب — يعتمده المهندس'));
   render(1);
 }

@@ -9,13 +9,13 @@
    لكلِّ نقطةٍ مركَّبةٍ بادئةُ شبكةٍ وثلاثةُ عناوين: الراوترُ والقارئُ
    والكاميرا. تُستورَد من ملفٍ وتُصدَّر إليه — وكانت تُكتَب ولا تُعرَض،
    فمن أراد عنوانَ قارئٍ ليتصل به لم يجده إلا في ملفٍ خارج النظام. */
-var IP_Q = '';
+PV.IP_Q = '';
 
 function ipRows(){
   return (STATE.sites || []).filter(function(x){
     if (!x.net && !x.ipRtr && !x.ipRdr && !x.ipCam) return false;
-    if (!IP_Q) return true;
-    return (x.id + ' ' + (x.name || '') + ' ' + (x.net || '')).indexOf(IP_Q) > -1;
+    if (!PV.IP_Q) return true;
+    return (x.id + ' ' + (x.name || '') + ' ' + (x.net || '')).indexOf(PV.IP_Q) > -1;
   });
 }
 
@@ -211,7 +211,7 @@ PV.NOTIF_LV = { عاجل:3, مهم:2, عادي:1 };
    في «الآن» والوزارةُ في «نظرة عامة» — بمن فعل وأين ومتى وكم نقطةً كسب.
      والعلانيةُ لا تُغني عن الاعتماد: «تمّ» هنا تعني أُنجز العملُ لا أنه
    اعتُمد — والاعتمادُ خطوةٌ لها إشعارُها. */
-var STEP_KINDS = {
+PV.STEP_KINDS = {
   visit:   { n:'زيارةُ مسح',   i:'\u{1F50D}', code:'SR' },
   install: { n:'تركيب',        i:'\u{1F527}', code:'IR' },
   dis:     { n:'فك',           i:'\u{1F9E9}', code:'UR' },

@@ -24,7 +24,7 @@ function baseSet(){
     by: STATE.meta.name || '',
     scope: S.total,
     byKey: JSON.parse(JSON.stringify(S.byKey)),
-    months: PLAN_MONTHS || cfgGet('phase') || 4,
+    months: PV.PLAN_MONTHS || cfgGet('phase') || 4,
     budget: cfgGet('budCap'),
     ph: cfgGet('ph'),
     targets: { survey:cfgGet('tgtSurvey'), ins:cfgGet('tgtInsCamp') + cfgGet('tgtInsCor'),
@@ -68,13 +68,13 @@ function wplanBody(){
   var can = wplanMay(), past = wplanOpenPast();
   var wk = wplanWeek(), L = wplanItems(wk), all = pmoList('wplan'), weeks = {}; all.forEach(function(x){ if (x.wk) weeks[x.wk] = 1; });
   var cur = mfuWeekKey(), nxt = wplanNextWeek(cur); weeks[cur] = 1; weeks[nxt] = 1;
-  var ed = WPLAN_EDIT ? all.filter(function(x){ return x.id === WPLAN_EDIT; })[0] : (WPLAN_PREFILL || null);
+  var ed = PV.WPLAN_EDIT ? all.filter(function(x){ return x.id === PV.WPLAN_EDIT; })[0] : (PV.WPLAN_PREFILL || null);
   var done = L.filter(function(x){ return x.st === 'تم'; }).length, stepsAll = 0, stepsDone = 0;
   L.forEach(function(x){ var st = wplanLines(x.steps); stepsAll += st.length; stepsDone += (x.sdone || []).filter(Boolean).length; });
   var chips = Object.keys(weeks).sort().map(function(k){ return btn((k === cur ? t('هذا الأسبوع') + ' ' : k === nxt ? t('الأسبوع القادم') + ' ' : '') + k, 'chip' + (k === wk ? ' active' : ''), ' data-wpwk="' + esc(k) + '"'); }).join('');
   var f = function(id, v){ return esc(ed ? (ed[id] || '') : ''); };
   var form = !can ? '' : card(ed && ed.id ? 'تعديل النقطة' : 'نقطةٌ جديدة في خطة الأسبوع',
-      '<div class="grid2"><label>' + esc(t('العنوان')) + '<input id="wpT" value="' + f('t') + '"></label><label>' + esc(t('الأولوية')) + '<select id="wpP">' + WPLAN_PRI.map(function(p){ return '<option value="' + esc(p) + '"' + ((ed ? ed.pri : 'متوسطة') === p ? ' selected' : '') + '>' + esc(t(p)) + '</option>'; }).join('') + '</select></label></div>'
+      '<div class="grid2"><label>' + esc(t('العنوان')) + '<input id="wpT" value="' + f('t') + '"></label><label>' + esc(t('الأولوية')) + '<select id="wpP">' + PV.WPLAN_PRI.map(function(p){ return '<option value="' + esc(p) + '"' + ((ed ? ed.pri : 'متوسطة') === p ? ' selected' : '') + '>' + esc(t(p)) + '</option>'; }).join('') + '</select></label></div>'
       + '<label>' + esc(t('التفاصيل والملاحظات')) + '<textarea id="wpN" rows="2">' + f('n') + '</textarea></label>'
       + '<label>' + esc(t('الخطوات — خطوةٌ في كلِّ سطر')) + '<textarea id="wpS" rows="3">' + f('steps') + '</textarea></label>'
       + '<div class="grid2"><label>' + esc(t('الاحتياجات والمتطلبات')) + '<textarea id="wpR" rows="2">' + f('needs') + '</textarea></label><label>' + esc(t('النتيجة المرجوّة')) + '<textarea id="wpG" rows="2">' + f('goal') + '</textarea></label></div>'
@@ -367,7 +367,7 @@ PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
                 : pill(p >= 0.999 ? 'بلغ' : (p > 0 ? 'جارٍ' : 'لم يبدأ'),
                        p >= 0.999 ? 'ok' : (p > 0 ? 'warn' : ''));
               var pc = nm(Math.round(p * 100)) + '٪';
-              if (full && MILE_EDIT === m.id){
+              if (full && PV.MILE_EDIT === m.id){
                 var o = mileOv(m.id);
                 nameCell = '<input value="' + esc(m.n) + '" data-mle="n" dir="auto" style="min-width:180px">';
                 return ['<span class="num">' + esc(m.id) + '</span>', nameCell,
@@ -391,7 +391,7 @@ PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
           })(),
           btn('⬇ إكسل — المعالم','btn-secondary btn-sm',' data-xls="miles"')
           + (may('settings') ? ' ' + btn('\u2795 ' + t('معلَم جديد'),'btn-primary btn-sm',' data-mlnew="1"') : ''))
-      + (may('settings') && MILE_NEW
+      + (may('settings') && PV.MILE_NEW
           ? card(t('معلَم جديد'),
               '<div class="grid cols-2">'
               + '<div class="field"><label>' + esc(t('المعلَم')) + '</label><input id="mlnN" dir="auto"></div>'
@@ -416,7 +416,7 @@ PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
             + '</p>'
             + table(['ما سيُجمَّد','القيمة الآن'], [
                 ['النطاق', N(siteStats().total) + ' ' + t('نقطة')],
-                ['المدّة', N(PLAN_MONTHS || 4) + ' ' + t('شهر')],
+                ['المدّة', N(PV.PLAN_MONTHS || 4) + ' ' + t('شهر')],
                 ['الميزانية', cfgGet('budCap') ? N(cfgGet('budCap')) : '—'],
                 ['سعر النقطة', cfgGet('ph') ? N(cfgGet('ph')) : '—'],
                 ['تارجت المسح', N(cfgGet('tgtSurvey'))]

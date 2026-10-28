@@ -13,7 +13,7 @@
    بالكتابة، يُضاف منها الصنفُ بكمّيته سطرًا سطرًا. والأسطرُ التي تتكرّر من
    نقطةٍ لأخرى — قارئٌ وهوائيٌّ ولوحٌ شمسيٌّ وبطاريةٌ للمخيم القياسي — تُحفَظ
    نمطًا باسمٍ يُطبَّق بضغطة. والأنماطُ إعدادٌ يُرفَع ويُقرأ كسائر الإعدادات. */
-var SOL_LINES = {}, SOL_Q = '', PAT_NAME = '';
+var SOL_LINES = {}, SOL_Q = ''; PV.PAT_NAME = '';
 
 
 /* ── التدقيق الهندسي — الاعتماد يحوّل الحالة ── */
@@ -23,13 +23,13 @@ var SOL_LINES = {}, SOL_Q = '', PAT_NAME = '';
    المسافةُ من موقعك، وأداةُ فحص الأجهزة، وإشعارُ واتساب. */
 
 /* ── المسافة: الأقربُ أولًا في قائمة المواقع ── */
-var MYPOS = null; PV.POS_WATCH = 0;
+PV.MYPOS = null; PV.POS_WATCH = 0;
 
 function posWatch(){
   if (typeof navigator === 'undefined' || !navigator.geolocation) return;
   try{
     PV.POS_WATCH = navigator.geolocation.watchPosition(function(p){
-      MYPOS = { lat:p.coords.latitude, lng:p.coords.longitude, at:Date.now() };
+      PV.MYPOS = { lat:p.coords.latitude, lng:p.coords.longitude, at:Date.now() };
       if (CUR === 'sites') render(1);
     }, function(e){
       /* الرفضُ أو التعذُّرُ صامتًا يجعل الزرَّ يبدو معطوبًا وهو يعمل */
@@ -51,13 +51,13 @@ function distKm(a, b){
 }
 
 function distTxt(x){
-  var k = distKm(MYPOS, x);
+  var k = distKm(PV.MYPOS, x);
   if (k == null) return '';
   return k < 1 ? (nm(Math.round(k * 1000)) + ' م') : (nm(Math.round(k * 10) / 10) + ' كم');
 }
 
 /* ── أداة الفحص: تُشغَّل من جهاز المكتب على شبكة الميدان ── */
-var PROBE = { on:false, done:0, up:0, down:0, log:[], t:0 };
+PV.PROBE = { on:false, done:0, up:0, down:0, log:[], t:0 };
 
 
 /* ═══ سجلُّ النقطة — كلُّ ما جرى لها من أوّل يوم (V17.20) ═══
@@ -105,7 +105,7 @@ function siteLog(id){
     if (!e) return;
     if (e.site === id || (e.what && String(e.what).indexOf(id) > -1)) push(e.ts, e.what, e.by, 'ev');
   });
-  (SITE_LOG_MORE[id] || []).forEach(function(e){ push(e.ts, e.what, e.by, 'ev'); });
+  (PV.SITE_LOG_MORE[id] || []).forEach(function(e){ push(e.ts, e.what, e.by, 'ev'); });
   out.sort(function(a, b){ return b.at - a.at; });
   /* لا يتكرّر السطرُ نفسُه من مصدرين */
   var seen = {}, uniq = [];
@@ -116,7 +116,7 @@ function siteLog(id){
   return uniq;
 }
 /* أحداثٌ تُجلَب من القاعدة عند الطلب — بسقفٍ، ولا تُقرأ إلا لمن فتح السجل */
-var SITE_LOG_MORE = {}, SITE_LOG_BUSY = '';
+PV.SITE_LOG_MORE = {}; PV.SITE_LOG_BUSY = '';
 
 PV.LOG_KIND = { visit:'\u{1F4CD}', ins:'\u{1F527}', dis:'\u{1F9E9}', photo:'\u{1F4F7}', ok:'\u2705',
                  back:'\u21A9', note:'\u{1F5E8}', task:'\u{1F4CB}', ev:'\u2022' };
@@ -182,7 +182,7 @@ function tourSpot(){
     if (el){
       el.classList.add('tour-spot');
       var sec = el.closest('.nav-section');
-      if (sec && sec.getAttribute('data-open') === 'false'){ sec.setAttribute('data-open', 'true'); OPEN[sec.getAttribute('data-g')] = true; }
+      if (sec && sec.getAttribute('data-open') === 'false'){ sec.setAttribute('data-open', 'true'); PV.OPEN[sec.getAttribute('data-g')] = true; }
       if (el.scrollIntoView) setTimeout(function(){ try { if (el.isConnected) el.scrollIntoView({ block:'nearest' }); } catch (e2){ LS_ERR = e2; } }, 900);   /* (V31.8) التمريرُ بعد ظهور الواجهة لا قبلها — يفرض تخطيطَ الصفحة كلِّها */
     }
   } catch (e){ LS_ERR = e; }

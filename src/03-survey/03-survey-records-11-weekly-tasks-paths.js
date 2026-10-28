@@ -12,7 +12,7 @@
    ومسؤولٌ وحالةٌ وتاريخا رصدٍ واستحقاقٍ ومصدرٌ وآخرُ تحديث. كان إكسلًا بدوالٍّ
    تحسب المتأخرَ والمستحقَّ — فصار صفحتين: المهامُّ نفسُها تُضاف وتُعدَّل
    وتُنهى، ولوحةٌ تحسب ما كانت الدوالُّ تحسبه من تاريخ اليوم لا من خليةٍ. */
-var WT_F = '', WT_Q = '', WT_NEW = false, WT_T = 0, WT_RESET = 0;
+var WT_F = ''; PV.WT_Q = ''; PV.WT_NEW = false; PV.WT_T = 0; PV.WT_RESET = 0;
 var WT_ST = ['مكتمل','جاري العمل','قيد الانتظار','متوقف'];
 /* ═══ V16.81 — المهامُّ بطاقاتٌ تُقرأ كجملة، ولوحةٌ واحدةٌ للتعديل ═══
    كانت جدولًا من عشرة أعمدة يفتح عشرَ خاناتٍ في السطر عند التعديل، ويعدّله
@@ -22,7 +22,7 @@ var WT_ST = ['مكتمل','جاري العمل','قيد الانتظار','مت�
    فوق، والوزارةُ — لأن الاجتماعَ معها والمهامَّ مهامُّها أيضًا؛ والقاعدةُ
    تفتح لها وثيقةَ المهام وحدَها. وأدواتُ المكتب (استيرادٌ ومسحٌ) تبقى لمدير
    المشروع، فلا يمسح الجدولَ إلا من يملكه. */
-var WT_OPEN = '', WT_TOOLS = false, WT_DONE_OPEN = false, WT_WBS = '';
+var WT_OPEN = '', WT_TOOLS = false; PV.WT_DONE_OPEN = false; var WT_WBS = '';
 function wtMay(){ var r = effRole(ROLE); return rankOf(r) >= 90 || r === 'viewer'; }
 /* ═══ V16.82 — المهمةُ تُربَط ببند الخطة، والبندُ يقول كم مهمةً تحرّكه ═══
    الخطةُ تقول «ماذا ومتى» والمهامُّ تقول «ما اتُّفق عليه هذا الأسبوع لتحريكها»
@@ -287,7 +287,7 @@ function wtFiltered(){
   return wtRows().filter(function(r){
     if (WT_TRACK && String(r.track || '').trim() !== WT_TRACK) return false;   /* بالمسار (V17.52) */
     if (WT_WBS){ var w = String(r.wbs || ''); if (!(w === WT_WBS || w.indexOf(WT_WBS + '.') === 0)) return false; }
-    if (WT_Q && (r.n + ' ' + (r.who || '') + ' ' + (r.track || '') + ' ' + (r.upd || '') + ' ' + (r.wbs || '')).indexOf(WT_Q) < 0) return false;
+    if (PV.WT_Q && (r.n + ' ' + (r.who || '') + ' ' + (r.track || '') + ' ' + (r.upd || '') + ' ' + (r.wbs || '')).indexOf(PV.WT_Q) < 0) return false;
     if (WT_F === 'late') return wtLate(r);
     if (WT_F === 'due'){ var d = wtDue(r); return d != null && d >= 0 && d <= 7; }
     if (WT_F === 'run') return r.st === 'جاري العمل';
@@ -398,7 +398,7 @@ PAGE.wtask = { m:'المتابعة', t:'متابعة المهام الأسبوع
                 + btn('\u2B07 ' + t('إكسل — الملف بمعادلاته'),'btn-secondary btn-sm',' data-wtxl="1" title="' + esc(t('ورقةُ المهام ولوحةُ المؤشِّرات — بالمعادلات كما يعمل عليها المكتب')) + '"')
                 + '<label class="btn btn-primary btn-sm" style="cursor:pointer">\u2B06 ' + esc(t('ارفع الملف — يستبدل الجدول'))
                 + '<input type="file" accept=".xlsx,.xls" data-wtfile="1" style="display:none"></label>'
-                + (R.length ? btn('\u{1F5D1} ' + t(WT_RESET ? 'تأكيد المسح' : 'امسح الكل'), WT_RESET ? 'btn-danger btn-sm' : 'btn-quiet btn-sm', ' data-wtreset="1"') : '')
+                + (R.length ? btn('\u{1F5D1} ' + t(PV.WT_RESET ? 'تأكيد المسح' : 'امسح الكل'), PV.WT_RESET ? 'btn-danger btn-sm' : 'btn-quiet btn-sm', ' data-wtreset="1"') : '')
                 + btn((WT_TOOLS ? '\u25BE ' : '\u2026 ') + t('المزيد'),'btn-quiet btn-sm',' data-wttools="1"')
                 + '</div>'
                 + (WT_TOOLS
@@ -411,7 +411,7 @@ PAGE.wtask = { m:'المتابعة', t:'متابعة المهام الأسبوع
       : '';
 
     var whoList = '<datalist id="wtWhoList">' + wtWhoList().map(function(w){ return '<option value="' + esc(w) + '">'; }).join('') + '</datalist>';
-    var newForm = (WT_NEW && me)
+    var newForm = (PV.WT_NEW && me)
       ? card(t('مهمة جديدة'),
           '<p class="hint" style="margin:0 0 8px">' + esc(t('المهمةُ سطرٌ واحد: ماذا — من — متى.')) + '</p>'
           + '<div class="grid cols-2">'
@@ -449,7 +449,7 @@ PAGE.wtask = { m:'المتابعة', t:'متابعة المهام الأسبوع
             + esc(t('متأخر')) + ' ' + nm(TRK[WT_TRACK] ? TRK[WT_TRACK].late : 0) + '</p>'
           : '')
       + '<div class="chips">' + chips.map(function(x){ return '<button type="button" class="chip' + (WT_F === x[0] ? ' on' : '') + '" data-wtf="' + x[0] + '">' + esc(t(x[1])) + ' <span class="num">' + nm(x[2]) + '</span></button>'; }).join('') + '</div>'
-      + card('', '<input type="search" data-wtq value="' + esc(WT_Q) + '" placeholder="' + esc(t('ابحث بالمهمة أو المسؤول أو المسار')) + '" dir="auto">');
+      + card('', '<input type="search" data-wtq value="' + esc(PV.WT_Q) + '" placeholder="' + esc(t('ابحث بالمهمة أو المسؤول أو المسار')) + '" dir="auto">');
 
     var cardOf = wtCardOf;
     var wbsBar = WT_WBS
@@ -464,8 +464,8 @@ PAGE.wtask = { m:'المتابعة', t:'متابعة المهام الأسبوع
         + '<div class="grid cols-2 wt-grid">' + items.map(cardOf).join('') + '</div></div>';
     }).join('')
       + (G.done.length
-          ? '<div class="wt-group"><button type="button" class="btn btn-quiet btn-sm" data-wtdone="1">' + (WT_DONE_OPEN ? '\u25BE ' : '\u25B8 ') + esc(t('مكتمل')) + ' <span class="num">' + nm(G.done.length) + '</span></button>'
-            + (WT_DONE_OPEN ? '<div class="grid cols-2 wt-grid">' + G.done.map(cardOf).join('') + '</div>' : '') + '</div>'
+          ? '<div class="wt-group"><button type="button" class="btn btn-quiet btn-sm" data-wtdone="1">' + (PV.WT_DONE_OPEN ? '\u25BE ' : '\u25B8 ') + esc(t('مكتمل')) + ' <span class="num">' + nm(G.done.length) + '</span></button>'
+            + (PV.WT_DONE_OPEN ? '<div class="grid cols-2 wt-grid">' + G.done.map(cardOf).join('') + '</div>' : '') + '</div>'
           : '');
     var empty = !R.length
       ? card('', '<p class="hint" style="text-align:center;margin:0">' + esc(t(me ? 'لا مهامَّ بعد — المهمةُ سطرٌ واحد: ماذا — من — متى. أضف الأولى من «مهمة جديدة».' : 'لا مهامَّ بعد — يضيفها المكتب.')) + '</p>')

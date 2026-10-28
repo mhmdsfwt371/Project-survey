@@ -83,12 +83,12 @@ document.addEventListener('change', function(e){
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-rt') && String(t0.tagName).toUpperCase() === 'INPUT'){ render(1); return; }
   /* جدولُ المتابعة: إنجازُ بندٍ يُكتب ويُرفَع فورًا؛ وملفُّ الاستيراد */
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-kmifile')){ if (t0.files && t0.files[0]) kmiImport(t0.files[0]); return; }
-  if (t0 && t0.hasAttribute && t0.hasAttribute('data-kmiz')){ KMI_ZONE = t0.value; return; }
-  if (t0 && t0.hasAttribute && t0.hasAttribute('data-kmit')){ KMI_TYPE = t0.value; return; }
-  if (t0 && t0.hasAttribute && t0.hasAttribute('data-kmiw')){ KMI_WORK = t0.value.trim(); return; }
-  if (t0 && t0.hasAttribute && t0.hasAttribute('data-kmick') && KMI){
+  if (t0 && t0.hasAttribute && t0.hasAttribute('data-kmiz')){ PV.KMI_ZONE = t0.value; return; }
+  if (t0 && t0.hasAttribute && t0.hasAttribute('data-kmit')){ PV.KMI_TYPE = t0.value; return; }
+  if (t0 && t0.hasAttribute && t0.hasAttribute('data-kmiw')){ PV.KMI_WORK = t0.value.trim(); return; }
+  if (t0 && t0.hasAttribute && t0.hasAttribute('data-kmick') && PV.KMI){
     var ix = +t0.getAttribute('data-kmick');
-    if (KMI.rows[ix]) KMI.rows[ix].take = !!t0.checked;
+    if (PV.KMI.rows[ix]) PV.KMI.rows[ix].take = !!t0.checked;
     return;
   }
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-mintype')){
@@ -208,7 +208,7 @@ document.addEventListener('change', function(e){
     if (el.hasAttribute('data-buyphoto')){   /* (V37.43) صورةُ الفاتورة — بلا رسمٍ كي لا تُمحى خاناتُ النموذج المكتوبة */
       var fileB = el.files && el.files[0]; if (!fileB) return;
       toast(t('تُضغط الصورة…'));
-      shrink(fileB, 1600, 0.78).then(function(p){ if (!p){ toast(t('تعذّرت قراءة الصورة')); return; } BUY_PH = p; var pv = document.getElementById('byPhPrev'); if (pv) pv.innerHTML = buyPhPrevHtml(); toast(t('اختيرت صورة الفاتورة — تُرفع مع حفظ الشراء')); });
+      shrink(fileB, 1600, 0.78).then(function(p){ if (!p){ toast(t('تعذّرت قراءة الصورة')); return; } PV.BUY_PH = p; var pv = document.getElementById('byPhPrev'); if (pv) pv.innerHTML = buyPhPrevHtml(); toast(t('اختيرت صورة الفاتورة — تُرفع مع حفظ الشراء')); });
       el.value = ''; return;
     }
     if (el.hasAttribute('data-photo')){
@@ -233,8 +233,8 @@ document.addEventListener('change', function(e){
       else { var mc = mfuList('chal').filter(function(x){ return x.id === fa[0]; })[0]; if (mc){ var mn = Object.assign({}, mc); delete mn.id; mn[fa[1] === 'owner' ? 'o' : fa[1]] = fv; mn.at = Date.now(); mn.hist = mfuHist(mc, fa[1], fv); mfuPut('chal', fa[0], mn); } }
       if (el.tagName === 'SELECT') render(1); return;
     }
-    if (el.hasAttribute('data-tfdf')){ TFD.f = +el.value || 0; if (typeof TFW === 'object'){ TFW.f = TFD.f; tfwPaint(); } render(1); return; }   /* (V28.0) */
-    if (el.hasAttribute('data-tfdd')){ TFD.d = el.value === 'back' ? 'back' : 'go'; if (typeof mapPaint === 'function') mapPaint(); render(1); return; }
+    if (el.hasAttribute('data-tfdf')){ PV.TFD.f = +el.value || 0; if (typeof TFW === 'object'){ TFW.f = PV.TFD.f; tfwPaint(); } render(1); return; }   /* (V28.0) */
+    if (el.hasAttribute('data-tfdd')){ PV.TFD.d = el.value === 'back' ? 'back' : 'go'; if (typeof mapPaint === 'function') mapPaint(); render(1); return; }
     if (el.hasAttribute('data-mfuprn')){ var pk = el.getAttribute('data-mfuprn'); pv = String(el.value || '').trim().slice(0, 40); MFU.prn = ''; if (pv && pv !== mfuPartyLabel(pk)){ mfuPut('party', pk, Object.assign({}, mfuPartyRaw(pk) || {}, { t:pv, at:Date.now() })); logEvent('تعديلُ اسم جهةٍ معالجة — ' + pk + ' → ' + pv); } render(1); return; }   /* (V26.8) */
     if (el.hasAttribute('data-mfuown') || el.hasAttribute('data-mfuchalst') || el.hasAttribute('data-mfureqst') || el.hasAttribute('data-mfurequ')){
       if (el.hasAttribute('data-mfuown')){ var oc = el.getAttribute('data-mfuown'); if (mfuParties().indexOf(el.value) > -1) mfuPut('own', oc, el.value); render(1); return; }
@@ -254,12 +254,12 @@ document.addEventListener('change', function(e){
     }
     if (el.hasAttribute('data-stakecur')){
       var sid = el.getAttribute('data-stakecur'), sx = pmoList('stake').filter(function(x){ return x.id === sid; })[0];
-      if (sx && PMO_LEVELS.indexOf(el.value) > -1){ var sy = Object.assign({}, sx); delete sy.id; sy.cur = el.value; sy.at = Date.now(); pmoPut('stake', sid, sy); render(1); }
+      if (sx && PV.PMO_LEVELS.indexOf(el.value) > -1){ var sy = Object.assign({}, sx); delete sy.id; sy.cur = el.value; sy.at = Date.now(); pmoPut('stake', sid, sy); render(1); }
       return;
     }
     if (el.hasAttribute('data-camkind')){
       var cid = el.getAttribute('data-camkind'), cx = siteFind(cid);
-      if (cx && may('settings') && CAM_KINDS.indexOf(el.value) > -1){ siteOvSet(cid, { cam:el.value }); cx.cam = el.value; logEvent('نوعُ الكاميرا — ' + cid + ' ← ' + el.value); statBump(); render(1); }
+      if (cx && may('settings') && PV.CAM_KINDS.indexOf(el.value) > -1){ siteOvSet(cid, { cam:el.value }); cx.cam = el.value; logEvent('نوعُ الكاميرا — ' + cid + ' ← ' + el.value); statBump(); render(1); }
       return;
     }
     if (el.hasAttribute('data-serial')){
@@ -288,7 +288,7 @@ document.addEventListener('input', function(e){
      its text and focus through the redraw: renderKeepGrab) */
   if (e.target && e.target.id === 'siteQ'){
     clearTimeout(renderKeepGrab.sqT); var qv = e.target.value;
-    renderKeepGrab.sqT = setTimeout(function(){ if (SITE_Q === qv) return; SITE_Q = qv; LIST_SHOWN = LIST_PAGE; render(); }, 280);
+    renderKeepGrab.sqT = setTimeout(function(){ if (SITE_Q === qv) return; SITE_Q = qv; PV.LIST_SHOWN = PV.LIST_PAGE; render(); }, 280);
     return;
   }
   if (e.target && e.target.closest && e.target.closest('input[data-rb]')){ rbOnChange(e.target.closest('input[data-rb]')); return; }   /* (V38.43) report builder boxes */
@@ -308,14 +308,14 @@ document.addEventListener('input', function(e){
       PG_LAST_BIND = bind;
       /* بحثُ الشاشة نفسِه: يُرشِّح البياناتِ كلَّها لا المعروضَ منها */
       bind(PG_Q.trim());
-      clearTimeout(PG_T);
-      PG_T = setTimeout(function(){ render(1); }, 220);   /* البؤرةُ تعود بآليةِ الرسم العامّة */
+      clearTimeout(PV.PG_T);
+      PV.PG_T = setTimeout(function(){ render(1); }, 220);   /* البؤرةُ تعود بآليةِ الرسم العامّة */
     } else pgFind(PG_Q);
     return;
   }
-  if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-minq')){ MIN_Q = e.target.value.trim(); clearTimeout(MIN_T); MIN_T = setTimeout(function(){ render(1); var el = document.querySelector('[data-minq]'); if (el){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); } }, 250); return; }
-  if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-wtq')){ WT_Q = e.target.value.trim(); clearTimeout(WT_T); WT_T = setTimeout(function(){ render(1); var el = document.querySelector('[data-wtq]'); if (el){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); } }, 250); return; }
-  if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-wbsq')){ WBS_Q = e.target.value.trim(); clearTimeout(WBS_T); WBS_T = setTimeout(function(){ render(1); var el2 = document.querySelector('[data-wbsq]'); if (el2){ el2.focus(); el2.setSelectionRange(el2.value.length, el2.value.length); } }, 250); return; }
+  if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-minq')){ PV.MIN_Q = e.target.value.trim(); clearTimeout(PV.MIN_T); PV.MIN_T = setTimeout(function(){ render(1); var el = document.querySelector('[data-minq]'); if (el){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); } }, 250); return; }
+  if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-wtq')){ PV.WT_Q = e.target.value.trim(); clearTimeout(PV.WT_T); PV.WT_T = setTimeout(function(){ render(1); var el = document.querySelector('[data-wtq]'); if (el){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); } }, 250); return; }
+  if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-wbsq')){ PV.WBS_Q = e.target.value.trim(); clearTimeout(PV.WBS_T); PV.WBS_T = setTimeout(function(){ render(1); var el2 = document.querySelector('[data-wbsq]'); if (el2){ el2.focus(); el2.setSelectionRange(el2.value.length, el2.value.length); } }, 250); return; }
   if (e.target && e.target.id === 'assistQ'){
     ASSIST_Q = e.target.value; var bkI = document.getElementById('assistBack'); if (bkI) bkI.hidden = !ASSIST_Q;   /* (V37.40) */
     /* (V36.1) بلاغُ المالك «البحث في المساعد بيسكرول لوحده»: كانت النافذةُ كلُّها تُستبدَل مع كلِّ حرفٍ ويُعاد تركيزُ حقلٍ جديد — فيعيد
@@ -376,7 +376,7 @@ document.addEventListener('input', function(e){
       return;
     }
     if (el2.hasAttribute('data-vhq')){
-      VEH_Q = el2.value.trim(); render(1);
+      PV.VEH_Q = el2.value.trim(); render(1);
       var vq = document.getElementById('vhQ');
       if (vq){ vq.focus(); vq.setSelectionRange(vq.value.length, vq.value.length); }
       return;
@@ -391,7 +391,7 @@ document.addEventListener('input', function(e){
       return;
     }
     if (el2.hasAttribute('data-shq')){
-      SHIP_Q = el2.value.trim(); render(1);
+      PV.SHIP_Q = el2.value.trim(); render(1);
       var sq = document.getElementById('shQ');
       if (sq){ sq.focus(); sq.setSelectionRange(sq.value.length, sq.value.length); }
       return;
@@ -401,7 +401,7 @@ document.addEventListener('input', function(e){
     if (el2.hasAttribute('data-ipd')){ ipSet(el2.getAttribute('data-ipd'), 'ipRdr', el2.value); return; }
     if (el2.hasAttribute('data-ipc')){ ipSet(el2.getAttribute('data-ipc'), 'ipCam', el2.value); return; }
     if (el2.hasAttribute('data-ipq')){
-      IP_Q = el2.value.trim(); render(1);
+      PV.IP_Q = el2.value.trim(); render(1);
       var iq = document.getElementById('ipQ');
       if (iq){ iq.focus(); iq.setSelectionRange(iq.value.length, iq.value.length); }
       return;
@@ -436,7 +436,7 @@ document.addEventListener('input', function(e){
     if (el2.hasAttribute('data-cotel')){ coTelSet(el2.getAttribute('data-cotel'), el2.value); render(1); return; }
     if (el2.hasAttribute('data-coliaison')){ coLiaisonSet(el2.getAttribute('data-coliaison'), el2.value); return; }   /* (V28.5) بلا إعادة رسم — لا يضيع المؤشر */
     if (el2.hasAttribute('data-coemail')){ coEmailSet(el2.getAttribute('data-coemail'), el2.value); return; }   /* (V29.0) */
-    if (el2.hasAttribute('data-waco')){ WA_CO = el2.value; render(1); return; }
+    if (el2.hasAttribute('data-waco')){ PV.WA_CO = el2.value; render(1); return; }
     if (el2.hasAttribute('data-hop')){ hoSetParty(el2.getAttribute('data-hop'), el2.value); return; }
     if (el2.hasAttribute('data-hosn')){ hoSetSigner(+el2.getAttribute('data-hosn'), 'n', el2.value); return; }
     if (el2.hasAttribute('data-hosr')){ hoSetSigner(+el2.getAttribute('data-hosr'), 'role', el2.value); return; }
@@ -458,13 +458,13 @@ document.addEventListener('input', function(e){
     if (el2.hasAttribute('data-tksup')){ techSet(el2.getAttribute('data-tksup'), { sup:el2.value.trim() }); return; }
   }
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-vlgq')){
-    VLOG_Q = e.target.value.trim();
+    PV.VLOG_Q = e.target.value.trim();
     render(1);
     vq = document.getElementById('vlQ');
     if (vq){ vq.focus(); vq.setSelectionRange(vq.value.length, vq.value.length); }
     return;
   }
-  if (e.target && e.target.id === 'patName'){ PAT_NAME = e.target.value; return; }
+  if (e.target && e.target.id === 'patName'){ PV.PAT_NAME = e.target.value; return; }
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-itname')){
     itemRename(e.target.getAttribute('data-itname'), e.target.value);
     return;
@@ -488,7 +488,7 @@ document.addEventListener('input', function(e){
     return;
   }
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-coq')){
-    CO_Q = e.target.value.trim();
+    PV.CO_Q = e.target.value.trim();
     render(1);
     var cq = document.getElementById('coQ');
     if (cq){ cq.focus(); cq.setSelectionRange(cq.value.length, cq.value.length); }
@@ -505,7 +505,7 @@ document.addEventListener('input', function(e){
     return;
   }
   if (e.target && e.target.id === 'survQ'){
-    SURV_Q = e.target.value; render(1);
+    PV.SURV_Q = e.target.value; render(1);
     sq = document.getElementById('survQ');
     if (sq){ sq.focus(); sq.setSelectionRange(sq.value.length, sq.value.length); }
     return;
@@ -517,7 +517,7 @@ document.addEventListener('input', function(e){
     return;
   }
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-nsq')){
-    NS_CO_Q = e.target.value;
+    PV.NS_CO_Q = e.target.value;
     render(1);
     var q2 = document.getElementById('nsCoQ');   /* (V36.1) كان إعلانُه في كتلة المساعد التي لم تعد تحتاجه */
     if (q2){ q2.focus(); q2.setSelectionRange(q2.value.length, q2.value.length); }
@@ -534,7 +534,7 @@ document.addEventListener('change', function(e){
      ويُقرآن في الجدول — ولا شيءَ يكتبهما. فيكتب المرءُ تاريخًا فلا يتغيّر
      شيءٌ ويظنُّ أن لا إسنادَ في ذلك اليوم. أمسكه جردُ الأزرار. */
   if (el && el.hasAttribute && el.hasAttribute('data-vlgd')){
-    VLOG_D = el.value || ''; render(1); return;
+    PV.VLOG_D = el.value || ''; render(1); return;
   }
   /* (V38.80) the database-cost period: editing either date keeps the other end of the period shown */
   if (el && el.hasAttribute && (el.hasAttribute('data-ucf') || el.hasAttribute('data-uct'))){
@@ -639,7 +639,7 @@ document.addEventListener('keydown', function(e){
 
 
 function liteSync(){
-  var old = document.getElementById('liteBar'); if (!LITE){ if (old) old.remove(); return; }
+  var old = document.getElementById('liteBar'); if (!PV.LITE){ if (old) old.remove(); return; }
   if (old) return;
   var d = document.createElement('div'); d.id = 'liteBar'; d.setAttribute('role', 'status');
   d.style.cssText = 'position:fixed;inset-inline:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);z-index:1900;background:#2C3E50;color:#fff;border-radius:12px;padding:8px 12px;font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.35)';
@@ -649,7 +649,7 @@ function liteSync(){
 function qStaleSync(){   /* (V37.29) البندُ ١ — الفنيُّ يعرف بنفسه قبل أن يُسأل */
   var old = document.getElementById('qStaleBar'), now = Date.now();
   var Q = (STATE.queue || []).filter(function(it){ return it && it.kind !== 'presence' && it.kind !== 'stats'; });
-  var oldest = Q.reduce(function(a, it){ return Math.min(a, +it.at || now); }, now), bad = typeof IDB_WHY !== 'undefined' && IDB_WHY;
+  var oldest = Q.reduce(function(a, it){ return Math.min(a, +it.at || now); }, now), bad = typeof PV.IDB_WHY !== 'undefined' && PV.IDB_WHY;
   var show = STATE.meta.online && ((Q.length && now - oldest > 3600000) || bad) && !(qStaleSync.snooze && now < qStaleSync.snooze);
   if (!show){ if (old) old.remove(); return; }
   if (old) return;
@@ -761,7 +761,7 @@ if (window.visualViewport){
     }
   }
   document.addEventListener('click', function(e){
-    try { boxAction(e); } catch (e0){ BOX_ERR = e0; }   /* الصندوقُ الأسود: معرِّفُ الفعل (V17.98) */
+    try { boxAction(e); } catch (e0){ PV.BOX_ERR = e0; }   /* الصندوقُ الأسود: معرِّفُ الفعل (V17.98) */
     var op = e.target.closest('[data-langmenu]');
     if (op){ langMenu(document.getElementById('langMenu').hidden); return; }
     var pick = e.target.closest('[data-setlang]');
@@ -800,7 +800,7 @@ if (window.visualViewport){
   });
 })();
 
-(function(){var s=document.createElement('style');s.textContent=LOGIN_CSS;document.head.appendChild(s);})();
+(function(){var s=document.createElement('style');s.textContent=PV.LOGIN_CSS;document.head.appendChild(s);})();
 /* (V37.40) رجوعُ المساعد: الزرُّ وزرُّ الرجوع في الهاتف — من سؤالٍ إلى صفحته الرئيسية، ومنها إلى الإغلاق */
 function assistGoHome(){ ASSIST_Q = ''; var inp = document.getElementById('assistQ'); if (inp){ inp.value = ''; } var rs = document.getElementById('assistRes'); if (rs) rs.innerHTML = assistResHtml(); var bk = document.getElementById('assistBack'); if (bk) bk.hidden = true; }
 if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener('popstate', function(){

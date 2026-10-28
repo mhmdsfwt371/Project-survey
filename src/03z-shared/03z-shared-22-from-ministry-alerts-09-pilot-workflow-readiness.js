@@ -6,7 +6,7 @@
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ── الطلبات والمسح ──────────────────────────────── */
-var SURV_Q = '', SURV_REOPEN = '', SURV_ST = '';
+PV.SURV_Q = ''; PV.SURV_REOPEN = ''; PV.SURV_ST = '';
 
 function surveyList(){
   return Object.keys(STATE.recs).map(function(id){

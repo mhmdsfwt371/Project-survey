@@ -114,7 +114,7 @@ function insPhotoAdd(id, files){
 
 /* (V29.4) «انسخ من آخر زيارتي»: الحقولُ الثابتةُ لنفس النوع (التثبيت والكهرباء والمقاسات والملاءمة والمعدّات والتقدير)
    من آخر زيارةٍ سجّلتُها — والوصولُ والتحدياتُ والملاحظاتُ والصورُ والأعدادُ الخاصةُ بالموقع لا تُنسَخ أبدًا. */
-var SV_COPY_KEYS = ['mount', 'power', 'height', 'cable', 'len_m', 'wid_m', 'hgt_m', 'fit', 'power_yn', 'power_src', 'pdist', 'p24', 'metal', 'civil', 'equip', 'hours', 'crew_n', 'n_ant', 'n_rdr', 'n_cam', 'n_sens', 'corr_w', 'router_sp'];
+PV.SV_COPY_KEYS = ['mount', 'power', 'height', 'cable', 'len_m', 'wid_m', 'hgt_m', 'fit', 'power_yn', 'power_src', 'pdist', 'p24', 'metal', 'civil', 'equip', 'hours', 'crew_n', 'n_ant', 'n_rdr', 'n_cam', 'n_sens', 'corr_w', 'router_sp'];
 function svLastMine(s){
   var me = STATE.meta.name || '', best = null;
   Object.keys(STATE.recs || {}).forEach(function(id){ if (id === s.id) return; var r = STATE.recs[id], x = siteFind(id);
@@ -134,21 +134,21 @@ function svCopyBar(s){
    — الذي يُرفَع — برسالته وسطره ونسخته، فيقرؤه المكتبُ في «السجلات» ويعرف
    أيَّ زرٍّ وأيَّ نسخة. ويُرفَع الخطأُ الواحدُ مرةً لا في كلِّ إعادة رسم،
    وبسقفٍ يمنع إغراقَ السجل إن انفجر شيءٌ في حلقة. */
-var ERR_SEEN = {};
+PV.ERR_SEEN = {};
 function errCapture(msg, src, line){
-  try { boxNote('err', String(msg || '').slice(0, 60) + '@' + String(src || '').split('/').pop().slice(0, 20) + ':' + (line || 0)); } catch (e0){ BOX_ERR = e0; }
+  try { boxNote('err', String(msg || '').slice(0, 60) + '@' + String(src || '').split('/').pop().slice(0, 20) + ':' + (line || 0)); } catch (e0){ PV.BOX_ERR = e0; }
   try {
     var key = String(msg || '').slice(0, 80) + '@' + (line || 0);
-    if (ERR_SEEN[key]) return;
-    if (Object.keys(ERR_SEEN).length >= 20) return;
-    ERR_SEEN[key] = 1;
+    if (PV.ERR_SEEN[key]) return;
+    if (Object.keys(PV.ERR_SEEN).length >= 20) return;
+    PV.ERR_SEEN[key] = 1;
     var ver = (document.querySelector('[data-p="vers"]') || {}).textContent || '';
     /* (V33.0) قياسُ الميدان (١٤ يومًا): ٣٣٥ من ٣٦٨ «خطأ برمجي» كانت أعطالَ مخزن المتصفّح في آيفون («Connection to Indexed Database
        server lost» و«internal error was encountered in the Indexed Database server») وفشلَ تحديث عامل الخدمة لانقطاع الشبكة — أعطالُ
        منصّةٍ لا أخطاءُ شيفرة، فكانت تغرق الأخطاءَ الحقيقية. تُسجَّل باسمها، ومخزنُ الجهاز يُعاد فتحُه فورًا لأن انقطاعه يقتل كلَّ
        اتصالاتِ الموقع ومنها اتصالُنا. */
     var plat = /Indexed Database server|IndexedDB|IDBDatabase|IDBTransaction|in-progress transaction|Failed to update a ServiceWorker|sw\.js load failed/i.test(String(msg || ''));
-    if (plat && /Indexed Database|IDB|transaction/i.test(String(msg || '')) && typeof idbRetryNow === 'function' && typeof indexedDB !== 'undefined'){ try { idbRetryNow(); } catch (e1){ IDB_LOG_ERR = e1; } }
+    if (plat && /Indexed Database|IDB|transaction/i.test(String(msg || '')) && typeof idbRetryNow === 'function' && typeof indexedDB !== 'undefined'){ try { idbRetryNow(); } catch (e1){ PV.IDB_LOG_ERR = e1; } }
     logEvent((plat ? 'عطلٌ في متصفّح الجهاز — ' : 'خطأ برمجي — ') + String(msg || '').slice(0, 140)
              + ' \u00b7 ' + String(src || '').split('/').pop().slice(0, 40) + ':' + (line || 0)
              + (ver ? ' \u00b7 ' + String(ver).replace(/\s+/g, ' ').trim().slice(0, 20) : ''));

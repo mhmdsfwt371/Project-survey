@@ -233,5 +233,5 @@ function wbsEditSave(id, patch){
 function wbsClear(){
   if (!may('settings')){ toast(t('جدولُ المتابعة للمهندس فما فوق')); return; }
   STATE.wbs = { rows:[], keys:[] };
-  if (wbsSave()){ logEvent('مسحُ جدول المتابعة'); toast(t('مُسح الجدول — استورد ملفًا جديدًا')); WBS_RESET = 0; render(1); }
+  if (wbsSave()){ logEvent('مسحُ جدول المتابعة'); toast(t('مُسح الجدول — استورد ملفًا جديدًا')); PV.WBS_RESET = 0; render(1); }
 }

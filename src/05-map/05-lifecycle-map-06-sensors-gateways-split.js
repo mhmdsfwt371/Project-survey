@@ -12,7 +12,7 @@
    وما خرج عن الحدود بعد تعديلها يُعلَّم بالأحمر ويُوزَّع من جديد، وإكسلٌ للحساسات. وتبقى خارجَ أرقام الوزارة بعدّادها الخاص (قرارُ V25.7).
    البنيةُ متوافقةٌ مع القديم: gw وsensors إحداثياتٌ كما كانت، ومعها gws (جيت واي إضافي) وsm/gm (بياناتُ الأجهزة بالترتيب نفسِه). */
 PV.IOT_ST = ['مخطط', 'مُركّب', 'معطّل'];
-var IOT_N = 12;
+PV.IOT_N = 12;
 function iotOf(id){
   var ov = STATE.siteOv && STATE.siteOv[id] && STATE.siteOv[id].iot;
   var c = (ov && ov.gw && Array.isArray(ov.sensors)) ? ov : (IOT.data && IOT.data.camps ? IOT.data.camps[id] : null);
@@ -302,14 +302,14 @@ function bedPaint(){
    للمخيمات وحدَها وللمهندس فما فوق. يُقسَم المضلّعُ أجزاءً متساويةَ المساحة على محوره الأطول (معاينةٌ على الخريطة قبل الحفظ)، ثم تُضبَط حدودُ كلِّ جزءٍ بـ«عدّل الحدود».
    الجزءُ الأوّلُ يبقى برقم المخيم وبياناته ومسحه، والأجزاءُ الجديدةُ برقمه + B وC… («لم تُزر» تحتاج مسحًا) بالمشعر والشركة والمربع نفسها والاسمِ والشاخصِ + (٢)، (٣).
    والأجزاءُ نقاطٌ معتمدةٌ من المهندس، فتدخل كلَّ العدّاداتِ والتقاريرِ والإكسل تلقائيًّا — لا عدَّ يدويًّا. */
-var SPLIT = null;   
+PV.SPLIT = null;   
 
 
 PV.SPLIT_COL = ['#4FA3FF', '#FF8C42', '#3AD6A0', '#E64980', '#F5C400', '#9B51E0'];
-function splitPaint(){ if (!SPLIT || !MAP_TMP) return; SPLIT.parts.forEach(function(pp, i){ L.polygon(pp, { renderer:MAP_CV, color:PV.SPLIT_COL[i % 6], weight:2.5, dashArray:'6 4', fillColor:PV.SPLIT_COL[i % 6], fillOpacity:0.3, interactive:false }).addTo(MAP_TMP); }); }
-function splitPanelHtml(){ if (!SPLIT) return ''; var x = siteFind(SPLIT.id) || {};
-  return '<div class="map-route-box"><div class="wt-row" style="justify-content:space-between;align-items:center;gap:8px;margin:0"><b>\u2702 ' + esc(t('قسّم المخيم')) + ' \u2014 ' + esc(x.name || SPLIT.id) + '</b><span class="hint">' + nm(SPLIT.parts.length) + ' ' + esc(t('أجزاء')) + '</span></div>'
-    + '<div class="chips" style="margin:8px 0">' + [2, 3, 4, 5, 6].map(function(k){ return '<button type="button" class="chip' + (SPLIT.n === k ? ' on' : '') + '" data-splitn="' + k + '">' + nm(k) + '</button>'; }).join('') + '</div>'
+function splitPaint(){ if (!PV.SPLIT || !MAP_TMP) return; PV.SPLIT.parts.forEach(function(pp, i){ L.polygon(pp, { renderer:MAP_CV, color:PV.SPLIT_COL[i % 6], weight:2.5, dashArray:'6 4', fillColor:PV.SPLIT_COL[i % 6], fillOpacity:0.3, interactive:false }).addTo(MAP_TMP); }); }
+function splitPanelHtml(){ if (!PV.SPLIT) return ''; var x = siteFind(PV.SPLIT.id) || {};
+  return '<div class="map-route-box"><div class="wt-row" style="justify-content:space-between;align-items:center;gap:8px;margin:0"><b>\u2702 ' + esc(t('قسّم المخيم')) + ' \u2014 ' + esc(x.name || PV.SPLIT.id) + '</b><span class="hint">' + nm(PV.SPLIT.parts.length) + ' ' + esc(t('أجزاء')) + '</span></div>'
+    + '<div class="chips" style="margin:8px 0">' + [2, 3, 4, 5, 6].map(function(k){ return '<button type="button" class="chip' + (PV.SPLIT.n === k ? ' on' : '') + '" data-splitn="' + k + '">' + nm(k) + '</button>'; }).join('') + '</div>'
     + '<p class="hint" style="margin:0 0 8px">' + esc(t('أجزاءٌ متساويةُ المساحة على طول المخيم — الأوّلُ يبقى برقمه ومسحه، والباقي مخيماتٌ جديدةٌ تحتاج مسحًا. بعد الحفظ اضبط حدودَ كلِّ جزءٍ بـ«عدّل الحدود».')) + '</p>'
     + '<div class="actions">' + btn('\u2713 ' + t('احفظ التقسيم'), 'btn-primary btn-sm', ' data-splitsave="1"') + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-splitcancel="1"') + '</div></div>';
 }

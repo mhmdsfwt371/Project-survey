@@ -26,7 +26,7 @@ var SV_LABELS = { ctype:'نوع المخيم', tbar:'الحاجز التنظيم
   civil:'أعمالٌ مدنية', equip:'المعدّات', hours:'ساعاتُ العمل', crew_n:'عددُ الفريق',
   chal_note:'تفصيلُ التحدي', note:'ملاحظةُ الميدان'
 };
-var SV_ORDER = ['access','mount','loc','power','power_src','power_yn','pdist','p24','power_note',
+PV.SV_ORDER = ['access','mount','loc','power','power_src','power_yn','pdist','p24','power_note',
   'len_m','wid_m','hgt_m','fit','height','cable','tents','gates','corr_w','jam_pos','metal',
   'n_ant','n_rdr','n_cam','n_sens','kits','kits_done','old_base','old_cable','old_net',
   'cam_ok','router_sp','civil','equip','hours','crew_n','chal_note','note'];
@@ -53,7 +53,7 @@ function svTexts(id){
 function svFieldRows(r){
   if (!r) return '';
   var out = '';
-  SV_ORDER.forEach(function(k){
+  PV.SV_ORDER.forEach(function(k){
     var v = r[k];
     if (v === '' || v === null || v === undefined) return;
     if (typeof v === 'number' && !isFinite(v)) return;
@@ -62,7 +62,7 @@ function svFieldRows(r){
   });
   return out;
 }
-var BRIEF_C  = { 'تمام':'#3AD6A0', 'تحدٍّ':'#E05252', 'ملاحظة':'#E8C34B' };
+PV.BRIEF_C = { 'تمام':'#3AD6A0', 'تحدٍّ':'#E05252', 'ملاحظة':'#E8C34B' };
 /* (V39.27) owner: «نشيل التفاصيل المختصرة ونحط اللي فيها في المسح والتركيب والفك باختلاف نماذجهم». The one-line
    summary (تمام · تحدٍّ · ملاحظة) is no longer a fourth map mode: every mode carries it on its own record — the visit in
    survey, the installation in installation, the dismantling in dismantling — and the point's frame says it. */
@@ -78,7 +78,7 @@ function briefOf(id, ph){
 /* (V39.27) the stage colouring of the fourth layer (V16.90) is gone with the layer: the survey colours carry every approval stage. */
 function briefRing(id, ph){
   var b = briefOf(id, ph);
-  return b ? (BRIEF_C[b.st] || '#E8C34B') : '';
+  return b ? (PV.BRIEF_C[b.st] || '#E8C34B') : '';
 }
 function briefMay(){ var r = effRole(ROLE); if (r === 'exec') return false; return rankOf(r) >= 90 || r === 'viewer' || may('edit'); }   /* (V39.27) management reads and does not write — as in the rules */
 

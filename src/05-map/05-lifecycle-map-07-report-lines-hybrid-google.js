@@ -39,7 +39,7 @@ function gmapsCard(){
       '<p class="hint" style="margin:0 0 8px">' + esc(t('بمفتاحٍ من منصة خرائط جوجل تُعرَض خرائطُ جوجل (شوارعُ وقمرٌ هجين بأسمائه) تحت نقاطنا على كلِّ الأجهزة على اتصال؛ وبلا شبكةٍ خريطةُ الجهاز كما هي. قيِّد المفتاحَ بنطاق التطبيق فقط.')) + '</p>'
     + (ed ? '<div class="wt-row" style="gap:8px;align-items:center;flex-wrap:wrap"><input id="gmKey" dir="ltr" placeholder="AIza…" value="' + esc(k) + '" style="min-width:260px;max-width:420px">' + btn(t('احفظ المفتاح'), 'btn-primary btn-sm', ' data-gmsave="1"') + (k ? btn('\u2715 ' + t('أزل المفتاح'), 'btn-quiet btn-sm', ' data-gmclear="1"') : '') + '</div>'
          : '<p class="hint">' + esc(k ? t('مفتاحٌ مضبوط') : t('لا مفتاح — تُستعمل الخريطةُ المفتوحة')) + '</p>')
-    + '<p class="hint" style="margin:8px 0 0">' + esc(t(k ? (GMAP.fail ? 'تعذّر تحميلُ خرائط جوجل بهذا المفتاح — تُستعمل الخريطةُ المفتوحة حتى يُصحَّح' : 'الحالة: مضبوط') : 'الحالة: الخريطةُ المفتوحة (شوارعُ المصدر المفتوح وقمرُ إسري)')) + '</p>');
+    + '<p class="hint" style="margin:8px 0 0">' + esc(t(k ? (PV.GMAP.fail ? 'تعذّر تحميلُ خرائط جوجل بهذا المفتاح — تُستعمل الخريطةُ المفتوحة حتى يُصحَّح' : 'الحالة: مضبوط') : 'الحالة: الخريطةُ المفتوحة (شوارعُ المصدر المفتوح وقمرُ إسري)')) + '</p>');
 }
 function basemapSatCls(){
   var el = document.getElementById('mapBox');
@@ -73,12 +73,12 @@ function basemapNetOk(){
 function basemapDownload(){
   if (BASEMAP.loading) return Promise.resolve(false);
   BASEMAP.loading = true; render(1);
-  return fetch(BASEMAP_FILE, { cache:'no-store', priority:'low' }).then(function(r){
+  return fetch(PV.BASEMAP_FILE, { cache:'no-store', priority:'low' }).then(function(r){
     if (!r.ok) throw new Error('no-file');
     return r.blob();
   }).then(function(b){
     if (b.size > BASEMAP_MAX) throw new Error('too-big');
-    return caches.open(BASEMAP_CACHE).then(function(c){ return c.put(BASEMAP_FILE, new Response(b, { headers:{ 'content-type':'application/octet-stream', 'content-length':String(b.size) } })); }).then(basemapWarm).then(function(){ BASEMAP.have = true; BASEMAP.loading = false; toast(t('نُزِّلت خريطةُ المشاعر — تعمل الآن بلا شبكة')); logEvent('خريطةُ المشاعر نُزِّلت — ' + Math.round(b.size / 1048576) + ' م.ب'); render(1); try { basemapAttach(); } catch (e){ LS_ERR = e; } return true; });
+    return caches.open(PV.BASEMAP_CACHE).then(function(c){ return c.put(PV.BASEMAP_FILE, new Response(b, { headers:{ 'content-type':'application/octet-stream', 'content-length':String(b.size) } })); }).then(basemapWarm).then(function(){ BASEMAP.have = true; BASEMAP.loading = false; toast(t('نُزِّلت خريطةُ المشاعر — تعمل الآن بلا شبكة')); logEvent('خريطةُ المشاعر نُزِّلت — ' + Math.round(b.size / 1048576) + ' م.ب'); render(1); try { basemapAttach(); } catch (e){ LS_ERR = e; } return true; });
   }).catch(function(e){ BASEMAP.loading = false; toast(t(String(e && e.message) === 'no-file' ? 'لم تُبنَ خريطةُ المشاعر بعد — انظر docs/maps' : 'تعذّر تنزيلُ الخريطة')); render(1); return false; });
 }
 
@@ -98,7 +98,7 @@ function basemapAttach(){
     if (!has) return false;
     return basemapScripts().then(function(ok){
       if (!ok || !window.protomapsL || !window.pmtiles) return false;
-      return caches.open(BASEMAP_CACHE).then(function(c){ return c.match(BASEMAP_FILE); }).then(function(r){
+      return caches.open(PV.BASEMAP_CACHE).then(function(c){ return c.match(PV.BASEMAP_FILE); }).then(function(r){
         if (!r){ BASEMAP.have = false; if (!BASEMAP.redl){ BASEMAP.redl = true; basemapDownload(); } return null; }   /* مُسِح بين الفحص والقراءة: يُعاد مرةً */
         return r.blob();
       }).then(function(b){
@@ -131,13 +131,13 @@ PV.NAMES_FILE = 'maps/mashaer-names.json'; PV.NAMES_REGION = 'maps/region-names.
 PV.NAMES_RANK = { motorway:1, trunk:1, primary:2, secondary:3, tertiary:4, unclassified:5, residential:5, pedestrian:5, living_street:5, service:6, footway:6, path:6, track:6, steps:7 };
 PV.NAMES_PLACE = { city:0, town:1, airport:1, suburb:2, village:2, peak:3, quarter:3, neighbourhood:4, hamlet:4, locality:5, station:6, hospital:6, mosque:6, place_of_worship:6, police:6, bus_station:6 };
 function namesFetch(file){
-  var fromCache = (typeof caches === 'object' && caches.open) ? caches.open(BASEMAP_CACHE).then(function(c){ return c.match(file); }).catch(function(){ return null; }) : Promise.resolve(null);
+  var fromCache = (typeof caches === 'object' && caches.open) ? caches.open(PV.BASEMAP_CACHE).then(function(c){ return c.match(file); }).catch(function(){ return null; }) : Promise.resolve(null);
   return fromCache.then(function(r){
     if (r) return r.json();
     return fetch(file, { cache:'no-store' }).then(function(res){
       if (!res.ok) throw new Error('names ' + res.status);
       var copy = res.clone();
-      if (typeof caches === 'object' && caches.open) caches.open(BASEMAP_CACHE).then(function(c){ return c.put(file, copy); }).catch(function(){});
+      if (typeof caches === 'object' && caches.open) caches.open(PV.BASEMAP_CACHE).then(function(c){ return c.put(file, copy); }).catch(function(){});
       return res.json();
     });
   }).catch(function(){ return null; });
@@ -229,9 +229,9 @@ function basemapLabelsSync(){
    وحدودنا ومساراتنا كما هي — عبر واجهة جوجل الرسمية وإضافة ليفلت الرسمية لها (GoogleMutant)، بمفتاحٍ يضعه المدير في
    ثوابت النظام فيصل الأجهزةَ كلَّها. على اتصالٍ فقط؛ وبلا شبكةٍ خريطةُ الجهاز كما كانت، وإن فشل المفتاحُ أو التحميلُ عاد
    الأساسُ المفتوح (شوارع/قمر) بلا أثر. التكلفةُ ضمن الحصة المجانية الشهرية لحجم استعمالنا. */
-var GMAP = { lib:null, api:null, fail:false, layer:null, kind:'' };
+PV.GMAP = { lib:null, api:null, fail:false, layer:null, kind:'' };
 function gmapsKey(){ return (CFG.gmaps && typeof CFG.gmaps.key === 'string') ? CFG.gmaps.key.trim() : ''; }
-function gmapsWant(){ return !!gmapsKey() && !GMAP.fail && !basemapWant(); }
+function gmapsWant(){ return !!gmapsKey() && !PV.GMAP.fail && !basemapWant(); }
 function gmapsScript(src, test, ms){
   return new Promise(function(res){
     if (test()) return res(true);
@@ -243,30 +243,30 @@ function gmapsScript(src, test, ms){
   });
 }
 function gmapsLoad(){
-  if (GMAP.api) return GMAP.api;
+  if (PV.GMAP.api) return PV.GMAP.api;
   var key = gmapsKey(); if (!key) return Promise.resolve(false);
-  GMAP.api = gmapsScript('https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(key) + '&language=ar&region=SA&v=weekly&loading=async', function(){ return !!(window.google && window.google.maps); }, 15000)
+  PV.GMAP.api = gmapsScript('https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(key) + '&language=ar&region=SA&v=weekly&loading=async', function(){ return !!(window.google && window.google.maps); }, 15000)
     .then(function(ok){ if (!ok) return false; return gmapsScript('vendor/google/leaflet-googlemutant-0.16.0.js', function(){ return !!(window.L && L.gridLayer && L.gridLayer.googleMutant); }, 12000); })
-    .then(function(ok){ if (!ok){ GMAP.fail = true; GMAP.api = null; } return ok; });
-  return GMAP.api;
+    .then(function(ok){ if (!ok){ PV.GMAP.fail = true; PV.GMAP.api = null; } return ok; });
+  return PV.GMAP.api;
 }
 function gmapsSync(){
   if (!MAP || !MAP_BASE) return;
   var want = gmapsWant();
-  if (!want){ if (GMAP.layer){ try { if (MAP.hasLayer(GMAP.layer)) MAP.removeLayer(GMAP.layer); } catch (e){ LS_ERR = e; } GMAP.layer = null; GMAP.kind = ''; if (!basemapWant() && !MAP.hasLayer(MAP_BASE)) MAP_BASE.addTo(MAP); } return; }
+  if (!want){ if (PV.GMAP.layer){ try { if (MAP.hasLayer(PV.GMAP.layer)) MAP.removeLayer(PV.GMAP.layer); } catch (e){ LS_ERR = e; } PV.GMAP.layer = null; PV.GMAP.kind = ''; if (!basemapWant() && !MAP.hasLayer(MAP_BASE)) MAP_BASE.addTo(MAP); } return; }
   var kind = MAP_SAT ? 'hybrid' : 'roadmap';
-  if (GMAP.layer && GMAP.kind === kind){ if (!MAP.hasLayer(GMAP.layer)) GMAP.layer.addTo(MAP); if (MAP.hasLayer(MAP_BASE)) MAP.removeLayer(MAP_BASE); return; }
+  if (PV.GMAP.layer && PV.GMAP.kind === kind){ if (!MAP.hasLayer(PV.GMAP.layer)) PV.GMAP.layer.addTo(MAP); if (MAP.hasLayer(MAP_BASE)) MAP.removeLayer(MAP_BASE); return; }
   gmapsLoad().then(function(ok){
     if (!ok || !MAP){ basemapSatCls(); return; }
     if (!gmapsWant()) return;
     try {
-      if (GMAP.layer && MAP.hasLayer(GMAP.layer)) MAP.removeLayer(GMAP.layer);
-      GMAP.kind = MAP_SAT ? 'hybrid' : 'roadmap';
-      GMAP.layer = L.gridLayer.googleMutant({ type:GMAP.kind, maxZoom:21, className: GMAP.kind === 'roadmap' ? 'nskBase' : 'nskGsat' });
-      GMAP.layer.addTo(MAP); if (MAP.hasLayer(MAP_BASE)) MAP.removeLayer(MAP_BASE);
+      if (PV.GMAP.layer && MAP.hasLayer(PV.GMAP.layer)) MAP.removeLayer(PV.GMAP.layer);
+      PV.GMAP.kind = MAP_SAT ? 'hybrid' : 'roadmap';
+      PV.GMAP.layer = L.gridLayer.googleMutant({ type:PV.GMAP.kind, maxZoom:21, className: PV.GMAP.kind === 'roadmap' ? 'nskBase' : 'nskGsat' });
+      PV.GMAP.layer.addTo(MAP); if (MAP.hasLayer(MAP_BASE)) MAP.removeLayer(MAP_BASE);
       if (NAMES.layer && MAP.hasLayer(NAMES.layer)) MAP.removeLayer(NAMES.layer);   /* لجوجل أسماؤها */
-      logEvent('خرائطُ جوجل — ' + GMAP.kind, '');
-    } catch (e){ GMAP.fail = true; GMAP.layer = null; if (!MAP.hasLayer(MAP_BASE)) MAP_BASE.addTo(MAP); softErr('gmaps', e, ''); }
+      logEvent('خرائطُ جوجل — ' + PV.GMAP.kind, '');
+    } catch (e){ PV.GMAP.fail = true; PV.GMAP.layer = null; if (!MAP.hasLayer(MAP_BASE)) MAP_BASE.addTo(MAP); softErr('gmaps', e, ''); }
     basemapSatCls();
   });
 }
@@ -312,10 +312,10 @@ function basemapCard(){
 }
 
 
-var SEL_IDS = [];
+PV.SEL_IDS = [];
 
 /* ── الاستيراد — قالبٌ يُنزَّل ثم يُرفع فيُعايَن قبل الحفظ ── */
-var IMP_COLS = {
+PV.IMP_COLS = {
   sites: ['المعرّف','المشعر','النوع','الشاخص','المربع','الشركة','خط العرض','خط الطول'],
   ips:   ['معرّف الموقع','بادئة الشبكة','الراوتر','القارئ','الكاميرا'],
   users: ['المعرّف','الاسم','الدور','الحالة'],
@@ -327,5 +327,5 @@ var IMP_COLS = {
 };
 
 
-var IMP_PREVIEW = null;
+PV.IMP_PREVIEW = null;
 

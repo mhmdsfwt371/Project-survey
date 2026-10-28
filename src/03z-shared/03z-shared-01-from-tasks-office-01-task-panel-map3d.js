@@ -14,7 +14,7 @@
    والنقرةُ نفسُها تفتح البطاقةَ نفسَها — و«٢د» يعيده حيث كان.
    المحرّكُ لا يُحمَّل إلا عند أوّل ضغطة (ثمانمئة كيلوبايتٍ لا تُثقل الميدان
    الذي لا يطلبه)، ويبقى حيًّا بعدها؛ والقمرُ الصناعيُّ يتبعه من الزرِّ نفسِه. */
-var MAP_3D = false, M3 = null, M3_READY = false, M3_LOADING = null, M3_ERR = '';
+var MAP_3D = false, M3 = null, M3_READY = false; PV.M3_LOADING = null; PV.M3_ERR = '';
 
 /* ارتفاعُ العمود: ما سجّله المسحُ، وإلا افتراضٌ بحسب النوع */
 /* (V39.21) owner: «أقدر بالماوس أدخل جوّه المكان» — the camera walks into the camp: it stands at the gate (the point),

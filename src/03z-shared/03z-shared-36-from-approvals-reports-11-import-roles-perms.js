@@ -144,10 +144,10 @@ var ROLE = 'tech';
    التطبيقُ يقرأ الدورَ من الوثيقة وحدَها — فإن كتبت عليها إعادةُ إصدارٍ أو
    لصقةٌ دورًا أدنى صار مطّلعًا في شاشاته: لا إعداداتٍ ولا حساباتٍ ولا سبيلَ
    لإصلاح نفسِه. التطبيقُ يطابق القاعدةَ: بريدُ صاحب المشروع مديرٌ دائمًا. */
-var BOSS_EMAILS = ['mohammed.safwat@afaqy.com', 'm.safwat@nusuk.local'];
+PV.BOSS_EMAILS = ['mohammed.safwat@afaqy.com', 'm.safwat@nusuk.local'];
 
 function isBossHere(){
-  try { var u = FB.auth && FB.auth.currentUser; return !!(u && BOSS_EMAILS.indexOf(String(u.email || '').toLowerCase()) > -1); }
+  try { var u = FB.auth && FB.auth.currentUser; return !!(u && PV.BOSS_EMAILS.indexOf(String(u.email || '').toLowerCase()) > -1); }
   catch (e){ return false; }
 }
 
@@ -174,7 +174,7 @@ function may(k){ if (k === 'propose') return may('edit') || !!(R().can || {}).pr
    والهواتفُ لا تراها الوزارةُ ولا الإدارةُ العليا، وصاحبُ المشروع ببريده لا
    تحكمه — فلا يُقفَل على نفسه. والافتراضياتُ هنا مرآةُ القاعدة حرفًا بحرف
    ويحرسها جردٌ يقرأ الملفين. */
-var PM_OPS = [['r','قراءة'], ['w','كتابة'], ['a','اعتماد'], ['d','حذف']];
+PV.PM_OPS = [['r','قراءة'], ['w','كتابة'], ['a','اعتماد'], ['d','حذف']];
 
 var PM_COLS = [
   /* [المجموعة، الاسم، الافتراضيُّ لكلِّ عملية كما في القاعدة] */
@@ -238,9 +238,9 @@ function pmDefault(col, op, role){
        : d === 'r90' ? rankOf(role) >= 90 : d === 'mgrOrViewer' ? (mgr || vw) : false;
 }
 
-var PM_DRAFT = null, PM_ROLE = 'tech', PM_AT = 0;
+PV.PM_DRAFT = null; PV.PM_ROLE = 'tech'; PV.PM_AT = 0;
 
-function pmMatrix(){ return (PM_DRAFT || (CFG.perms && CFG.perms.m) || {}); }
+function pmMatrix(){ return (PV.PM_DRAFT || (CFG.perms && CFG.perms.m) || {}); }
 
 function pmOverride(col, op, role){
   var v = ((pmMatrix()[col] || {})[role] || {})[op];
@@ -253,12 +253,12 @@ function pmGet(col, op, role){
   return ov === null ? pmDefault(col, op, role) : ov;
 }
 
-function pmDirty(){ return !!PM_DRAFT; }
+function pmDirty(){ return !!PV.PM_DRAFT; }
 
 function pmRefresh(force){
   if (!FB.ready || !FB.db) return Promise.resolve(false);
-  if (!force && Date.now() - PM_AT < 60000) return Promise.resolve(false);
-  PM_AT = Date.now();
+  if (!force && Date.now() - PV.PM_AT < 60000) return Promise.resolve(false);
+  PV.PM_AT = Date.now();
   return DB.col('settings').doc('perms').get().then(function(doc){
     FB.readCount = (FB.readCount || 0) + doc.size;
     if (doc && doc.exists) CFG.perms = doc.data();
@@ -268,7 +268,7 @@ function pmRefresh(force){
 
 function pmCard(){
   var roles = Object.keys(ROLES);
-  if (roles.indexOf(PM_ROLE) < 0) PM_ROLE = roles[0];
+  if (roles.indexOf(PV.PM_ROLE) < 0) PV.PM_ROLE = roles[0];
   var ovN = 0, M = pmMatrix();
   Object.keys(M).forEach(function(c){ Object.keys(M[c]).forEach(function(r){ Object.keys(M[c][r]).forEach(function(o){
     if (M[c][r][o] === true || M[c][r][o] === false) ovN++; }); }); });
@@ -278,16 +278,16 @@ function pmCard(){
              ['نسخة المصفوفة', N(cur.v || 0)],
              ['آخر حفظ', cur.at ? '<span class="num">' + esc(agoTxt(cur.at)) + '</span>' : '—']])
     + '<div class="chips" role="tablist" style="margin:0 0 10px">' + roles.map(function(k){
-        return '<button type="button" class="chip' + (k === PM_ROLE ? ' on' : '') + '" role="tab" data-pmrole="' + esc(k) + '">'
+        return '<button type="button" class="chip' + (k === PV.PM_ROLE ? ' on' : '') + '" role="tab" data-pmrole="' + esc(k) + '">'
           + esc(t(ROLES[k].n)) + '</button>';
       }).join('') + '</div>'
-    + cardFlush(t('صلاحيات') + ' — ' + esc(t(ROLES[PM_ROLE].n)),
-        table(['المجموعة'].concat(PM_OPS.map(function(o){ return o[1]; })),
+    + cardFlush(t('صلاحيات') + ' — ' + esc(t(ROLES[PV.PM_ROLE].n)),
+        table(['المجموعة'].concat(PV.PM_OPS.map(function(o){ return o[1]; })),
           PM_COLS.map(function(c){
             return ['<strong>' + esc(t(c[1])) + '</strong> <span class="hint" style="margin:0" dir="ltr">' + esc(c[0]) + '</span>'].concat(
-              PM_OPS.map(function(o){
+              PV.PM_OPS.map(function(o){
                 if (!c[2][o[0]]) return '<span class="hint" style="margin:0">—</span>';
-                var lock = pmLocked(c[0], o[0], PM_ROLE), on = pmGet(c[0], o[0], PM_ROLE), ov = pmOverride(c[0], o[0], PM_ROLE);
+                var lock = pmLocked(c[0], o[0], PV.PM_ROLE), on = pmGet(c[0], o[0], PV.PM_ROLE), ov = pmOverride(c[0], o[0], PV.PM_ROLE);
                 var cls = lock ? 'off' : on ? 'ok' : 'off';
                 var mark = lock ? ' \u{1F512}' : (ov === null ? '' : ' *');
                 return may('perms') && !lock
@@ -324,7 +324,7 @@ function rankOf(role){ return ROLE_RANK[role] != null ? ROLE_RANK[role] : 30; }
    اسمٌ وأساسٌ ورتبة — يرث شاشاتِ أساسه وقدراتِه، وتُعدَّل قدراتُه هنا وخانتُه
    في مصفوفة القاعدة بمفتاحه، والقاعدةُ تعامله بأساسه ورتبته (settings/roles)
    دون نشر. ويُحذَف إن لم يبقَ عليه حساب. والأساسيّةُ لا تُحذَف. */
-var BASE_ROLES = ['exec','admin','engineer','supervisor','viewer','tech','cprep','casm','cins','buyer','store','acct','helper','driver'];
+PV.BASE_ROLES = ['exec','admin','engineer','supervisor','viewer','tech','cprep','casm','cins','buyer','store','acct','helper','driver'];
 
 function effRole(r){ var x = ROLES[r]; return (x && x.custom && x.base) ? x.base : r; }
 
@@ -334,7 +334,7 @@ function rolesApply(){
   Object.keys(ROLES).forEach(function(k){ if (ROLES[k].custom && !R9[k]){ delete ROLES[k]; delete ROLE_RANK[k]; } });
   Object.keys(R9).forEach(function(k){
     var c = R9[k] || {}, b = ROLES[c.base] && !ROLES[c.base].custom ? ROLES[c.base] : ROLES.tech;
-    if (BASE_ROLES.indexOf(k) > -1) return;   /* لا يُكتَب فوق أساسيّ */
+    if (PV.BASE_ROLES.indexOf(k) > -1) return;   /* لا يُكتَب فوق أساسيّ */
     ROLES[k] = { n:c.n || k, d:c.d || (t('يرث') + ' ' + t(b.n)), base:c.base || 'tech', custom:true,
                  kind:b.kind, guide:b.guide, nav:Array.isArray(b.nav) ? b.nav.slice() : b.nav,
                  can:Object.assign({}, b.can || {}) };

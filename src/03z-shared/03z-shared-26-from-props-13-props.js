@@ -23,11 +23,11 @@ function propKeep(v){
 
 function propFind(id){ return propList().filter(function(p){ return p.id === id; })[0] || null; }
 
-var PROP_POP = '', PROP_SHEET = false;
+var PROP_POP = ''; PV.PROP_SHEET = false;
 
 function propMay(){ return typeof may === 'function' && may('approve'); }
 
-function propLine(p){ var tx = (TAX_DEF[p.type] || { l:p.type, i:'\u25CF' }); return tx.i + ' ' + esc(t(tx.l)) + ' \u2014 ' + esc(t(p.zone || '')) + (p.sq ? ' \u00b7 ' + esc(t('مربع')) + ' ' + esc(p.sq) : '') + (p.sign ? ' \u00b7 ' + esc(t('شاخص')) + ' ' + esc(p.sign) : ''); }
+function propLine(p){ var tx = (PV.TAX_DEF[p.type] || { l:p.type, i:'\u25CF' }); return tx.i + ' ' + esc(t(tx.l)) + ' \u2014 ' + esc(t(p.zone || '')) + (p.sq ? ' \u00b7 ' + esc(t('مربع')) + ' ' + esc(p.sq) : '') + (p.sign ? ' \u00b7 ' + esc(t('شاخص')) + ' ' + esc(p.sign) : ''); }
 
 function propPopHtml(){
   var p = propFind(PROP_POP); if (!p) return '';
@@ -49,10 +49,10 @@ function propMarkers(){
     mk.on('click', function(){ PROP_POP = p.id; POP_OPEN = false; render(1); }); mk.addTo(MAP_TMP); });
 }
 
-function propChip(){ var n = propList().length; if (!n) return ''; return '<button type="button" class="map-chip' + (PROP_SHEET ? ' on' : '') + '" data-propsheet="' + (PROP_SHEET ? '0' : '1') + '" style="border-color:#9B51E0">\u{1F3DB} ' + esc(t('مقترحات الوزارة')) + ' \u00b7 ' + nm(n) + '</button>'; }
+function propChip(){ var n = propList().length; if (!n) return ''; return '<button type="button" class="map-chip' + (PV.PROP_SHEET ? ' on' : '') + '" data-propsheet="' + (PV.PROP_SHEET ? '0' : '1') + '" style="border-color:#9B51E0">\u{1F3DB} ' + esc(t('مقترحات الوزارة')) + ' \u00b7 ' + nm(n) + '</button>'; }
 
 function propSheetHtml(){
-  if (!PROP_SHEET) return ''; var P = propList().slice().sort(function(a, b){ return (+b.at || 0) - (+a.at || 0); });
+  if (!PV.PROP_SHEET) return ''; var P = propList().slice().sort(function(a, b){ return (+b.at || 0) - (+a.at || 0); });
   return '<div class="map-sheet"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b>\u{1F3DB} ' + esc(t('مقترحات الوزارة')) + ' \u00b7 ' + nm(P.length) + '</b>' + btn('\u2715', 'btn-quiet btn-sm', ' data-propsheet="0" aria-label="' + esc(t('إغلاق')) + '"') + '</div>'
     + (P.length ? P.map(function(p){ return '<div style="' + 'background:var(--surface-2);border-radius:12px;padding:10px;margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap"><div style="flex:1;min-width:160px"><div style="font-weight:700">' + esc(p.name || p.id) + '</div><div class="hint" style="margin:2px 0 0;font-size:12px">' + propLine(p) + ' \u00b7 ' + esc(fmtDate(p.at)) + '</div></div>'
         + btn('\u{1F4CD}', 'btn-quiet btn-sm', ' data-propgo="' + esc(p.id) + '" title="' + esc(t('على الخريطة')) + '"') + (propMay() ? btn('\u2705 ' + t('اعتمد'), 'btn-primary btn-sm', ' data-propok="' + esc(p.id) + '"') + btn('\u2715', 'btn-danger btn-sm', ' data-propno="' + esc(p.id) + '" title="' + esc(t('ارفضها')) + '"') : '') + '</div>'; }).join('') : '<p class="hint">' + esc(t('لا مقترحات')) + '</p>') + '</div>';

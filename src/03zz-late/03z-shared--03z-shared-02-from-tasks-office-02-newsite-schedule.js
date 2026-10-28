@@ -6,7 +6,7 @@
    NOTE    : Edit these functions here. audit-core-alone.mjs fails if code the core runs alone starts calling one without checking typeof first.
    ============================================================================ */
 function typeCode(ty){
-  if (TYPE_CODE[ty]) return TYPE_CODE[ty];
+  if (PV.TYPE_CODE[ty]) return PV.TYPE_CODE[ty];
   var a = String(ty || '').replace(/[^A-Za-z0-9]/g, '').toUpperCase();
   return a ? a.slice(0, 4) : 'NEW';
 }

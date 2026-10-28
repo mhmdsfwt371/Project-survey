@@ -100,7 +100,7 @@ function gedHtml(){
    وإسنادُ السيارة القائم. يظهر «🗑 حذف» بجوار زرِّ خطوتها التالية — أي ما دام في الحالة التي يُسمح فيها بالحذف وحدَها: فلا يُحذَف
    بلاغٌ أُغلق ولا مستخلصٌ اعتُمد أو صُرف ولا طلبٌ قُرّر. والسجلّاتُ الماليةُ والجودية تُلغى (تبقى أثرًا بحالة «ملغى» وتخرج من
    الحسابات) لا تُمحى؛ والإسنادُ يُمحى. */
-var GDEL_REG = {
+PV.GDEL_REG = {
   ncr: { t:'بلاغ عدم مطابقة', anchor:'ncrok', may:'approve', run:function(i){ var x = NCRS[+i]; if (!x) return ''; x.st = 'ملغى'; x.cancelBy = STATE.meta.name || ''; x.cancelAt = Date.now(); CORE.dirty('ncr', 'NCR-' + (+i + 1), x); return x.cat || ('NCR-' + (+i + 1)); } },
   ipc: { t:'مستخلص', anchor:'ipcok', may:'money', run:function(i){ var x = IPCS[+i]; if (!x || x.st !== 'مقدَّم') return ''; x.st = 'ملغى'; x.cancelBy = STATE.meta.name || ''; x.cancelAt = Date.now(); CORE.dirty('ipc', 'IPC-' + (+i + 1), x); return x.period || ('IPC-' + (+i + 1)); } },
   chg: { t:'طلب تغيير', anchor:'chgok', may:'approve', run:function(i){ var x = CHANGES[+i]; if (!x || x.st !== 'مقدَّم') return ''; x.st = 'ملغى'; x.cancelBy = STATE.meta.name || ''; x.cancelAt = Date.now(); CORE.dirty('changes', 'CR-' + (+i + 1), x); return x.kind || ('CR-' + (+i + 1)); } },
@@ -111,8 +111,8 @@ var GDEL_REG = {
   va:  { t:'إسناد سيارة', anchor:'vaend', may:'fleet', run:function(id){ var a = (STATE.vehAsn || {})[id]; if (!a) return ''; delete STATE.vehAsn[id]; CORE.set('vehAsn', id, null); return a.to || a.who || id; } }
 };
 function gdelInject(){
-  Object.keys(GDEL_REG).forEach(function(k){
-    var R = GDEL_REG[k]; if (R.direct || !(typeof may === 'function' && (may(R.may) || may('settings')))) return;
+  Object.keys(PV.GDEL_REG).forEach(function(k){
+    var R = PV.GDEL_REG[k]; if (R.direct || !(typeof may === 'function' && (may(R.may) || may('settings')))) return;
     document.querySelectorAll('[data-' + R.anchor + ']').forEach(function(b){
       if (b.nextElementSibling && b.nextElementSibling.hasAttribute('data-gdel')) return;
       var e = document.createElement('button'); e.type = 'button'; e.className = 'btn btn-quiet btn-sm'; e.style.color = '#E05252';
@@ -126,12 +126,12 @@ function gdelInject(){
 /* ═══ (V37.4) محرّرُ تصنيفات الزيارة والمسح — المسمّياتُ وجهاتُ الحل وصورةُ الإثبات والظهورُ في قائمة الميدان ═══
    طلبُ المالك: «أقدر أغيّر وأعدّل كل الحاجات دي — المسميات والجهات اللي تحل». يُحفَظ في CFG.cats ويصل كلَّ الأجهزة مع المزامنة.
    المفتاحُ ثابت؛ فتغييرُ الاسم لا يمسّ سجلًّا، وتعطيلُ البند يُخفيه من قائمة الميدان ويُبقي عدَّ ما سُجّل به. */
-var CAT_NEW = { why:[], cc:[] };
+PV.CAT_NEW = { why:[], cc:[] };
 /* ما يُكتب يُحفَظ مسودّةً لحظةَ كتابته — فأيُّ إعادة رسمٍ (مزامنةٌ في الخلفية أو زرُّ «＋») لا تمسحه قبل «حفظ التصنيفات» */
-var CAT_DRAFT = {};
+PV.CAT_DRAFT = {};
 function catDraftCatch(e){ var el = e.target; if (!el || !el.getAttribute) return;
-  ['data-vcn', 'data-vcw', 'data-vcp', 'data-vco'].forEach(function(a){ var id = el.getAttribute(a); if (id != null) CAT_DRAFT[a + '|' + id] = el.type === 'checkbox' ? el.checked : el.value; }); }
-function catD(a, id, def){ var v = CAT_DRAFT[a + '|' + id]; return v === undefined ? def : v; }
+  ['data-vcn', 'data-vcw', 'data-vcp', 'data-vco'].forEach(function(a){ var id = el.getAttribute(a); if (id != null) PV.CAT_DRAFT[a + '|' + id] = el.type === 'checkbox' ? el.checked : el.value; }); }
+function catD(a, id, def){ var v = PV.CAT_DRAFT[a + '|' + id]; return v === undefined ? def : v; }
 function catRow(kind, o){ var id = kind + '|' + o.k;
     var supTxt = (typeof supOf === 'function' ? supOf(o) : []).map(function(x){ return x.p + (x.s ? ': ' + x.s : ''); }).join('\n');   /* (V37.14) */
     o = { k:o.k, base:o.base, n:catD('data-vcn', id, o.n || ''), who:catD('data-vcw', id, supTxt), photo:catD('data-vcp', id, !!o.photo), off:!catD('data-vco', id, !o.off) };
@@ -143,7 +143,7 @@ function catsCard(){
   if (!(typeof may === 'function' && may('settings'))) return '';
   var row = catRow;
   var tbl = function(kind, L, head){
-    var news = CAT_NEW[kind].map(function(k){ return row(kind, { k:k, n:'', who:'', photo:false }); }).join('');
+    var news = PV.CAT_NEW[kind].map(function(k){ return row(kind, { k:k, n:'', who:'', photo:false }); }).join('');
     return '<div class="tablewrap"><table class="tbl"><thead><tr>' + head.map(function(h){ return '<th>' + esc(t(h)) + '</th>'; }).join('') + '</tr></thead><tbody id="catBody-' + kind + '">'
       + L.map(function(o){ return row(kind, o); }).join('') + news + '</tbody></table></div>'
       + '<div class="actions" style="margin:6px 0 14px">' + btn('\uFF0B ' + t(kind === 'why' ? 'سبب جديد' : 'تحدٍّ جديد'), 'btn-quiet btn-sm', ' data-vcadd="' + kind + '"') + '</div>'; };
@@ -153,10 +153,10 @@ function catsCard(){
     + '<h4 style="margin:6px 0">' + esc(t('تحديات التركيب — الفئات')) + '</h4>' + tbl('cc', ccList(), ['المسمّى', 'جهات الدعم المطلوب — سطرٌ لكلِّ جهة', 'في قائمة الميدان']),
     btn('حفظ التصنيفات', 'btn-primary btn-sm', ' data-vcok="1"')) + '</div>';
 }
-var AQ = { at:0, rows:null, busy:false };
+PV.AQ = { at:0, rows:null, busy:false };
 function assistQFetch(force){
-  if (AQ.busy || !FB.ready || !FB.db || (!force && AQ.rows && Date.now() - AQ.at < 10 * 60000)) return;
-  AQ.busy = true; var P0 = 'سؤال المساعد — ';
+  if (PV.AQ.busy || !FB.ready || !FB.db || (!force && PV.AQ.rows && Date.now() - PV.AQ.at < 10 * 60000)) return;
+  PV.AQ.busy = true; var P0 = 'سؤال المساعد — ';
   DB.col('events').where('what', '>=', P0).where('what', '<', P0 + '\uf8ff').limit(400).get().then(function(sn){
     FB.readCount = (FB.readCount || 0) + sn.size; var M = {}, wk = Date.now() - 14 * 864e5;
     sn.forEach(function(d){ var x = d.data() || {}; if (+x.ts < wk) return; var w = String(x.what || '').slice(P0.length), no = / · بلا جواب$/.test(w), q = w.replace(/ · بلا جواب$/, '').trim(); if (!q) return;
@@ -164,14 +164,14 @@ function assistQFetch(force){
     /* (V37.39) من المراجعة: سؤالٌ ناقصٌ («…أو بطي») يُسجَّل حين يتوقّف صاحبُه لحظةً ثم يكمل — فيُضَمُّ إلى سؤاله الأطول الذي يبدأ به */
     var keys = Object.keys(M).sort(function(a, b){ return b.length - a.length; });
     keys.forEach(function(k){ if (!M[k]) return; keys.forEach(function(k2){ if (k2 !== k && M[k2] && k.indexOf(k2) === 0 && k.length - k2.length <= 12){ var a = M[k], b = M[k2]; a.n += b.n; a.no = a.no && b.no; Object.keys(b.by).forEach(function(u){ a.by[u] = 1; }); a.last = Math.max(a.last, b.last); delete M[k2]; } }); });
-    AQ.rows = Object.keys(M).map(function(k){ var o = M[k]; o.who = Object.keys(o.by).length; return o; }).sort(function(a, b){ return (b.no - a.no) || (b.n - a.n) || (b.last - a.last); });
-    AQ.at = Date.now(); AQ.busy = false; render(1);
-  }).catch(function(e){ AQ.busy = false; AQ.rows = AQ.rows || []; softErr('أسئلة المساعد', e, ''); });
+    PV.AQ.rows = Object.keys(M).map(function(k){ var o = M[k]; o.who = Object.keys(o.by).length; return o; }).sort(function(a, b){ return (b.no - a.no) || (b.n - a.n) || (b.last - a.last); });
+    PV.AQ.at = Date.now(); PV.AQ.busy = false; render(1);
+  }).catch(function(e){ PV.AQ.busy = false; PV.AQ.rows = PV.AQ.rows || []; softErr('أسئلة المساعد', e, ''); });
 }
 function assistQCard(){
   if (!(typeof may === 'function' && may('settings'))) return '';
   assistQFetch(false);
-  var R = AQ.rows; if (R === null) return card('أسئلة الناس للمساعد', '<p class="hint" style="margin:0">' + esc(t('جارٍ الجلب…')) + '</p>');
+  var R = PV.AQ.rows; if (R === null) return card('أسئلة الناس للمساعد', '<p class="hint" style="margin:0">' + esc(t('جارٍ الجلب…')) + '</p>');
   var no = R.filter(function(r){ return r.no; }).length;
   return card('أسئلة الناس للمساعد',
     '<p class="hint" style="margin-top:0">' + esc(t('آخر ١٤ يومًا — ما سأله الفريق، وما لم يجد له المساعد جوابًا أولًا. اضغط «أضفها» لتكتب حلّها مرة واحدة في المشاكل المعروفة.')) + ' <b>' + nm(R.length) + '</b> ' + esc(t('سؤال')) + ' \u00b7 <b>' + nm(no) + '</b> ' + esc(t('بلا جواب')) + '</p>'

@@ -69,7 +69,7 @@ function pwaInstall(){
   if (INSTALL_EVT){ INSTALL_EVT.prompt(); INSTALL_EVT = null; return; }
   /* آيفونُ لا يُرسِل حدثَ التثبيت أبدًا — والتثبيتُ فيه متاحٌ بخطوتين.
      فقولُ «غير متاح» كذبٌ يمنع نصفَ الميدان من تثبيت التطبيق. */
-  if (pwaIOS()){ POP_HELP = 'ios'; render(1); return; }
+  if (pwaIOS()){ PV.POP_HELP = 'ios'; render(1); return; }
   if (pwaAndroid()){ lsSet('nsk14.iosNudge', '0'); render(1); return; }   /* خطواتُ أندرويد (V19.8) */
   toast(t('افتح قائمة المتصفّح واختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية»'));
 }

@@ -44,7 +44,7 @@ function mfuPut(sec, id, entry){
 function mfuOwnDefOf(cat){
   if (MFU.ownDef[cat]) return MFU.ownDef[cat];
   var cc = ccList().filter(function(o){ return t(o.n) === cat || o.n === cat; })[0];
-  if (cc){ var old = Object.keys(CHAL_FROM).filter(function(o){ return CHAL_FROM[o] === cc.k && MFU.ownDef[o]; })[0]; if (old) return MFU.ownDef[old]; if (cc.k === 'mount') return MFU.ownDef['لا يوجد سطح تثبيت']; }
+  if (cc){ var old = Object.keys(PV.CHAL_FROM).filter(function(o){ return PV.CHAL_FROM[o] === cc.k && MFU.ownDef[o]; })[0]; if (old) return MFU.ownDef[old]; if (cc.k === 'mount') return MFU.ownDef['لا يوجد سطح تثبيت']; }
   return '';
 }
 function mfuOwnerOf(cat){ var k = (mfuData().own || {})[cat] || mfuOwnDefOf(cat) || 'شركة الخدمة', P = mfuParties(); return P.indexOf(k) > -1 ? k : (P[0] || k); }   /* (V26.8) الجهةُ المحذوفةُ تسقط إلى أوّل جهةٍ قائمة */
@@ -120,13 +120,13 @@ function mfuWeekKey(t){ var d = new Date(t || Date.now()); d.setUTCHours(0, 0, 0
 
 
 /* (V37.14) صفُّ البطاقة: الاسمُ والعدد يفتحان القائمة، و«جهة الدعم المطلوب» تفتح نافذتَها (في القاعة نصٌّ بلا ضغط) */
-var SUP_EXTRA = {
+PV.SUP_EXTRA = {
   tech:   { n:'تحتاج زيارة أخرى — أعادها المهندس', sup:[{ p:'أفاقي', s:'زيارةٌ تقنية' }] },
   none:   { n:'بلا سبب مسجّل — يصنّفه المهندس', sup:[{ p:'أفاقي', s:'يختار المهندسُ السببَ من القائمة' }] },
   review: { n:'يراجع المهندسُ تصنيفَه', sup:[{ p:'أفاقي', s:'يختار المهندسُ الفئةَ من القائمة' }] }
 };
 
-var SUP_POP = '';   
+PV.SUP_POP = '';   
 
 
 /* ═══ (V37.29) البندُ ٣ — الوزارةُ تقرأ «من عليه الدور» بأربع مجموعات، والفريقُ يبقى بالفئات الثماني تحتها (مقترحُ ملف التصنيف) ═══

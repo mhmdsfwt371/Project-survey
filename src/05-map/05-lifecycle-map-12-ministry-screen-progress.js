@@ -88,7 +88,7 @@ if (typeof document === 'object'){
     if (Math.abs(dx) + Math.abs(dy) > 0.01) PV.PM_DRAG.moved = true;
     PM_VIEW.cx = Math.min(Math.max(PV.PM_DRAG.cx - dx / PM_VIEW.z, 0), 1); PM_VIEW.cy = Math.min(Math.max(PV.PM_DRAG.cy - dy / PM_VIEW.z, 0), 1); pmApply();
   }, { passive:true });
-  var pmUp = function(e){ if (PV.PM_PINCH && (e.pointerId === PV.PM_PINCH.a.id || e.pointerId === PV.PM_PINCH.b.id)){ PV.PM_PINCH = null; PV.PM_DRAG = null; return; } if (PV.PM_DRAG && e.pointerId === PV.PM_DRAG.id){ if (PV.PM_DRAG.moved) PM_CLICK_SKIP = Date.now(); PV.PM_DRAG = null; } };
+  var pmUp = function(e){ if (PV.PM_PINCH && (e.pointerId === PV.PM_PINCH.a.id || e.pointerId === PV.PM_PINCH.b.id)){ PV.PM_PINCH = null; PV.PM_DRAG = null; return; } if (PV.PM_DRAG && e.pointerId === PV.PM_DRAG.id){ if (PV.PM_DRAG.moved) PV.PM_CLICK_SKIP = Date.now(); PV.PM_DRAG = null; } };
   document.addEventListener('pointerup', pmUp, { passive:true }); document.addEventListener('pointercancel', pmUp, { passive:true });
 }
 /* ═══ القمرُ الصناعيُّ في شاشة الوزارة (V18.4) ═══
@@ -97,10 +97,10 @@ if (typeof document === 'object'){
    الطبقة التي تستعملها الخريطةُ الرئيسة) ودوائرُ بألوان الحالة نفسِها، تُفتَح
    النقطةُ بالضغط، ويبقى إطارُها بين تجديدات الدقيقة. وخريطةُ النقاط المجرّدةُ
    تبقى خيارًا. وحيث لا ليفليت (بيئةُ الفحص) تُرسَم النقاطُ المجرّدة. */
-var KK_VIEW = 'sat', KK_MAP = null, KK_MAPV = {}, KK_MAP_ZONE = '';
+var KK_VIEW = 'sat'; PV.KK_MAP = null; PV.KK_MAPV = {}; PV.KK_MAP_ZONE = '';
 
 
-var PM_CLICK_SKIP = 0;
+PV.PM_CLICK_SKIP = 0;
 
 /* ═══ الأسبوعُ في جملة (V17.89) ═══
    الرقمُ يُقرأ، والجملةُ تُقال في الاجتماع. تُبنى من الأرقام نفسِها: ما مُسح
@@ -111,8 +111,8 @@ var PM_CLICK_SKIP = 0;
 /* العدّاداتُ تتحرّك من الصفر إلى رقمها حين تُفتَح الشاشة — الرقمُ يُرى وهو يُبنى */
 
 
-var KIOSK_ON = false, KIOSK_TIMER = null, KIOSK_CYCLE = null, KIOSK_STEP = 0;
+var KIOSK_ON = false, KIOSK_TIMER = null; PV.KIOSK_CYCLE = null; PV.KIOSK_STEP = 0;
 
 
-var KSC = null;   
+PV.KSC = null;   
 

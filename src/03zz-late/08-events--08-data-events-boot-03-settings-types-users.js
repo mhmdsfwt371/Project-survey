@@ -207,42 +207,42 @@ function provKick(quiet){
   /* بلا مفتاح تشغيلٍ على هذا الجهاز (مفتاحُ السيور للإدارة وحدها — V17.93): الطلبُ
      مكتوبٌ في القاعدة والخادمُ المجدولُ يتولّاه خلال دقائق — يُقال ذلك لا يُسكَت */
   if (!ghToken()){ if (!quiet) toast(t('كُتب الطلب — يُنشئ الخادمُ الحسابَ خلال دقائق')); return; }
-  if (quiet) PROV_QUIET = true;
-  clearTimeout(PROV_KICK);
-  PROV_KICK = setTimeout(function(){
-    var gap = Date.now() - PROV_LAST;
-    if (gap < 20000){ PROV_KICK = setTimeout(function(){ provKick(PROV_QUIET); }, 20000 - gap); return; }
-    PROV_LAST = Date.now();
-    var q = PROV_QUIET; PROV_QUIET = false;
+  if (quiet) PV.PROV_QUIET = true;
+  clearTimeout(PV.PROV_KICK);
+  PV.PROV_KICK = setTimeout(function(){
+    var gap = Date.now() - PV.PROV_LAST;
+    if (gap < 20000){ PV.PROV_KICK = setTimeout(function(){ provKick(PV.PROV_QUIET); }, 20000 - gap); return; }
+    PV.PROV_LAST = Date.now();
+    var q = PV.PROV_QUIET; PV.PROV_QUIET = false;
     ghRunNow(true).then(function(ok){
       if (!ok) return;
       if (!q) toast(t('أُرسل إلى الخادم — يُنفَّذ خلال دقيقة'));
-      if (PW_FLOW && PW_FLOW.st !== 'done') pwFlowSet('wait');
-      if (PW_FLOW && typeof pwFlowWatch === 'function') pwFlowWatch();
+      if (PV.PW_FLOW && PV.PW_FLOW.st !== 'done') pwFlowSet('wait');
+      if (PV.PW_FLOW && typeof pwFlowWatch === 'function') pwFlowWatch();
     });
   }, 2000);
 }
 
 function pwFlowStart(u, pass){
-  PW_FLOW = { user:u.user, name:u.name || u.user, pass:pass, st:'writing', at:Date.now(), why:'' };
-  clearInterval(PW_POLL); PW_POLL = 0;
+  PV.PW_FLOW = { user:u.user, name:u.name || u.user, pass:pass, st:'writing', at:Date.now(), why:'' };
+  clearInterval(PV.PW_POLL); PV.PW_POLL = 0;
   render(1);
 }
 
-function pwFlowSet(st, why){ if (!PW_FLOW) return; PW_FLOW.st = st; PW_FLOW.why = why || ''; render(1); }
+function pwFlowSet(st, why){ if (!PV.PW_FLOW) return; PV.PW_FLOW.st = st; PV.PW_FLOW.why = why || ''; render(1); }
 
 function pwFlowWatch(){
-  clearInterval(PW_POLL);
+  clearInterval(PV.PW_POLL);
   var tries = 0;
-  PW_POLL = setInterval(function(){
-    if (!PW_FLOW || !FB.ready || !FB.db){ clearInterval(PW_POLL); PW_POLL = 0; return; }
+  PV.PW_POLL = setInterval(function(){
+    if (!PV.PW_FLOW || !FB.ready || !FB.db){ clearInterval(PV.PW_POLL); PV.PW_POLL = 0; return; }
     tries++;
-    DB.col('provision').doc(PW_FLOW.user).get().then(function(d){
+    DB.col('provision').doc(PV.PW_FLOW.user).get().then(function(d){
       FB.readCount = (FB.readCount || 0) + d.size;
       var v = d && d.exists ? (d.data() || {}) : {};
-      if (v.status === 'done'){ clearInterval(PW_POLL); PW_POLL = 0; STATE.provision[PW_FLOW.user] = v; pwFlowSet('done'); logEvent('كلمةٌ جديدةٌ ضُبطت — ' + PW_FLOW.user); }
-      else if (v.status === 'error'){ clearInterval(PW_POLL); PW_POLL = 0; pwFlowSet('error', v.why || ''); }
-      else if (tries > 36){ clearInterval(PW_POLL); PW_POLL = 0; pwFlowSet('slow'); }
+      if (v.status === 'done'){ clearInterval(PV.PW_POLL); PV.PW_POLL = 0; STATE.provision[PV.PW_FLOW.user] = v; pwFlowSet('done'); logEvent('كلمةٌ جديدةٌ ضُبطت — ' + PV.PW_FLOW.user); }
+      else if (v.status === 'error'){ clearInterval(PV.PW_POLL); PV.PW_POLL = 0; pwFlowSet('error', v.why || ''); }
+      else if (tries > 36){ clearInterval(PV.PW_POLL); PV.PW_POLL = 0; pwFlowSet('slow'); }
     }).catch(function(e){ LS_ERR = e; });
   }, 5000);
 }

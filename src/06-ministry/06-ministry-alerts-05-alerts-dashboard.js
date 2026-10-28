@@ -50,7 +50,7 @@ function svMiniMap(rows){
 /* ═══ (V37.56) لوحةٌ تُقرأ بالنظر — قرارُ المالك: «عاوزها user friendly أوي، أي حد يبص يفهم من غير كلام» ═══
    لونٌ + أيقونةٌ + رقمٌ + كلمةٌ واحدة: حلقةٌ كبيرةٌ بالنسبة، وشريطُ إشارةٍ واحدٌ لحال النقاط (أخضر جاهزة · برتقالي شغلٌ علينا · أحمر يحتاج طرفًا آخر · رمادي لسه)،
    و«ليه مش جاهزة؟» مربعاتٌ بأيقونة، والمشاعرُ حلقاتٌ صغيرةٌ تُضغط، والأسبوعُ جملةٌ عادية، ثم الخريطةُ وزرُّ الإكسل. لا وسيطَ ولا «أقدم بند» ولا أسماءَ فئاتٍ بسطرين. */
-var SV_ST = [   /* حالُ النقطة — الألوانُ نفسُها في كلِّ اللوحات */
+PV.SV_ST = [   /* حالُ النقطة — الألوانُ نفسُها في كلِّ اللوحات */
   { k:'ins', c:'#3AD6A0', e:'\u{1F527}', n:'مُركّبة' },   /* (V37.64) لونُ الخريطة LIFE.installed */
   { k:'sched', c:'#7C5CFF', e:'\u{1F4C5}', n:'مجدولة للتركيب' },   /* (V37.62) */
   { k:'ready', c:'#22C55E', e:'\u2705', n:'جاهزة للتركيب' },
@@ -61,7 +61,7 @@ var SV_ST = [   /* حالُ النقطة — الألوانُ نفسُها في 
 ];
 
 function svPopRefresh(){   /* (V37.60) نسخةٌ واحدةٌ لإعادة رسم النافذة في مكانها (المشعر، المربع، الرجوع) */
-  SV_SHOW = 80; var host = document.getElementById('content'); if (!host){ render(1); return; }
+  PV.SV_SHOW = 80; var host = document.getElementById('content'); if (!host){ render(1); return; }
   svPopRemove(); var tmp = document.createElement('div'); tmp.innerHTML = svListPop() + supPopHtml(); while (tmp.firstChild) host.appendChild(tmp.firstChild);
   var pp = document.querySelector('.svpop'); if (pp) pp.scrollTop = 0;
 }

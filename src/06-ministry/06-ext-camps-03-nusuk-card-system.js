@@ -143,14 +143,14 @@ function mtCamps(){
   }
 
   /* تحميل المطابقات */
-  if (!EXT_MATCH_STATE || EXT.busy){
+  if (!PV.EXT_MATCH_STATE || EXT.busy){
     if (!EXT.busy) extMatchLoad();
     return h + '<div class="hint" style="text-align:center;padding:20px">⟳ ' + esc(t('جارٍ تحميل بيانات المخيمات…')) + '</div>';
   }
 
   if (EXT.err) h += alertBox('warn', t('خطأ في تحميل البيانات') + ': ' + EXT.err);
 
-  var unmatched = EXT_MATCH_STATE.unmatched;
+  var unmatched = PV.EXT_MATCH_STATE.unmatched;
 
   /* (V38.12) حالةُ النقاط أوّلًا (V38.13)، ثم الربطُ الجماعيّ، ثم شريطُ الإعداد */
   h += extStatusCard() + extBulkCard() + setup;
@@ -209,7 +209,7 @@ function extNkSave(id, val){
     if (M && !M[key] && !confirm(t('الاسمُ غيرُ ظاهرٍ في نظام البطاقات الآن. يُحفَظ على أيِّ حال؟'))){ toast(t('لم يُحفَظ')); return; }
   }
   x.nk = v; siteOvSet(id, { nk:v, nkAt:Date.now(), nkBy:STATE.meta.name || '' });
-  EXT_MATCH_STATE = null;
+  PV.EXT_MATCH_STATE = null;
   logEvent(v ? 'ربطُ نقطةٍ بنظام البطاقات — ' + id + ' ← ' + v : 'فكُّ ربط نقطةٍ بنظام البطاقات — ' + id, id);
   toast(t(v ? 'رُبطت النقطة' : 'فُكَّ الربط')); render(1);
 }
@@ -266,7 +266,7 @@ function extBulkApply(){
   if (!confirm(t('تُربَط') + ' ' + P.apply.length + ' ' + t('نقطةً بأسمائها المقترحة. متابعة؟'))){ toast(t('لم يُربَط شيء — أُلغي')); return; }
   var by = STATE.meta.name || '', at = Date.now();
   P.apply.forEach(function(z){ var x = siteFind(z.id); if (!x) return; x.nk = z.sug; siteOvSet(z.id, { nk:z.sug, nkAt:at, nkBy:by, nkSrc:z.src }); });
-  EXT_MATCH_STATE = null;
+  PV.EXT_MATCH_STATE = null;
   logEvent('ربطٌ جماعيٌّ بنظام البطاقات — ' + P.apply.length + ' نقطة · تعارض ' + P.conflicts.length);
   toast(t('رُبطت') + ' ' + nm(P.apply.length) + ' ' + t('نقطة')); render(1);
 }
@@ -514,7 +514,7 @@ function extSerAdopt(id, ser){
   var r = Object.assign({}, ins); r.serials = Object.assign({}, ins.serials); r.serials[k] = String(ser);
   r.serHist = (ins.serHist || []).concat([{ at:Date.now(), by:STATE.meta.name || '', key:k, old:old, nw:String(ser), src:'نظام البطاقات' }]);
   STATE.inss[id] = r; CORE.set('inss', id, r); CORE.saveSoon();
-  EXT_MATCH_STATE = null;
+  PV.EXT_MATCH_STATE = null;
   logEvent('استبدالُ سيريال القارئ من نظام البطاقات — ' + id + ' · ' + old + ' ← ' + ser, id);
   toast(t('حُدِّث سيريالُ القارئ')); render(1);
 }

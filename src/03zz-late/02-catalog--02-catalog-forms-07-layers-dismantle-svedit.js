@@ -125,7 +125,7 @@ function svqPhotoDel(photoId){
 function svqSave(id, key, val, quiet){   /* (V38.20) quiet: جزءٌ من حفظٍ مركّب (التحديات + وصفُها) فلا يقول «لم يتغيّر شيء» */
   var rec = STATE.recs[id]; if (!rec || !svqMay(id)) return false;
   var old = key === 'chals' ? (rec.chals || []).slice() : key === 'loc' ? locList(rec.loc) : rec[key];
-  if (SVQ_NUM[key]){ var nv = cfgN(val); if (!(nv > 0)){ toast(t('اكتب رقمًا أكبر من صفر')); return false; } val = nv; }
+  if (PV.SVQ_NUM[key]){ var nv = cfgN(val); if (!(nv > 0)){ toast(t('اكتب رقمًا أكبر من صفر')); return false; } val = nv; }
   else if (key === 'chals'){ if (!val || !val.length){ toast(t('اختر تحديًا واحدًا على الأقل — أو «لا توجد تحديات»')); return false; } }
   else if (key === 'loc'){ val = Array.isArray(val) ? val.slice() : locList(val); }   /* (V38.25) قائمة */
   else val = String(val == null ? '' : val).trim();

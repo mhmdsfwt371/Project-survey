@@ -88,7 +88,7 @@ function goPage(id){
   if (id !== 'map' && typeof POP_OPEN !== 'undefined' && POP_OPEN) POP_OPEN = false;   /* (V26.9) نافذةُ نقطة الخريطة لا تبقى «مفتوحةً» في صفحةٍ أخرى — كانت تبتلع أوّلَ نقرةٍ بعد العودة من الخريطة */
   CUR = id;
   try { pageTick(id); } catch (e){ if (typeof softErr === 'function') softErr('pageTick', e, ''); }
-  try { boxNote('pg', id); } catch (e){ BOX_ERR = e; }
+  try { boxNote('pg', id); } catch (e){ PV.BOX_ERR = e; }
 }
 /* ═══ استعمالُ الصفحات (V17.95) ═══
    كم فُتحت كلُّ صفحةٍ اليومَ على هذا الجهاز — يُعَدُّ محليًّا ويركب نبضةَ
@@ -149,7 +149,7 @@ var CAP_SAY = {
    والدليلُ المكتوبُ بيدٍ يشيخ: تُضاف شاشةٌ أو تُنقَل قدرةٌ فيبقى الدليلُ
    على حاله يصف نظامًا لم يعد قائمًا. فهذا يُشتقّ من ROLES نفسِها لحظةَ
    فتحه — من غيّر صلاحيةً غيّر الدليلَ معها، ولا سبيلَ لأن يفترقا. */
-var GUIDE = { g:'', role:'' };   
+PV.GUIDE = { g:'', role:'' };   
 
 /* GUIDE.role مُعلَنٌ مع GUIDE أعلاه (V32.3) */
 

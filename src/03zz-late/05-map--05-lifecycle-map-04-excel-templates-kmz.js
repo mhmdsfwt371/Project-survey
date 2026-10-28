@@ -186,7 +186,7 @@ function xlsExport(keys, fname){
         rows.forEach(function(r){ w = Math.max(w, Math.min(46, String(r[i]==null?'':r[i]).length + 2)); });
         return { wch:w };
       });
-      XLSX.utils.book_append_sheet(wb, ws, (SHEET_NAMES[k] || k).slice(0, 30));
+      XLSX.utils.book_append_sheet(wb, ws, (PV.SHEET_NAMES[k] || k).slice(0, 30));
       n++;
     });
     if (!n){ toast('لا بيانات للتصدير'); return false; }
@@ -240,7 +240,7 @@ function kmzCamTable(x){
   var X = function(v){ return String(v == null ? '' : v).replace(/[<>&]/g, function(ch){ return ch === '<' ? '&lt;' : ch === '>' ? '&gt;' : '&amp;'; }); };
   return '<br><b>Uplink:</b> ' + X([c.cpe ? 'CPE ' + c.cpe : '', c.ant, c.sector, c.secAnt].filter(Boolean).join(' · ')) + (c.status ? '<br><b>Status:</b> ' + X(c.status) : '')
     + '<table border="1" cellpadding="3" style="border-collapse:collapse;font-size:11px"><tr><th>CAM</th><th>Model</th><th>Type</th><th>Spec</th><th>IP</th><th>VLAN</th></tr>'
-    + c.cams.map(function(k){ return '<tr><td>' + X(k.n) + '</td><td>' + X(k.model) + '</td><td>' + (k.kind === 'P' ? 'PTZ' : 'Fixed') + '</td><td>' + X(CAM_SPEC[k.model] || '') + '</td><td>' + X(k.ip) + '</td><td>' + X(k.vlan) + '</td></tr>'
+    + c.cams.map(function(k){ return '<tr><td>' + X(k.n) + '</td><td>' + X(k.model) + '</td><td>' + (k.kind === 'P' ? 'PTZ' : 'Fixed') + '</td><td>' + X(PV.CAM_SPEC[k.model] || '') + '</td><td>' + X(k.ip) + '</td><td>' + X(k.vlan) + '</td></tr>'
         + '<tr><td colspan="6">rtsp://' + X(k.ip) + ':554/cam/realmonitor?channel=1&amp;subtype=0</td></tr>'; }).join('') + '</table>';
 }
 
@@ -269,7 +269,7 @@ function kmzBuild(filter, title){
       + (x.sign ? '<br>شاخص: ' + X(x.sign) : '')
       + (x.sq   ? '<br>مربع: '  + X(x.sq)   : '')
       + (x.co   ? '<br>' + X(x.co) : '') + kmzCamTable(x) + ']]></description>'
-      + '<styleUrl>#' + (KMZ_STY[x.type] || 'bld') + '</styleUrl>'
+      + '<styleUrl>#' + (PV.KMZ_STY[x.type] || 'bld') + '</styleUrl>'
       + '<Point><coordinates>' + x.lng + ',' + x.lat + ',0</coordinates></Point></Placemark>');
   });
   Object.keys(folders).forEach(function(f){
@@ -282,30 +282,30 @@ function kmzBuild(filter, title){
 }
 
 function kmiApply(){
-  if (!KMI || !may('edit')) return;
-  var take = KMI.rows.filter(function(r){ return r.take; });
+  if (!PV.KMI || !may('edit')) return;
+  var take = PV.KMI.rows.filter(function(r){ return r.take; });
   if (!take.length){ toast(t('لم تُحدَّد نقطةٌ للإضافة')); return; }
-  var pre = zoneCode(KMI_ZONE);
-  var tp  = typeCode(KMI_TYPE);
+  var pre = zoneCode(PV.KMI_ZONE);
+  var tp  = typeCode(PV.KMI_TYPE);
   var seq = STATE.sites.filter(function(x){ return String(x.id).indexOf('NSK-' + pre + '-' + tp + '-K') === 0; }).length;
   var n = 0;
   take.forEach(function(r){
     seq++; n++;
     var id = 'NSK-' + pre + '-' + tp + '-K' + String(seq).padStart(3, '0');
-    var site = { id:id, name:r.p.name || (KMI_ZONE + ' - ' + KMI_TYPE + ' ' + seq),
-      zone:KMI_ZONE, type:KMI_TYPE, work:KMI_WORK,
+    var site = { id:id, name:r.p.name || (PV.KMI_ZONE + ' - ' + PV.KMI_TYPE + ' ' + seq),
+      zone:PV.KMI_ZONE, type:PV.KMI_TYPE, work:PV.KMI_WORK,
       lat:+r.p.lat.toFixed(6), lng:+r.p.lng.toFixed(6),
       sq:r.p.sq || '', sign:r.p.sign || '', co:r.p.co || '',
-      region:'منطقة ' + KMI_ZONE, fstat:'لم يبدأ', inout:'',
-      isNew:true, approved:false, src:'kmz', srcFile:KMI.file || '',
+      region:'منطقة ' + PV.KMI_ZONE, fstat:'لم يبدأ', inout:'',
+      isNew:true, approved:false, src:'kmz', srcFile:PV.KMI.file || '',
       by:STATE.meta.name || '', at:Date.now() };
     STATE.sites.push(site);
     CORE.set('newsites', id, site);
   });
   SITE_IX = null; SITE_TOK = null;
-  logEvent('استيرادُ KMZ — أُضيفت ' + n + ' نقطةً · ' + KMI_ZONE + ' · ' + KMI_TYPE);
-  notifPush('نقاطٌ مستورَدة', nm(n) + ' ' + t('نقطةً أُضيفت من ملف') + ' — ' + KMI_ZONE, { lv:'مهم' });
-  statBump(); KMI = null; toast(nm(n) + ' ' + t('نقطةً أُضيفت'));
+  logEvent('استيرادُ KMZ — أُضيفت ' + n + ' نقطةً · ' + PV.KMI_ZONE + ' · ' + PV.KMI_TYPE);
+  notifPush('نقاطٌ مستورَدة', nm(n) + ' ' + t('نقطةً أُضيفت من ملف') + ' — ' + PV.KMI_ZONE, { lv:'مهم' });
+  statBump(); PV.KMI = null; toast(nm(n) + ' ' + t('نقطةً أُضيفت'));
   render(1);
 }
 
@@ -317,19 +317,19 @@ function kmiCard(){
     + esc(t('يُقرأ الملفُّ ويُعايَن قبل أن يُكتب شيء. النقطةُ التي تبعد خمسةَ عشرَ مترًا فأقلَّ عن نقطةٍ عندنا هي هي — مهما اختلف الاسم — فلا تُضاف. وما تجاوزها يُضاف بمعرِّفٍ من نظامنا وبالتصنيف الذي تختاره.'))
     + '</p><div class="grid cols-3">'
     +   '<div class="field"><label>' + esc(t('المشعر')) + '</label><select data-kmiz>'
-    +     ZS.map(function(z){ return '<option value="' + esc(z) + '"' + (KMI_ZONE === z ? ' selected' : '') + '>' + esc(t(z)) + '</option>'; }).join('') + '</select></div>'
+    +     ZS.map(function(z){ return '<option value="' + esc(z) + '"' + (PV.KMI_ZONE === z ? ' selected' : '') + '>' + esc(t(z)) + '</option>'; }).join('') + '</select></div>'
     +   '<div class="field"><label>' + esc(t('النوع')) + '</label><select data-kmit>'
-    +     TS.map(function(x){ return '<option value="' + esc(x) + '"' + (KMI_TYPE === x ? ' selected' : '') + '>' + esc(typeShort(x)) + '</option>'; }).join('') + '</select></div>'
-    +   '<div class="field"><label>' + esc(t('وجه العمل')) + '</label><input data-kmiw value="' + esc(KMI_WORK) + '" dir="auto"></div>'
+    +     TS.map(function(x){ return '<option value="' + esc(x) + '"' + (PV.KMI_TYPE === x ? ' selected' : '') + '>' + esc(typeShort(x)) + '</option>'; }).join('') + '</select></div>'
+    +   '<div class="field"><label>' + esc(t('وجه العمل')) + '</label><input data-kmiw value="' + esc(PV.KMI_WORK) + '" dir="auto"></div>'
     + '</div>'
     + '<div class="actions" style="margin:8px 0 0">'
     +   '<label class="btn btn-primary btn-sm" style="cursor:pointer">\u2B06 ' + esc(t('اختر ملف KMZ أو KML'))
     +   '<input type="file" accept=".kmz,.kml,application/vnd.google-earth.kmz,application/vnd.google-earth.kml+xml" data-kmifile="1" style="display:none"></label>'
-    +   (KMI ? btn(t('إلغاء المعاينة'),'btn-quiet btn-sm',' data-kmix="1"') : '')
+    +   (PV.KMI ? btn(t('إلغاء المعاينة'),'btn-quiet btn-sm',' data-kmix="1"') : '')
     + '</div>'
-    + (KMI_BUSY ? '<p class="hint" style="margin:8px 0 0">' + esc(t('يُقرأ الملف…')) + '</p>' : ''));
-  if (!KMI) return head;
-  var R = KMI.rows;
+    + (PV.KMI_BUSY ? '<p class="hint" style="margin:8px 0 0">' + esc(t('يُقرأ الملف…')) + '</p>' : ''));
+  if (!PV.KMI) return head;
+  var R = PV.KMI.rows;
   var cnt = { same:0, doubt:0, new:0 };
   R.forEach(function(r){ cnt[r.st]++; });
   var take = R.filter(function(r){ return r.take; }).length;
@@ -348,7 +348,7 @@ function kmiCard(){
     + stats([['في الملف', N(R.length)], ['جديدة', N(cnt['new']), 'acc'],
              ['موجودة عندنا', N(cnt.same), 'ok'], ['مشكوكٌ فيها', N(cnt.doubt), cnt.doubt ? 'wrn' : 'ok'],
              ['ستُضاف', N(take), take ? 'acc' : 'wrn']])
-    + cardFlush(t('معاينةُ الملف') + ' \u2014 ' + esc(KMI.file || ''),
+    + cardFlush(t('معاينةُ الملف') + ' \u2014 ' + esc(PV.KMI.file || ''),
         table(['', 'الاسم في الملف','الإحداثيات','الحكم','أقربُ نقطةٍ عندنا','حقولٌ قرأناها'], rows),
         '<div class="actions" style="margin:0">'
         + btn('\u2714 ' + t('أضِف المحدَّد') + ' (' + nm(take) + ')','btn-primary btn-sm',' data-kmigo="1"')

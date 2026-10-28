@@ -158,10 +158,10 @@ function supRowHtml(r){
 }
 
 /* (V37.14) نافذةُ جهة الدعم المفتوحة */
-function supPopHtml(){ return SUP_POP ? supPanel(SUP_POP) : ''; }
+function supPopHtml(){ return PV.SUP_POP ? supPanel(PV.SUP_POP) : ''; }
 
 function supPanel(ref){
-  var p = String(ref || '').split('|'), o = p[0] === 'why' ? whyOf(p[1]) : p[0] === 'cc' ? ccOf(p[1]) : SUP_EXTRA[p[1]];
+  var p = String(ref || '').split('|'), o = p[0] === 'why' ? whyOf(p[1]) : p[0] === 'cc' ? ccOf(p[1]) : PV.SUP_EXTRA[p[1]];
   if (!o) return '';
   var L = supOf(o);
   return '<div id="supVeil" data-supclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2004"></div>'
@@ -175,8 +175,8 @@ function supPanel(ref){
 
 function gapCard(c){
   var rows = whyList().map(function(o){ return [o.n, o, c.why[o.k] || 0, 'why_' + o.k, 'why|' + o.k]; });
-  rows.push(['تحتاج زيارة أخرى — أعادها المهندس', SUP_EXTRA.tech, c.tech, 'why_tech', 'x|tech']);
-  if (ROLE !== 'viewer' && c.none) rows.push(['بلا سبب مسجّل — يصنّفه المهندس', SUP_EXTRA.none, c.none, 'why_none', 'x|none']);
+  rows.push(['تحتاج زيارة أخرى — أعادها المهندس', PV.SUP_EXTRA.tech, c.tech, 'why_tech', 'x|tech']);
+  if (ROLE !== 'viewer' && c.none) rows.push(['بلا سبب مسجّل — يصنّفه المهندس', PV.SUP_EXTRA.none, c.none, 'why_none', 'x|none']);
   return '<div class="card" style="margin:0"><div class="pid">' + esc(t('زيارة بلا مسح')) + ' — <b class="num" data-svlist="gap" role="button" tabindex="0">' + nm(c.gap) + '</b>' + catEditLink() + '</div>'
     + rows.filter(function(r){ return r[2]; }).map(supRowHtml).join('')
     + (c.esc ? '<div class="kk-zl" data-svlist="esc" role="button" tabindex="0" style="color:#E05252"><span>\u26A0 ' + esc(t('متوقفة — ثلاثُ محاولاتٍ أو عشرةُ أيامٍ بلا مسح')) + '</span><b>' + nm(c.esc) + '</b></div>' : '')
@@ -198,7 +198,7 @@ function ccGroupsHtml(){
 
 function ccCard(c){
   var rows = ccList().map(function(o){ return [o.n, o, c.cc[o.k] || 0, 'cc_' + o.k, 'cc|' + o.k]; }).filter(function(r){ return r[2]; }).sort(function(a, b){ return b[2] - a[2]; });
-  if (ROLE !== 'viewer' && c.review) rows.push(['يراجع المهندسُ تصنيفَه', SUP_EXTRA.review, c.review, 'cc_review', 'x|review']);
+  if (ROLE !== 'viewer' && c.review) rows.push(['يراجع المهندسُ تصنيفَه', PV.SUP_EXTRA.review, c.review, 'cc_review', 'x|review']);
   return '<div class="card" style="margin:0"><div class="pid">' + esc(t('تحديات التركيب بفئاتها')) + catEditLink() + '</div>'
     + '<div class="hint" style="margin:0 0 6px">' + esc(t('من عليه الدور — بالمجموعات الأربع، والتفصيلُ بالفئات تحتها')) + '</div>' + ccGroupsHtml()   /* (V37.29) */
     + (rows.length ? rows.map(supRowHtml).join('')

@@ -13,8 +13,8 @@ function alRuleList(rule){
 }
 
 function alAll(){   /* (V33.7) مرةً في الرسمة — الملخّصُ التنفيذيُّ وبطاقةُ التنبيهات كانا يمرّان على القواعد كلٌّ وحدَه */
-  var mk = AL_RULES.map(function(r){ return alRuleDays(r[1]); }).join(','); if (DB.memo && DB.memo.al && DB.memo.al.k === mk) return DB.memo.al.v;
-  var v = AL_RULES.map(function(rule){ var d = alRuleDays(rule[1]); return { k:rule[0], cfg:rule[1], label:t(rule[2]) + ' ' + nm(d) + ' ' + t('يوم'), days:d, sites:d ? alRuleList(rule) : [], off:!d }; });
+  var mk = PV.AL_RULES.map(function(r){ return alRuleDays(r[1]); }).join(','); if (DB.memo && DB.memo.al && DB.memo.al.k === mk) return DB.memo.al.v;
+  var v = PV.AL_RULES.map(function(rule){ var d = alRuleDays(rule[1]); return { k:rule[0], cfg:rule[1], label:t(rule[2]) + ' ' + nm(d) + ' ' + t('يوم'), days:d, sites:d ? alRuleList(rule) : [], off:!d }; });
   if (DB.memo) DB.memo.al = { k:mk, v:v }; return v; }
 
 function alCard(){
@@ -30,7 +30,7 @@ function svListSites(){   /* (V29.9) على صفحة الوزارة تتبع ا�
 }
 
 function svListRows(key){   /* (V31.6) القائمةُ تُحسَب مرةً في المهمة الواحدة — بطاقاتُ الملخّص وحدَها كانت تمرّ على النقاط عشرَ مرات */
-  var mk = key + '|' + CUR + '|' + (MFU.flt.z || '') + '|' + (MFU.flt.t || '') + (/^al_/.test(key) ? '|' + AL_RULES.map(function(r){ return alRuleDays(r[1]); }).join(',') : ''), LM = DB.memo ? DB.memo.lists : null;   /* أيامُ القواعد في المفتاح: تغييرُها في المهمة نفسِها لا يُرجِع قائمةً قديمة */
+  var mk = key + '|' + CUR + '|' + (MFU.flt.z || '') + '|' + (MFU.flt.t || '') + (/^al_/.test(key) ? '|' + PV.AL_RULES.map(function(r){ return alRuleDays(r[1]); }).join(',') : ''), LM = DB.memo ? DB.memo.lists : null;   /* أيامُ القواعد في المفتاح: تغييرُها في المهمة نفسِها لا يُرجِع قائمةً قديمة */
   if (LM && LM[mk]) return LM[mk].slice();
   var res = svListRows0(key); if (LM) LM[mk] = res;
   return res.slice();
@@ -53,7 +53,7 @@ function svListRows0(key){
   var OK = svObKey(key);
   if (OK) return svListRows0(OK.bad ? 'chal' : 'clean').filter(function(row){ var x = siteFind(row[0]); return x && taxOf(x).t === OK.ty; });
   var L = SV_LISTS[key] || svDynList(key);   /* (V37.4) */
-  if (!L && /^al_/.test(key)){ var rule = AL_RULES.filter(function(r){ return r[0] === key; })[0]; if (!rule) return [];   /* (V30.1) قوائمُ قواعد التنبيه */
+  if (!L && /^al_/.test(key)){ var rule = PV.AL_RULES.filter(function(r){ return r[0] === key; })[0]; if (!rule) return [];   /* (V30.1) قوائمُ قواعد التنبيه */
     var ids = {}; alRuleList(rule).forEach(function(x){ ids[x.id] = 1; }); L = [t(rule[2]) + ' ' + nm(alRuleDays(rule[1])) + ' ' + t('يوم'), function(x){ return !!ids[x.id]; }]; }
   if (!L) return [];
   return svListSites().filter(function(x){ return L[1](x, STATE.recs[x.id]); }).map(function(x){
@@ -68,7 +68,7 @@ function svListRows0(key){
 
 function svListHead(key){ if (MFU.lists[key]) return MFU.lists[key].head; return ['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'آخر زيارة', 'بواسطة', key === 'nophoto' || key === 'al_nophoto' || key === 'badphoto' ? 'الصور' : (key === 'campins' || key === 'corins') ? 'التركيب' : key === 'obs' ? 'المعوّقات' : 'الحالة — سبب عدم المسح أو التحديات']; }
 
-function svListTitle(key){ if (MFU.lists[key]) return t(MFU.lists[key].title); var OK = svObKey(key); if (OK) return t((TAX_DEF[OK.ty] || { l:OK.ty }).l) + ' \u2014 ' + t(OK.bad ? 'بعوائق' : 'بدون عوائق'); if (SV_LISTS[key]) return t(SV_LISTS[key][0]); var DL = svDynList(key); if (DL) return t(DL[0]); var rule = AL_RULES.filter(function(r){ return r[0] === key; })[0]; return rule ? t(rule[2]) + ' ' + nm(alRuleDays(rule[1])) + ' ' + t('يوم') : key; }
+function svListTitle(key){ if (MFU.lists[key]) return t(MFU.lists[key].title); var OK = svObKey(key); if (OK) return t((PV.TAX_DEF[OK.ty] || { l:OK.ty }).l) + ' \u2014 ' + t(OK.bad ? 'بعوائق' : 'بدون عوائق'); if (SV_LISTS[key]) return t(SV_LISTS[key][0]); var DL = svDynList(key); if (DL) return t(DL[0]); var rule = PV.AL_RULES.filter(function(r){ return r[0] === key; })[0]; return rule ? t(rule[2]) + ' ' + nm(alRuleDays(rule[1])) + ' ' + t('يوم') : key; }
 
 /* (V30.1) */
 function svListPop(){
@@ -76,7 +76,7 @@ function svListPop(){
   var rowsAll = svListRows(SV_POP), head = svListHead(SV_POP), dcz = svDashCols(head);
   var zonesAll = []; if (dcz.zone > -1){ var zm = {}; rowsAll.forEach(function(r){ zm[String(r[dcz.zone] || '')] = 1; }); zonesAll = Object.keys(zm).filter(Boolean); }
   var rows = svPopFilter(rowsAll, head);   /* (V37.45 المشعر · V37.58 والمربعُ المضغوط) — المرشّحُ نفسُه في الإكسل */
-  var shown = rows.slice(0, SV_SHOW);   /* (V37.27 المرحلةُ ٢) دفعاتٌ من ٨٠ — كانت ٣٠٠ صفٍّ دفعةً واحدة */
+  var shown = rows.slice(0, PV.SV_SHOW);   /* (V37.27 المرحلةُ ٢) دفعاتٌ من ٨٠ — كانت ٣٠٠ صفٍّ دفعةً واحدة */
   var dc0 = svDashCols(head), canDash = dc0.zone > -1 || dc0.type > -1 || dc0.comp > -1;   /* (V37.41) طلبُ المالك: كلُّ نوافذ متابعة الوزارة لوحة */
   var asDash = canDash && SV_VIEW !== 'list';
   var PCN = {}, PP = STATE.photos || {}; Object.keys(PP).forEach(function(k){ var x = PP[k]; if (x && !x.del && x.site && !/^ins|^dis/.test(String(x.kind || ''))) PCN[x.site] = (PCN[x.site] || 0) + 1; });   /* (V38.75) the visit's photos */   /* (V37.14) فهرسٌ مرةً للنافذة */
@@ -87,7 +87,7 @@ function svListPop(){
       + (canDash ? btn(asDash ? '\u2630 ' + t('القائمة') : '\u{1F4CA} ' + t('اللوحة'), 'btn-quiet btn-sm', ' data-svview="' + (asDash ? 'list' : 'dash') + '"') : '')
       + (canDash && asDash ? btn('\u{1F5A8} ' + t('طباعة اللوحة'), 'btn-quiet btn-sm', ' data-svprint="1"') : '')   /* (V37.45) */
       + btn('\u2715 ' + t('إغلاق'), 'btn-quiet btn-sm', ' data-svpopclose="1"') + '</div></div>'
-    + (SV_STACK.length ? '<div class="actions" style="margin:8px 0 0">' + btn('\u2192 ' + t('رجوع'), 'btn-secondary', ' data-svback="1" title="' + esc(t('للشاشة السابقة')) + '"') + '</div>' : '')   /* (V37.59) رجوعٌ حقيقيٌّ للشاشة السابقة */
+    + (PV.SV_STACK.length ? '<div class="actions" style="margin:8px 0 0">' + btn('\u2192 ' + t('رجوع'), 'btn-secondary', ' data-svback="1" title="' + esc(t('للشاشة السابقة')) + '"') + '</div>' : '')   /* (V37.59) رجوعٌ حقيقيٌّ للشاشة السابقة */
     + (zonesAll.length > 1 ? '<div class="chips" style="margin:8px 0 0">' + [['', 'كل المشاعر']].concat(zonesAll.map(function(z){ return [z, z]; })).map(function(z){ return '<button type="button" class="chip' + (SV_ZF === z[0] ? ' on' : '') + '" data-svzf="' + esc(z[0]) + '">' + esc(t(z[1])) + '</button>'; }).join('') + '</div>' : '')
     + (SV_POP === 'nophoto' ? '<p class="hint" style="margin:6px 0">' + esc(t('وجِّه الشبابَ لهذه النقاط لإضافة الصور من «تعديل المسح» — «التُقطت ولم تُرفع» تعني أن الصور على جهاز صاحب الزيارة: يفتح التطبيقَ على الشبكة.')) + '</p>' : '')
     /* (V37.6) طلبُ المالك: «عاوز هنا الصور — أقدر أفتح صور المخيم ده في كل التحديات وأسباب عدم المسح». عمودُ «الصور» في النافذة وحدَها (لا في الإكسل) */
@@ -99,7 +99,7 @@ function svListPop(){
                    + (rows.length > shown.length ? '<div class="actions" style="justify-content:center;margin:10px 0">' + btn('\u2193 ' + t('عرض المزيد') + ' (' + nm(Math.min(80, rows.length - shown.length)) + ' ' + t('من') + ' ' + nm(rows.length - shown.length) + ')', 'btn-secondary btn-sm', ' data-svmore="1"') + '</div><p class="hint" style="text-align:center">' + esc(t('والكلُّ في ملف الإكسل')) + '</p>' : '')   /* (V37.27) */
                    : (asDash ? '' : '<p class="hint">' + esc(t('لا نقاط')) + '</p>'))   /* (V37.58) كانت تظهر تحت اللوحة */
     + '</div>'
-    + (SV_PHO ? svPhoPanel(SV_PHO) : '');
+    + (PV.SV_PHO ? svPhoPanel(PV.SV_PHO) : '');
 }
 
 function svDashCols(head){   /* (V37.41) الأعمدةُ بأسمائها لا بمواضعها — فتعمل اللوحةُ على كلِّ قائمةٍ في صفحة الوزارة */
@@ -125,7 +125,7 @@ function svDashHtml(key, rows, head){
 
 function svPrimWhy(rec){
   if (!rec || !svDone(rec)) return -1; var cc = chalCats(rec); if (!cc.length) return -1;
-  for (var q = 0; q < SV_WHY_ORDER.length; q++){ var w = SV_WHY[SV_WHY_ORDER[q]]; if (w.ks.some(function(k){ return cc.indexOf(k) > -1; })) return SV_WHY_ORDER[q]; }
+  for (var q = 0; q < PV.SV_WHY_ORDER.length; q++){ var w = PV.SV_WHY[PV.SV_WHY_ORDER[q]]; if (w.ks.some(function(k){ return cc.indexOf(k) > -1; })) return PV.SV_WHY_ORDER[q]; }
   return 5;
 }
 
@@ -159,20 +159,20 @@ function svSubPass(id){
 }
 
 function svSubLabel(){ if (!SV_SUB) return ''; var p = SV_SUB.split(':');
-  if (p[0] === 'st'){ var o = SV_ST.filter(function(x){ return x.k === p[1]; })[0]; return o ? o.n : ''; }
+  if (p[0] === 'st'){ var o = PV.SV_ST.filter(function(x){ return x.k === p[1]; })[0]; return o ? o.n : ''; }
   if (p[0] === 'neww') return 'تحتاج تنسيق مع الجهة المالكة — جديدة هذا الأسبوع';
   if (p[0] === 'life') return p[1] === 'minwait' ? 'جاهزة لاعتماد الوزارة' : ((LIFE[p[1]] || {}).n || p[1]);
-  if (p[0] === 'type') return (TAX_DEF[p[1]] || { l:p[1] }).l; if (p[0] === 'co') return SV_SUB.slice(3);
-  if (p[0] === 'cob'){ var b = MT_COB.filter(function(x){ return x.k === p[1]; })[0]; return b ? t('شركات') + ' — ' + t(b.n) : ''; }
-  if (p[0] === 'grp'){ if (p[1] === 'all') return t('عليها تحدي'); var g = MT_GRP.filter(function(x){ return x.k === p[1]; })[0]; return g ? g.n : ''; }
+  if (p[0] === 'type') return (PV.TAX_DEF[p[1]] || { l:p[1] }).l; if (p[0] === 'co') return SV_SUB.slice(3);
+  if (p[0] === 'cob'){ var b = PV.MT_COB.filter(function(x){ return x.k === p[1]; })[0]; return b ? t('شركات') + ' — ' + t(b.n) : ''; }
+  if (p[0] === 'grp'){ if (p[1] === 'all') return t('عليها تحدي'); var g = PV.MT_GRP.filter(function(x){ return x.k === p[1]; })[0]; return g ? g.n : ''; }
   if (p[0] === 'day'){ var dd = new Date(p[1] + 'T12:00:00'), WDN = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']; return t(WDN[dd.getDay()]) + ' ' + nm(dd.getDate()) + '/' + nm(dd.getMonth() + 1) + (p[2] ? ' \u00b7 ' + t(({ visit:'زيارة', ins:'تركيب', dis:'فك' })[p[2]] || p[2]) : ''); }   /* (V37.62) اليومُ باسمه وتاريخه بالعربية */
-  var w = SV_WHY[+p[1]]; return w ? w.n : ''; }
+  var w = PV.SV_WHY[+p[1]]; return w ? w.n : ''; }
 
 function svSubUnit(){ return /^(co|cob):/.test(SV_SUB) ? 'مخيم' : 'نقطة'; }
 
 function svSubTitle(rows){
   var p = SV_SUB.split(':'), n = rows.length, lab = svSubLabel(), extra = '';
-  if (p[0] === 'cob'){ lab = SV_COB_T[p[1]] || lab; var nc = mtCoStats().filter(function(o){ return o.b === p[1]; }).length; extra = ' ' + esc(t('في')) + ' ' + nm(nc) + ' ' + esc(t('شركة')); }
+  if (p[0] === 'cob'){ lab = PV.SV_COB_T[p[1]] || lab; var nc = mtCoStats().filter(function(o){ return o.b === p[1]; }).length; extra = ' ' + esc(t('في')) + ' ' + nm(nc) + ' ' + esc(t('شركة')); }
   if (p[0] === 'co') lab = t('مخيمات') + ' ' + SV_SUB.slice(3);
   if (p[0] === 'day') lab = t('شغل') + ' ' + lab;
   return esc(t(lab)) + ' \u2014 ' + nm(n) + ' ' + esc(t(svSubUnit())) + extra + (SV_ZF ? ' <small class="hint" style="margin:0">' + esc(t(SV_ZF)) + '</small>' : '');
@@ -188,15 +188,15 @@ function svDashHtml0(key, rows, head){
   var tile = 'background:var(--surface-2);border-radius:14px;padding:12px';
   var stc = {}, wc = {}, multi = 0;
   rows.forEach(function(r){ var k = svStOf(r[0]); stc[k] = (stc[k] || 0) + 1;
-    if (k === 'prep' || k === 'coord'){ var rec = STATE.recs[r[0]], pw = svPrimWhy(rec); if (pw > -1 && pw !== 3){ wc[pw] = (wc[pw] || 0) + 1; var cc = chalCats(rec), kinds = SV_WHY.filter(function(w){ return w.ks.some(function(x){ return cc.indexOf(x) > -1; }); }).length; if (kinds > 1) multi++; } } });
+    if (k === 'prep' || k === 'coord'){ var rec = STATE.recs[r[0]], pw = svPrimWhy(rec); if (pw > -1 && pw !== 3){ wc[pw] = (wc[pw] || 0) + 1; var cc = chalCats(rec), kinds = PV.SV_WHY.filter(function(w){ return w.ks.some(function(x){ return cc.indexOf(x) > -1; }); }).length; if (kinds > 1) multi++; } } });
   /* ١ · العنوان: في اللوحة الأمّ حلقةٌ بالنسبة، وداخلَ مربعٍ جملةٌ واحدةٌ بلا حلقةٍ ولا نسبة */
   var prog = /^(sv|srv|insd|hand|disd)$/.test(key), pct = Math.round(n / Math.max(1, base.n) * 100);
   var ringC = prog ? (pct >= 90 ? '#22C55E' : pct >= 50 ? '#F59E0B' : '#EF4444') : 'var(--acc,#2E86DE)';
   var hero = sub
-    ? '<div style="' + tile + ';margin:10px 0;display:flex;align-items:center;gap:12px"><span style="font-size:30px">' + ((SV_ST.filter(function(o){ return 'st:' + o.k === SV_SUB; })[0] || {}).e || (SV_WHY[+String(SV_SUB).split(':')[1]] || {}).e || '\u25CF') + '</span><div><div class="num" style="font-size:30px;font-weight:800;line-height:1.1">' + nm(n) + '</div><div style="font-size:15px">' + esc(t(svSubUnit())) + ' \u2014 ' + esc(t(/^cob:/.test(SV_SUB) ? (SV_COB_T[SV_SUB.slice(4)] || svSubLabel()) : /^co:/.test(SV_SUB) ? t('مخيمات') + ' ' + SV_SUB.slice(3) : svSubLabel())) + '</div></div></div>'
+    ? '<div style="' + tile + ';margin:10px 0;display:flex;align-items:center;gap:12px"><span style="font-size:30px">' + ((PV.SV_ST.filter(function(o){ return 'st:' + o.k === SV_SUB; })[0] || {}).e || (PV.SV_WHY[+String(SV_SUB).split(':')[1]] || {}).e || '\u25CF') + '</span><div><div class="num" style="font-size:30px;font-weight:800;line-height:1.1">' + nm(n) + '</div><div style="font-size:15px">' + esc(t(svSubUnit())) + ' \u2014 ' + esc(t(/^cob:/.test(SV_SUB) ? (PV.SV_COB_T[SV_SUB.slice(4)] || svSubLabel()) : /^co:/.test(SV_SUB) ? t('مخيمات') + ' ' + SV_SUB.slice(3) : svSubLabel())) + '</div></div></div>'
     : '<div style="display:flex;align-items:center;gap:16px;' + tile + ';margin:10px 0">' + svRing(pct, 108, ringC, nm(pct) + '\u066A') + '<div><div class="num" style="font-size:34px;font-weight:800;line-height:1.1">' + nm(n) + '</div><div class="hint" style="margin:2px 0 0;font-size:14px">' + esc(t('نقطة')) + ' \u00b7 ' + esc(t('من')) + ' ' + nm(base.n) + '</div></div></div>';
   /* ٢ · حالُها الآن: كلُّ نقطةٍ مرةً واحدة — يختفي إن كانت كلُّها لونًا واحدًا */
-  var sts = SV_ST.filter(function(o){ return stc[o.k]; });
+  var sts = PV.SV_ST.filter(function(o){ return stc[o.k]; });
   var stSec = sts.length > 1 ? '<div class="hint" style="margin:4px 0 6px;font-size:14px">' + esc(t('حالها الآن')) + '</div>'
     + '<div style="display:flex;height:22px;border-radius:12px;overflow:hidden;margin:4px 0 10px">' + sts.map(function(o){ return '<i title="' + esc(t(o.n)) + '" style="display:block;width:' + (stc[o.k] / n * 100).toFixed(2) + '%;background:' + o.c + '"></i>'; }).join('') + '</div>'
     + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:12px">' + sts.map(function(o){
@@ -204,7 +204,7 @@ function svDashHtml0(key, rows, head){
   /* ٣ · «تحتاج تجهيز — ليه؟»: بالسبب الرئيس فمجموعُها = البرتقالي بالضبط */
   var why = Object.keys(wc).map(Number).sort(function(a, b){ return wc[b] - wc[a]; }), prepN = why.reduce(function(a, wi){ return a + wc[wi]; }, 0);
   var whySec = why.length && !(sub && /^why:/.test(SV_SUB)) ? '<div class="hint" style="margin:4px 0 6px;font-size:14px">' + esc(t('تحتاج تجهيز — ليه؟')) + ' <span class="num">(' + nm(prepN) + ')</span></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px">'
-    + why.map(function(wi){ var w = SV_WHY[wi]; return '<div role="button" tabindex="0" data-svsub="why:' + wi + '" title="' + esc(t('اضغط للتفاصيل والإكسل')) + '" style="' + tile + ';text-align:center;padding:10px 6px;cursor:pointer"><div style="font-size:24px">' + w.e + '</div><div class="num" style="font-size:18px;font-weight:800;margin-top:2px">' + nm(wc[wi]) + '</div><div style="font-size:12px">' + esc(t(w.n)) + ' \u203A</div></div>'; }).join('') + '</div>'
+    + why.map(function(wi){ var w = PV.SV_WHY[wi]; return '<div role="button" tabindex="0" data-svsub="why:' + wi + '" title="' + esc(t('اضغط للتفاصيل والإكسل')) + '" style="' + tile + ';text-align:center;padding:10px 6px;cursor:pointer"><div style="font-size:24px">' + w.e + '</div><div class="num" style="font-size:18px;font-weight:800;margin-top:2px">' + nm(wc[wi]) + '</div><div style="font-size:12px">' + esc(t(w.n)) + ' \u203A</div></div>'; }).join('') + '</div>'
     + (multi ? '<p class="hint" style="margin:0 0 12px;font-size:12px">' + esc(t('كلُّ نقطةٍ محسوبةٌ مرةً بأهمِّ تحدٍّ فيها — و')) + nm(multi) + ' ' + esc(t('منها فيها تحدٍّ آخر كمان')) + '</p>' : '<div style="margin-bottom:12px"></div>') : '';
   /* ٤ · المشاعر: حلقاتٌ في اللوحة الأمّ، وأعدادٌ فقط داخلَ المربع */
   var zc = {}; if (C.zone > -1) rows.forEach(function(r){ var z = String(r[C.zone] || ''); if (z) zc[z] = (zc[z] || 0) + 1; });

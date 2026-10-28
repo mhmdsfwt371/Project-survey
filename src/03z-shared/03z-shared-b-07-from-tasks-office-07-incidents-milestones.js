@@ -19,7 +19,7 @@ function hseSet(i, patch){
 }
 
 
-var MILE_EDIT = '', MILE_NEW = false;
+PV.MILE_EDIT = ''; PV.MILE_NEW = false;
 
 function mileDateSet(id, d){
   if (!may('settings')){ toast(t('مواعيدُ المعالم للمهندس وحده')); return; }

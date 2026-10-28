@@ -7,12 +7,12 @@
    ============================================================================ */
 function navPush(from){
   if (!from) return;
-  if (NAV_HIST[NAV_HIST.length - 1] === from) return;
-  NAV_HIST.push(from);
-  if (NAV_HIST.length > 20) NAV_HIST.shift();
+  if (PV.NAV_HIST[PV.NAV_HIST.length - 1] === from) return;
+  PV.NAV_HIST.push(from);
+  if (PV.NAV_HIST.length > 20) PV.NAV_HIST.shift();
 }
 
 function navBack(){
-  CUR = NAV_HIST.length ? NAV_HIST.pop() : 'over';
+  CUR = PV.NAV_HIST.length ? PV.NAV_HIST.pop() : 'over';
   render();
 }

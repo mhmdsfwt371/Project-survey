@@ -60,7 +60,7 @@ function kkSatInit(){
   var el = document.getElementById('kkSat'); if (!el) return false;
   if (typeof L === 'undefined' || !L.map){ el.innerHTML = '<p class="hint" style="padding:12px">' + esc(t('الخريطةُ تحتاج تحميلَ المكتبة — تظهر النقاطُ المجرّدةُ بدلًا منها')) + '</p>'; return false; }
   var zone = KK_ZONE, all = (STATE.sites || []).filter(function(x){ return taxOf(x).g === zone && +x.lat && +x.lng; }), core = geoOutliers(all).core;
-  if (KK_MAP){ try { KK_MAP.remove(); } catch (e){ LS_ERR = e; } KK_MAP = null; }
+  if (PV.KK_MAP){ try { PV.KK_MAP.remove(); } catch (e){ LS_ERR = e; } PV.KK_MAP = null; }
   var m = L.map(el, { zoomControl:true, attributionControl:true, preferCanvas:true });
   L.tileLayer(TILES.esri, { maxZoom:19, keepBuffer:1, updateWhenIdle:true, updateWhenZooming:false, attribution:'Esri, Maxar, Earthstar Geographics' }).addTo(m);   /* (V34.2) */
   /* على اللمس: خريطةٌ طويلةٌ داخل صفحةٍ تُمسك الإصبعَ فلا تُمرَّر الصفحة. يبدأ
@@ -79,11 +79,11 @@ function kkSatInit(){
     L.circleMarker([+x.lat, +x.lng], { renderer:MAP_CV_KK, radius:5, color:'#fff', weight:1, fillColor:C, fillOpacity:0.95 })
       .on('click', function(){ DETAIL_ID = x.id; CUR = 'site'; render(); }).addTo(m);
   });
-  var v = KK_MAPV[zone];
+  var v = PV.KK_MAPV[zone];
   if (v && v.z) m.setView([v.lat, v.lng], v.z);
   else if (core.length){ m.fitBounds(L.latLngBounds(core.map(function(x){ return [+x.lat, +x.lng]; })), { padding:[12, 12] }); }
-  m.on('moveend', function(){ var c = m.getCenter(); KK_MAPV[zone] = { lat:c.lat, lng:c.lng, z:m.getZoom() }; });
-  KK_MAP = m; KK_MAP_ZONE = zone;
+  m.on('moveend', function(){ var c = m.getCenter(); PV.KK_MAPV[zone] = { lat:c.lat, lng:c.lng, z:m.getZoom() }; });
+  PV.KK_MAP = m; PV.KK_MAP_ZONE = zone;
   return true;
 }
 
@@ -144,7 +144,7 @@ function kioskObsHtml(){
   return '<div class="kk-h" style="margin:14px 2px 8px">' + esc(t('النقاط بعوائق وبدونها')) + '</div>'
     + '<div class="kk-rings" id="kksec-4">'
     +   card(esc(t('الإجمالي')), K.T, 'clean', 'chal', true)
-    +   types.map(function(ty){ var d = TAX_DEF[ty] || { l:ty, i:'\u25CF' }; return card(d.i + ' ' + esc(t(d.l)), K.by[ty], 'obok|' + ty, 'obbad|' + ty, false); }).join('')
+    +   types.map(function(ty){ var d = PV.TAX_DEF[ty] || { l:ty, i:'\u25CF' }; return card(d.i + ' ' + esc(t(d.l)), K.by[ty], 'obok|' + ty, 'obbad|' + ty, false); }).join('')
     + '</div>';
 }
 
@@ -196,11 +196,11 @@ function kioskAnimate(){
 function kioskCycleTick(){
   var secs = document.querySelectorAll('.kk [id^="kksec-"]');
   if (!secs.length) return;
-  KIOSK_STEP = (KIOSK_STEP + 1) % secs.length;
-  try { secs[KIOSK_STEP].scrollIntoView({ behavior:'smooth', block:'start' }); } catch (e){ secs[KIOSK_STEP].scrollIntoView(); }
+  PV.KIOSK_STEP = (PV.KIOSK_STEP + 1) % secs.length;
+  try { secs[PV.KIOSK_STEP].scrollIntoView({ behavior:'smooth', block:'start' }); } catch (e){ secs[PV.KIOSK_STEP].scrollIntoView(); }
 }
 
-function kioskCycleStop(){ if (KIOSK_CYCLE){ clearInterval(KIOSK_CYCLE); KIOSK_CYCLE = null; } }
+function kioskCycleStop(){ if (PV.KIOSK_CYCLE){ clearInterval(PV.KIOSK_CYCLE); PV.KIOSK_CYCLE = null; } }
 
 /* (V33.5) طلبُ المالك: أربعُ حلقاتٍ فقط — المسح والتركيب والتسليم والفك — الأخضرُ المنجزُ والأحمرُ المتبقي، وتفاعليةٌ كبطاقات «بعوائق
    وبدونها»: الحلقةُ تفتح قائمةَ المنجز، و«متبقٍّ» تحتها تفتح قائمةَ المتبقي. ولا مقامَ له (الفكُّ قبل التسليم) حلقةٌ رماديةٌ تقول متى تبدأ. */
@@ -230,11 +230,11 @@ function kioskToggle(){
     else if (!KIOSK_ON && document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
   } catch (e){ LS_ERR = e; }
   if (KIOSK_TIMER){ clearInterval(KIOSK_TIMER); KIOSK_TIMER = null; }
-  kioskCycleStop(); KIOSK_STEP = 0;
+  kioskCycleStop(); PV.KIOSK_STEP = 0;
   try { sunApply(); } catch (e){ LS_ERR = e; }   /* القاعةُ بلا وضع الشمس (V17.99) */
   if (KIOSK_ON){
     KIOSK_TIMER = setInterval(function(){ if ((CUR === 'mfu' || CUR === 'over') && KIOSK_ON) render(1); else kioskToggle(); }, 60000);   /* (V37.49) كان يشترط تبويبَ «over/kiosk» القديم فيُطفئ العرضَ بعد دقيقة */
-    KIOSK_CYCLE = setInterval(kioskCycleTick, 15000);
+    PV.KIOSK_CYCLE = setInterval(kioskCycleTick, 15000);
     var stop = function(){ kioskCycleStop(); };
     ['pointerdown', 'wheel', 'keydown', 'touchstart'].forEach(function(ev){ document.addEventListener(ev, stop, { once:true, passive:true }); });
   }
@@ -260,10 +260,10 @@ function kioskBody(){
     +   btn(KIOSK_ON ? '\u2716 ' + t('خروج من العرض') : '\u{1F5A5} ' + t('عرضٌ كامل'), KIOSK_ON ? 'btn-quiet' : 'btn-primary', ' data-kiosk="1"' + (KIOSK_ON ? '' : ' title="' + esc(t('يملأ الشاشةَ ويتنقّل بين الأقسام بنفسه كلَّ خمسَ عشرةَ ثانية')) + '"')) + '</div>'
     + '<div class="kk-story">' + esc(kioskStory()) + '</div>'
     + '<div class="kk-rings" id="kksec-1">'   /* (V33.5) طلبُ المالك: المسح والتركيب والتسليم والفك — أربعٌ فقط */
-    +   stageRings(KSC = stageCounts())   /* (V37.0) خمسُ مراحل */
+    +   stageRings(PV.KSC = stageCounts())   /* (V37.0) خمسُ مراحل */
     + '</div>'
     + kioskObsHtml()
-    + '<div class="mfu-hero-grid" id="kksec-stage">' + stageFunnel(KSC) + gapCard(KSC) + ccCard(KSC) + '</div>'   /* (V33.3) طلبُ المالك: بطاقاتٌ فوق تحت الحلقات مباشرةً، وكلُّ رقمٍ يفتح قائمتَه بتصدير */
+    + '<div class="mfu-hero-grid" id="kksec-stage">' + stageFunnel(PV.KSC) + gapCard(PV.KSC) + ccCard(PV.KSC) + '</div>'   /* (V33.3) طلبُ المالك: بطاقاتٌ فوق تحت الحلقات مباشرةً، وكلُّ رقمٍ يفتح قائمتَه بتصدير */
     + '<div class="kk-grid">'
     +   '<div class="kk-box" id="kksec-2"><div class="kk-h">' + esc(t('المشاعرُ — كم أُنجز وكم بقي')) + '</div>'
     +     zones.map(function(z){ var o = K.zones[z], p = o.n ? Math.round(o.sv / o.n * 100) : 0;

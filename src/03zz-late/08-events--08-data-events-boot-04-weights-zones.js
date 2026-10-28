@@ -6,7 +6,7 @@
    NOTE    : Edit these functions here. audit-core-alone.mjs fails if code the core runs alone starts calling one without checking typeof first.
    ============================================================================ */
 function zoneCode(zone){
-  if (ZONE_CODE[zone]) return ZONE_CODE[zone];
+  if (PV.ZONE_CODE[zone]) return PV.ZONE_CODE[zone];
   var en = (D.en && D.en[zone]) || '';
   var a = String(en).replace(/[^A-Za-z]/g, '').toUpperCase();
   return a ? a.slice(0, 3) : 'NEW';

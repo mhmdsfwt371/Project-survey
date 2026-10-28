@@ -124,7 +124,7 @@ function svReopen(id, reason, note){
   logEvent('إعادة تصنيف زيارة كمتعذّرة — ' + id + ' \u00b7 ' + reason
            + (r.reopenNote ? (' \u00b7 ' + r.reopenNote) : ''));
   toast(id + ' \u00b7 ' + t('أُعيدت للقائمة — تحتاج زيارةً ثانية'));
-  SURV_REOPEN = '';
+  PV.SURV_REOPEN = '';
   statBump();
   render(1);
 }

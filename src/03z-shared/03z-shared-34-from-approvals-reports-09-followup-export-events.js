@@ -9,7 +9,7 @@
    كان يعرض خمسةَ أسطرٍ ثابتةً من بيانات العرض لا السجلَّ الحقيقي — فالأثرُ
    التدقيقيُّ يُكتَب ولا يُقرأ، ومن سأل «من حذف هذه الصورة؟» لم يجد جوابًا.
    والحدثُ نصٌّ حر، فنوعُه يُشتقُّ من مفتتحه لا يُخزَّن معه. */
-var EV_KINDS = [
+PV.EV_KINDS = [
   ['مسح',    /^مسح موقع|^تعذّر الوصول/],
   ['تركيب',  /^تركيب|^إتمام تركيب|^مسودّة تركيب/],
   ['اعتماد', /^اعتماد|^ردّ |^رُدّ/],
@@ -24,7 +24,7 @@ var EV_KINDS = [
 
 function evKind(what){
   var w = String(what || '');
-  for (var i = 0; i < EV_KINDS.length; i++) if (EV_KINDS[i][1].test(w)) return EV_KINDS[i][0];
+  for (var i = 0; i < PV.EV_KINDS.length; i++) if (PV.EV_KINDS[i][1].test(w)) return PV.EV_KINDS[i][0];
   return 'أخرى';
 }
 
@@ -67,16 +67,16 @@ var EVF = { kind:'', by:'', from:'', to:'', q:'', cat:'' };
    يُكتَب على الوثيقة المخزَّنة اسمٌ لم تُكتَب به — تزويرٌ في سجلِّ تدقيق.
    فيُقرأ للعرض فقط: إن ذُكر في النصِّ اسمُ حسابٍ من حسابات النظام غيرِ
    صاحب الجهاز فهو الفاعل، ويُقال إنه مقروءٌ من النصّ لا مختومٌ في الحقل. */
-var EV_NAMES = null; PV.EV_NAMES_V = 0;
+PV.EV_NAMES = null; PV.EV_NAMES_V = 0;
 
 function evNames(){
   var n = Object.keys(STATE.users || {}).length;
-  if (EV_NAMES && PV.EV_NAMES_V === n) return EV_NAMES;
+  if (PV.EV_NAMES && PV.EV_NAMES_V === n) return PV.EV_NAMES;
   PV.EV_NAMES_V = n;
-  EV_NAMES = Object.keys(STATE.users || {}).map(function(k){ return (STATE.users[k] || {}).name || ''; })
+  PV.EV_NAMES = Object.keys(STATE.users || {}).map(function(k){ return (STATE.users[k] || {}).name || ''; })
     .filter(function(x){ return x && x.length > 3; })
     .sort(function(a, b){ return b.length - a.length; });   /* الأطولُ أولًا فلا يبتلعه جزءٌ منه */
-  return EV_NAMES;
+  return PV.EV_NAMES;
 }
 
 function evActor(e){

@@ -58,18 +58,18 @@ var PAGE = {};
    عربيةٍ قد يُعاد ترتيبُه بصريًّا. في HTML يُعزَل بـ<bdi>، وفي النصِّ الصريح (واتساب
    والتقارير) بعلامتَي FSI…PDI. للعرض فقط: القيمُ المخزونةُ والتصديرُ (CSV/JSON/إكسل)
    تبقى نظيفةً من العلامات. */
-var BDI_TOK = /[A-Za-z0-9][A-Za-z0-9._:\/-]*[A-Za-z0-9]|[A-Za-z0-9]/g;
+PV.BDI_TOK = /[A-Za-z0-9][A-Za-z0-9._:\/-]*[A-Za-z0-9]|[A-Za-z0-9]/g;
 function bdiNeed(m){ return /[A-Za-z]/.test(m) || /[\/:.-]/.test(m); }
 function bdi(s){ return '<bdi>' + esc(s) + '</bdi>'; }
 function bdiText(s){
   /* التهريبُ بعد التقطيع: esc تحوّل الشَّرطةَ المائلة إلى مرجعٍ فيتقطّع الشاخص */
   s = String(s == null ? '' : s); var out = '', last = 0;
-  s.replace(BDI_TOK, function(m, off){ out += esc(s.slice(last, off)) + (bdiNeed(m) ? '<bdi>' + esc(m) + '</bdi>' : esc(m)); last = off + m.length; return m; });
+  s.replace(PV.BDI_TOK, function(m, off){ out += esc(s.slice(last, off)) + (bdiNeed(m) ? '<bdi>' + esc(m) + '</bdi>' : esc(m)); last = off + m.length; return m; });
   return out + esc(s.slice(last));
 }
 
 
-function esc(s){ var x = String(s==null?'':s); if (LANG === 'ar' && noTashkeel()) x = x.replace(TASHKEEL_RE, '');   /* (V34.4) */
+function esc(s){ var x = String(s==null?'':s); if (LANG === 'ar' && noTashkeel()) x = x.replace(PV.TASHKEEL_RE, '');   /* (V34.4) */
   return x
   .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
   .replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/\//g,'&#47;'); }
@@ -174,14 +174,14 @@ function pageHead(eyebrow, title, lede, right){
    كان. والحدُّ الأقصى للصفوف يرتفع أثناء البحث فلا يختبئ المطلوبُ خلفه. */
 var PG_Q = '';
 var PG_BIND = {
-  survey:  function(v){ SURV_Q = v; }, svappr: function(v){ SVA_Q = v; },
-  minappr: function(v){ MIN_Q  = v; }, wbs:    function(v){ WBS_Q = v; },
-  wtask:   function(v){ WT_Q   = v; }, users:  function(v){ USR.q = v; },
-  co:      function(v){ CO_Q   = v; }, sites:  function(v){ SITE_Q = v; },
+  survey:  function(v){ PV.SURV_Q = v; }, svappr: function(v){ SVA_Q = v; },
+  minappr: function(v){ PV.MIN_Q  = v; }, wbs:    function(v){ PV.WBS_Q = v; },
+  wtask:   function(v){ PV.WT_Q   = v; }, users:  function(v){ USR.q = v; },
+  co:      function(v){ PV.CO_Q   = v; }, sites:  function(v){ SITE_Q = v; },
   items:   function(v){ IT_Q   = v; }, jobs:   function(v){ JB_Q  = v; },
-  reqreg:  function(v){ REG_Q  = v; }, ships:  function(v){ SHIP_Q = v; },
-  myveh:   function(v){ VEH_Q  = v; }, fleetLog: function(v){ VLOG_Q = v; },
-  ips:     function(v){ IP_Q   = v; }, solution: function(v){ SOL_Q = v; },
+  reqreg:  function(v){ REG_Q  = v; }, ships:  function(v){ PV.SHIP_Q = v; },
+  myveh:   function(v){ PV.VEH_Q  = v; }, fleetLog: function(v){ PV.VLOG_Q = v; },
+  ips:     function(v){ PV.IP_Q   = v; }, solution: function(v){ SOL_Q = v; },
   ev:      function(v){ EVF.q  = v; },
   chal:    function(v){ CHAL_Q = v; }, notif: function(v){ NTF_Q = v; }
 };
@@ -190,7 +190,7 @@ function pgBindOf(){
   var tab = (typeof TABS === 'object' && TABS[CUR]) ? PTAB[CUR] : '';
   return PG_BIND[tab] || PG_BIND[CUR] || null;
 }
-var PG_T = 0;
+PV.PG_T = 0;
 function pgFind(q){
   PG_Q = String(q == null ? PG_Q : q);
   var c = document.getElementById('content'); if (!c) return;

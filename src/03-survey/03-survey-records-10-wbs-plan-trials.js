@@ -81,17 +81,17 @@ function wbsLeft(r){
 }
 /* المرشِّحُ نفسُه للشاشة وللورقة */
 function wbsPass(r){
-  if (WBS_Q && (r.n + ' ' + r.id + ' ' + (r.resp || '') + ' ' + (r.party || '')).indexOf(WBS_Q) < 0) return false;
+  if (PV.WBS_Q && (r.n + ' ' + r.id + ' ' + (r.resp || '') + ' ' + (r.party || '')).indexOf(PV.WBS_Q) < 0) return false;
   var st = wbsStatus(r), tm = wbsTiming(r);
-  if (WBS_F === 'late') return tm === 'متأخر';
-  if (WBS_F === 'run') return st === 'قيد التنفيذ';
-  if (WBS_F === 'done') return st === 'مكتملة';
-  if (WBS_F === 'todo') return st === 'لم تبدأ';
-  if (WBS_F === 'ms') return r.type === 'معلم';
+  if (PV.WBS_F === 'late') return tm === 'متأخر';
+  if (PV.WBS_F === 'run') return st === 'قيد التنفيذ';
+  if (PV.WBS_F === 'done') return st === 'مكتملة';
+  if (PV.WBS_F === 'todo') return st === 'لم تبدأ';
+  if (PV.WBS_F === 'ms') return r.type === 'معلم';
   return true;
 }
 function wbsFiltered(){
-  if (!WBS_F && !WBS_Q) return wbsRows();
+  if (!PV.WBS_F && !PV.WBS_Q) return wbsRows();
   var keep = {};
   wbsRows().forEach(function(r){
     if (!wbsPass(r)) return;
@@ -117,7 +117,7 @@ function wbsSave(){
    جهةُ الدفع والتكلفة، وأصنافُ ما يُشترى بكمياتها وأسعارها، وماذا يُركَّب
    وكيف وأين، والعائدُ منه بقيمته، وروابطُ ملفاته (كراسة · عرض · مخطّط).
    يُحفَظ في صفِّ البند نفسِه — لا مجموعةَ جديدة ولا قاعدةَ جديدة. */
-var WBS_DOS = '';
+PV.WBS_DOS = '';
 function dosOf(r){ return (r && r.dos) || {}; }
 function dosItems(r){ var d = dosOf(r); return Array.isArray(d.items) ? d.items : []; }
 function dosFiles(r){ var d = dosOf(r); return Array.isArray(d.files) ? d.files : []; }
@@ -133,8 +133,8 @@ function dosBadge(r){
     + (any ? '\u{1F4C1}' : '\u2795') + (c ? ' <span class="num">' + nm(c) + '</span>' : (fl ? ' <span class="num">' + nm(fl) + '</span>' : '')) + '</button>';
 }
 function wbsDosSheet(){
-  if (!WBS_DOS) return '';
-  var r = wbsRow(WBS_DOS); if (!r){ WBS_DOS = ''; return ''; }
+  if (!PV.WBS_DOS) return '';
+  var r = wbsRow(PV.WBS_DOS); if (!r){ PV.WBS_DOS = ''; return ''; }
   var d = dosOf(r), me = may('settings'), its = dosItems(r), fls = dosFiles(r), cost = dosCost(r);
   var fld = function(k, lab, val, ph){
     return '<div class="field"><label>' + esc(t(lab)) + '</label>'
@@ -267,7 +267,7 @@ function wbsImport(file){
     fr.readAsArrayBuffer(file);
   });
 }
-var WBS_F = '', WBS_Q = '', WBS_T = 0, WBS_OPEN = {}, WBS_RESET = 0, WBS_EDIT = '';
+PV.WBS_F = ''; PV.WBS_Q = ''; PV.WBS_T = 0; var WBS_OPEN = {}; PV.WBS_RESET = 0; var WBS_EDIT = '';
 /* الجذرُ مفتوحٌ أو مطويّ — والافتراضُ الطيُّ ليُقرأ الجدولُ من فوق */
 function wbsShown(id){
   var parts = String(id).split('.');
@@ -363,7 +363,7 @@ PAGE.wbs = { m:'التخطيط', t:'متابعة الخطة التفصيلية',
       ? card('', '<div class="actions" style="margin:0">'
           + '<label class="btn btn-secondary btn-sm" style="cursor:pointer">\u2B06 ' + esc(t('استيراد من إكسل'))
           + '<input type="file" accept=".xlsx,.xls" data-wbsfile="1" style="display:none"></label>'
-          + (wbsRows().length ? btn('\u{1F5D1} ' + t(WBS_RESET ? 'تأكيد المسح — يُمحى الجدولُ كلُّه' : 'امسح الجدول وابدأ من جديد'), WBS_RESET ? 'btn-danger btn-sm' : 'btn-quiet btn-sm', ' data-wbsreset="1"') : '')
+          + (wbsRows().length ? btn('\u{1F5D1} ' + t(PV.WBS_RESET ? 'تأكيد المسح — يُمحى الجدولُ كلُّه' : 'امسح الجدول وابدأ من جديد'), PV.WBS_RESET ? 'btn-danger btn-sm' : 'btn-quiet btn-sm', ' data-wbsreset="1"') : '')
           + '</div>') : '';
     var R = wbsRows();
     if (!R.length) return head + card('', '<p class="hint" style="text-align:center;margin:0">'
@@ -383,7 +383,7 @@ PAGE.wbs = { m:'التخطيط', t:'متابعة الخطة التفصيلية',
     /* الأبُ يظهر إن ظهر أحدُ أبنائه أو طابق هو نفسُه */
     var show = {}; R.forEach(function(r){ if (pass(r)){ show[r.id] = 1; var parts = String(r.id).split('.'); for (var i = 1; i < parts.length; i++) show[parts.slice(0, i).join('.')] = 1; } });
     /* البحثُ والمرشِّحُ يفتحان الطريقَ إلى ما طابق؛ وبلا بحثٍ يُطوى ما لم يُفتَح */
-    var filtering = !!(WBS_Q || WBS_F);
+    var filtering = !!(PV.WBS_Q || PV.WBS_F);
     var rows = R.filter(function(r){ return show[r.id] && (filtering || wbsShown(r.id)); }).map(function(r){
       var dep = wbsDepth(r.id), kids = wbsChildren(r.id).length, p = wbsPct(r), st = wbsStatus(r), tm = wbsTiming(r), left = wbsLeft(r);
       var op = !!WBS_OPEN[r.id];
@@ -460,8 +460,8 @@ PAGE.wbs = { m:'التخطيط', t:'متابعة الخطة التفصيلية',
     }).join('') + '</div>' : '';
     return head + strip + cards
       + stats([['البنود', N(leaves.length)], ['مكتمل', N(c.done), 'ok'], ['قيد التنفيذ', N(c.run), 'wrn'], ['لم يبدأ', N(c.todo)], ['متأخر', N(c.late), c.late ? 'bad' : 'ok'], ['المعالم', N(c.ms), 'acc']])
-      + '<div class="chips">' + chips.map(function(x){ return '<button type="button" class="chip' + (WBS_F === x[0] ? ' on' : '') + '" data-wbsf="' + x[0] + '">' + esc(t(x[1])) + ' <span class="num">' + nm(x[2]) + '</span></button>'; }).join('') + '</div>'
-      + card('', '<input type="search" data-wbsq value="' + esc(WBS_Q) + '" placeholder="' + esc(t('ابحث بالبند أو المسؤول أو الجهة')) + '" dir="auto">')
+      + '<div class="chips">' + chips.map(function(x){ return '<button type="button" class="chip' + (PV.WBS_F === x[0] ? ' on' : '') + '" data-wbsf="' + x[0] + '">' + esc(t(x[1])) + ' <span class="num">' + nm(x[2]) + '</span></button>'; }).join('') + '</div>'
+      + card('', '<input type="search" data-wbsq value="' + esc(PV.WBS_Q) + '" placeholder="' + esc(t('ابحث بالبند أو المسؤول أو الجهة')) + '" dir="auto">')
       + cardRaw(esc(t('جدول المتابعة')) + ' \u2014 ' + nm(rows.length) + (STATE.wbs && STATE.wbs.by ? ' <span class="hint" style="margin:0;font-weight:400">\u00b7 ' + esc(t('آخر تحديث')) + ' ' + esc(dispName(STATE.wbs.by)) + ' ' + esc(stepAgo(STATE.wbs.at || 0)) + '</span>' : ''),
           table(['#','البند','فروع','البدء','الانتهاء','الإنجاز','المخطّط','الانحراف','الحالة','النوع','الموقف الزمني','المسؤول','الجهة','المتبقي','الملف',''], rows, null, { sticky:true }),   /* (V30.2) */
           btn('\u2B07 ' + t('إكسل — بالمعادلات وتجميع الصفوف'),'btn-primary btn-sm',' data-wbsxl="1" title="' + esc(t('ملفٌّ كملفِّ المتابعة: صيغٌ تُحدِّث نفسَها ومستوياتُ طيٍّ وألوانٌ شرطية')) + '"')

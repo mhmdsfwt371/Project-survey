@@ -63,7 +63,7 @@ function execRows(){
   var ix = function(L, v){ var i = (L || []).indexOf(v); return i < 0 ? 99 : i; };
   var key = function(r){ var c4r = r.c3 === 'ممرات' ? (r.c4 === 'ممرات الطرق' && /^READY/.test(r.b) ? 9 : ix(EXEC_O.c4, r.c4)) : 0;   /* ممراتُ الطرق الجاهزةُ بعد الجبل ونمرة والقطار كما رتّبها المالك */
     var tail = r.b === 'SP_ARAFAT' ? 1 : 0;   /* كاميراتُ مزودي الخدمة في عرفة آخرَ الملف كما وضعها */
-    var bo = r.c2 === 'الهجرة 2' && /^READY/.test(r.b) ? -1 : ix(EXEC_ORDER_L, r.b);   /* في الهجرة ٢ قدّم المالكُ الجاهزةَ */
+    var bo = r.c2 === 'الهجرة 2' && /^READY/.test(r.b) ? -1 : ix(PV.EXEC_ORDER_L, r.b);   /* في الهجرة ٢ قدّم المالكُ الجاهزةَ */
     return [tail, ix(EXEC_O.c1, r.c1), ix(EXEC_O.c2, r.c2), ix(EXEC_O.c3[r.c2] || EXEC_O.c3['*'], r.c3), c4r, bo]; };
   rows.sort(function(a, b){ var A = key(a), B = key(b); for (var q = 0; q < A.length; q++) if (A[q] !== B[q]) return A[q] - B[q]; return 0; });
   return { rows:rows, tot:tot };
@@ -100,7 +100,7 @@ function execSheetXml(xml, rows){
 function execTplParts(){   /* (V37.47) فكُّ القالب مرةً ويُحفَظ */
   if (execTplParts.p) return execTplParts.p;
   if (typeof DecompressionStream !== 'function') return Promise.reject(new Error('no-inflate'));
-  var bin = atob(EXEC_TPL_B64), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+  var bin = atob(PV.EXEC_TPL_B64), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
   var inflate = function(bytes){ return new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer().then(function(b){ return new Uint8Array(b); }); };
   execTplParts.p = Promise.all(zipRead(u.buffer).map(function(e){ return (e.method === 8 ? inflate(e.data) : Promise.resolve(e.data)).then(function(b){ return [e.name, new TextDecoder().decode(b)]; }); }));
   execTplParts.p.catch(function(){ execTplParts.p = null; });

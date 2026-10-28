@@ -49,7 +49,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
         + (typeof insqMay === 'function' && insqMay(x.id) ? btn('\u270E ' + t('تعديل التركيب'),'btn-secondary btn-sm',' data-insq="' + esc(x.id) + '"') : '')   /* (V38.61) */
         + '</div>')
 
-      + (SITE_ED && maySiteEditBasic() ? siteEditHtml(x) : '')   /* (V28.6) */
+      + (PV.SITE_ED && maySiteEditBasic() ? siteEditHtml(x) : '')   /* (V28.6) */
       + (typeof egCard === 'function' ? egCard(x) : '')   /* (V38.31) بواباتُ محطة القطار */
       + (rankOf(ROLE) >= rankOf('tech') && typeof chThreadHtml === 'function' ? chThreadHtml(x.id) : '')   /* (V38.60) the point's chat */
       + (typeof egIsGate === 'function' && egIsGate(x) ? (function(){   /* (V38.53) a train gate shows its station and its drawing pages, and opens them */
@@ -152,7 +152,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
    زيارةٌ بوزنها، وتركيبٌ بنقاط قطعه، وفكٌّ بوزنه في معامل حالته.
    فيرى كلٌّ ما عمله ورقمَه بين فريقه، ويرى المهندسُ الجميع. */
 
-var STAGE_ROLES = {
+PV.STAGE_ROLES = {
   eng:   { n:'مهندسو المناطق', i:'\u{1F393}', kinds:['visit','install'],
            d:'يديرون مناطقهم ويعتمدون ما يُرفَع فيها.' },
   cfg:   { n:'فنيو التهيئة',   i:'\u{1F6E0}', kinds:['prep'],

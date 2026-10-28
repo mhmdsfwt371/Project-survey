@@ -26,7 +26,7 @@ function stepsCard(n){
   return cardFlush('\u2705 ' + t('آخر ما تمّ') + ' \u2014 ' + nm(nSites) + ' ' + t('نقطة') + ' \u00b7 ' + nm(stepsList().length) + ' ' + t('خطوة'),
     table(['الخطوة','النقطة','مَن','متى'],
       L.map(function(r){
-        var K = STEP_KINDS[r.kind] || { n:r.kind, i:'', code:'' };
+        var K = PV.STEP_KINDS[r.kind] || { n:r.kind, i:'', code:'' };
         return [K.i + ' <strong>' + esc(t(K.n)) + '</strong>'
                   + (K.code ? ' <span class="num hint">' + esc(K.code) + '</span>' : '')
                   + (r.detail ? '<br><span class="hint" style="margin:0">' + esc(r.detail.slice(0, 40)) + '</span>' : ''),

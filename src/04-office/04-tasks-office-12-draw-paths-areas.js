@@ -16,27 +16,27 @@
 
 function tfdStart(f, d){
   if (!tfdMay()){ toast(t('رسمُ المسارات للمهندس فما فوق')); return; }
-  TFD.on = true; TFD.f = (f == null ? TFD.f : +f); TFD.d = d || TFD.d; TFD.nodes = []; TFD.paths = []; TFD.pts = []; POP_OPEN = false; PIN_ON = false; if (typeof ROUTE === 'object') ROUTE.on = false;
+  PV.TFD.on = true; PV.TFD.f = (f == null ? PV.TFD.f : +f); PV.TFD.d = d || PV.TFD.d; PV.TFD.nodes = []; PV.TFD.paths = []; PV.TFD.pts = []; POP_OPEN = false; PIN_ON = false; if (typeof ROUTE === 'object') ROUTE.on = false;
   tfdGraph().then(function(g){ toast(t(g ? 'اضغط على الخريطة نقطةً بعد نقطة — الخطُّ يمشي على الشوارع وحدَها' : 'تعذّر تحميلُ شبكة الشوارع — تحقّق من الشبكة')); });
-  if (typeof TFW === 'object' && TFW.f < 0){ TFW.f = TFD.f; tfwLoad(); tfwPaint(); }
+  if (typeof TFW === 'object' && TFW.f < 0){ TFW.f = PV.TFD.f; tfwLoad(); tfwPaint(); }
   if (typeof mapPaint === 'function') mapPaint(); render(1);
 }
 
-function tfdUndo(){ TFD.nodes.pop(); if (TFD.pts) TFD.pts.pop(); if (TFD.paths.length >= TFD.nodes.length && TFD.paths.length) TFD.paths.pop(); if (typeof mapPaint === 'function') mapPaint(); render(1); }
-function tfdCancel(){ TFD.on = false; TFD.nodes = []; TFD.paths = []; TFD.pts = []; TFD.free = false; if (typeof mapPaint === 'function') mapPaint(); render(1); }
+function tfdUndo(){ PV.TFD.nodes.pop(); if (PV.TFD.pts) PV.TFD.pts.pop(); if (PV.TFD.paths.length >= PV.TFD.nodes.length && PV.TFD.paths.length) PV.TFD.paths.pop(); if (typeof mapPaint === 'function') mapPaint(); render(1); }
+function tfdCancel(){ PV.TFD.on = false; PV.TFD.nodes = []; PV.TFD.paths = []; PV.TFD.pts = []; PV.TFD.free = false; if (typeof mapPaint === 'function') mapPaint(); render(1); }
 
 function tfdSave(){
-  if (!tfdMay() || !TFD.paths.length){ toast(t('ارسم نقطتين على الأقل')); return false; }
-  var pl = []; TFD.paths.forEach(function(p, i){ p.forEach(function(pt, j){ if (i && j === 0) return; pl.push([+pt[0].toFixed(6), +pt[1].toFixed(6)]); }); });
-  var all = JSON.parse(JSON.stringify(tfdDrawn())); var fl = all[TFD.f] = all[TFD.f] || {}; var arr = fl[TFD.d] = fl[TFD.d] || []; arr.push(pl);
+  if (!tfdMay() || !PV.TFD.paths.length){ toast(t('ارسم نقطتين على الأقل')); return false; }
+  var pl = []; PV.TFD.paths.forEach(function(p, i){ p.forEach(function(pt, j){ if (i && j === 0) return; pl.push([+pt[0].toFixed(6), +pt[1].toFixed(6)]); }); });
+  var all = JSON.parse(JSON.stringify(tfdDrawn())); var fl = all[PV.TFD.f] = all[PV.TFD.f] || {}; var arr = fl[PV.TFD.d] = fl[PV.TFD.d] || []; arr.push(pl);
   CFG.tfwdraw = { floors:all, at:Date.now(), by:STATE.meta.name || '' }; CORE.set('cfg', 'tfwdraw', CFG.tfwdraw);
-  logEvent('رسمُ مسار تفويج — ' + t('الدور') + ' ' + t(TFW_FL[TFD.f]) + ' · ' + t(TFD.d === 'go' ? 'الذهاب' : 'العودة') + ' · ' + Math.round(tfdLen([pl])) + ' م', '');
-  toast(t('حُفظ المسارُ — يُعرَض على الأجهزة كلِّها بدل المولَّد')); TFD.nodes = []; TFD.paths = []; TFD.pts = [];
-  if (typeof TFW === 'object'){ TFW.f = TFD.f; tfwPaint(); } if (typeof mapPaint === 'function') mapPaint(); render(1); return true;
+  logEvent('رسمُ مسار تفويج — ' + t('الدور') + ' ' + t(PV.TFW_FL[PV.TFD.f]) + ' · ' + t(PV.TFD.d === 'go' ? 'الذهاب' : 'العودة') + ' · ' + Math.round(tfdLen([pl])) + ' م', '');
+  toast(t('حُفظ المسارُ — يُعرَض على الأجهزة كلِّها بدل المولَّد')); PV.TFD.nodes = []; PV.TFD.paths = []; PV.TFD.pts = [];
+  if (typeof TFW === 'object'){ TFW.f = PV.TFD.f; tfwPaint(); } if (typeof mapPaint === 'function') mapPaint(); render(1); return true;
 }
 function tfdClear(f, d){
   if (!tfdMay()) return; var all = JSON.parse(JSON.stringify(tfdDrawn())); if (!all[f] || !all[f][d]) return; delete all[f][d]; if (!Object.keys(all[f]).length) delete all[f];
-  CFG.tfwdraw = { floors:all, at:Date.now(), by:STATE.meta.name || '' }; CORE.set('cfg', 'tfwdraw', CFG.tfwdraw); logEvent('حذفُ مسار تفويج مرسوم — ' + t('الدور') + ' ' + t(TFW_FL[f]) + ' · ' + t(d === 'go' ? 'الذهاب' : 'العودة'), '');
+  CFG.tfwdraw = { floors:all, at:Date.now(), by:STATE.meta.name || '' }; CORE.set('cfg', 'tfwdraw', CFG.tfwdraw); logEvent('حذفُ مسار تفويج مرسوم — ' + t('الدور') + ' ' + t(PV.TFW_FL[f]) + ' · ' + t(d === 'go' ? 'الذهاب' : 'العودة'), '');
   if (typeof TFW === 'object' && TFW.f >= 0) tfwPaint(); render(1);
 }
 
@@ -44,7 +44,7 @@ function routeStart(mode){
   if (!may('settings')){ toast(t('إضافةُ النقاط للمكتب')); return; }
   ROUTE.on = true; ROUTE.mode = (mode === 'area' ? 'area' : 'line'); ROUTE.pts = []; POP_OPEN = false; PIN_ON = false;
   ROUTE.gen = null; ROUTE.moved = 0;
-  RT_MIN = false; drawFlag();
+  PV.RT_MIN = false; drawFlag();
   if (ROUTE.mode === 'area' && ROUTE.every === 250) ROUTE.every = 50;
   /* المساحةُ للمخيم أوّلًا (V17.59): تُرسَم حدودُه فيُحفَظ مخيمًا واحدًا بلا نقاط —
      وغيرُه من الأنواع يبقى شبكةَ نقاطٍ كالمواقف. والمسارُ لا يكون مخيمًا. */
@@ -93,8 +93,8 @@ function areaCampSave(){
   var P = ROUTE.pts;
   if (P.length < 3){ toast(t('ارسم ثلاثَ نقاطٍ على الأقل لتحديد المساحة')); return false; }
   var sq = String(ROUTE.sq || '').trim(), sign = String(ROUTE.sign || '').trim();
-  if (sq && !NS_SQ_RE.test(sq)){ toast(t('رقم المربع: أرقامٌ أو أرقام-أرقام — مثال 7 أو 7-14')); return false; }
-  if (sign && !NS_SIGN_RE.test(sign)){ toast(t('الصيغة: اسم الخيمة/رقم الشارع — مثال 57/2 أو 12أ/8')); return false; }
+  if (sq && !PV.NS_SQ_RE.test(sq)){ toast(t('رقم المربع: أرقامٌ أو أرقام-أرقام — مثال 7 أو 7-14')); return false; }
+  if (sign && !PV.NS_SIGN_RE.test(sign)){ toast(t('الصيغة: اسم الخيمة/رقم الشارع — مثال 57/2 أو 12أ/8')); return false; }
   var hits = areaCampHits();
   if (hits.length > 1){ toast(nm(hits.length) + ' ' + t('مخيماتٍ مسجَّلةٍ داخل الحدود — ارسم حدودَ مخيمٍ واحد')); return false; }
   var flat = polyFlat(P), who = STATE.meta.name || '', stamp = Date.now();

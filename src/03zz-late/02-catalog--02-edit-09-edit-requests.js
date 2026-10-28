@@ -23,7 +23,7 @@ function gedSave(){
 }
 
 function gdelRun(k, id){
-  var R = GDEL_REG[k]; if (!R) return false;
+  var R = PV.GDEL_REG[k]; if (!R) return false;
   if (!(typeof may === 'function' && (may(R.may) || may('settings')))){ toast(t('الحذفُ لمن يملك هذه القائمة')); return false; }
   var what = R.run(id); if (!what){ toast(t('لا يُحذَف في حالته الحالية')); return false; }
   logEvent('حذف ' + R.t + ' — ' + what); toast(t('حُذف')); statBump(); return true;
@@ -31,7 +31,7 @@ function gdelRun(k, id){
 
 /* (V38.16) كلُّ أسئلة الأيام الأربعة عشر في ملفٍّ يُرسَل للمطوِّر — منه تُضاف أنواعُ الأسئلة التي لم يفهمها المساعد */
 function assistQXls(){
-  var R = AQ.rows || []; if (!R.length){ toast(t('لا أسئلة بعد')); return; }
+  var R = PV.AQ.rows || []; if (!R.length){ toast(t('لا أسئلة بعد')); return; }
   var rows = [[t('السؤال'), t('مرات'), t('أشخاص'), t('آخر مرة'), t('الحالة')]];
   R.forEach(function(r){
     var st = knownHits(r.q).length ? t('له حلّ الآن') : (typeof aqAnswer === 'function' && aqAnswer(r.q)) ? t('يُجاب الآن من البيانات') : r.no ? t('بلا جواب') : t('أجاب');
@@ -45,13 +45,13 @@ function catsSave(){
   var out = { why:[], cc:[] }, val = function(a, id){ var e = document.querySelector('[' + a + '="' + id + '"]'); return e ? (e.type === 'checkbox' ? e.checked : String(e.value || '').trim()) : null; };
   document.querySelectorAll('[data-vcn]').forEach(function(inp){
     var id = inp.getAttribute('data-vcn'), p = id.split('|'), kind = p[0], k = p.slice(1).join('|'), n = String(inp.value || '').trim();
-    var isNew = CAT_NEW[kind].indexOf(k) > -1; if (isNew && !n) return;
+    var isNew = PV.CAT_NEW[kind].indexOf(k) > -1; if (isNew && !n) return;
     var supL = String(val('data-vcw', id) || '').split(/\n+/).map(function(l){ l = l.trim(); if (!l) return null; var m = /^(.+?)\s*(?::|：| — | - )\s*(.+)$/.exec(l); return m ? { p:m[1].trim(), s:m[2].trim() } : { p:l, s:'' }; }).filter(Boolean);   /* (V37.14) سطرٌ لكلِّ جهة */
     var o = { k:k, n:n, sup:supL, who:supL.length === 1 && supL[0].s ? supL[0].p + ' — ' + supL[0].s : supL.map(function(x){ return x.p; }).join('، '), off:val('data-vco', id) === false };
     if (kind === 'why') o.photo = val('data-vcp', id) === true;
     out[kind].push(o);
   });
-  CFG.cats = out; CAT_NEW = { why:[], cc:[] }; CAT_DRAFT = {}; catCached.why = catCached.cc = null;
+  CFG.cats = out; PV.CAT_NEW = { why:[], cc:[] }; PV.CAT_DRAFT = {}; catCached.why = catCached.cc = null;
   cfgPushSoon('cats'); CFG_VER = (typeof CFG_VER === 'number' ? CFG_VER : 0) + 1;
   logEvent('تعديل تصنيفات الزيارة والمسح — ' + out.why.length + ' سببًا · ' + out.cc.length + ' تحدّيًا');
   toast(t('حُفظت التصنيفات — تصل كلَّ الأجهزة مع المزامنة')); statBump(); return true;

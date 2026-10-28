@@ -165,7 +165,7 @@ function mapPaint(light){
   if (light === true && MK.z === z && MK.list && !MAP_3D){ mapPaintLight(z); return; }
   if (!MAP_TMP) MAP_TMP = L.layerGroup().addTo(MAP);
   MAP_TMP.clearLayers();
-  if (MAP_POLY) MAP_POLY.clearLayers();
+  if (PV.MAP_POLY) PV.MAP_POLY.clearLayers();
 
   var b = MAP.getBounds(), keep = b.pad(MK_PAD);
   /* على الشاشات اللمسية تكبر النقطةُ قليلًا: البصرُ يقرأ الصغيرَ والإصبعُ لا يصيبه. */
@@ -220,11 +220,11 @@ function mapPaint(light){
      مرقَّمة، والمساحةُ مضلَّعًا مظلَّلًا — وتُعرَض نقاطُ التوليد الناتجةُ
      باهتةً قبل الحفظ، فيُرى ما سيُحفَظ قبل أن يُحفَظ. */
   try {
-    if (typeof TFD === 'object' && TFD.on && MAP_TMP){   /* (V28.0) المسارُ المرسومُ قبل حفظه */
-      TFD.paths.forEach(function(pl){ L.polyline(pl, { renderer:MAP_CV, color: TFD.d === 'go' ? '#F5C400' : '#D0021B', weight:6, opacity:0.95, dashArray: TFD.d === 'back' ? '8 6' : null, interactive:false }).addTo(MAP_TMP); });
-      (TFD.pts || []).forEach(function(n, i){ L.circleMarker(n, { renderer:MAP_CV, radius:6, color:'#fff', weight:2, fillColor: TFD.nodes[i] >= 0 ? '#FF8C42' : '#9B51E0', fillOpacity:1, interactive:false }).addTo(MAP_TMP); });   /* (V28.1) الحرّةُ بنفسجية */
+    if (typeof PV.TFD === 'object' && PV.TFD.on && MAP_TMP){   /* (V28.0) المسارُ المرسومُ قبل حفظه */
+      PV.TFD.paths.forEach(function(pl){ L.polyline(pl, { renderer:MAP_CV, color: PV.TFD.d === 'go' ? '#F5C400' : '#D0021B', weight:6, opacity:0.95, dashArray: PV.TFD.d === 'back' ? '8 6' : null, interactive:false }).addTo(MAP_TMP); });
+      (PV.TFD.pts || []).forEach(function(n, i){ L.circleMarker(n, { renderer:MAP_CV, radius:6, color:'#fff', weight:2, fillColor: PV.TFD.nodes[i] >= 0 ? '#FF8C42' : '#9B51E0', fillOpacity:1, interactive:false }).addTo(MAP_TMP); });   /* (V28.1) الحرّةُ بنفسجية */
     }
-    if (SPLIT) splitPaint();   /* (V37.67) معاينةُ التقسيم */ if (typeof propMarkers === 'function') propMarkers();   /* (V37.69) */ if (typeof ROUTE === 'object' && ROUTE.on && ROUTE.pts.length && MAP_TMP){
+    if (PV.SPLIT) splitPaint();   /* (V37.67) معاينةُ التقسيم */ if (typeof propMarkers === 'function') propMarkers();   /* (V37.69) */ if (typeof ROUTE === 'object' && ROUTE.on && ROUTE.pts.length && MAP_TMP){
       var pts = ROUTE.pts.map(function(p){ return [p[0], p[1]]; });
       var isArea = ROUTE.mode === 'area', isCamp = isArea && ROUTE.type === 'مخيم';
       if (isArea && pts.length > 2){
@@ -235,8 +235,8 @@ function mapPaint(light){
       /* النقاطُ التي ستُولَّد — تُرى قبل الحفظ؛ ونقاطُ المسار تُسحَب بالإصبع (V17.58)،
          والمخيمُ بحدوده لا شبكةَ داخله (V17.59) */
       var gen = isArea ? (isCamp ? [] : areaPoints()) : routeGen();
-      var drag = !isArea && gen.length <= RT_DRAG_MAX;
-      gen.slice(0, drag ? RT_DRAG_MAX : 600).forEach(function(g, gi){
+      var drag = !isArea && gen.length <= PV.RT_DRAG_MAX;
+      gen.slice(0, drag ? PV.RT_DRAG_MAX : 600).forEach(function(g, gi){
         if (!drag){
           L.circleMarker([g[0], g[1]], { renderer:MAP_CV, radius:3.5, color:'#fff', weight:1,
             fillColor:'#FFD166', fillOpacity:0.95, interactive:false }).addTo(MAP_TMP);

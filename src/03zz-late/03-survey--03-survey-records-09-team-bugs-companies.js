@@ -50,14 +50,14 @@ function bugSend(){
   var id = uid36();
   var r = { id:id, kind:BUG_KIND, txt:txt, want:g('bgWant'),
             by:STATE.meta.name || '', uid:myUid(), at:Date.now(),
-            status:'جديد', ctx:bugCtx(), gh:0, diag:(typeof assistDiag === 'function' ? assistDiag() : null), viaAssist:!!BUG_FROM_ASSIST,   /* (V37.27) لقطةُ حالة الجهاز */
+            status:'جديد', ctx:bugCtx(), gh:0, diag:(typeof assistDiag === 'function' ? assistDiag() : null), viaAssist:!!PV.BUG_FROM_ASSIST,   /* (V37.27) لقطةُ حالة الجهاز */
             box:(function(){ try { return boxText(); } catch (e){ return ''; } })() };   /* الصندوقُ الأسود في الكتابة نفسِها (V17.98) */
   if (!STATE.bugs) STATE.bugs = {};
   STATE.bugs[id] = r;
   CORE.set('bugs', id, r);
   logEvent('بلاغ — ' + BUG_KIND + ': ' + txt.slice(0, 60));
   try { notifPush('بلاغٌ جديد', BUG_KIND + ' — ' + txt.slice(0, 60), { lv:'مهم' }); } catch (e){ LS_ERR = e; }
-  BUG_OPEN = false; BUG_FROM_ASSIST = '';
+  BUG_OPEN = false; PV.BUG_FROM_ASSIST = '';
   toast(t('وصل البلاغ — يُفتَح في المستودع خلال دقائق'));
   render(1);
 }
@@ -88,7 +88,7 @@ function bugDecide(id, ok, why){
   CORE.set('bugs', id, b);
   logEvent('قرارُ بلاغ — ' + (ok ? 'قُبل' : 'رُدّ') + ' · ' + String(b.txt || '').slice(0, 50), '', b.decBy, b.decAt);
   toast(t(ok ? 'قُبل البلاغُ — يدخل قائمةَ العمل' : 'رُدَّ البلاغُ — لا يُعمَل به'));
-  BUG_DEC = ''; render(1);
+  PV.BUG_DEC = ''; render(1);
   return true;
 }
 
@@ -98,15 +98,15 @@ function bugsPageHtml(){
   var nNew = cnt('جديد'), nOk = cnt('مقبول') + cnt('مفتوح') + cnt('قيد التنفيذ'), nNo = cnt('مرفوض'), nDone = cnt('مغلق');
   var L = ALL.filter(function(b){
     var st = b.status || 'جديد';
-    if (BUG_F === 'new') return st === 'جديد';
-    if (BUG_F === 'ok')  return st === 'مقبول' || st === 'مفتوح' || st === 'قيد التنفيذ';
-    if (BUG_F === 'no')  return st === 'مرفوض';
-    if (BUG_F === 'done') return st === 'مغلق';
-    if (BUG_F === 'عطل' || BUG_F === 'طلب جديد' || BUG_F === 'اقتراح') return (b.kind || '') === BUG_F;
+    if (PV.BUG_F === 'new') return st === 'جديد';
+    if (PV.BUG_F === 'ok')  return st === 'مقبول' || st === 'مفتوح' || st === 'قيد التنفيذ';
+    if (PV.BUG_F === 'no')  return st === 'مرفوض';
+    if (PV.BUG_F === 'done') return st === 'مغلق';
+    if (PV.BUG_F === 'عطل' || PV.BUG_F === 'طلب جديد' || PV.BUG_F === 'اقتراح') return (b.kind || '') === PV.BUG_F;
     return true;
   });
   var chip = function(k, txt, n, cls){
-    return '<button type="button" class="chip' + (BUG_F === k ? ' on' : '') + (cls ? ' ' + cls : '') + '" data-bugf="' + esc(k) + '">'
+    return '<button type="button" class="chip' + (PV.BUG_F === k ? ' on' : '') + (cls ? ' ' + cls : '') + '" data-bugf="' + esc(k) + '">'
       + esc(t(txt)) + ' <span class="num">' + nm(n) + '</span></button>';
   };
   return '<p class="lede" style="margin:0 0 16px">' + esc(t('كلُّ ما أُبلغ عنه واقتُرح وطُلب — بتاريخه. ما تقبله يدخل قائمةَ العمل، وما تردُّه يُقفَل بسببه ولا يُعمَل به.')) + '</p>'
@@ -126,14 +126,14 @@ function bugsPageHtml(){
               +   '<div class="hint" style="margin:2px 0 0">' + esc(t(b.kind || '')) + ' \u00b7 ' + esc(dispName(b.by || ''))
               +     ' \u00b7 ' + esc(stepAgo(b.at || 0)) + (c.v ? ' \u00b7 ' + esc(c.v) : '')
               +     (c.page ? ' \u00b7 ' + esc(t(pageTitle(c.page) || c.page)) : '') + '</div></div>'
-              + '<div class="wt-row" style="margin:0">' + pill(b.status || 'جديد', BUG_ST_C[b.status] || '')
+              + '<div class="wt-row" style="margin:0">' + pill(b.status || 'جديد', PV.BUG_ST_C[b.status] || '')
               +   (b.gh ? '<a class="btn btn-quiet btn-sm" target="_blank" rel="noopener" href="https://github.com/mhmdsfwt371/Project-survey/issues/' + esc(b.gh) + '">#' + nm(b.gh) + '</a>' : '')
               + '</div></div>'
               + (b.want ? '<div class="hint" style="margin:6px 0 0">' + esc(t('المتوقَّع')) + ': ' + esc(b.want) + '</div>' : '')
               /* الصندوقُ الأسود خطًّا زمنيًّا — للمهندس فمن فوقه (V17.98) */
               + (b.box && rankOf(effRole(ROLE)) >= rankOf('engineer')
                   ? '<details style="margin:6px 0 0"><summary class="hint" style="margin:0;cursor:pointer">' + esc(t('الخطُّ الزمنيُّ للجهاز')) + ' \u00b7 ' + nm(String(b.box).split('\n').length) + ' ' + esc(t('سطر')) + '</summary>'
-                    + '<pre dir="ltr" style="font-size:12px;line-height:1.6;white-space:pre-wrap;margin:6px 0 0">' + esc(String(b.box).slice(0, BOX_BYTES)) + '</pre></details>'
+                    + '<pre dir="ltr" style="font-size:12px;line-height:1.6;white-space:pre-wrap;margin:6px 0 0">' + esc(String(b.box).slice(0, PV.BOX_BYTES)) + '</pre></details>'
                   : '')
               /* تاريخُ البلاغ: قرارُه ومن قرّره ومتى، وما جرى بعده */
               + (b.decBy
@@ -156,7 +156,7 @@ function bugsPageHtml(){
                     + '</div>'
                   : '')
               + (bugMayDecide() && (b.status || 'جديد') === 'جديد'
-                  ? (BUG_DEC === b.id
+                  ? (PV.BUG_DEC === b.id
                       ? '<div class="field" style="margin:8px 0 0"><label>' + esc(t('سببُ الردّ')) + '</label>'
                         + '<input id="bgWhy" dir="auto" placeholder="' + esc(t('يُكتَب لصاحب البلاغ — فيعرف لماذا')) + '"></div>'
                         + '<div class="actions" style="margin:6px 0 0">'
@@ -241,7 +241,7 @@ function coRename(oldName, newName){
 function coEmailOf(co){ return String(coTel()['e|' + co] || '').trim(); }
 
 function mailOfficial(kind, co, when){
-  var S = coStat(co), lz = coLiaisonOf(co), kn = WA_KINDS[kind] ? WA_KINDS[kind].n : t('إشعار');
+  var S = coStat(co), lz = coLiaisonOf(co), kn = PV.WA_KINDS[kind] ? PV.WA_KINDS[kind].n : t('إشعار');
   var sub = kn + ' \u2014 ' + co + ' \u2014 ' + t('مشروع قارئات نسك') + ' ١٤٤٨هـ';
   var L = ['السادة / ' + co + '                    المحترمين', '', 'السلام عليكم ورحمة الله وبركاته،', 'تحيةً طيبةً وبعد،', ''];
   if (kind === 'plan'){ L.push('نُفيدكم بأنّ فريقَ شركة أفاقي سيباشر تركيبَ قارئات بطاقة نسك في نقاطكم ضمن مشروع وزارة الحج والعمرة لموسم ١٤٤٨هـ.'); L.push('عددُ النقاط: ' + S.n + (when ? ' — الموعدُ المتوقّع: ' + when : '') + '.'); L.push(''); L.push('نأمل التكرّمَ بتسهيل دخول الفريق إلى المواقع وتوفيرِ مصدر كهرباءٍ عند كلِّ نقطة.'); }
@@ -258,7 +258,7 @@ function mailGo(co, kind, when){
   var M = mailOfficial(kind || 'plan', co, when || '');
   try { window.location.href = 'mailto:' + encodeURIComponent(to) + '?subject=' + encodeURIComponent(M.sub) + '&body=' + encodeURIComponent(M.body); }
   catch (e){ toast(t('تعذّر الفتح')); return; }
-  logEvent('إشعار بريد رسمي — ' + (WA_KINDS[kind] ? WA_KINDS[kind].n : kind) + ' \u00b7 ' + co);
+  logEvent('إشعار بريد رسمي — ' + (PV.WA_KINDS[kind] ? PV.WA_KINDS[kind].n : kind) + ' \u00b7 ' + co);
 }
 
 function coLiaisonOf(co){ return String(coLiaison()[co] || '').trim(); }
@@ -319,6 +319,6 @@ function waGo(co, kind, when, copy){
   if (!ph){ toast(t('لا جوالَ محفوظٌ لهذه الشركة — احفظه في دفتر الجوالات أوّلًا')); return; }
   try { window.open(waLink(ph, txt), '_blank', 'noopener'); }
   catch (e){ toast(t('تعذّر الفتح')); return; }
-  logEvent('إشعار واتساب — ' + (WA_KINDS[kind] ? WA_KINDS[kind].n : kind) + ' \u00b7 ' + co);
-  notifPush('إشعار شركة', co + ' \u00b7 ' + t(WA_KINDS[kind] ? WA_KINDS[kind].n : ''), { lv:'عادي' });
+  logEvent('إشعار واتساب — ' + (PV.WA_KINDS[kind] ? PV.WA_KINDS[kind].n : kind) + ' \u00b7 ' + co);
+  notifPush('إشعار شركة', co + ' \u00b7 ' + t(PV.WA_KINDS[kind] ? PV.WA_KINDS[kind].n : ''), { lv:'عادي' });
 }

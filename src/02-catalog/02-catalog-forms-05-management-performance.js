@@ -11,24 +11,24 @@
    الدروسُ المستفادة، والمراجعاتُ الدورية، وأصحابُ المصلحة — في وثيقةٍ واحدة
    settings/pmo (قاعدتُها: المكتبُ والإدارةُ العليا قراءةً، والمكتبُ كتابةً). كلُّ
    مدخلٍ بمعرِّفه وتاريخه وكاتبه، والحذفُ شاهدٌ لا محو. تُقرأ عند فتح شريحتها. */
-var PMO = { at:0, v:null, err:'' };
-var PMO_LEVELS = ['غير مدرك', 'مقاوم', 'محايد', 'داعم', 'قائد'];
-var PMO_DOMAINS = ['الحوكمة', 'النطاق', 'الجدول', 'المالية', 'أصحاب المصلحة', 'الموارد', 'المخاطر'];
+PV.PMO = { at:0, v:null, err:'' };
+PV.PMO_LEVELS = ['غير مدرك', 'مقاوم', 'محايد', 'داعم', 'قائد'];
+PV.PMO_DOMAINS = ['الحوكمة', 'النطاق', 'الجدول', 'المالية', 'أصحاب المصلحة', 'الموارد', 'المخاطر'];
 
 
 function pmoList(sec){
-  var o = ((PMO.v || STATE.pmo || {})[sec]) || {};
+  var o = ((PV.PMO.v || STATE.pmo || {})[sec]) || {};
   return Object.keys(o).map(function(k){ return Object.assign({ id:k }, o[k]); }).filter(function(x){ return x && !x.gone; }).sort(function(a, b){ return (b.at || 0) - (a.at || 0); });
 }
 /* (V28.2) قرارُ المالك: «كلُّ سجلٍّ من أصغره لأكبره: إضافة وتعديل ومسح». سجلاتُ الإدارة (الدروس، المراجعات الدورية،
    أصحابُ المصلحة) كانت إضافةً وحذفًا فقط — صار لكلِّ صفٍّ «✎» يملأ نموذجَ الإضافة بقيمه، و«احفظ التعديل» يكتب على السجلِّ نفسِه. */
-var PMO_ED = { sec:'', id:'' };
-var PMO_FORM = { lessons:{ t:'lsT', d:'lsD', w:'lsW', c:'lsC', a:'lsA', o:'lsO' }, retros:{ p:'rtP', g:'rtG', i:'rtI', a:'rtA' }, stake:{ n:'shN', r:'shR', inf:'shI', int:'shT', cur:'shC', want:'shD', s:'shS', o:'shO' } };
+PV.PMO_ED = { sec:'', id:'' };
+PV.PMO_FORM = { lessons:{ t:'lsT', d:'lsD', w:'lsW', c:'lsC', a:'lsA', o:'lsO' }, retros:{ p:'rtP', g:'rtG', i:'rtI', a:'rtA' }, stake:{ n:'shN', r:'shR', inf:'shI', int:'shT', cur:'shC', want:'shD', s:'shS', o:'shO' } };
 
 
 function pmoPut(sec, id, entry){
   if (!may('settings')){ toast(t('سجلاتُ الإدارة للمهندس فمن فوقه')); return false; }
-  PMO.v = PMO.v || STATE.pmo || {}; PMO.v[sec] = PMO.v[sec] || {}; PMO.v[sec][id] = entry; STATE.pmo = PMO.v;
+  PV.PMO.v = PV.PMO.v || STATE.pmo || {}; PV.PMO.v[sec] = PV.PMO.v[sec] || {}; PV.PMO.v[sec][id] = entry; STATE.pmo = PV.PMO.v;
   var w = {}; w[sec] = {}; w[sec][id] = entry;
   CORE.set('cfg', 'pmo', w);
   logEvent((entry.gone ? 'حذفٌ من ' : 'سجلُّ الإدارة — ') + sec + ' · ' + id, '');
@@ -60,7 +60,7 @@ function pmiRows(){
   var rt = pmoList('retros'), rt14 = rt.filter(function(x){ return now - (x.at || 0) < D14; }).length;
   var dq = (typeof dqDupPos === 'function' ? dqDupPos().length : 0) + (typeof dqNoCo === 'function' ? dqNoCo().length : 0) + (typeof dqNoSign === 'function' ? dqNoSign().length : 0) + (typeof dqFar === 'function' ? dqFar().length : 0);
   var pf = Object.keys(STATE.presence || {}).some(function(u){ var p = STATE.presence[u]; return p && p.pf; });
-  var sr = (typeof SYSREP === 'object' && SYSREP.v && SYSREP.v.pulse && SYSREP.v.pulse.at) ? SYSREP.v.pulse.at : 0;
+  var sr = (typeof PV.SYSREP === 'object' && PV.SYSREP.v && PV.SYSREP.v.pulse && PV.SYSREP.v.pulse.at) ? PV.SYSREP.v.pulse.at : 0;
   var tasks = Object.keys(STATE.tasks || {}).length, crews = (STATE.crews || []).length;
   var add = function(fw, code, title, ev, stt, note, go){ out.push({ fw:fw, code:code, title:title, ev:ev, st:stt, note:note || '', go:go || '' }); };
   /* دليلُ المعرفة — المبادئ */
@@ -95,19 +95,19 @@ function pmiRows(){
   add('ai', 'C6', 'التشغيل والمراقبة', 'الصندوقُ الأسود وملخّصُ الصباح والمراقبةُ اليومية', sr && now - sr < 2 * 864e5 ? 'ok' : 'part', sr ? t('آخر ملخّص') + ' ' + fmtDate(sr) : t('لم يصل ملخّص'), 'sys');
   return out;
 }
-var PMI_ST = { ok:['مطبّق', 'ok'], part:['جزئي', 'wrn'], gap:['ناقص', 'bad'], na:['لا ينطبق', ''] };
+PV.PMI_ST = { ok:['مطبّق', 'ok'], part:['جزئي', 'wrn'], gap:['ناقص', 'bad'], na:['لا ينطبق', ''] };
 
 /* ── حسب المرحلة: فريق كل مرحلةٍ على حدة، بتارجتها المستقل ── */
 function perfStageTable(){
-  var R = STAGE_ROLES[STAGE_TAB] || STAGE_ROLES.ins;
-  var L = stageList(STAGE_TAB);
-  var tgt = stageTarget(STAGE_TAB);
+  var R = PV.STAGE_ROLES[PV.STAGE_TAB] || PV.STAGE_ROLES.ins;
+  var L = stageList(PV.STAGE_TAB);
+  var tgt = stageTarget(PV.STAGE_TAB);
   var sum = L.reduce(function(a,e){ return a + e.total; }, 0);
   var acts = L.reduce(function(a,e){ return a + e.acts; }, 0);
 
-  return '<div class="chips">' + Object.keys(STAGE_ROLES).map(function(k){
-      var S = STAGE_ROLES[k], n = stageList(k).length;
-      return '<button type="button" class="chip' + (STAGE_TAB===k?' on':'') + '" data-stab="' + k + '">'
+  return '<div class="chips">' + Object.keys(PV.STAGE_ROLES).map(function(k){
+      var S = PV.STAGE_ROLES[k], n = stageList(k).length;
+      return '<button type="button" class="chip' + (PV.STAGE_TAB===k?' on':'') + '" data-stab="' + k + '">'
         + S.i + ' ' + esc(t(S.n)) + (n ? ' <span class="num">' + nm(n) + '</span>' : '') + '</button>';
     }).join('') + '</div>'
 
@@ -167,8 +167,8 @@ PAGE.perf = { m:'الفرق', t:'الفرق والأداء',
         '<p class="hint" style="margin:0">' + esc(t('أنشئ أوّل فريقٍ لتبدأ.')) + '</p>')
         + (may('users') ? crewNewCard() : '');
     }
-    if (!L.some(function(c){ return c.id === CREW_CUR; })) CREW_CUR = L[0].id;
-    var crew = crewOf(CREW_CUR) || crewOf('');   /* (V38.69) */
+    if (!L.some(function(c){ return c.id === PV.CREW_CUR; })) PV.CREW_CUR = L[0].id;
+    var crew = crewOf(PV.CREW_CUR) || crewOf('');   /* (V38.69) */
     var techs = crewTechs(crew);
     var subs  = crewTeams(crew);
     if (!subs.some(function(x){ return x.id === CTEAM_CUR; })) CTEAM_CUR = subs[0] ? subs[0].id : '';
@@ -179,9 +179,9 @@ PAGE.perf = { m:'الفرق', t:'الفرق والأداء',
     var orphan = unassignedTechs();
 
     var html = '<div class="chips">' + L.map(function(c){
-        var K = c.kind === '*' ? null : WO_KINDS[c.kind];
+        var K = c.kind === '*' ? null : PV.WO_KINDS[c.kind];
         var mem = techsList().filter(function(x){ return x.crew === c.n; }).length;
-        return '<button type="button" class="chip' + (CREW_CUR===c.id?' on':'') + '" data-crewcur="' + esc(c.id) + '">'
+        return '<button type="button" class="chip' + (PV.CREW_CUR===c.id?' on':'') + '" data-crewcur="' + esc(c.id) + '">'
           + (K ? K.i + ' ' : '\u{1F393} ') + esc(t(c.n)) + ' <span class="num">' + nm(mem) + '</span></button>';
       }).join('') + '</div>'
 
@@ -200,13 +200,13 @@ PAGE.perf = { m:'الفرق', t:'الفرق والأداء',
           + '<div class="field"><label>' + esc(t('نوع العمل')) + '</label>'
           +   (may('users')
                 ? '<select data-crk="' + esc(crew.n) + '">'
-                  + Object.keys(WO_KINDS).map(function(k){
+                  + Object.keys(PV.WO_KINDS).map(function(k){
                       return '<option value="' + esc(k) + '"' + (crew.kind === k ? ' selected' : '')
-                        + '>' + esc(t(WO_KINDS[k].n)) + '</option>';
+                        + '>' + esc(t(PV.WO_KINDS[k].n)) + '</option>';
                     }).join('')
                   + '<option value="*"' + (crew.kind === '*' ? ' selected' : '') + '>'
                   + esc(t('إدارة')) + '</option></select>'
-                : esc(t((WO_KINDS[crew.kind] || {}).n || crew.kind))) + '</div>'
+                : esc(t((PV.WO_KINDS[crew.kind] || {}).n || crew.kind))) + '</div>'
           + '<div class="field"><label>' + esc(t('الوصف')) + '</label>'
           +   (may('users')
                 ? '<input value="' + esc(crew.d || '') + '" data-crd="' + esc(crew.n) + '" dir="auto">'
@@ -288,9 +288,9 @@ PAGE.perf = { m:'الفرق', t:'الفرق والأداء',
                 var sh = cfgN(m.share);
                 var mine = tot ? (pts * sh / tot) : 0;
                 return ['<strong>' + esc(m.name) + '</strong>',
-                        '<select data-mrole="' + i + '">' + Object.keys(TEAM_ROLE).map(function(k){
+                        '<select data-mrole="' + i + '">' + Object.keys(PV.TEAM_ROLE).map(function(k){
                           return '<option value="' + k + '"' + (m.role===k?' selected':'') + '>'
-                            + TEAM_ROLE[k].i + ' ' + esc(t(TEAM_ROLE[k].n)) + '</option>';
+                            + PV.TEAM_ROLE[k].i + ' ' + esc(t(PV.TEAM_ROLE[k].n)) + '</option>';
                         }).join('') + '</select>',
                         '<input type="number" min="0" max="100" step="1" value="' + sh
                           + '" data-share="' + i + '" style="max-width:88px">',
@@ -317,8 +317,8 @@ PAGE.perf = { m:'الفرق', t:'الفرق والأداء',
               }).map(function(x){ return '<option>' + esc(x.n) + '</option>'; }).join('')
             + '</select></div>'
             + '<div class="field"><label>' + esc(t('الدور')) + '</label>'
-            + '<select id="depMemRole">' + Object.keys(TEAM_ROLE).map(function(k){
-                return '<option value="' + k + '">' + TEAM_ROLE[k].i + ' ' + esc(t(TEAM_ROLE[k].n)) + '</option>';
+            + '<select id="depMemRole">' + Object.keys(PV.TEAM_ROLE).map(function(k){
+                return '<option value="' + k + '">' + PV.TEAM_ROLE[k].i + ' ' + esc(t(PV.TEAM_ROLE[k].n)) + '</option>';
               }).join('') + '</select></div>'
             + '<div class="field"><label>' + esc(t('النسبة')) + ' ' + t('٪') + '</label>'
             + '<input type="number" id="depMemShare" min="0" max="100" value="20"></div>'
@@ -337,20 +337,20 @@ PAGE.perf = { m:'الفرق', t:'الفرق والأداء',
   })();
     if (cur === 'crewplan') return head + (function(){
     var C = K();
-    var rows = CREW_SPEC.map(function(s){ return { s:s, r:crewNeed(s, PLAN_MONTHS) }; });
+    var rows = PV.CREW_SPEC.map(function(s){ return { s:s, r:crewNeed(s, PV.PLAN_MONTHS) }; });
     var ins = rows.filter(function(x){ return x.s.kind === 'install'; });
     var srv = rows.filter(function(x){ return x.s.kind === 'visit'; });
     var sum = function(L, f){ return L.reduce(function(a,x){ return a + f(x); }, 0); };
 
     return '<div class="chips">' + [3,4,5,6].map(function(m){
-        return '<button type="button" class="chip' + (PLAN_MONTHS===m?' on':'') + '" data-months="' + m + '">'
+        return '<button type="button" class="chip' + (PV.PLAN_MONTHS===m?' on':'') + '" data-months="' + m + '">'
           + nm(m) + ' ' + esc(t('أشهر')) + '</button>';
       }).join('') + '</div>'
 
       + stats([['فرق التركيب', N(sum(ins,function(x){return x.r.crews;})), 'acc'],
                ['أفرادها', N(sum(ins,function(x){return x.r.people;}))],
                ['معدّات', N(sum(ins,function(x){return x.r.gear;})), 'wrn'],
-               ['أيام العمل', N((C.days||26) * PLAN_MONTHS)]])
+               ['أيام العمل', N((C.days||26) * PV.PLAN_MONTHS)]])
 
       + cardFlush('طواقم التركيب',
           table(['الفريق','الطاقم','المعدل/يوم','النقاط','أيام-فريق','فرق لازمة','أفراد','معدّات'],
@@ -382,7 +382,7 @@ PAGE.perf = { m:'الفرق', t:'الفرق والأداء',
 
       + card('ضبط المعدلات',
           table(['النوع','مشرف','فنيون','معدّات','المعدل/يوم'],
-            CREW_SPEC.map(function(s){
+            PV.CREW_SPEC.map(function(s){
               return [esc(t(s.n)),
                       cfgInput('crewSup', s.k), cfgInput('crewTech', s.k),
                       cfgInput('crewGear', s.k), cfgInput('crewRate', s.k, { dec:1 })];
@@ -402,20 +402,20 @@ PAGE.perf = { m:'الفرق', t:'الفرق والأداء',
     var names = techNames();
 
     var html = '<div class="chips">' + views.map(function(v){
-        return '<button type="button" class="chip' + (PERF_VIEW===v[0]?' on':'') + '" data-perfview="' + v[0] + '">'
+        return '<button type="button" class="chip' + (PV.PERF_VIEW===v[0]?' on':'') + '" data-perfview="' + v[0] + '">'
           + esc(t(v[1])) + '</button>';
       }).join('') + '</div>';
 
-    if (PERF_VIEW === 'stage'){
+    if (PV.PERF_VIEW === 'stage'){
       html += perfStageTable();
-    } else if (PERF_VIEW === 'job'){
+    } else if (PV.PERF_VIEW === 'job'){
       var byJob = rollupBy(function(e, tx){ return tx ? tx.job : ''; },
                             function(id){ var j = jobOf(id); return j ? j.n : 'بلا وظيفة'; });
       html += card('حسب الوظيفة', rollupTable(byJob, 'الوظيفة'));
-    } else if (PERF_VIEW === 'crew'){
+    } else if (PV.PERF_VIEW === 'crew'){
       var byCrew = rollupBy(function(e, tx){ return tx ? tx.crew : ''; });
       html += card('حسب الفريق', rollupTable(byCrew, 'الفريق'));
-    } else if (PERF_VIEW === 'project'){
+    } else if (PV.PERF_VIEW === 'project'){
       var project = rollupBy(function(){ return 'المشروع'; });
       html += card('المشروع كله', rollupTable(project, 'المشروع'));
     } else {

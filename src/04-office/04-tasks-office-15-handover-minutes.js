@@ -9,9 +9,9 @@
    ============================================================================ */
 
 function handNext(){
-  HAND_SEQ = (HAND_SEQ || 0) + 1;
-  CORE.set('cfg', 'handSeq', { n:HAND_SEQ });
-  var n = String(HAND_SEQ);
+  PV.HAND_SEQ = (PV.HAND_SEQ || 0) + 1;
+  CORE.set('cfg', 'handSeq', { n:PV.HAND_SEQ });
+  var n = String(PV.HAND_SEQ);
   while (n.length < 4) n = '0' + n;
   return 'HO-' + n;
 }

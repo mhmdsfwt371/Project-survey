@@ -17,12 +17,12 @@
    عارضٌ مضمَّنٌ (vendor/protomaps) يُحمَّل عند الحاجة. الإسنادُ ظاهر. القمرُ
    الصناعيُّ يبقى عبر الشبكة، وبلا الملفِّ يبقى كلُّ شيءٍ كما كان. */
 var BASEMAP = { manifest:null, have:null, layer:null, arc:null, busy:null, loading:false };
-var BASEMAP_CACHE = 'nusuk-basemap', BASEMAP_FILE = 'maps/mashaer.pmtiles', BASEMAP_MAX = 30 * 1024 * 1024;
+PV.BASEMAP_CACHE = 'nusuk-basemap'; PV.BASEMAP_FILE = 'maps/mashaer.pmtiles'; var BASEMAP_MAX = 30 * 1024 * 1024;
 /* (V25.0) عارضُ خريطة الجهاز يُحفَظ معها في مخزنها الباقي: بلا شبكةٍ لا يُحمَّل من مكانٍ آخر، ومخزنُ الهيكل يتبدّل مع كلِّ نسخة */
 var BASEMAP_JS = ['vendor/protomaps/pmtiles-4.5.0.js', 'vendor/protomaps/protomaps-leaflet-5.1.0.js'];
 function basemapWarm(){
   if (typeof caches !== 'object' || !caches.open) return Promise.resolve(false);
-  return caches.open(BASEMAP_CACHE).then(function(c){ return Promise.all(BASEMAP_JS.map(function(u){ return c.match(u).then(function(h){ return h || c.add(u); }); })); }).then(function(){ return true; }).catch(function(){ return false; });
+  return caches.open(PV.BASEMAP_CACHE).then(function(c){ return Promise.all(BASEMAP_JS.map(function(u){ return c.match(u).then(function(h){ return h || c.add(u); }); })); }).then(function(){ return true; }).catch(function(){ return false; });
 }
 function basemapManifest(){
   if (BASEMAP.manifest) return Promise.resolve(BASEMAP.manifest);
@@ -32,7 +32,7 @@ function basemapManifest(){
 }
 function basemapHave(){
   if (typeof caches !== 'object' || !caches.open) return Promise.resolve(false);
-  return caches.open(BASEMAP_CACHE).then(function(c){ return c.match(BASEMAP_FILE); }).then(function(r){ var was = BASEMAP.have; BASEMAP.have = !!r; if (was === null && (CUR === 'tools' || CUR === 'acct')) render(1); return !!r; }).catch(function(){ BASEMAP.have = false; return false; });
+  return caches.open(PV.BASEMAP_CACHE).then(function(c){ return c.match(PV.BASEMAP_FILE); }).then(function(r){ var was = BASEMAP.have; BASEMAP.have = !!r; if (was === null && (CUR === 'tools' || CUR === 'acct')) render(1); return !!r; }).catch(function(){ BASEMAP.have = false; return false; });
 }
 /* ═══ خريطةُ مكة تلقائيًّا (V24.9) ═══ ملفٌّ واحدٌ (أقلُّ من ٤ م.ب) بشوارع مكة كلِّها ومبانيها وأسمائها —
    المشاعرُ والحرمُ والعزيزيةُ والنواريةُ والزايدي: يُنزَّل مرةً عند أوّل فتحٍ للخريطة ويُحفَظ في الجهاز، ثم
@@ -63,7 +63,7 @@ function basemapWant(){
 /* (V25.2) المحفوظُ غيرُ ما في البيان (بحجمه): يُستبدَل بالجديد على اتصالٍ جيد، ويبقى القديمُ عاملًا حتى يتمّ */
 function basemapStale(){
   if (typeof caches !== 'object' || !caches.open) return Promise.resolve(false);
-  return Promise.all([basemapManifest(), caches.open(BASEMAP_CACHE).then(function(c){ return c.match(BASEMAP_FILE); })]).then(function(a){
+  return Promise.all([basemapManifest(), caches.open(PV.BASEMAP_CACHE).then(function(c){ return c.match(PV.BASEMAP_FILE); })]).then(function(a){
     var m = a[0], r = a[1], n = r ? +(r.headers.get('content-length') || 0) : 0;
     return !!(m && m.bytes > 0 && n > 0 && n !== m.bytes);
   }).catch(function(){ return false; });

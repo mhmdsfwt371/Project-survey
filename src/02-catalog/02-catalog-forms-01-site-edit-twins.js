@@ -54,7 +54,7 @@ function loadSites(){
    البياناتِ الأساسيةَ في مكانها: تُكتَب طبقةً فوق النقطة المضمَّنة في مجموعة
    sites (كما تُكتَب عناوينُ الشبكة) وتُحفَظ محليًّا فتصمد بلا شبكة. والإخفاءُ
    بدل المحو: النقطةُ من الوزارة، فتُخفى وتُستعاد — ولا تُخفى نقطةٌ لها سجلّ. */
-var SITE_ED = 0, SITE_HIDE = '';
+PV.SITE_ED = 0; PV.SITE_HIDE = '';
 function maySiteEdit(){ return typeof ROLE !== 'undefined' && rankOf(ROLE) >= rankOf('engineer'); }
 /* (V28.6) قرارُ المالك: «صلاحيةُ المشرف كبّرها — ما يرجعوش في كلِّ كبيرةٍ وصغيرةٍ للمهندس». البياناتُ الأساسيةُ للنقطة (الاسم والمربع
    والشاخص ووجهُ العمل والشركة والداخل/الخارج والبوابة والدور والإحداثيات) يعدّلها المشرف؛ والتصنيفُ (المشعرُ والنوعُ والمنطقة)
@@ -211,7 +211,7 @@ function siteEditHtml(x){
     + (isJmr(x)
         ? '<div class="grid cols-2">'
           + fld('مدخل أو مخرج', '<select id="seGate">' + opt(['', 'مدخل', 'مخرج'], siteGate(x) || '') + '</select>')
-          + fld('الدور', '<select id="seFloor">' + ['<option value=""' + (siteFloor(x) == null ? ' selected' : '') + '>— ' + esc(t('بلا')) + ' —</option>'].concat(FLOOR_NAMES.map(function(f, i){ return '<option value="' + i + '"' + (siteFloor(x) === i ? ' selected' : '') + '>' + esc(t(floorName(i))) + '</option>'; })).join('') + '</select>')
+          + fld('الدور', '<select id="seFloor">' + ['<option value=""' + (siteFloor(x) == null ? ' selected' : '') + '>— ' + esc(t('بلا')) + ' —</option>'].concat(PV.FLOOR_NAMES.map(function(f, i){ return '<option value="' + i + '"' + (siteFloor(x) === i ? ' selected' : '') + '>' + esc(t(floorName(i))) + '</option>'; })).join('') + '</select>')
           + '</div>'
           + '<p class="hint" style="margin:0 0 8px">' + esc(t('يُضاف الدورُ والبوابةُ إلى اسم النقطة فيظهران في الخريطة والقوائم.')) + '</p>'
         : '')

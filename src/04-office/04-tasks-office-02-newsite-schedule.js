@@ -11,15 +11,15 @@
 var WR_EDIT = '';      /* (V29.7) الاسمُ والمركزُ والتحديات */
 
 /* صيغةُ الشاخص: اسم الخيمة/رقم الشارع — 57/2 و12أ/8 كلاهما صحيح */
-var NS_SIGN_RE = /^[0-9A-Za-z\u0621-\u064A]+(?:[-\/][0-9A-Za-z\u0621-\u064A]+)+$/;
-var NS_SQ_RE   = /^[0-9A-Za-z\u0621-\u064A]+(?:-[0-9A-Za-z\u0621-\u064A]+)*$/;
+PV.NS_SIGN_RE = /^[0-9A-Za-z\u0621-\u064A]+(?:[-\/][0-9A-Za-z\u0621-\u064A]+)+$/;
+PV.NS_SQ_RE = /^[0-9A-Za-z\u0621-\u064A]+(?:-[0-9A-Za-z\u0621-\u064A]+)*$/;
 
 function nsCapture(){
   if (!navigator.geolocation){ toast(t('تعذّر تحديد الموقع')); return; }
   toast(t('يُلتقَط موضعك…'));
   navigator.geolocation.getCurrentPosition(function(p){
     NEWSITE.lat = p.coords.latitude; NEWSITE.lng = p.coords.longitude;
-    MYPOS = { lat:NEWSITE.lat, lng:NEWSITE.lng, at:Date.now() };
+    PV.MYPOS = { lat:NEWSITE.lat, lng:NEWSITE.lng, at:Date.now() };
     toast(t('التُقط'));
     render(1);
   }, function(){ toast(t('تعذّر تحديد الموقع')); }, { enableHighAccuracy:true, timeout:10000 });
@@ -81,7 +81,7 @@ function visitAsnOpen(ids, quiet){
   if (!ids.length){ toast(t('لا نقطةَ بهذا المعرِّف')); return false; }
   selClear();
   ids.forEach(function(id){ if (!asnOf(id)){ SEL[id] = 1; SEL_N++; } });
-  FIELD_MODE = 'survey'; ASN_KIND = 'visit'; ASN_PICK = false; ASN_BASE = [];
+  FIELD_MODE = 'survey'; ASN_KIND = 'visit'; ASN_PICK = false; PV.ASN_BASE = [];
   POP_OPEN = false; MAP_SELECT = false;
   goPage('map'); ASN_OPEN = true;
   if (!quiet) toast(t('جدوِل زيارتَها: اختر من يزورها وموعدَه ثم «أسند»'));
@@ -116,7 +116,7 @@ function nsDupNear(lat, lng, type){
 }
 function nsSave(){
   var minProp = ROLE === 'viewer', office = nsOffice() || minProp;   /* (V37.68) قرارُ المالك: نقطةُ الوزارة «مقترحة» يعتمدها المهندس — بلا صورٍ إلزاميةٍ ولا زيارة */
-  var lat = NEWSITE.lat || (MYPOS && MYPOS.lat), lng = NEWSITE.lng || (MYPOS && MYPOS.lng);
+  var lat = NEWSITE.lat || (PV.MYPOS && PV.MYPOS.lat), lng = NEWSITE.lng || (PV.MYPOS && PV.MYPOS.lng);
   if (!lat || !lng){ toast(t('التقط موضعك أولًا')); return; }
 
   NEWSITE.sq   = String(NEWSITE.sq   || '').trim();
@@ -128,9 +128,9 @@ function nsSave(){
   if (camp){
     if (!NEWSITE.sq){   toast(t('رقم المربع مطلوب')); return; }
     if (!NEWSITE.sign){ toast(t('رقم الشاخص مطلوب')); return; }
-    if (!NS_SQ_RE.test(NEWSITE.sq)){
+    if (!PV.NS_SQ_RE.test(NEWSITE.sq)){
       toast(t('رقم المربع: أرقامٌ أو أرقام-أرقام — مثال 7 أو 7-14')); return; }
-    if (!NS_SIGN_RE.test(NEWSITE.sign)){
+    if (!PV.NS_SIGN_RE.test(NEWSITE.sign)){
       toast(t('الصيغة: اسم الخيمة/رقم الشارع — مثال 57/2 أو 12أ/8')); return; }
   } else { NEWSITE.sq = ''; NEWSITE.sign = ''; }
   if (!minProp && camp && NEWSITE.reason !== 'عدم وجود تخصيص' && !NEWSITE.co && !NEWSITE.coReq){
@@ -201,7 +201,7 @@ function nsSave(){
 
   NEWSITE = { lat:0, lng:0, zone:NEWSITE.zone, type:'مخيم', sq:'', sign:'',   /* (V39.54) owner: «تتضاف تحت مخيمات» — the last type no longer carries into the next point */
               co:'', coReq:'', tents:'', reason:'', why:'', note:'', photos:{}, nm:'', center:'', chals:[] };
-  NS_CO_OPEN = false; NS_CO_Q = '';
+  NS_CO_OPEN = false; PV.NS_CO_Q = '';
 
   /* المكتبُ لم يزرها: لا نموذجَ مسحٍ يُفتَح بل لوحُ الإسناد عليها — فتُجدوَل
      زيارتُها الآن ولا تُنسى (V17.57). والميدانُ زارها فعلًا: يُفتَح نموذجُ

@@ -78,7 +78,7 @@ function shapeSvg(shape, col){
 PV.TAX_ALIAS = { 'كاميرات الرصد':'كاميرات المتابعة', 'المتابعة':'كاميرات المتابعة', 'محطات التفويج':'مراكز التفويج', 'كاميرات رصد':'كاميرات المتابعة' };   /* (V30.0) المشعرُ «المتابعة» صار «كاميرات المتابعة» */
 var TAX_G = ['منى', 'عرفات', 'المزدلفة', 'مراكز التفويج', 'كاميرات المتابعة'];
 var TAX_T = ['مخيمات', 'مخيمات ترددية', 'ممرات', 'محطات قطار', 'كاميرات المتابعة', 'منشأة الجمرات', 'مسجد نمرة', 'النورية', 'محطات طريق الهجرة', 'الزايدي'];
-var TAX_V = 3;   /* (V39.55) «مخيمات ترددية» */   /* يُرفَع عند أيِّ تعديلٍ يدويّ فتُعاد قراءةُ الذاكرة */
+PV.TAX_V = 3;   /* (V39.55) «مخيمات ترددية» */   /* يُرفَع عند أيِّ تعديلٍ يدويّ فتُعاد قراءةُ الذاكرة */
 function taxCalc(x){
   var z = String(x.zone || ''), ty = String(x.type || ''), nm0 = String(x.name || ''), cam = (ty === 'كاميرا' || ty === 'LPR');
   var t = { 'مخيم':'مخيمات', 'ممر':'ممرات', 'محطة':'محطات قطار', 'جسر':'منشأة الجمرات', 'بوابة':'مسجد نمرة', 'كاميرا':'كاميرات المتابعة', 'LPR':'كاميرات المتابعة', 'مبنى':'مخيمات' }[ty] || (TAX_T.indexOf(ty) > -1 ? ty : 'مخيمات');
@@ -101,15 +101,15 @@ function taxCalc(x){
 function taxOf(x){
   if (!x) return { g:'', t:'' };
   var ctC = ((STATE.recs || {})[x.id] || {}).ctype || '';   /* (V39.62) the camp type chosen in a survey edit re-reads the taxonomy */
-  if (x._tax && x._taxV === TAX_V && x._taxC === ctC) return x._tax;
+  if (x._tax && x._taxV === PV.TAX_V && x._taxC === ctC) return x._tax;
   var r = taxCalc(x);
   var tg = PV.TAX_ALIAS[x.tg] || x.tg, tt = PV.TAX_ALIAS[x.tt] || x.tt;   /* (V28.5) */
   if (tg && TAX_G.indexOf(tg) > -1) r.g = tg;
   if (tt && TAX_T.indexOf(tt) > -1) r.t = tt;
-  x._tax = r; x._taxV = TAX_V; x._taxC = ctC; return r;
+  x._tax = r; x._taxV = PV.TAX_V; x._taxC = ctC; return r;
 }
-var TAX_DEF = { 'مخيمات':{ l:'مخيمات', i:'\u26FA', c:'#3ED598' }, 'ممرات':{ l:'ممرات', i:'\u{1F6E3}', c:'#4FA3FF' }, 'محطات قطار':{ l:'محطات قطار', i:'\u{1F686}', c:'#F2C960' }, 'كاميرات المتابعة':{ l:'كاميرات المتابعة', i:'\u{1F4F7}', c:'#C77DFF' }, 'منشأة الجمرات':{ l:'منشأة الجمرات', i:'\u{1F309}', c:'#E8873A' }, 'مسجد نمرة':{ l:'مسجد نمرة', i:'\u{1F54C}', c:'#38B2AC' }, 'النورية':{ l:'النورية', i:'\u{1F693}', c:'#FF6B6B' }, 'محطات طريق الهجرة':{ l:'محطات طريق الهجرة', i:'\u{1F693}', c:'#FF8E53' }, 'الزايدي':{ l:'الزايدي', i:'\u{1F693}', c:'#FFB347' } };
-TAX_DEF['مخيمات ترددية'] = { l:'مخيمات ترددية', i:'\u26FA', c:'#F59E0B' };   /* (V39.55) amber beside the camps' green */
+PV.TAX_DEF = { 'مخيمات':{ l:'مخيمات', i:'\u26FA', c:'#3ED598' }, 'ممرات':{ l:'ممرات', i:'\u{1F6E3}', c:'#4FA3FF' }, 'محطات قطار':{ l:'محطات قطار', i:'\u{1F686}', c:'#F2C960' }, 'كاميرات المتابعة':{ l:'كاميرات المتابعة', i:'\u{1F4F7}', c:'#C77DFF' }, 'منشأة الجمرات':{ l:'منشأة الجمرات', i:'\u{1F309}', c:'#E8873A' }, 'مسجد نمرة':{ l:'مسجد نمرة', i:'\u{1F54C}', c:'#38B2AC' }, 'النورية':{ l:'النورية', i:'\u{1F693}', c:'#FF6B6B' }, 'محطات طريق الهجرة':{ l:'محطات طريق الهجرة', i:'\u{1F693}', c:'#FF8E53' }, 'الزايدي':{ l:'الزايدي', i:'\u{1F693}', c:'#FFB347' } };
+PV.TAX_DEF['مخيمات ترددية'] = { l:'مخيمات ترددية', i:'\u26FA', c:'#F59E0B' };   /* (V39.55) amber beside the camps' green */
 /* (V38.34) the category badge of a point: train E-GATEs are gates of the train, not Namirah mosque gates */
 function catDefOf(x){ var d = CAT_DEF[x && x.type] || { l:(x && x.type) || '', i:'\u25CF', c:'#8A939D' }; return (typeof egIsGate === 'function' && egIsGate(x)) ? { l:'بوابات القطار', i:'\u{1F6AA}', c:'#F2C960' } : d; }
 var CAT_DEF = {
@@ -189,7 +189,7 @@ function ctSrc(r, key){
 function ctypeSrc(x){ return x ? ctSrc((STATE.recs || {})[x.id], 'ctype') : null; }
 function siteTard(x){ if (!x) return false; var cs = ctypeSrc(x); return !!(cs && cs.field && cs.v === 'ترددي'); }
 function siteTbar(x){ if (!siteTard(x)) return 0; var ts = ctSrc((STATE.recs || {})[x.id], 'tbar'); return ts && ts.field ? (+ts.v || 0) : 0; }
-function filtOn(){ return !!(FILT.zone || FILT.type || FILT.work || FILT.life || FILT.stg || FILT.exec || FILT.ccg || FILT.route || (FILT.floor !== '' && FILT.floor != null) || CO_SEL.length); }
+function filtOn(){ return !!(FILT.zone || FILT.type || FILT.work || FILT.life || FILT.stg || FILT.exec || FILT.ccg || FILT.route || (FILT.floor !== '' && FILT.floor != null) || PV.CO_SEL.length); }
 /* (V39.29) the stage of a point in the installation or dismantling legend — the same rule the legend counts by */
 function modeStageOf(x, mode){ return (mode === 'dis' ? disDone(x.id) : insDone(x.id)) ? 'done' : (asnOf(x.id) ? 'asn' : 'wait'); }
 
@@ -206,7 +206,7 @@ function filtPass(x){
   if (FILT.exec && typeof execStatusMemo === 'function'){ var exL = execLabelOf(execStatusMemo(x)); if (FILT.exec === '*' ? execIsNone(exL) : exL !== FILT.exec) return false; }   /* (V39.69) «الكل» = every point with a real challenge */   /* (V37.52→V37.53) بالتسمية الظاهرة */
   if (FILT.ccg && typeof ccGroupsOfSite === 'function'){ var cgs = ccGroupsOfSite(x); if (FILT.ccg === '*' ? !cgs.length : cgs.indexOf(FILT.ccg) < 0) return false; }   /* (V39.69) «الكل» = every point in any handling group */
   /* الشركةُ ترشيحٌ لا تلوينٌ فحسب: من اختار شركةً أراد نقاطَها وحدها */
-  if (CO_SEL.length && CO_SEL.indexOf(x.co) < 0) return false;
+  if (PV.CO_SEL.length && PV.CO_SEL.indexOf(x.co) < 0) return false;
   return true;
 }
 
@@ -251,20 +251,20 @@ function camNetOf(x){
   });
   return hit;
 }
-var CAM_SPEC = { 'DH-IPC-HFW7842H-Z-X':'8MP (4K) · 2.7–12mm', 'DH-IPC-HFW7842H-Z-S2':'8MP (4K) · 2.7–12mm', 'DH-SD49425XB-HNR':'4MP · 25x (4.8–120mm)',
+PV.CAM_SPEC = { 'DH-IPC-HFW7842H-Z-X':'8MP (4K) · 2.7–12mm', 'DH-IPC-HFW7842H-Z-S2':'8MP (4K) · 2.7–12mm', 'DH-SD49425XB-HNR':'4MP · 25x (4.8–120mm)',
   'DH-SD8A840N-HNF-PA':'8MP (4K) · 40x', 'IPC-HFW2531T-ZS-S2':'5MP · 2.7–13.5mm', 'IPC-HFW5431E-ZE':'4MP · 2.7–13.5mm', 'IPC-HFW5541E-ZE':'5MP · 2.7–13.5mm' };   /* [عددُ الكاميرات، [[F|P، عدد]…]، حالةُ الربط، القطاع، موقعٌ تقريبيٌّ داخل الدور] */
-var FLOOR_NAMES = ['الأرضي', 'الأول', 'الثاني', 'الثالث', 'الرابع'];
+PV.FLOOR_NAMES = ['الأرضي', 'الأول', 'الثاني', 'الثالث', 'الرابع'];
 /* (V39.69) a challenges label that is not a challenge: «لا توجد تحديات…» and «تم التركيب» */
 function execIsNone(el){ el = String(el || ''); return !el || /^لا توجد تحديات/.test(el) || el === 'تم التركيب'; }
 function siteFloor(x){
   if (!x) return null;
   if (x.floor != null && x.floor !== '') return +x.floor;
   var n = String(x.name || ''), m = /الدور\s+(الأرضي|الأول|الثاني|الثالث|الرابع)/.exec(n);
-  if (m) return FLOOR_NAMES.indexOf(m[1]);
+  if (m) return PV.FLOOR_NAMES.indexOf(m[1]);
   var e = /\b(G|1ST|2ND|3RD|4TH)\s*(?:F|FLOOR)\b/i.exec(n);
   return e ? ({ G:0, '1ST':1, '2ND':2, '3RD':3, '4TH':4 })[e[1].toUpperCase()] : null;
 }
-function floorName(v){ return v == null ? '' : 'الدور ' + (FLOOR_NAMES[v] || String(v)); }
+function floorName(v){ return v == null ? '' : 'الدور ' + (PV.FLOOR_NAMES[v] || String(v)); }
 /* (V25.4) نقاطُ الجمرات: مدخلٌ أو مخرج — من الحقل المحفوظ أو من الاسم؛ والاسمُ يحمل الدورَ والبوابةَ معًا (قرارُ المالك: يتضاف) */
 function isJmr(x){ return !!x && (/-JMR-/.test(String(x.id || '')) || x.zone === 'الجمرات' || /الجمرات/.test(String(x.name || ''))); }
 function siteGate(x){
@@ -291,7 +291,7 @@ function camInfoRows(x, kvf){
    من layers/ (لا تثقل الملفَّ الرئيسيّ) وتُخزَّن للعمل بلا شبكة. */
 var TFW = { f:-1, d:'both', data:null, overlay:null, busy:false };   /* (V24.3) f=5 كلُّ الأدوار معًا، وd اتجاهُ العرض: both | go | back */
 var TFW_ALL = 5, TFW_COL = ['#F5C400', '#FF7A00', '#3AD6A0', '#4BC9F5', '#C77DFF'];
-var TFW_FL = ['الأرضي', 'الأول', 'الثاني', 'الثالث', 'الرابع'];
+PV.TFW_FL = ['الأرضي', 'الأول', 'الثاني', 'الثالث', 'الرابع'];
 function tfwLoad(){
   if (TFW.data || TFW.busy || typeof fetch !== 'function') return;
   TFW.busy = true;
@@ -388,7 +388,7 @@ function tfwLines(){
    «لما أختار مخيم بعينه يطلعلي مسار الذهاب والعودة بتاعه ورايح على أنهي دور». من خطوط الدور نفسِها
    (شبكةٌ على الشوارع الفعلية) يُحسَب أقصرُ طريق: الذهابُ من المخيم إلى مداخل المنشأة، والعودةُ من مخرج
    دوره إلى المخيم — ويُرسَمان وحدَهما مع المسافة ووقت المشي (٦٠ م في الدقيقة: سيرُ الزحام). */
-var TFW_JIN = [21.4199, 39.8747], TFW_JEX = ['0014', '0017', '0020', '0023', '0026'];
+var TFW_JIN = [21.4199, 39.8747]; PV.TFW_JEX = ['0014', '0017', '0020', '0023', '0026'];
 
 
 function tfwFloorOf(id){ return (TFW.data && TFW.data.assign && TFW.data.assign[id] != null) ? TFW.data.assign[id] : null; }
@@ -397,15 +397,15 @@ function tfwRow(){
   var h = '<div class="catrow"><span class="hint" style="margin:0 4px;align-self:center">\u{1F6B6} ' + esc(t('مسار التفويج')) + '</span>'
     + '<button type="button" class="cat' + (TFW.f < 0 ? ' on' : '') + '" data-tfw="-1">' + esc(t('إخفاء')) + '</button>'
     + '<button type="button" class="cat' + (TFW.f >= 0 ? ' on' : '') + '" data-tfw="show">' + esc(t('إظهار')) + '</button>'
-    + (TFW.f >= 0 ? '<span class="hint" style="margin:0 4px;align-self:center">' + (TFW.f === TFW_ALL ? esc(t('كل الأدوار — اختر الدور من صف الأدوار')) : esc(t('الدور') + ' ' + t(TFW_FL[TFW.f]))) + '</span>' : '') + '</div>';
+    + (TFW.f >= 0 ? '<span class="hint" style="margin:0 4px;align-self:center">' + (TFW.f === TFW_ALL ? esc(t('كل الأدوار — اختر الدور من صف الأدوار')) : esc(t('الدور') + ' ' + t(PV.TFW_FL[TFW.f]))) + '</span>' : '') + '</div>';
   /* (V24.3) الاتجاه: الذهابُ والعودةُ معًا أو كلٌّ وحدَه — ومع «كل الأدوار» لكلِّ دورٍ لونُه والعودةُ متقطّعة */
   if (TFW.f >= 0) h += '<div class="catrow"><span class="hint" style="margin:0 4px;align-self:center">' + esc(t('الاتجاه')) + '</span>' + [['both', 'الذهاب والعودة'], ['go', 'الذهاب فقط'], ['back', 'العودة فقط']].map(function(o){
       return '<button type="button" class="cat' + (TFW.d === o[0] ? ' on' : '') + '" data-tfwd="' + o[0] + '">' + esc(t(o[1])) + '</button>'; }).join('') + '</div>';
-  if (TFW.f >= 0 && TFW.f < TFW_ALL && TFW.data) h += '<div class="tfw-card"><i style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:middle;background:' + (TFW_COL[TFW.f] || '#F5C400') + '55;border:2px solid ' + (TFW_COL[TFW.f] || '#F5C400') + '"></i> ' + esc(t('مخيمات الدور')) + ' ' + esc(t(TFW_FL[TFW.f])) + ': <b>' + nm(tfwCampsOf(TFW.f).length) + '</b> ' + esc(t('مخيمًا')) + ' \u2014 ' + esc(t('مظلّلةٌ على الخريطة بلون الدور')) + '</div>';   /* (V27.8) */
-  if (TFW.f === TFW_ALL) h += '<div class="tfw-card">' + TFW_FL.map(function(n, i){ return '<span style="display:inline-flex;align-items:center;gap:5px;margin-inline-end:12px"><i style="width:18px;height:4px;border-radius:2px;background:' + TFW_COL[i] + '"></i>' + esc(t('الدور') + ' ' + t(n)) + ' <span class="num">' + nm(tfwCampsOf(i).length) + '</span> ' + esc(t('مخيمًا')) + '</span>'; }).join('')
+  if (TFW.f >= 0 && TFW.f < TFW_ALL && TFW.data) h += '<div class="tfw-card"><i style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:middle;background:' + (TFW_COL[TFW.f] || '#F5C400') + '55;border:2px solid ' + (TFW_COL[TFW.f] || '#F5C400') + '"></i> ' + esc(t('مخيمات الدور')) + ' ' + esc(t(PV.TFW_FL[TFW.f])) + ': <b>' + nm(tfwCampsOf(TFW.f).length) + '</b> ' + esc(t('مخيمًا')) + ' \u2014 ' + esc(t('مظلّلةٌ على الخريطة بلون الدور')) + '</div>';   /* (V27.8) */
+  if (TFW.f === TFW_ALL) h += '<div class="tfw-card">' + PV.TFW_FL.map(function(n, i){ return '<span style="display:inline-flex;align-items:center;gap:5px;margin-inline-end:12px"><i style="width:18px;height:4px;border-radius:2px;background:' + TFW_COL[i] + '"></i>' + esc(t('الدور') + ' ' + t(n)) + ' <span class="num">' + nm(tfwCampsOf(i).length) + '</span> ' + esc(t('مخيمًا')) + '</span>'; }).join('')
       + '<div class="hint" style="margin:4px 0 0;font-size:11px">' + esc(t('الخط المتصل: الذهاب · المتقطع: العودة')) + '</div></div>';
   if (TFW.camp){ var cs = siteFind(TFW.camp.id), mins = function(m){ return nm(Math.max(1, Math.round(m / 60))); };
-    h += '<div class="tfw-card"><b>' + esc(t('مسار المخيم')) + ': ' + esc(cs ? siteTitle(cs) : TFW.camp.id) + '</b> \u2014 ' + esc(t('الدور') + ' ' + t(TFW_FL[TFW.camp.f]))
+    h += '<div class="tfw-card"><b>' + esc(t('مسار المخيم')) + ': ' + esc(cs ? siteTitle(cs) : TFW.camp.id) + '</b> \u2014 ' + esc(t('الدور') + ' ' + t(PV.TFW_FL[TFW.camp.f]))
       + '<div style="margin:4px 0 0"><i style="display:inline-block;width:16px;height:4px;border-radius:2px;background:#F5C400;vertical-align:middle"></i> ' + esc(t('الذهاب')) + ' <b class="num">' + nm(TFW.camp.go.len) + '</b> ' + esc(t('م')) + ' \u00b7 ' + mins(TFW.camp.go.len) + ' ' + esc(t('دقيقة مشيا'))
       + ' \u2003 <i style="display:inline-block;width:16px;height:4px;border-radius:2px;background:#D0021B;vertical-align:middle"></i> ' + esc(t('العودة')) + ' <b class="num">' + nm(TFW.camp.back.len) + '</b> ' + esc(t('م')) + ' \u00b7 ' + mins(TFW.camp.back.len) + ' ' + esc(t('دقيقة مشيا')) + '</div>'
       + '<div style="margin:6px 0 0">' + btn('إلغاء', 'btn-quiet btn-sm', ' data-tfwcampx="1"') + '</div></div>'; }
@@ -444,10 +444,10 @@ function catBar(withWork){
     + zones.map(function(z){ return '<button type="button" class="cat zone' + (FILT.zone===z?' on':'') + '" data-fz="' + esc(z) + '">' + esc(t(z)) + ' <span class="n">' + nm(C.zone[z]) + '</span></button>'; }).join('') + '</div>';
   /* ─ النوع ─ */
   var typeRow = types.length > 1 || FILT.type ? '<div class="catrow">' + types.map(function(ty){
-      var d = TAX_DEF[ty] || { l:ty, i:'\u25CF', c:'#8A939D' }, on = FILT.type === ty;
+      var d = PV.TAX_DEF[ty] || { l:ty, i:'\u25CF', c:'#8A939D' }, on = FILT.type === ty;
       if (ty === 'مخيمات' && C.type['مخيمات ترددية']) d = { l:'مخيمات عادية', i:d.i, c:d.c };   /* (V39.57) owner: «تقسيم المخيمات: عادي وترددي» */
       return '<button type="button" class="cat' + (on?' on':'') + '" data-ft="' + esc(ty) + '" style="border-color:' + d.c + (on ? ';background:' + d.c + '22;color:' + d.c : '') + '">' + d.i + ' ' + esc(t(d.l)) + ' <span class="n">' + nm(C.type[ty]) + '</span></button>'; }).join('') + '</div>' : '';
-  var typeSel = FILT.type ? esc(t(FILT.type === 'مخيمات' && C.type['مخيمات ترددية'] ? 'مخيمات عادية' : (TAX_DEF[FILT.type] || { l:FILT.type }).l)) : '';
+  var typeSel = FILT.type ? esc(t(FILT.type === 'مخيمات' && C.type['مخيمات ترددية'] ? 'مخيمات عادية' : (PV.TAX_DEF[FILT.type] || { l:FILT.type }).l)) : '';
   /* ─ المسارات ─ */
   var routeRow = '', routeSel = '';
   { var RT = routesList(), rks = Object.keys(RT).sort(function(a, b){ return RT[b] - RT[a]; });
@@ -475,12 +475,12 @@ function catBar(withWork){
   if (typeof lifeOf === 'function' && typeof LIFE_ORDER !== 'undefined'){
     var lc = {}, base = STATE.sites.filter(function(x){
       if (FILT.zone && taxOf(x).g !== FILT.zone) return false; if (FILT.type && taxOf(x).t !== FILT.type) return false;
-      if (FILT.work && x.work !== FILT.work) return false; if (CO_SEL.length && CO_SEL.indexOf(x.co) < 0) return false; return true; });
+      if (FILT.work && x.work !== FILT.work) return false; if (PV.CO_SEL.length && PV.CO_SEL.indexOf(x.co) < 0) return false; return true; });
     base.forEach(function(x){ var l = lifeOf(x); lc[l] = (lc[l] || 0) + 1; });
     var lifeKeys = LIFE_ORDER.filter(function(k){ return lc[k]; });
     if (typeof execStatusMemo === 'function' && typeof CC_GROUPS !== 'undefined'){
       var ec = {}, gc = {}; base.forEach(function(x){ var el = execLabelOf(execStatusMemo(x)); ec[el] = (ec[el] || 0) + 1; ccGroupsOfSite(x).forEach(function(g){ gc[g] = (gc[g] || 0) + 1; }); });
-      var eKeys = []; EXEC_ORDER_L.forEach(function(k){ var el = execLabelOf(k); if (ec[el] && eKeys.indexOf(el) < 0) eKeys.push(el); });
+      var eKeys = []; PV.EXEC_ORDER_L.forEach(function(k){ var el = execLabelOf(k); if (ec[el] && eKeys.indexOf(el) < 0) eKeys.push(el); });
       var exAny = eKeys.reduce(function(n, el){ return n + (execIsNone(el) ? 0 : ec[el]); }, 0);   /* (V39.69) owner: «لما أختار الكل يظهر المخيمات ذات التحديات بس» */
       if (eKeys.length){ execRow = '<div class="catrow"><button type="button" class="cat' + (FILT.exec === '*' ? ' on' : '') + '" data-fx="*">' + esc(t('الكل')) + ' <span class="num">' + nm(exAny) + '</span></button>'
         + eKeys.map(function(el){ return '<button type="button" class="cat' + (FILT.exec === el ? ' on' : '') + '" data-fx="' + esc(el) + '">' + esc(t(el)) + ' <span class="num">' + nm(ec[el]) + '</span></button>'; }).join('') + '</div>'; execSel = FILT.exec ? esc(t(FILT.exec)) + (ec[FILT.exec] ? ' <b>' + nm(ec[FILT.exec]) + '</b>' : '') : ''; }
@@ -523,7 +523,7 @@ var FILT_CACHE = null, FILT_KEY = '';
 
 function filtered(){
   var k = FILT.zone + '|' + FILT.type + '|' + FILT.work + '|' + FILT.life + '|' + (FILT.stg ? FILT.stg + '@' + FIELD_MODE : '') + '|' + FILT.route + '|' + FILT.floor + '|' + STAT_VER
-        + '|' + CO_SEL.join(',');
+        + '|' + PV.CO_SEL.join(',');
   /* (V38.70) the cache follows the registry list too — a replaced or grown list is filtered anew (as siteIndex) */
   if (FILT_CACHE && FILT_KEY === k && filtered.of === STATE.sites && filtered.n === STATE.sites.length) return FILT_CACHE;
   FILT_KEY = k; filtered.of = STATE.sites; filtered.n = STATE.sites.length;

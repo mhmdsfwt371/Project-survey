@@ -15,13 +15,13 @@
    وبلاغاتٌ جوهرية، ومردوداتٌ تتكرّر. فالخطرُ يُرى قبل أن يُكتَب. */
 function risksList(){
   if (!Array.isArray(STATE.risks) || !STATE.risks.length)
-    STATE.risks = RISKS.map(function(r){ return Object.assign({}, r); });
+    STATE.risks = PV.RISKS.map(function(r){ return Object.assign({}, r); });
   return STATE.risks;
 }
 
 function riskSave(){ CORE.set('cfg', 'risks', risksList().slice()); }
 
-var RISKS = [
+PV.RISKS = [
   { id:'R1', t:'تأخّر توريد القطع عن الموعد', cat:'مشتريات', p:3, i:4,
     resp:'تخفيف', plan:'طلبٌ مبكّرٌ ومورّدٌ بديلٌ معتمد', own:'المهندس', st:'مفتوح' },
   { id:'R2', t:'تعذّر الوصول لمواقع داخل المخيمات', cat:'ميداني', p:4, i:3,

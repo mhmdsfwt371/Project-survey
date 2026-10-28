@@ -120,8 +120,8 @@ var CORE = {
     return !!sId && sId.indexOf('/') < 0 && sId !== '.' && sId !== '..';
   },
   saveSoon: function(){
-    if (_saveT) return;
-    _saveT = setTimeout(function(){ _saveT = 0; CORE.saveLocal(); }, 400);
+    if (PV._saveT) return;
+    PV._saveT = setTimeout(function(){ PV._saveT = 0; CORE.saveLocal(); }, 400);
   },
 
   /* ═══ احتياطيُّ الطابور في localStorage (V21.0) ═══
@@ -159,7 +159,7 @@ var CORE = {
   },
   saveLocal: function(){
     CORE.qbakSave();
-    if (PH_DIRTY){ PH_DIRTY = false; var PHS = {}; Object.keys(STATE.photos || {}).forEach(function(k){ PHS[k] = photoSlim(STATE.photos[k]); }); idbSet('photos', PHS); }   /* (V37.18) */
+    if (PV.PH_DIRTY){ PV.PH_DIRTY = false; var PHS = {}; Object.keys(STATE.photos || {}).forEach(function(k){ PHS[k] = photoSlim(STATE.photos[k]); }); idbSet('photos', PHS); }   /* (V37.18) */
     return idbSet('state', {
       recs:STATE.recs, inss:STATE.inss, tasks:STATE.tasks,
       moves:STATE.moves, buys:STATE.buys, cfg:CFG, queue:STATE.queue,
@@ -191,7 +191,7 @@ var CORE = {
       ['recs','inss','tasks','moves','buys','queue','poison','diss','maints','steps','photos','pending','provision','att','msgs'].forEach(function(k){
         if (v[k]) STATE[k] = v[k];
       });
-      if (v.photos){ var oldP = {}; Object.keys(v.photos).forEach(function(k){ oldP[k] = photoSlim(v.photos[k]); }); STATE.photos = oldP; PH_DIRTY = true, phTouch(); }   /* (V37.18) لقطةٌ قديمةٌ تحمل الصورَ: تُجرَّد مرةً */
+      if (v.photos){ var oldP = {}; Object.keys(v.photos).forEach(function(k){ oldP[k] = photoSlim(v.photos[k]); }); STATE.photos = oldP; PV.PH_DIRTY = true, phTouch(); }   /* (V37.18) لقطةٌ قديمةٌ تحمل الصورَ: تُجرَّد مرةً */
       if (v.siteOv && typeof v.siteOv === 'object'){ STATE.siteOv = v.siteOv; STATE.sites = STATE.sites.concat(STATE.hiddenSites || []); siteOvApply(); }
       if (v.cfg) Object.keys(v.cfg).forEach(function(k){ CFG[k] = v.cfg[k]; });
       if (v.pullAt && typeof v.pullAt === 'object') STATE.meta.pullAt = v.pullAt;
@@ -473,7 +473,7 @@ var FB = {
     if (FB.ready) return true;
     if (typeof window === 'undefined' || !window.firebase) return false;
     try {
-      FB.app  = window.firebase.initializeApp(FB_CFG);
+      FB.app  = window.firebase.initializeApp(PV.FB_CFG);
       FB.auth = window.firebase.auth();
       FB.db   = window.firebase.firestore();
       FB.ready = true;
@@ -493,7 +493,7 @@ var FB = {
       var second;
       try {
         second = (window.firebase.apps || []).filter(function(a){ return a.name === 'mk'; })[0]
-              || window.firebase.initializeApp(FB_CFG, 'mk');
+              || window.firebase.initializeApp(PV.FB_CFG, 'mk');
       } catch (e){ return { ok:false, err:'app' }; }
       var bye = function(r){
         return second.auth().signOut().then(function(){ return r; })
@@ -737,7 +737,7 @@ var FB = {
       FB.readCount = (FB.readCount || 0) + doc.size;
       var v = doc && doc.exists ? (doc.data() || {}) : {};
       if (v.epoch && epochApply(v.epoch)){ SYNC.pullAsk = true; FB._staticAt = 0; }
-      if (v.syncAll) SYNC_ALL_SEEN = +v.syncAll || 0;   /* عند الدخول: تُضبَط العلامةُ بلا سحبٍ زائد */
+      if (v.syncAll) PV.SYNC_ALL_SEEN = +v.syncAll || 0;   /* عند الدخول: تُضبَط العلامةُ بلا سحبٍ زائد */
       if (v.ver && typeof verChase === 'function') verChase(v.ver);
     }).catch(function(e){ softErr('قراءة العهد', e, ''); }).then(function(){ EPOCH_PENDING = false; });
     return epochRead.then(function(){ return FB.pullStatic2(); });
@@ -946,7 +946,7 @@ var FB = {
       DB.col('settings').doc('handSeq').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists){ var v = doc.data();
-          if (typeof v.n === 'number' && v.n > HAND_SEQ) HAND_SEQ = v.n; }
+          if (typeof v.n === 'number' && v.n > PV.HAND_SEQ) PV.HAND_SEQ = v.n; }
       }).catch(function(e){ softErr('سحب ترقيم محاضر التسليم', e, 'تعذّر سحبُ آخر رقم محضر — قد يتكرّر الترقيم'); });
       DB.col('settings').doc('patterns').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
@@ -966,7 +966,7 @@ var FB = {
       DB.col('settings').doc('perms').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists) CFG.perms = doc.data();
-        PM_AT = Date.now();
+        PV.PM_AT = Date.now();
       }).catch(function(e){ softErr('سحب مصفوفة الصلاحيات', e, ''); });
       /* الأدوارُ المخصَّصةُ أوّلًا ثم القدراتُ فوقها — أيًّا كان ترتيبُ وصولهما */
       DB.col('settings').doc('roles').get().then(function(doc){
@@ -1130,7 +1130,7 @@ var FB = {
         var v = doc.data();
         Object.keys(v).forEach(function(k){ if (k in CFG) CFG[k] = v[k]; });
       }
-      CFG_PULLED = true; STATE.meta.lastSync = Date.now();
+      PV.CFG_PULLED = true; STATE.meta.lastSync = Date.now();
       return true;
     }).catch(function(e){
       /* بلا إعداداتٍ يعمل النظامُ بأوزانٍ صفرٍ وحدودِ اعتمادٍ صفر — ويبدو

@@ -156,7 +156,7 @@ function formGo(id, why){
 
 function svCopyFrom(id){
   var r = STATE.recs[id]; if (!r){ toast(t('لا زيارة')); return; }
-  var n = 0; SV_COPY_KEYS.forEach(function(k){ if (r[k] != null && r[k] !== '' && (FORM[k] == null || FORM[k] === '')){ FORM[k] = r[k]; n++; } });
+  var n = 0; PV.SV_COPY_KEYS.forEach(function(k){ if (r[k] != null && r[k] !== '' && (FORM[k] == null || FORM[k] === '')){ FORM[k] = r[k]; n++; } });
   if (typeof SVD === 'object' && SVD) SVD.dirty = true; try { svDraftSoon(); } catch (e){ LS_ERR = e; }
   toast(n ? t('نُسخ') + ' ' + nm(n) + ' ' + t('حقلًا من') + ' ' + id + ' \u2014 ' + t('راجعها قبل الحفظ') : t('لا حقولَ فارغةً تُنسَخ'));
 }

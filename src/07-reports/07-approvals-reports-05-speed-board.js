@@ -10,13 +10,13 @@
 /* ═══ (V37.34) البندُ ٤ — لوحةُ السرعة لكلِّ جهازٍ ولكلِّ صفحة ═══
    من قياسات الأجهزة نفسِها (نبضتُها اليومية): زمنُ رسم كلِّ صفحةٍ (الربعُ الأعلى)، واستجابةُ اللمس، وزمنُ الفتح — لكلِّ جهازٍ صفّ،
    ولكلِّ صفحةٍ رئيسيةٍ عمود؛ أخضرُ دون ٠٫٣ ثانية (الهدف)، وأصفرُ دون ثانية، وأحمرُ فوقها. فيُعرَف الجهازُ البطيءُ والصفحةُ البطيئةُ قبل الشكوى. */
-var SPEED_PAGES = [['map', 'الخريطة'], ['mfu', 'المتابعة'], ['forms', 'النموذج'], ['survey', 'المسح'], ['mywork', 'شغلي'], ['sites', 'المواقع']];
+PV.SPEED_PAGES = [['map', 'الخريطة'], ['mfu', 'المتابعة'], ['forms', 'النموذج'], ['survey', 'المسح'], ['mywork', 'شغلي'], ['sites', 'المواقع']];
 function speedCell(v){ if (v == null) return '<span class="hint" style="margin:0">\u2014</span>'; var c = v < 300 ? 'ok' : v < 1000 ? 'wrn' : 'bad'; return pill(nm(Math.round(v / 10) / 100) + t('ث'), c); }
 function speedRows(){
   var P = STATE.presence || {}, now = Date.now();
   return Object.keys(P).map(function(k){ return P[k] || {}; }).filter(function(x){ return x && x.name && x.pf && x.pf.pages && now - (+x.at || 0) < 7 * 864e5; }).map(function(x){
     var pg = x.pf.pages || {}, worst = 0;
-    var cells = SPEED_PAGES.map(function(p){ var v = pg[p[0]] && pg[p[0]].p75; if (v != null && v > worst) worst = v; return v == null ? null : +v; });
+    var cells = PV.SPEED_PAGES.map(function(p){ var v = pg[p[0]] && pg[p[0]].p75; if (v != null && v > worst) worst = v; return v == null ? null : +v; });
     return { name:x.name, model:(typeof uaModel === 'function' ? uaModel(x.ua) : ''), ver:x.ver || '', cells:cells, inp:x.pf.inp && x.pf.inp.p75, open:x.pf.open, worst:worst };
   }).sort(function(a, b){ return b.worst - a.worst; });
 }
@@ -27,7 +27,7 @@ function speedCard(){
   return card('سرعة الصفحات لكل جهاز',
     '<p class="hint" style="margin-top:0">' + esc(t('زمن رسم كل صفحة على كل جهاز (من قياس الجهاز نفسه، آخر ٧ أيام). الهدف أقل من ٠٫٣ ثانية.')) + ' '
     + '<b>' + nm(ok) + '</b> ' + esc(t('جهاز داخل الهدف')) + ' \u00b7 <b>' + nm(slow) + '</b> ' + esc(t('جهاز فيه صفحة أبطأ من ثانية')) + '</p>'
-    + '<div style="overflow-x:auto">' + table(['الجهاز'].concat(SPEED_PAGES.map(function(p){ return p[1]; })).concat(['اللمس', 'الفتح']),
+    + '<div style="overflow-x:auto">' + table(['الجهاز'].concat(PV.SPEED_PAGES.map(function(p){ return p[1]; })).concat(['اللمس', 'الفتح']),
       R.map(function(r){ return [esc(r.name) + '<div class="hint" style="margin:0">' + esc(r.model) + ' \u00b7 ' + esc(r.ver) + '</div>'].concat(r.cells.map(speedCell)).concat([speedCell(r.inp), speedCell(r.open)]); })) + '</div>');
 }
 function devActCard(){
@@ -89,26 +89,26 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
   })();
     if (cur === 'probe') return head + (function(){
     var withIp = STATE.sites.filter(function(s){ return probeIp(s); }).length;
-    var el = PROBE.t ? Math.round((Date.now() - PROBE.t) / 1000) : 0;
+    var el = PV.PROBE.t ? Math.round((Date.now() - PV.PROBE.t) / 1000) : 0;
     return alertBox('info','المتصفّح لا يملك ping — تُطلَب صفحةُ الجهاز ويُقاس ردُّه. والردُّ بخطأٍ دليلُ حياةٍ أيضًا: المنفذُ موجود. الصمتُ وحده موت.')
       + stats([['عناوين مسجّلة', N(withIp), withIp?'':'wrn'],
-               ['فُحص', N(PROBE.done)],
-               ['حيّ', N(PROBE.up), 'ok'],
-               ['صامت', N(PROBE.down), PROBE.down?'bad':'']])
+               ['فُحص', N(PV.PROBE.done)],
+               ['حيّ', N(PV.PROBE.up), 'ok'],
+               ['صامت', N(PV.PROBE.down), PV.PROBE.down?'bad':'']])
       + card('التشغيل',
           (withIp
             ? '<div class="actions">'
-              + btn(PROBE.on ? '⏸ ' + t('أوقف') : '▶ ' + t('ابدأ الفحص'),
-                    PROBE.on ? 'btn-danger' : 'btn-primary', ' data-probe="1"')
-              + (PROBE.on ? '<span class="hint" style="margin:0">'
-                  + nm(PROBE.done) + ' / ' + nm(withIp) + ' · ' + nm(el) + ' ث</span>' : '')
+              + btn(PV.PROBE.on ? '⏸ ' + t('أوقف') : '▶ ' + t('ابدأ الفحص'),
+                    PV.PROBE.on ? 'btn-danger' : 'btn-primary', ' data-probe="1"')
+              + (PV.PROBE.on ? '<span class="hint" style="margin:0">'
+                  + nm(PV.PROBE.done) + ' / ' + nm(withIp) + ' · ' + nm(el) + ' ث</span>' : '')
               + '</div>'
-              + (PROBE.on ? meter('التقدم', PROBE.done, withIp) : '')
+              + (PV.PROBE.on ? meter('التقدم', PV.PROBE.done, withIp) : '')
             : '<p class="hint" style="margin:0">' + esc(t('لا عناوين بعد — تُشتقّ من بادئة الشبكة التي تُدخَل عند التركيب.')) + '</p>'))
-      + (PROBE.log.length
+      + (PV.PROBE.log.length
         ? cardFlush('آخر ما فُحص',
             table(['النقطة','العنوان','الحالة'],
-              PROBE.log.slice(0, 24).map(function(r){
+              PV.PROBE.log.slice(0, 24).map(function(r){
                 return ['<span class="num">' + esc(r.id) + '</span>',
                         '<span class="num" dir="ltr">' + esc(r.ip) + '</span>',
                         pill(r.alive ? 'حيّ' : 'صامت', r.alive ? 'ok' : 'off')];
@@ -126,21 +126,21 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
     drvCfg();
     var n = STATE.sites.length;
     var est = Math.round(n * 4 * 180 / 1024);   /* أربعُ صورٍ للنقطة بمئةٍ وثمانين كيلو */
-    return (PHOTO_FAIL.length
+    return (PV.PHOTO_FAIL.length
         ? alertBox('warn','صورٌ تعذّر رفعُها بعد خمس محاولات — لم تُفقَد، وهي على هذا الجهاز.')
           + card('بانتظار إعادة المحاولة',
               '<div class="pop-rows" style="margin:0">'
-              + PHOTO_FAIL.slice(0, 12).map(function(x){
+              + PV.PHOTO_FAIL.slice(0, 12).map(function(x){
                   return '<div><span class="k">' + esc(x.site) + ' · ' + esc(t(x.kind)) + '</span>'
                     + '<span>' + esc(x.why || t('سببٌ غير معروف')) + '</span></div>';
                 }).join('') + '</div>',
               btn('أعد المحاولة','btn-primary btn-sm',' data-pretry="1"'))
         : '')
       + stats([['في الطابور', N(PHOTO_Q.length), PHOTO_Q.length?'wrn':'ok'],
-                  ['تعذّر رفعُها', N(PHOTO_FAIL.length), PHOTO_FAIL.length?'wrn':'ok'],
+                  ['تعذّر رفعُها', N(PV.PHOTO_FAIL.length), PV.PHOTO_FAIL.length?'wrn':'ok'],
                   ['رُفعت', N(Object.keys(STATE.photos || {}).length), 'ok'],
                   ['المتوقَّع للمشروع', N(est) + ' ' + t('ميجا')],
-                  ['الإذن', DRV.ready ? t('ممنوح') : t('لم يُطلَب'), DRV.ready?'ok':'wrn']])
+                  ['الإذن', PV.DRV.ready ? t('ممنوح') : t('لم يُطلَب'), PV.DRV.ready?'ok':'wrn']])
 
       + (drvCfg()
         ? alertBox('success','درايفك موصولٌ — الصورُ تُرفَع إليه ويُحفَظ رابطُها في السجل.')
@@ -149,9 +149,9 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
       + card('الوصل',
           '<div class="field"><label>Client ID</label>'
           + '<input id="drvClient" dir="ltr" placeholder="xxxxx.apps.googleusercontent.com" value="'
-          +   esc(DRV.clientId) + '"></div>'
+          +   esc(PV.DRV.clientId) + '"></div>'
           + '<div class="field"><label>' + esc(t('معرّف مجلّد المشروع')) + ' — ' + esc(t('اختياري')) + '</label>'
-          + '<input id="drvFolder" dir="ltr" placeholder="1AbC…" value="' + esc(DRV.folderId) + '"></div>'
+          + '<input id="drvFolder" dir="ltr" placeholder="1AbC…" value="' + esc(PV.DRV.folderId) + '"></div>'
           + '<p class="hint">' + esc(t('المعرّفُ من رابط المجلّد في درايفك — ما بعد ‎/folders/‎. وإن تُرك فارغًا رُفعت في الجذر.')) + '</p>',
           '<div class="actions">'
           + btn('احفظ','btn-primary btn-sm',' data-drvsave="1"')
@@ -229,7 +229,7 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
        فاتورةٍ آخرَ الشهر. فيُعرَض هنا: كم قرأ هذا الجهازُ منذ فتحِ التطبيق،
        وتقديرُ ما يعنيه لو صار كلَّ يوم — ليُعرَف التسرّبُ يومَه لا بعد شهر. */
     var rdN = (typeof FB === 'object' && FB.readCount) || 0;
-    var upMin = Math.max(1, Math.round((Date.now() - (BOOT_AT || Date.now())) / 60000));
+    var upMin = Math.max(1, Math.round((Date.now() - (PV.BOOT_AT || Date.now())) / 60000));
     var perDay = Math.round(rdN / upMin * 60 * 8);      /* ثماني ساعاتِ عمل */
     var FREE = 50000;
     /* «Missing or insufficient permissions» بلا هويةٍ لا يُشخَّص: من يكتب؟
@@ -309,7 +309,7 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
         ? cardFlush('الطابور — ' + nm(Q.length),
             table(['النوع','السجل','سُجّل'],
               Q.slice(0, 50).map(function(x){
-                return [pill(t(Q_LBL[x.kind] || x.kind), 'acc'), '<strong>' + esc(String(x.id || '—')) + '</strong>',
+                return [pill(t(PV.Q_LBL[x.kind] || x.kind), 'acc'), '<strong>' + esc(String(x.id || '—')) + '</strong>',
                         '<span class="num">' + esc(fmtDT(x.at || 0)) + '</span>'];
               })))
         : card('', '<p class="hint" style="text-align:center;margin:0">' + esc(t('لا شيءَ بانتظار الرفع — كلُّ ما سُجّل وصل.')) + '</p>'));

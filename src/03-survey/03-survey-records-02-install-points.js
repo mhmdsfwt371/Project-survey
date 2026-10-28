@@ -88,7 +88,7 @@ function layerStats(mode){
 /* الخريطةُ تُرشِّح بالطبقة ثم بالتصنيف */
 function layerFiltered(){
   var L = LAYER();
-  var base = (MY_ONLY || isCrewRole(ROLE)) ? mineFiltered() : filtered();
+  var base = (PV.MY_ONLY || isCrewRole(ROLE)) ? mineFiltered() : filtered();
   return base.filter(function(x){ return L.pass(x); });
 }
 
@@ -110,7 +110,7 @@ function layerBar(){
 PAGE.tfwdraw = { m:'الميدان', t:'رسم المسارات من وإلى الجمرات', l:'ارسم بيدك على الخريطة مسارَ كلِّ دورٍ ذهابًا وعودة — يلتصق بالشوارع ويُعرَض على الأجهزة كلِّها بدل المولَّد.',
   body:function(){
     var D = tfdDrawn(), rows = [];
-    TFW_FL.forEach(function(n, f){ ['go', 'back'].forEach(function(d){ var pls = (D[f] && D[f][d]) || [], m = Math.round(tfdLen(pls));
+    PV.TFW_FL.forEach(function(n, f){ ['go', 'back'].forEach(function(d){ var pls = (D[f] && D[f][d]) || [], m = Math.round(tfdLen(pls));
       rows.push([esc(t(floorName(f))), esc(t(d === 'go' ? 'الذهاب' : 'العودة')), pls.length ? pill(nm(pls.length) + ' ' + t('خط') + ' \u00b7 ' + nm(m) + ' ' + t('م'), 'ok') : pill(t('المولَّد من المخطّط'), 'wrn'),
         (tfdMay() ? btn('\u270F ' + t('ارسم على الخريطة'), 'btn-secondary btn-sm', ' data-tfdgo="' + f + '|' + d + '"') + (pls.length ? ' ' + btn('\u2715 ' + t('احذف المرسوم'), 'btn-quiet btn-sm', ' data-tfdclear="' + f + '|' + d + '"') : '') : '')]); }); });
     return card('\u{1F6B6} ' + t('كيف أرسم؟'), '<ol class="hint" style="margin:0;padding-inline-start:18px"><li>' + esc(t('اختر الدور والاتجاه ثم «ارسم على الخريطة» — تُفتَح الخريطةُ وعليها مخيماتُ الدور.')) + '</li><li>' + esc(t('اضغط نقطةً بعد نقطة من أوّل المسار إلى آخره؛ كلُّ نقطةٍ تلتصق بأقرب شارع وتُوصَل بما قبلها على الشوارع وحدَها — لا فوق خيمةٍ ولا بيت.')) + '</li><li>' + esc(t('«تراجع» يرفع آخرَ نقطة، و«احفظ المسار» يثبّته ويعرضه على الأجهزة كلِّها بدل المولَّد. ارسم أكثرَ من خطٍّ للدور نفسِه إن تفرّع.')) + '</li></ol>')
@@ -271,14 +271,14 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           +   '</select></div>'
           + '<div class="field"><label>' + esc(t('محضر شركة')) + '</label>'
           +   '<select id="hoDocCo">' + coKeys.map(function(c){
-                return '<option value="' + esc(c) + '"' + (HO_CO === c ? ' selected' : '') + '>'
+                return '<option value="' + esc(c) + '"' + (PV.HO_CO === c ? ' selected' : '') + '>'
                   + esc(c.length > 34 ? c.slice(0, 33) + '\u2026' : c)
                   + ' \u00b7 ' + nm(coL[c].done) + '/' + nm(coL[c].n) + '</option>'; }).join('')
           +   '</select></div>'
           + '</div>',
           btn('\u{1F4C4} ' + t('اعرض محضر النقطة'),'btn-secondary btn-sm',' data-hodoc="site"')
           + btn('\u{1F3E2} ' + t('اعرض محضر الشركة'),'btn-secondary btn-sm',' data-hodoc="co"')
-          + (HO_DOC || HO_CO ? btn('\u{1F5A8} ' + t('طباعة'),'btn-quiet btn-sm',' data-print="1"') : ''))
+          + (HO_DOC || PV.HO_CO ? btn('\u{1F5A8} ' + t('طباعة'),'btn-quiet btn-sm',' data-print="1"') : ''))
 
       + (HO_DOC
         ? (function(){
@@ -297,11 +297,11 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
         : '')
       /* الزرُّ في جسم البطاقة لا في رأسها: البطاقةُ بلا عنوانٍ تُسقِط الرأسَ
          ومعه ما فيه — فيختفي الزرُّ ولا يشكو أحد. */
-      + (HO_CO
-        ? card('', handDocCo(HO_CO)
+      + (PV.HO_CO
+        ? card('', handDocCo(PV.HO_CO)
             + '<div class="actions" style="margin-top:12px">'
-            + (coTelOf(HO_CO)
-                ? btn('\u{1F4AC} ' + t('أبلغ الشركة على واتساب'),'btn-primary btn-sm',' data-wasend="hand|' + esc(HO_CO) + '"')
+            + (coTelOf(PV.HO_CO)
+                ? btn('\u{1F4AC} ' + t('أبلغ الشركة على واتساب'),'btn-primary btn-sm',' data-wasend="hand|' + esc(PV.HO_CO) + '"')
                 : '<span class="hint" style="margin:0">' + esc(t('لا جوالَ لهذه الشركة — احفظه في «الشركات ← إشعار الشركات»')) + '</span>')
             + '</div>')
         : '')
@@ -354,7 +354,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
                     table(['الصنف','العدد','حالتُه'],
                       Object.keys(ins.parts || {}).map(function(k){
                         return [esc(itemName(k)), N(ins.parts[k]),
-                          '<select data-discond="' + esc(k) + '">' + DIS_COND.map(function(c){
+                          '<select data-discond="' + esc(k) + '">' + PV.DIS_COND.map(function(c){
                             return '<option value="' + esc(c) + '"' + ((DISF.items[k] || 'سليم') === c ? ' selected' : '') + '>'
                               + esc(t(c)) + '</option>'; }).join('') + '</select>'];
                       })))
@@ -531,7 +531,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
             + esc(t('كلُّ نقطةٍ لها بادئةُ شبكة.')) + '</p>'))
 
       + '<form class="inline-form" onsubmit="return false" style="margin:0 0 14px">'
-      +   '<input type="search" id="ipQ" data-ipq="1" value="' + esc(IP_Q) + '" placeholder="'
+      +   '<input type="search" id="ipQ" data-ipq="1" value="' + esc(PV.IP_Q) + '" placeholder="'
       +     esc(t('ابحث بالمعرّف أو الاسم أو البادئة')) + '" dir="auto">'
       + '</form>'
 
@@ -722,7 +722,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
     var camp = NEWSITE.type === 'مخيم';
 
     /* اختِير الموضعُ على الخريطة؟ فلا حاجةَ لالتقاط الموضع (V17.44) */
-    var head = !MYPOS && !has && !NEWSITE.byMap
+    var head = !PV.MYPOS && !has && !NEWSITE.byMap
       ? alertBox('warn','لم يُلتقَط موضعُك بعد — اضغط «التقط موضعي» قبل تعبئة النموذج.')
       : (near && near.length
           ? alertBox('warn','انتبه — يوجد مواقعُ مسجّلةٌ قريبةٌ منك. أغلبُ حالات «غير موجود» وقوفٌ بجانب مسجَّل، فراجعها قبل الإنشاء.')
@@ -741,7 +741,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           '<div class="pop-rows" style="margin:0">'
           + '<div><span class="k">' + esc(t('الإحداثيات')) + '</span><span class="num">'
           +   (has ? (NEWSITE.lat.toFixed(6) + ', ' + NEWSITE.lng.toFixed(6))
-                   : (MYPOS ? (MYPOS.lat.toFixed(6) + ', ' + MYPOS.lng.toFixed(6)) : '—'))
+                   : (PV.MYPOS ? (PV.MYPOS.lat.toFixed(6) + ', ' + PV.MYPOS.lng.toFixed(6)) : '—'))
           + '</span></div></div>',
           btn('◎ ' + t('التقط موضعي'),'btn-secondary btn-sm',' data-nsloc="1"')
           + (may('settings')   /* (V37.96) كان «newsite» مفتاحًا لا وجودَ له فيُرجع كاذبًا دائمًا */
@@ -765,7 +765,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           + (!camp ? '<div class="field"><label>' + esc(t('اسم النقطة')) + (office ? '' : ' <span class="req">*</span>') + '</label>'
               + '<input data-ns="nm" value="' + esc(NEWSITE.nm) + '" dir="auto" placeholder="' + esc(t('مثال: ممر الملك فهد — البوابة ٣')) + '"></div>' : '')
           + (NEWSITE.type === 'LPR' ? '<div class="field"><label>' + esc(t('المركز')) + ' <span class="req">*</span></label>'
-              + '<select data-ns="center"><option value="">— ' + esc(t('اختر')) + ' —</option>' + NS_CENTERS.map(function(c){ return '<option value="' + esc(c[1]) + '"' + (NEWSITE.center === c[1] ? ' selected' : '') + '>' + esc(t(c[0])) + '</option>'; }).join('') + '</select></div>' : '')
+              + '<select data-ns="center"><option value="">— ' + esc(t('اختر')) + ' —</option>' + PV.NS_CENTERS.map(function(c){ return '<option value="' + esc(c[1]) + '"' + (NEWSITE.center === c[1] ? ' selected' : '') + '>' + esc(t(c[0])) + '</option>'; }).join('') + '</select></div>' : '')
           /* المربعُ والشاخصُ من هويّة المخيمات وحدَها — الممرُّ والكاميرا والمحطةُ
              والجمراتُ ونمرةُ والتسكينُ لا مربعَ لها ولا شاخص، فلا يُطلَبان ولا يُعرَضان */
           + (camp
@@ -803,7 +803,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
       + card('لماذا ليس في السجل؟',
           '<div class="field"><label>' + esc(t('السبب')) + (office ? '' : ' <span class="req">*</span>') + '</label>'
           + '<select data-ns="reason"><option value="">— ' + esc(t('اختر')) + ' —</option>'
-          + (camp ? cfgList('reasonsCamp', NS_REASONS) : cfgList('reasonsPt', NS_REASONS_PT)).map(function(r){   /* (V30.3) من الإعدادات */
+          + (camp ? cfgList('reasonsCamp', PV.NS_REASONS) : cfgList('reasonsPt', PV.NS_REASONS_PT)).map(function(r){   /* (V30.3) من الإعدادات */
               return '<option value="' + esc(r) + '"' + (NEWSITE.reason===r?' selected':'') + '>' + esc(t(r)) + '</option>'; }).join('')
           + '</select></div>'
           + '<div class="field"><label>' + esc(t('شرح مختصر')) + '</label>'
@@ -820,7 +820,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
               ? 'الصورُ اختياريةٌ للمكتب — تُرفَع إن وُجدت، وتُلتقَط في الزيارة التي تُجدوَل بعد الحفظ.'
               : 'الأوليان إلزاميتان — بهما يطابق المكتبُ الموقع. الباقي اختياريٌّ وكلُّ صورةٍ تساعد.')) + '</p>'
           + '<div class="grid cols-2">'
-          + NS_PHOTOS.map(function(lbl, i){
+          + PV.NS_PHOTOS.map(function(lbl, i){
               var p = NEWSITE.photos[i];
               return '<div class="field"><label>' + nm(i+1) + ' · ' + esc(t(lbl))
                 + (i < 2 && !office ? ' <span class="req">*</span>' : '') + '</label>'   /* (V29.7) أوّلُ صورتين */

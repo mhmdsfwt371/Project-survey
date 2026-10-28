@@ -17,7 +17,7 @@ function photoFind(key){
   var m = /^q(\d+)$/.exec(key);
   if (m){ var q = PHOTO_Q[+m[1]]; if (q) return { data:q.data, name:(q.site + '-' + (q.seq || '') + '.jpg') }; }
   var mf = /^f(\d+)$/.exec(key);
-  if (mf){ var qf = PHOTO_FAIL[+mf[1]]; if (qf) return { data:qf.data, name:(qf.site + '-' + (qf.seq || '') + '.jpg') }; }
+  if (mf){ var qf = PV.PHOTO_FAIL[+mf[1]]; if (qf) return { data:qf.data, name:(qf.site + '-' + (qf.seq || '') + '.jpg') }; }
   return null;
 }
 

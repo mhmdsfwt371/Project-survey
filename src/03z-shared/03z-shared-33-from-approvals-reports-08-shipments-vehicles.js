@@ -5,7 +5,7 @@
    DEFINES : shipList, shipSave, shipLate, shipWatch, todayISO, msDay, vehKinds, vehKindName, vehList, vehOf, vehAsnList, vehAsnOf … (+3 more)
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
-var SHIP_Q = '';
+PV.SHIP_Q = '';
 
 function shipList(){
   var S = STATE.ships || {};
@@ -35,7 +35,7 @@ function shipWatch(){
 }
 
 /* أسماءُ الأعمال التي تُسنَد — تُقرأ في السيارات والمهامّ معًا */
-var ASN_LABEL = { srv:'زيارة', ins:'تركيب', dis:'فك', buy:'مشتريات', prep:'تهيئة', asm:'تجميع' };
+PV.ASN_LABEL = { srv:'زيارة', ins:'تركيب', dis:'فك', buy:'مشتريات', prep:'تهيئة', asm:'تجميع' };
 
 function todayISO(){ return dayKey(); }
 
@@ -49,18 +49,18 @@ function msDay(ms){ return ms ? dayKey(+ms) : '—'; }
    فالسيارةُ مسنَدةٌ كالفنيّ: لها نوعٌ ولوحةٌ ورخصةٌ تنتهي، وتُسنَد إلى شخصٍ
    أو فريقٍ لنشاطٍ بعينه، وتُحسَب تكلفتُها في مصروف المشروع من يوم تشغيلها. */
 
-var VEH_KINDS_SEED = [
+PV.VEH_KINDS_SEED = [
   { id:'pickup', n:'بيك أب — للعدّة', d:'تحمل العدّةَ والقطعَ إلى الموقع', cap:2 },
   { id:'sedan',  n:'سيدان — للتنقّل', d:'ينتقل بها الفريقُ بين النقاط',   cap:4 },
   { id:'van',    n:'فان',             d:'فريقٌ كاملٌ وعدّتُه معًا',        cap:7 },
   { id:'truck',  n:'شاحنة',           d:'نقلُ توريدٍ ثقيلٍ إلى المستودع',  cap:2 }
 ];
 
-var VEH_Q = ''; PV.VEH_EDIT = '';
+PV.VEH_Q = ''; PV.VEH_EDIT = '';
 
 function vehKinds(){
   if (!Array.isArray(STATE.vehKinds) || !STATE.vehKinds.length)
-    STATE.vehKinds = VEH_KINDS_SEED.map(function(k){ return Object.assign({}, k); });
+    STATE.vehKinds = PV.VEH_KINDS_SEED.map(function(k){ return Object.assign({}, k); });
   return STATE.vehKinds;
 }
 
@@ -112,7 +112,7 @@ function vehAsnAll(){
 
 /* ملاءمةُ النوع للعمل: العدّةُ تحتاج بيك أب، والتنقّلُ سيدان، والتوريدُ شاحنة.
    والفريقُ الذي معه سيدانٌ وحدَه لا يحمل عدّتَه — فيقف في الموقع بلا قطع. */
-var VEH_FIT = {
+PV.VEH_FIT = {
   ins:  ['pickup','van','truck'],
   dis:  ['pickup','van','truck'],
   prep: ['pickup','van'],
@@ -122,8 +122,8 @@ var VEH_FIT = {
 };
 
 function vehFits(kindVeh, kindWork){
-  var ok = VEH_FIT[kindWork];
+  var ok = PV.VEH_FIT[kindWork];
   return !ok || ok.indexOf(kindVeh) > -1;
 }
 
-var VLOG_D = '', VLOG_Q = '';
+PV.VLOG_D = ''; PV.VLOG_Q = '';

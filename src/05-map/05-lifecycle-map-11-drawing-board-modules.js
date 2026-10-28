@@ -13,7 +13,7 @@
 function routePanelHtml(){
   var area = ROUTE.mode === 'area', camp = area && ROUTE.type === 'مخيم';
   var hits = camp ? areaCampHits() : [];
-  var n = routeCount(), big = !area && n > RT_DRAG_MAX;
+  var n = routeCount(), big = !area && n > PV.RT_DRAG_MAX;
   var T = typesList();
   var opt = function(v, lbl, cur){ return '<option value="' + esc(v) + '"' + (cur === v ? ' selected' : '') + '>' + esc(lbl) + '</option>'; };
   var hint;
@@ -31,10 +31,10 @@ function routePanelHtml(){
                     : 'نقطةً على المسار — اسحب أيَّ نقطةٍ لتحريكها قبل الحفظ.'))))
       + (ROUTE.moved ? ' <span class="pill acc">' + esc(t('حُرِّك')) + ' ' + nm(ROUTE.moved) + '</span>' : '');
   }
-  return '<div class="map-route-box' + (RT_MIN ? ' min' : '') + '">'
+  return '<div class="map-route-box' + (PV.RT_MIN ? ' min' : '') + '">'
     + '<div class="wt-row" style="justify-content:space-between;margin:0 0 6px">'
     +   '<b>' + esc(t(camp ? 'مساحةُ مخيم' : (area ? 'مساحةٌ بنقاط' : 'مسارٌ بنقاط'))) + '</b>'
-    +   btn(RT_MIN ? '\u25B2 ' + t('توسيع') : '\u25BC ' + t('طيّ'), 'btn-quiet btn-sm', ' data-rtmin="1"')
+    +   btn(PV.RT_MIN ? '\u25B2 ' + t('توسيع') : '\u25BC ' + t('طيّ'), 'btn-quiet btn-sm', ' data-rtmin="1"')
     +   '<span class="hint" style="margin:0">' + esc(t('نقاطُ الرسم')) + ' <span class="num">' + nm(ROUTE.pts.length) + '</span>'
     +     (!area && ROUTE.pts.length > 1 ? ' \u00b7 ' + nm(routeLen()) + ' ' + esc(t('م')) : '') + '</span></div>'
     + '<div class="grid cols-2" style="gap:6px">'
@@ -44,7 +44,7 @@ function routePanelHtml(){
           + '<div class="field"><label>' + esc(t('رقم الشاخص')) + '</label>'
           + '<input dir="auto" value="' + esc(ROUTE.sign) + '" data-rt="sign" placeholder="57/2"></div>'
         : '<div class="field"><label>' + esc(t('كلَّ كم مترًا')) + '</label>'
-          + '<input type="number" min="' + RT_EVERY_MIN + '" step="1" inputmode="numeric" value="' + esc(ROUTE.every) + '" data-rt="every"'
+          + '<input type="number" min="' + PV.RT_EVERY_MIN + '" step="1" inputmode="numeric" value="' + esc(ROUTE.every) + '" data-rt="every"'
           +   (ROUTE.gen ? ' disabled title="' + esc(t('المسافةُ مثبَّتةٌ بعد التحريك — «أعد التوليد» يعيدها')) + '"' : '') + '></div>')
     +   '<div class="field"><label>' + esc(t('النوع')) + '</label><select data-rt="type">'
     /* الأنواعُ من سجلِّ الأنواع الذي تُدار منه الشاشةُ نفسُها — فما يُضاف
@@ -134,11 +134,11 @@ function mapUIHtml(){
     +   (rankOf(ROLE) >= rankOf('supervisor') ? '<button type="button" class="map-chip'+(MAP_SELECT?' on':'')+'" data-selmap="'
     +     (MAP_SELECT?'0':'1')+'">'
     +     '\u2611 '+esc(t('تحديد'))+(SEL_N?' \u00b7 '+nm(SEL_N):'')+'</button>' : '')
-    +   (MY_ONLY || isCrewRole(ROLE) ? '<button type="button" class="map-chip on" data-myonly="0">'
+    +   (PV.MY_ONLY || isCrewRole(ROLE) ? '<button type="button" class="map-chip on" data-myonly="0">'
     +     '\u25C9 '+esc(t('مهامي'))+'</button>' : '')
     +   '<span class="chip-pair">'
-    +     '<button type="button" class="map-chip'+(CO_MODE?' on':'')+'" data-comode="'+(CO_MODE?'0':'1')+'">'
-    +       '\u25C9 '+esc(t('الشركات'))+(CO_SEL.length?' \u00b7 '+nm(CO_SEL.length):'')+'</button>'
+    +     '<button type="button" class="map-chip'+(PV.CO_MODE?' on':'')+'" data-comode="'+(PV.CO_MODE?'0':'1')+'">'
+    +       '\u25C9 '+esc(t('الشركات'))+(PV.CO_SEL.length?' \u00b7 '+nm(PV.CO_SEL.length):'')+'</button>'
     +     '<button type="button" class="map-chip chip-caret'+(CO_OPEN?' on':'')+'" data-co="1"'
     +       ' aria-label="'+esc(t('اختر الشركات'))+'">\u25BE</button>'
     +   '</span>'
@@ -181,14 +181,14 @@ function mapUIHtml(){
     + mvdBarHtml()   /* (V39.31) moving the devices of a point */
     + (typeof teWalkHtml === 'function' ? teWalkHtml() : '')   /* (V39.25) walking inside a camp */
     + (BED ? bedPanelHtml() : '')   /* (V25.9) */
-    + (SPLIT ? splitPanelHtml() : '')   /* (V37.67) */
+    + (PV.SPLIT ? splitPanelHtml() : '')   /* (V37.67) */
     + (MAP_3D ? m3uiFab() : '<div class="map-fab">'   /* (V39.28) in 3D only «الشمال» and «موقعي» — drawing stays in 2D */
     +   ((may('edit') || ROLE === 'viewer') ? btn('+ '+t('موقع غير مسجّل'),'btn-primary btn-sm',' data-newsite="1"') : '')   /* (V37.68) الوزارةُ تقترح نقطة */
     +   (ROLE === 'viewer' ? btn((PIN_ON ? '\u23F3 ' + t('اضغط على الخريطة') : '\u{1F4CC} ' + t('نقطة هنا')), PIN_ON ? 'btn-danger btn-sm' : 'btn-secondary btn-sm', ' data-pin="1"') : '')   /* بلا أدوات الرسم */
     +   (may('settings')   /* (V37.96) كان «newsite» مفتاحًا لا وجودَ له فيُرجع كاذبًا دائمًا */
           ? btn((PIN_ON ? '\u23F3 ' + t('اضغط على الخريطة') : '\u{1F4CC} ' + t('نقطة هنا')),
                 PIN_ON ? 'btn-danger btn-sm' : 'btn-secondary btn-sm', ' data-pin="1"')
-            + (tfdMay() ? btn((TFD.on ? '\u270F ' + t('جارٍ رسم المسار') : '\u{1F6B6} ' + t('رسم مسار التفويج')), TFD.on ? 'btn-danger btn-sm' : 'btn-secondary btn-sm', ' data-tfd="1"') : '')   /* (V28.0) */
+            + (tfdMay() ? btn((PV.TFD.on ? '\u270F ' + t('جارٍ رسم المسار') : '\u{1F6B6} ' + t('رسم مسار التفويج')), PV.TFD.on ? 'btn-danger btn-sm' : 'btn-secondary btn-sm', ' data-tfd="1"') : '')   /* (V28.0) */
             + btn((ROUTE.on && ROUTE.mode === 'line' ? '\u270F ' + t('جارٍ الرسم') : '\u{1F6E3} ' + t('مسار بنقاط')),
                 (ROUTE.on && ROUTE.mode === 'line') ? 'btn-danger btn-sm' : 'btn-secondary btn-sm', ' data-route="1"')
             + btn((ROUTE.on && ROUTE.mode === 'area' ? '\u270F ' + t('جارٍ الرسم') : '\u{1F17F} ' + t('مساحة بنقاط')),
@@ -313,7 +313,7 @@ function chalKeys(list){
 }
 
 
-var SVD_SRC = { field:'عدُّ الميدان', registry:'سجلُّ الوزارة', avg:'متوسطٌ مقدَّر', none:'بلا عدد' };
+PV.SVD_SRC = { field:'عدُّ الميدان', registry:'سجلُّ الوزارة', avg:'متوسطٌ مقدَّر', none:'بلا عدد' };
 
 
 var SVD_CARDS = [

@@ -9,8 +9,8 @@
 function onDocClick(e){
   /* (V37.14) جهةُ الدعم المطلوب أوّلًا — معالجٌ سابقٌ عند المهندس كان يبتلع الضغطَ قبل وصوله */
   var supq = e.target.closest('[data-supq]');   /* (V37.14) جهةُ الدعم المطلوب — قبل القائمة */
-  if (supq){ if (e.preventDefault) e.preventDefault(); supRemove(); SUP_POP = supq.getAttribute('data-supq'); var hostS = supq.closest('#content') || document.getElementById('content') || document.body; var tmpS = document.createElement('div'); tmpS.innerHTML = supPanel(supq.getAttribute('data-supq')); while (tmpS.firstChild) hostS.appendChild(tmpS.firstChild); return; }
-  if (e.target.closest('[data-supclose]')){ SUP_POP = ''; supRemove(); return; }
+  if (supq){ if (e.preventDefault) e.preventDefault(); supRemove(); PV.SUP_POP = supq.getAttribute('data-supq'); var hostS = supq.closest('#content') || document.getElementById('content') || document.body; var tmpS = document.createElement('div'); tmpS.innerHTML = supPanel(supq.getAttribute('data-supq')); while (tmpS.firstChild) hostS.appendChild(tmpS.firstChild); return; }
+  if (e.target.closest('[data-supclose]')){ PV.SUP_POP = ''; supRemove(); return; }
   /* (V33.0) كان ٩٨٤ سطرًا؛ صار أجزاءً بالترتيب نفسِه — الجزءُ الذي يعالج النقرةَ يُنهيها */
   if (onDocClickPart1(e) !== CLICK_NEXT) return;
   if (onDocClickPart2(e) !== CLICK_NEXT) return;
@@ -58,9 +58,9 @@ function onDocClickPart1(e){
   if (e.target.closest('[data-knownsave]')){ if (knEdSave()) render(1); return; }   /* (V37.27 → V37.74 كروت) */
   if (e.target.closest('[data-askeng], [data-askengto]')){ askEngClick(e); return; }   /* (V39.4 → V39.7) the conversation with the engineer */   /* (V37.4 → V37.13: أسماءٌ فريدة) */
   var cad = e.target.closest('[data-vcadd]');
-  if (cad){ var kd = cad.getAttribute('data-vcadd'), tb = document.getElementById('catBody-' + kd); if (!CAT_NEW[kd] || !tb) return;   /* صفٌّ يُضاف في مكانه — بلا إعادة رسمٍ تمسح ما كُتب */
-    var nk = 'u' + Date.now().toString(36); CAT_NEW[kd].push(nk); tb.insertAdjacentHTML('beforeend', catRow(kd, { k:nk, n:'', who:'', photo:false })); var ni = tb.querySelector('[data-vcn="' + kd + '|' + nk + '"]'); if (ni) ni.focus(); return; }
-  if (e.target.closest('[data-vcedit]')){ SUP_POP = ''; supRemove(); svPopRemove(); goPage('consts'); render(1); setTimeout(function(){ var cc = document.getElementById('catsCard'); if (cc && cc.scrollIntoView) cc.scrollIntoView({ block:'start' }); }, 60); return; }
+  if (cad){ var kd = cad.getAttribute('data-vcadd'), tb = document.getElementById('catBody-' + kd); if (!PV.CAT_NEW[kd] || !tb) return;   /* صفٌّ يُضاف في مكانه — بلا إعادة رسمٍ تمسح ما كُتب */
+    var nk = 'u' + Date.now().toString(36); PV.CAT_NEW[kd].push(nk); tb.insertAdjacentHTML('beforeend', catRow(kd, { k:nk, n:'', who:'', photo:false })); var ni = tb.querySelector('[data-vcn="' + kd + '|' + nk + '"]'); if (ni) ni.focus(); return; }
+  if (e.target.closest('[data-vcedit]')){ PV.SUP_POP = ''; supRemove(); svPopRemove(); goPage('consts'); render(1); setTimeout(function(){ var cc = document.getElementById('catsCard'); if (cc && cc.scrollIntoView) cc.scrollIntoView({ block:'start' }); }, 60); return; }
   if (e.target.closest('[data-listsok]')){   /* (V30.3) */
     if (!may('settings')){ toast(t('القوائمُ للمهندس فما فوق')); return; }
     var LS = {}; document.querySelectorAll('[data-lists]').forEach(function(ta){ LS[ta.getAttribute('data-lists')] = String(ta.value || '').split('\n').map(function(x){ return x.trim(); }).filter(Boolean); });
@@ -135,14 +135,14 @@ function onDocClickPart1(e){
       var rr = STATE.recs[gsite];
       PG_Q = gsite; PG_KEEP = true;
       if (dest === 'svappr'){ SVA_Q = gsite; SVA_ST = svReview(rr) === 'revisit' ? 'revisit' : 'pending'; }
-      if (dest === 'minappr'){ MIN_Q = gsite; }
+      if (dest === 'minappr'){ PV.MIN_Q = gsite; }
       toast(t('فُتحت على') + ' ' + gsite);
     }
     render();
     return;
   }
   var sva = e.target.closest('[data-svast]');
-  if (sva){ SVA_ST = sva.getAttribute('data-svast'); SVA_REV = ''; SVA_SOL = ''; render(1); return; }
+  if (sva){ SVA_ST = sva.getAttribute('data-svast'); PV.SVA_REV = ''; SVA_SOL = ''; render(1); return; }
   /* (V38.93) tick visits and approve them at once */
   var ssel = e.target.closest('[data-svasel]');
   if (ssel){ var idT = ssel.getAttribute('data-svasel'); var selM = svaSel(); if (selM[idT]) delete selM[idT]; else selM[idT] = 1; ssel.checked = !!selM[idT]; svaSelPaint(); return; }
@@ -158,13 +158,13 @@ function onDocClickPart1(e){
       SVA_ST = 'approved'; SVA_SOL = idA; SOL_LINES = {}; SOL_Q = ''; }
     render(1); return; }
   var svrv = e.target.closest('[data-svrevisit]');
-  if (svrv){ SVA_REV = svrv.getAttribute('data-svrevisit'); render(1);
+  if (svrv){ PV.SVA_REV = svrv.getAttribute('data-svrevisit'); render(1);
     var ne = document.getElementById('svaNote'); if (ne) ne.focus(); return; }
-  if (e.target.closest('[data-svrevisitcancel]')){ SVA_REV = ''; render(1); return; }
+  if (e.target.closest('[data-svrevisitcancel]')){ PV.SVA_REV = ''; render(1); return; }
   var svrg = e.target.closest('[data-svrevisitgo]');
   if (svrg){ var idR = svrg.getAttribute('data-svrevisitgo');
     if (svRevisit(idR, (document.getElementById('svaNote') || {}).value)){
-      toast(idR + ' \u00b7 ' + t('رُدَّت — عادت إلى مهام المشرف')); SVA_REV = ''; }
+      toast(idR + ' \u00b7 ' + t('رُدَّت — عادت إلى مهام المشرف')); PV.SVA_REV = ''; }
     render(1); return; }
   if (e.target.closest('[data-xlspage]')){ toast(t('يُجهَّز إكسلُ الصفحة كاملةً…')); xlsPage(); return; }
   return CLICK_NEXT;
@@ -173,7 +173,7 @@ function onDocClickPart1(e){
    يعالج: boardrole، ngo، site، golayer، nsite، nid، provsync، provcancel، provcancelgo، usrreq، svph، svsol، svsolcancel، svsolgo، ipfill، svmore، pwcopy، pwclose، pnddel، pndgo، bulkchk، bulkgo، ghrun، evsite، provlocal، ghsave، ghclear، waasn، waasnx، watask، routego، attin، attout، pwgo، pwx، pwopen، provwipe، seedgo، dissave، mntsave، … */
 function onDocClickPart2(e){
     var brl = e.target.closest('[data-boardrole]');
-  if (brl){ BOARD_ROLE = brl.getAttribute('data-boardrole') || ''; render(1); return; }
+  if (brl){ PV.BOARD_ROLE = brl.getAttribute('data-boardrole') || ''; render(1); return; }
   var nrow = e.target.closest('.notif-rows tbody tr');
   if (nrow && !e.target.closest('button,a,input,select')){
     var act = nrow.querySelector('[data-ngo],[data-site]');
@@ -185,17 +185,17 @@ function onDocClickPart2(e){
   if (ngo){
     var tabN = ngo.getAttribute('data-ngo'), siteN = ngo.getAttribute('data-nsite') || '', nidN = ngo.getAttribute('data-nid');
     if (nidN){ var nn = notifStore().filter(function(x){ return x.id === nidN; })[0]; if (nn) nn.read = true; }
-    if (tabN === 'svappr'){ SVA_ST = 'pending'; SVA_Q = siteN; SVA_SOL = ''; SVA_REV = ''; SVA_PH = siteN; }
+    if (tabN === 'svappr'){ SVA_ST = 'pending'; SVA_Q = siteN; SVA_SOL = ''; PV.SVA_REV = ''; PV.SVA_PH = siteN; }
     /* الشريحةُ تُطلَب باسمها: goPage بالأمّ يعيد الشريحةَ إلى أولاها */
     goPage(tabN); render(1); return;
   }
   if (e.target.closest('[data-provsync]')){ provSync(); return; }
-  if (e.target.closest('[data-provcancel]')){ PROV_CANCEL = 1; render(1); return; }
+  if (e.target.closest('[data-provcancel]')){ PV.PROV_CANCEL = 1; render(1); return; }
   if (e.target.closest('[data-provcancelgo]')){ provCancelAll(); return; }
   var usq = e.target.closest('[data-usrreq]');
   if (usq){ if (provReask(usq.getAttribute('data-usrreq'))) render(1); return; }
   var svph = e.target.closest('[data-svph]');
-  if (svph){ var sid = svph.getAttribute('data-svph'); SVA_PH = (SVA_PH === sid) ? '' : sid; render(1); return; }
+  if (svph){ var sid = svph.getAttribute('data-svph'); PV.SVA_PH = (PV.SVA_PH === sid) ? '' : sid; render(1); return; }
   var svso = e.target.closest('[data-svsol]');
   if (svso){ SVA_SOL = svso.getAttribute('data-svsol'); SOL_LINES = {}; SOL_Q = ''; render(1); return; }
   if (e.target.closest('[data-svsolcancel]')){ SVA_SOL = ''; render(1); return; }
@@ -216,8 +216,8 @@ function onDocClickPart2(e){
   if (svm){ SV_MORE = svm.getAttribute('data-svmore') === '1'; render(1); return; }
   /* الشريحةُ المفتوحةُ سلفًا لا تتغيّر بالضغط عليها — فيُقال ما هو معروضٌ
      الآن بدل صمتٍ يظنُّه الناقرُ عطلًا. */
-  if (e.target.closest('[data-pwcopy]')){ if (PW_FLOW){ try { navigator.clipboard.writeText(PW_FLOW.pass); toast(t('نُسخت')); } catch (er){ toast(PW_FLOW.pass); } } return; }
-  if (e.target.closest('[data-pwclose]')){ PW_FLOW = null; clearInterval(PW_POLL); PW_POLL = 0; render(1); return; }
+  if (e.target.closest('[data-pwcopy]')){ if (PV.PW_FLOW){ try { navigator.clipboard.writeText(PV.PW_FLOW.pass); toast(t('نُسخت')); } catch (er){ toast(PV.PW_FLOW.pass); } } return; }
+  if (e.target.closest('[data-pwclose]')){ PV.PW_FLOW = null; clearInterval(PV.PW_POLL); PV.PW_POLL = 0; render(1); return; }
   var pndd = e.target.closest('[data-pnddel]');
   if (pndd){ pendDel(pndd.getAttribute('data-pnddel')); return; }
   var pnd = e.target.closest('[data-pndgo]');
@@ -315,12 +315,12 @@ function onDocClickPart3(e){
     roleDel(rk9); return;
   }
   var pmr = e.target.closest('[data-pmrole]');
-  if (pmr){ PM_ROLE = pmr.getAttribute('data-pmrole'); render(1); return; }
+  if (pmr){ PV.PM_ROLE = pmr.getAttribute('data-pmrole'); render(1); return; }
   var pmk = e.target.closest('[data-pmk]');
-  if (pmk){ var kk = pmk.getAttribute('data-pmk').split('|'); pmToggle(kk[0], kk[1], PM_ROLE); return; }
+  if (pmk){ var kk = pmk.getAttribute('data-pmk').split('|'); pmToggle(kk[0], kk[1], PV.PM_ROLE); return; }
   if (e.target.closest('[data-pmsave]')){ pmSave(); return; }
-  if (e.target.closest('[data-pmreset]')){ pmResetRole(PM_ROLE); return; }
-  if (e.target.closest('[data-pmrefresh]')){ pmRefresh(true).then(function(){ PM_DRAFT = null; toast(t('قُرئت من القاعدة')); render(1); }); return; }
+  if (e.target.closest('[data-pmreset]')){ pmResetRole(PV.PM_ROLE); return; }
+  if (e.target.closest('[data-pmrefresh]')){ pmRefresh(true).then(function(){ PV.PM_DRAFT = null; toast(t('قُرئت من القاعدة')); render(1); }); return; }
   if (e.target.closest('[data-presfetch]')){
     presenceFetch(true).then(function(n){ toast(t('حُدِّثت القائمة') + ' — ' + nm(n)); render(1); });
     return;

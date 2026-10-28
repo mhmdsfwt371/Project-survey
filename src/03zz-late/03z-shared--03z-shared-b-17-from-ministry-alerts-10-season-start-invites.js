@@ -20,7 +20,7 @@ function ghRunNow(quiet){
     body:JSON.stringify({ ref:'main' })
   }).then(function(r){
     if (r.status === 204){
-      GH_RAN = Date.now();
+      PV.GH_RAN = Date.now();
       logEvent('تشغيلُ خادم الحسابات يدويًّا');
       toast(t('انطلق الخادم — الحساباتُ خلال دقيقة، وتصلك «تمّ» هنا فورًا'));
       render(1); return true;

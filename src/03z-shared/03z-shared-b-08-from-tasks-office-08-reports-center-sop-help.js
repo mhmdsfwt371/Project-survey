@@ -5,7 +5,7 @@
    DEFINES : helpOf
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
-var SOP_CUR = 'sop-survey';
+PV.SOP_CUR = 'sop-survey';
 
 /* ═══ «ما هذه الصفحة؟» — شرحٌ لكلِّ شاشة ═══
    لكلِّ صفحةٍ أربعةُ أسئلة: ماذا تفعل؟ ومن أين تقرأ؟ وعلامَ تُبنى؟

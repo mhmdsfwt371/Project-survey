@@ -89,7 +89,7 @@ function contCard(){
   var D = contLoad.d || {}, rows = [], now = Date.now();
   var B = (typeof EXT !== 'undefined') ? EXT.bridge : null, bh = B ? (now - B.at) / 3600000 : null;
   rows.push([esc(t('آخر جسر لنظام البطاقات')), B ? pill(bh < 12 ? 'حديث' : bh < 48 ? 'قديم' : 'متوقّف', bh < 12 ? 'ok' : bh < 48 ? 'warn' : 'bad') + ' ' + esc(pilotAgo(B.at)) + (B.by ? ' \u00b7 ' + esc(dispName(B.by)) : '') : pill('لم يُشغَّل', 'off')]);
-  var m = BK_STATE.meta, ma = bkAgeDays(m);
+  var m = PV.BK_STATE.meta, ma = bkAgeDays(m);
   rows.push([esc(t('آخر نسخة احتياطية')), m ? pill(m.ok && ma <= 1 ? 'اليوم' : 'متأخرة', m.ok && ma <= 1 ? 'ok' : 'warn') + ' <span class="num">' + esc(String(m.at || '').slice(0, 10)) + '</span>' : '<span class="hint" style="margin:0">' + esc(t('يُقرأ…')) + '</span>']);
   var dl = ((contLoad.dl || {}).items || []).map(function(x){ return { at:x.at, what:x.what, d:Math.ceil((Date.parse(x.at) - now) / 86400000) }; })
     .filter(function(x){ return isFinite(x.d) && x.d >= 0; }).sort(function(a, b){ return a.d - b.d; });
@@ -111,7 +111,7 @@ function contCard(){
 
 function bkCard(){
   bkFetch(false);
-  var m = BK_STATE.meta, dv = BK_STATE.drive;
+  var m = PV.BK_STATE.meta, dv = PV.BK_STATE.drive;
   var rows = [];
   var mOk = !!(m && m.ok), dOk = !!(dv && dv.ok);
   var mAge = bkAgeDays(m), dAge = bkAgeDays(dv);

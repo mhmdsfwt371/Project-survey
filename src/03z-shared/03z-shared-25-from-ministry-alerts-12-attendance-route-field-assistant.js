@@ -80,10 +80,10 @@ function mapsUrl(lat, lng, label){
    ٢) ملخّصُ اليوم الجاهز: ما سجّلتُه اليوم بنصٍّ يُنسَخ أو يُرسَل للمشرف بضغطة.
    ٣) تجهيزُ اليوم بلا نت: خريطةُ الجهاز وآخرُ البيانات وما ينتظر الرفع — في قائمةٍ واحدةٍ قبل الخروج.
    ٤) «انسخ من آخر زيارتي» في نموذج المسح (المسحُ الأسرع): الحقولُ الثابتةُ من آخر زيارةٍ لنفس النوع، والصورُ والتحدياتُ من الموقع. */
-var FH_PREP = 0;
+PV.FH_PREP = 0;
 
 function fhNearest(n){
-  var P = (typeof MYPOS === 'object' && MYPOS) || (typeof ROUTE_POS === 'object' && ROUTE_POS) || null; if (!P) return null;
+  var P = (typeof PV.MYPOS === 'object' && PV.MYPOS) || (typeof ROUTE_POS === 'object' && ROUTE_POS) || null; if (!P) return null;
   var out = [];
   (STATE.sites || []).forEach(function(x){ if (!+x.lat || !+x.lng) return; var r = STATE.recs[x.id]; if (r && svDone(r)) return; out.push({ x:x, d:distKm(P, x) }); });
   out.sort(function(a, b){ return a.d - b.d; });
@@ -129,7 +129,7 @@ function fieldHelperCard(){
     + ok(!O.queue, t('لا تسجيلات معلّقة'), nm(O.queue) + ' ' + t('تسجيل بانتظار الرفع')) + ' ' + ok(!O.photos, t('لا صور معلّقة'), nm(O.photos) + ' ' + t('صورة بانتظار الرفع')) + ' '
     + ok(!!near, t('موقعي معروف'), t('موقعي غير محدَّد')) + '</div>'
     + '<div class="actions" style="margin:0">' + btn('\u{1F4E5} ' + t('جهّز يومي'), 'btn-primary btn-sm', ' data-fhprep="1"') + btn('\u{1F504} ' + t('زامن الآن'), 'btn-secondary btn-sm', ' data-pull="1"') + '</div>'
-    + (FH_PREP ? '<p class="hint" style="margin:6px 0 0">' + esc(t('بدأ التجهيز')) + ' \u00b7 ' + esc(agoTxt(FH_PREP)) + '</p>' : ''));
+    + (PV.FH_PREP ? '<p class="hint" style="margin:6px 0 0">' + esc(t('بدأ التجهيز')) + ' \u00b7 ' + esc(agoTxt(PV.FH_PREP)) + '</p>' : ''));
 }
 
 function routeCard(){

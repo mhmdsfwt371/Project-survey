@@ -11,7 +11,7 @@
    لا قيمةَ افتراضيةً ولا رماديةً: كلُّ وزنٍ ونقطةٍ وتارجتٍ يبدأ صفرًا
    ويُضبط بيد المهندس. وما يُكتب هنا يقرؤه كلُّ ما بُني فوقه في اللحظة نفسها. */
 
-var CFG_PULLED = false;   /* (V37.61) وصلت إعداداتُ السحابة في هذه الجلسة — شرطُ أيِّ بذرٍ يكتب إليها */
+PV.CFG_PULLED = false;   /* (V37.61) وصلت إعداداتُ السحابة في هذه الجلسة — شرطُ أيِّ بذرٍ يكتب إليها */
 var CFG = {
   /* أوزان الزيارة والفك — مفتاحها «المشعر|النوع» */
   w:  {},
@@ -81,7 +81,7 @@ function cfgGet(path, key){
   if (k !== null && (path === 'w' || path === 'dw')){
     k = wKeyNorm(k);
     if (o && o[k] == null){   /* وزنٌ مكتوبٌ بتسميةٍ قديمة (V19.1) */
-      var bar = k.indexOf('|'), z = bar < 0 ? '' : k.slice(0, bar + 1), lab = bar < 0 ? k : k.slice(bar + 1), al = W_ALIAS[lab] || [];
+      var bar = k.indexOf('|'), z = bar < 0 ? '' : k.slice(0, bar + 1), lab = bar < 0 ? k : k.slice(bar + 1), al = PV.W_ALIAS[lab] || [];
       for (var ai = 0; ai < al.length; ai++){ if (o[z + al[ai]] != null) return cfgN(o[z + al[ai]]); }
     }
   }

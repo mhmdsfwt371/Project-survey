@@ -51,7 +51,7 @@ function crewAdd(){
                      base:g('crRole') || 'supervisor', kind:g('crKind') || 'ins',
                      d:g('crD'), members:[] });
   crewSave();
-  CREW_CUR = id;
+  PV.CREW_CUR = id;
   logEvent('فريق جديد — ' + n);
   toast(t('أُنشئ الفريق'));
   render(1);
@@ -69,7 +69,7 @@ function crewDel(id){
   if (subs){ toast(t('فيه') + ' ' + nm(subs) + ' ' + t('فرقًا فرعيةً — احذفها أولًا')); return; }
   L.splice(i, 1);
   crewSave();
-  if (CREW_CUR === id2) CREW_CUR = L[0] ? L[0].id : '';
+  if (PV.CREW_CUR === id2) PV.CREW_CUR = L[0] ? L[0].id : '';
   logEvent('حذف فريق — ' + nm2);
   toast(t('حُذف الفريق'));
   render(1);
@@ -123,7 +123,7 @@ function depTeamEven(){
 function depTeamByRole(){
   var tm = teamOf(CTEAM_CUR);
   if (!tm) return;
-  var raw = tm.members.map(function(m){ return (TEAM_ROLE[m.role] || TEAM_ROLE.tech).def; });
+  var raw = tm.members.map(function(m){ return (PV.TEAM_ROLE[m.role] || PV.TEAM_ROLE.tech).def; });
   var sum = raw.reduce(function(a,b){ return a + b; }, 0);
   if (!sum){ toast(t('لا أعضاءَ في هذا الفريق')); return; }
   var acc = 0;

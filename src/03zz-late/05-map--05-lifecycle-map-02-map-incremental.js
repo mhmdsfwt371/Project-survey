@@ -10,9 +10,9 @@ function mapLocate(){
   toast(t('يُلتقَط موضعك…'));
   navigator.geolocation.getCurrentPosition(
     function(p){
-      MYPOS = { lat:p.coords.latitude, lng:p.coords.longitude, at:Date.now() };
-      if (MAP) MAP.setView([MYPOS.lat, MYPOS.lng], 17);
-      if (MAP_3D && M3){ try { M3.flyTo({ center:[MYPOS.lng, MYPOS.lat], zoom:16, duration:900 }); } catch (e){ LS_ERR = e; } }
+      PV.MYPOS = { lat:p.coords.latitude, lng:p.coords.longitude, at:Date.now() };
+      if (MAP) MAP.setView([PV.MYPOS.lat, PV.MYPOS.lng], 17);
+      if (MAP_3D && M3){ try { M3.flyTo({ center:[PV.MYPOS.lng, PV.MYPOS.lat], zoom:16, duration:900 }); } catch (e){ LS_ERR = e; } }
       /* ═══ علامةُ موضعك على لوح النقاط نفسِه — لا على لوحٍ فوقه ═══
          كانت تُضاف إلى الخريطة بلا لوحٍ معيَّن، فيُنشئ Leaflet لها لوحًا
          ثانيًا (canvas) يغطّي الخريطةَ كلَّها فوق لوح النقاط. واللوحُ الأعلى
@@ -22,12 +22,12 @@ function mapLocate(){
          اللوح نفسِه (MAP_CV) وغيرَ قابلةٍ للنقر — تُرى ولا تحجب. */
       try{
         if (MAP_ME) MAP.removeLayer(MAP_ME);
-        MAP_ME = L.circleMarker([MYPOS.lat, MYPOS.lng], {
+        MAP_ME = L.circleMarker([PV.MYPOS.lat, PV.MYPOS.lng], {
           renderer:MAP_CV, interactive:false,
           radius:8, color:'#fff', weight:3, fillColor:'#4FA3FF', fillOpacity:1
         }).addTo(MAP_TMP ? MAP_TMP : MAP);
         /* لوحُ النقاط يُمسَح في كلِّ رسمٍ — فتُعاد العلامةُ بعده */
-        MAP_ME_LL = [MYPOS.lat, MYPOS.lng];
+        MAP_ME_LL = [PV.MYPOS.lat, PV.MYPOS.lng];
       }catch(e){}
       toast(t('موضعُك'));
       render(1);

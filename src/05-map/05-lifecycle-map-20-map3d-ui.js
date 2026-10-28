@@ -22,7 +22,7 @@ function m3uiOn(){
   var n = 0;
   if (IOT.on) n++; if (heatPaint.on) n++; if (covPaint.on) n++; if (timeState().on) n++; if (liveState().on) n++;
   if (typeof tentOn !== 'function' || tentOn()) n++; if (typeof dtwPaint !== 'function' || dtwPaint.on !== false) n++;
-  if (typeof phPinOn !== 'function' || phPinOn()) n++; if (CO_MODE) n++;
+  if (typeof phPinOn !== 'function' || phPinOn()) n++; if (PV.CO_MODE) n++;
   return n;
 }
 /* the one row on top */
@@ -39,7 +39,7 @@ function m3uiTop(mq){
     + '<button type="button" class="map-chip' + (filtOn() ? ' on' : '') + '" data-mfilt="' + (MAP_FILT_OPEN ? '0' : '1') + '">\u2261 ' + esc(t('تصفية')) + (filtOn() ? ' \u00b7 ' + nm(layerFiltered().length) : '') + '</button>'
     + '<button type="button" class="map-chip m3-ic' + (mq.open ? ' on' : '') + '" data-mapq="' + (mq.open ? '0' : '1') + '" aria-label="' + esc(t('بحث')) + '" title="' + esc(t('بحث')) + '">\u{1F50D}</button>'
     + '<button type="button" class="map-chip m3-ic' + (S.views ? ' on' : '') + '" data-m3ui="' + (S.views ? 'close' : 'views') + '" aria-label="' + esc(t('المناظر')) + '" title="' + esc(t('المناظر')) + '">\u{1F4CD}</button>'
-    + (MY_ONLY || isCrewRole(ROLE) ? '<button type="button" class="map-chip on" data-myonly="0">\u25C9 ' + esc(t('مهامي')) + '</button>' : '')
+    + (PV.MY_ONLY || isCrewRole(ROLE) ? '<button type="button" class="map-chip on" data-myonly="0">\u25C9 ' + esc(t('مهامي')) + '</button>' : '')
     + '<button type="button" class="map-chip" data-m3="1" title="' + esc(t('العودة إلى الخريطة المسطّحة')) + '">\u25A6 ' + esc(t('٢د')) + '</button>';
 }
 /* every optional layer in one sheet, in the order a GIS reads them */
@@ -58,8 +58,8 @@ function m3uiSheet(){
         + tg(typeof dtwPaint !== 'function' || dtwPaint.on !== false, 'data-twin="1"', '\u{1F9E9}', 'الأجهزة')
         + tg(typeof tentOn !== 'function' || tentOn(), 'data-tent="1"', '\u26FA', 'الخيام')
         + tg(typeof phPinOn !== 'function' || phPinOn(), 'data-phpin="1"', '\u{1F5BC}', 'الصور')
-        + tg(CO_MODE, 'data-comode="' + (CO_MODE ? '0' : '1') + '"', '\u25C9', 'الشركات', CO_SEL.length ? ' \u00b7 ' + nm(CO_SEL.length) : '')
-        + (CO_MODE ? tg(CO_OPEN, 'data-co="1"', '\u25BE', 'اختر الشركات') : ''))
+        + tg(PV.CO_MODE, 'data-comode="' + (PV.CO_MODE ? '0' : '1') + '"', '\u25C9', 'الشركات', PV.CO_SEL.length ? ' \u00b7 ' + nm(PV.CO_SEL.length) : '')
+        + (PV.CO_MODE ? tg(CO_OPEN, 'data-co="1"', '\u25BE', 'اختر الشركات') : ''))
     + sec('التحليل', tg(heatPaint.on, 'data-heat="1"', '\u{1F3AF}', heatLabel()) + tg(covPaint.on, 'data-cov="1"', '\u{1F4F6}', 'التغطية')
         + tg(timeState().on, 'data-time="1"', '\u23F3', 'الزمن') + tg(liveState().on, 'data-live="1"', '\u{1F493}', 'الحي'))
     + (typeof m3ovState === 'function' ? sec('العرض', tg(m3ovState().agg, 'data-m3agg="1"', '\u25CE', 'تجميع من بعيد') + tg(m3ovState().lab, 'data-m3lab="1"', '\u{1F3F7}', 'أرقام الشواخص')) : '')   /* (V39.29) */

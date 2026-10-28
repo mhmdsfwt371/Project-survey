@@ -6,7 +6,7 @@
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ═══ نافذةُ نقاط التحدي (V26.9) — من صفحة التحديات والمعوقات في الميدان ═══ */
-var CHAL_POP = '', CHUP_OPEN = '';
+var CHAL_POP = ''; PV.CHUP_OPEN = '';
 
 function chalPopHtml(){
   var cat = CHAL_POP, O = mfuObstaclesF().filter(function(o){ return cat === '*' || o.cats.indexOf(cat) > -1; });

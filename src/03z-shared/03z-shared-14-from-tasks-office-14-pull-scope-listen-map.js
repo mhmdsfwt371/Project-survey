@@ -69,7 +69,7 @@ function pullDelta(opt){
      فالبصمةُ صارت للنطاق كلِّه — أيُّ تبدّلٍ فيه يُصفّر المؤشِّرَ ويسحب باردًا. */
   var tk = sc.tree ? treeKeys() : null;
   var sig = effRole(ROLE) + '|' + sc.cols.join(',') + '|' + (sc.mine ? 'mine' : 'all') + '|' + (tk ? tk.sig : '-');
-  if (at.__sig !== sig){ sc.cols.forEach(function(c){ delete at[c]; }); at.__sig = sig; COLD_N++; }
+  if (at.__sig !== sig){ sc.cols.forEach(function(c){ delete at[c]; }); at.__sig = sig; PV.COLD_N++; }
   /* (V37.24 المرحلة ١) السحبةُ على دفعتين: ما تحتاجه الخريطةُ والميدانُ أوّلًا (الزيارات والتركيبات والمهام والمواقع) فتُرسَم،
      ثم الباقي — فالجهازُ البطيءُ يعمل بعد ثوانٍ لا بعد السحبة كلِّها (كانت جهازٌ واحدٌ ١٠٢ ثانية) */
   var FIRST = { recs:1, inss:1, tasks:1, sites:1, newsites:1 }, colsA = sc.cols.filter(function(c){ return FIRST[c]; }), colsB = sc.cols.filter(function(c){ return !FIRST[c]; });
@@ -205,7 +205,7 @@ function readDelta(col, key, cap){
   q.get().then(function(sn){
     FB.readCount = (FB.readCount || 0) + sn.size;
     sn.forEach(function(dd){ STATE[key][dd.id] = key === 'photos' ? photoSlim(dd.data()) : dd.data(); });   /* (V37.13) كانت القراءةُ تُعَدّ مرتين · (V37.18) الصورُ بلا خام */
-    if (key === 'photos' && sn.size) PH_DIRTY = true, phTouch();
+    if (key === 'photos' && sn.size) PV.PH_DIRTY = true, phTouch();
     at['@' + col] = start; CORE.saveSoon();
   }).catch(function(e){
     /* لا مؤشِّرَ على وثائقَ قديمةٍ كُتبت قبل المؤشِّر: تُسحَب مرةً بالأحدث */
@@ -243,15 +243,15 @@ function pulseWatch(){
 }
 
 function pulseStop(){ if (PULSE_UNSUB){ try { PULSE_UNSUB(); } catch (e){ LS_ERR = e; } PULSE_UNSUB = null; }
-  if (BRIDGE_UNSUB){ try { BRIDGE_UNSUB(); } catch (e){ LS_ERR = e; } BRIDGE_UNSUB = null; } }
+  if (PV.BRIDGE_UNSUB){ try { PV.BRIDGE_UNSUB(); } catch (e){ LS_ERR = e; } PV.BRIDGE_UNSUB = null; } }
 
 /* ختمُ الجسر: وثيقةٌ واحدةٌ يكتبها الخادمُ بعد كلِّ تشغيلٍ — تُقرأ عند تغيّرها فقط (V17.39) */
-var BRIDGE_UNSUB = null;
+PV.BRIDGE_UNSUB = null;
 
 function bridgeWatch(){
-  if (!FB.ready || !FB.db || BRIDGE_UNSUB) return;
+  if (!FB.ready || !FB.db || PV.BRIDGE_UNSUB) return;
   try {
-    BRIDGE_UNSUB = DB.col('settings').doc('bridge').onSnapshot(function(doc){
+    PV.BRIDGE_UNSUB = DB.col('settings').doc('bridge').onSnapshot(function(doc){
       snapReads(doc);
       if (!doc.exists || (doc.metadata && doc.metadata.fromCache)) return;
       FB.readCount = (FB.readCount || 0) + 1;
@@ -301,9 +301,9 @@ function liveStop(){
 
 var MAP_ME = null;
 
-var MAP = null, MAP_LAYER = null, MAP_TMP = null, MAP_BASE = null, MAP_POLY = null, MAP_CV = null, MAP_ME_LL = null;
+var MAP = null, MAP_LAYER = null, MAP_TMP = null, MAP_BASE = null; PV.MAP_POLY = null; var MAP_CV = null, MAP_ME_LL = null;
 
-var MAP_READY = false, MAP_LOADING = false;
+PV.MAP_READY = false; PV.MAP_LOADING = false;
 
 /* حدُّ رسمِ حدود المخيمات — مصدرٌ واحدٌ يقرؤه الرسمُ والتحميلُ معًا (قرارٌ قائم: المخيمُ بحدوده عند ١٢ فتبقى متفرّدةً).
    (V25.3) قياس: عند ١٢ نحو ١٬٤٠٠ مضلّعٍ تُنشأ وتُقصّ وتُرسَم مع كلِّ حركة — رفعُ الحدِّ إلى ١٤ يُسرّع التبعيدَ كثيرًا، وهو قرارٌ للمالك */
@@ -371,7 +371,7 @@ var TILES = {
 };
 
 /* ألوان الحالة — المسح ثنائيٌّ والتركيب رباعي */
-var MAP_COL = {
+PV.MAP_COL = {
   survey:  { 'لم يُزر':'#E8C34B', 'تمت الزيارة':'#4BC9F5' },
   install: { 'لم يبدأ':'#9FB0AA', 'مجدول':'#FF8C42', 'مُركّب':'#3AD6A0', 'متعذّر':'#E05252' }
 };

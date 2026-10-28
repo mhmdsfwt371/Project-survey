@@ -62,9 +62,9 @@ function bellHtml(){
 }
 
 function bellToggle(open){
-  BELL_OPEN = (open === undefined) ? !BELL_OPEN : !!open;
+  PV.BELL_OPEN = (open === undefined) ? !PV.BELL_OPEN : !!open;
   var old = document.getElementById('bellPop'); if (old) old.remove();
-  if (!BELL_OPEN) return;
+  if (!PV.BELL_OPEN) return;
   var d = document.createElement('div'); d.innerHTML = bellHtml();
   document.body.appendChild(d.firstChild);
 }
@@ -74,7 +74,7 @@ function notifPopGo(id){
   var el = document.querySelector('[data-npop="' + id + '"]'); if (el) el.remove();
   if (!n) return;
   n.read = true;
-  if (n.site && n.kind === 'زيارة تمّت' && may('approve')){ SVA_ST = 'pending'; SVA_Q = n.site; SVA_PH = n.site; goPage('svappr'); render(1); return; }
+  if (n.site && n.kind === 'زيارة تمّت' && may('approve')){ SVA_ST = 'pending'; SVA_Q = n.site; PV.SVA_PH = n.site; goPage('svappr'); render(1); return; }
   if (n.site && n.kind === 'تركيب تمّ' && may('approve')){ goPage('qa'); render(1); return; }
   if (n.kind === 'مهام الاجتماع'){ WT_F = 'late'; goPage('wtask'); render(1); return; }
   if (n.site){ DETAIL_ID = n.site; goPage('site'); render(1); return; }

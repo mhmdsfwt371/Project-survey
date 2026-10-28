@@ -62,8 +62,8 @@ function mohuParse(rows){
     o.camx.cams.push({ n:c.n, kind:c.kind, model:c.model, ip:c.ip, vlan:c.vlan });
   });
   var ok = Object.keys(byId).map(function(k){ return byId[k]; });
-  IMP_PREVIEW = { kind:'mohu', ok:ok, bad:bad, head:['CPE','CAM','SECTOR','POLE','IP'], missing:start < 0 ? ['SECTOR'] : [], cams:cams.length };
-  return IMP_PREVIEW;
+  PV.IMP_PREVIEW = { kind:'mohu', ok:ok, bad:bad, head:['CPE','CAM','SECTOR','POLE','IP'], missing:start < 0 ? ['SECTOR'] : [], cams:cams.length };
+  return PV.IMP_PREVIEW;
 }
 /* صفوفُ النافذة من تقرير الوزارة المرفوع — لمن دخل التطبيق */
 function camxRows(x, kvf){
@@ -75,7 +75,7 @@ function camxRows(x, kvf){
   var list = '<div class="cx-box">' + c.cams.map(function(k){
     return '<div class="cx"><b>' + esc(t('كاميرا')) + ' ' + esc(k.n || '\u2014') + '</b> \u2014 ' + esc(t(k.kind === 'P' ? 'متحرّكة' : k.kind === 'L' ? 'قارئة لوحات (LPR)' : 'ثابتة'))
       + (k.ip ? L('IP ' + esc(k.ip) + (/\d/.test(k.vlan || '') ? ' \u00b7 VLAN ' + esc(k.vlan) : '')) : '')
-      + (k.model ? L(esc(k.model) + (CAM_SPEC[k.model] ? ' \u00b7 ' + esc(CAM_SPEC[k.model]) : '')) : '')
+      + (k.model ? L(esc(k.model) + (PV.CAM_SPEC[k.model] ? ' \u00b7 ' + esc(PV.CAM_SPEC[k.model]) : '')) : '')
       + (k.ip ? L('<span class="hint" style="margin:0;font-size:11px">rtsp://' + esc(k.ip) + ':554/cam/realmonitor?channel=1&amp;subtype=0</span>') : '')
       + '</div>';
   }).join('') + '</div>';
@@ -105,7 +105,7 @@ function impRead(kind, file){
 }
 
 function impValidate(kind, rows){
-  var cols = IMP_COLS[kind] || [], head = rows[0] || [];
+  var cols = PV.IMP_COLS[kind] || [], head = rows[0] || [];
   var missing = cols.filter(function(c){ return head.indexOf(c) < 0; });
   var okRows = [], bad = [];
   for (var i = 1; i < rows.length; i++){
@@ -126,8 +126,8 @@ function impValidate(kind, rows){
     if (why) bad.push({ row:i+1, why:why, data:r });
     else okRows.push(r);
   }
-  IMP_PREVIEW = { kind:kind, missing:missing, ok:okRows, bad:bad, head:head };
-  return IMP_PREVIEW;
+  PV.IMP_PREVIEW = { kind:kind, missing:missing, ok:okRows, bad:bad, head:head };
+  return PV.IMP_PREVIEW;
 }
 
 
@@ -260,13 +260,13 @@ var EPOCH_PENDING = false;   /* قراءةُ العهد جارية — لا رف
    يضغط المزامنة. والقاعدةُ تصل كلَّ جهازٍ مفتوحٍ أصلًا (settings/app منصَتٌ إليه):
    فرقمٌ يزيد هناك = أمرٌ بسحبٍ فوريٍّ يمرُّ به كلُّ مفتوح، والمغلقُ يسحب حين يُفتَح.
    ولمديرِ المشروع وحدَه — والقاعدةُ تحرسه لا الشاشةُ فقط. */
-var SYNC_ALL_SEEN = 0;
+PV.SYNC_ALL_SEEN = 0;
 
 function syncAllApply(v){
   var n = +v || 0;
-  if (!n || n <= (SYNC_ALL_SEEN || 0)) return false;
-  var first = !SYNC_ALL_SEEN;
-  SYNC_ALL_SEEN = n;
+  if (!n || n <= (PV.SYNC_ALL_SEEN || 0)) return false;
+  var first = !PV.SYNC_ALL_SEEN;
+  PV.SYNC_ALL_SEEN = n;
   if (first) return false;                      /* أوّلُ قراءةٍ تضبط العلامةَ ولا تسحب */
   SYNC.pullAsk = true; FB._staticAt = 0; syncCycle();   /* أمرُ المكتب يجلب الثوابتَ أيضًا */
   toast(t('مزامنةٌ من المكتب — يُسحَب الآن'));

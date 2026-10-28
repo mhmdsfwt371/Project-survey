@@ -30,9 +30,9 @@
 var TYPES_NORM = null;
 /* تسمياتٌ قديمةٌ في سجلِّ الأنواع تُردُّ إلى التسمية الحالية عند كلِّ تحميل — منها
    خطأٌ إملائيٌّ («فالوزارة») وتسمياتُ ما قبل توحيد عائلة كاميرات الوزارة (V19.1) */
-var TYPES_OLD_L = { 'LPR':['قراءة اللوحات', 'كاميرات قراءة اللوحات', 'كاميرات LPR', 'كاميرات الوزارة — LPR'], 'كاميرا':['كاميرات الوزارة الذكيّة', 'كاميرات فالوزارة', 'كاميرات الوزارة'] };   /* (V28.5) والتسميتان السابقتان تُردّان للجديدتين */
+PV.TYPES_OLD_L = { 'LPR':['قراءة اللوحات', 'كاميرات قراءة اللوحات', 'كاميرات LPR', 'كاميرات الوزارة — LPR'], 'كاميرا':['كاميرات الوزارة الذكيّة', 'كاميرات فالوزارة', 'كاميرات الوزارة'] };   /* (V28.5) والتسميتان السابقتان تُردّان للجديدتين */
 /* ومفاتيحُ الأوزان المكتوبةُ بالتسمية القديمة تُقرأ للتسمية الجديدة حتى يُنقَل قرارُها */
-var W_ALIAS = { 'كاميرات المتابعة':['كاميرات الوزارة', 'كاميرات فالوزارة', 'كاميرات الوزارة الذكيّة'], 'مراكز التفويج':['كاميرات الوزارة — LPR', 'كاميرات قراءة اللوحات', 'كاميرات LPR'] };   /* (V28.5) أوزانُ التسمية السابقة تُقرأ للجديدة */
+PV.W_ALIAS = { 'كاميرات المتابعة':['كاميرات الوزارة', 'كاميرات فالوزارة', 'كاميرات الوزارة الذكيّة'], 'مراكز التفويج':['كاميرات الوزارة — LPR', 'كاميرات قراءة اللوحات', 'كاميرات LPR'] };   /* (V28.5) أوزانُ التسمية السابقة تُقرأ للجديدة */
 function typeCopy(v){
   var o = { l:v.l, i:v.i, c:v.c };
   if (v.s) o.s = v.s;
@@ -45,7 +45,7 @@ function typesNormalize(T){
     if (k.charAt(0) === '_' || !v || typeof v !== 'object'){ delete T[k]; return; }
     if (v.gone){ gone[k] = 1; delete T[k]; return; }
     var b = CAT_DEF_BASE[k];
-    if (b && TYPES_OLD_L[k] && TYPES_OLD_L[k].indexOf(v.l) > -1) v.l = b.l;
+    if (b && PV.TYPES_OLD_L[k] && PV.TYPES_OLD_L[k].indexOf(v.l) > -1) v.l = b.l;
     if (b && !v.s && b.s) v.s = b.s;
     /* (V20.1) مدخلٌ في السجلِّ بتسميةٍ وحدَها (قرارُ تسمية) كان يُفقِد النوعَ رمزَه ولونَه:
        «undefined» في نافذة النقطة ودائرةٌ بلا لون — يُكمَل من الأصل أو بافتراضٍ محايد */
@@ -164,7 +164,7 @@ function typesCard(){
    صفرًا، ولا يقول أحدٌ شيئًا. فصارت تُشتقّ من البيانات، وتُدرَج معها كلُّ
    تركيبةٍ ممكنةٍ ولو خلت اليومَ — ليُضبَط وزنُها قبل أن يأتي أولُ موقعٍ فيها
    لا بعده. */
-var MX_ZONES = ['منى','عرفات','مزدلفة'];
+PV.MX_ZONES = ['منى','عرفات','مزدلفة'];
 
 function mxExtra(){
   if (!Array.isArray(CFG.mxExtra)) CFG.mxExtra = [];
@@ -413,14 +413,14 @@ function usrDupes(){
    بتشغيلٍ للخادم — بمهلةِ ثانيتين تجمع الطلباتِ المتتابعة (استيرادُ ثلاثين
    حسابًا = تشغيلٌ واحد)، وبفاصلٍ لا يقلُّ عن عشرين ثانيةً بين تشغيلَين فلا
    تُستهلَك حصةُ السيور. ومن لا مفتاحَ عنده يبقى له الزرُّ. */
-var PROV_KICK = 0, PROV_LAST = 0, PROV_QUIET = false;
+PV.PROV_KICK = 0; PV.PROV_LAST = 0; PV.PROV_QUIET = false;
 
-var PW_FLOW = null, PW_POLL = 0;
+PV.PW_FLOW = null; PV.PW_POLL = 0;
 
 
 function pwFlowHtml(){
-  if (!PW_FLOW) return '';
-  var f = PW_FLOW, big = '<div style="font:700 26px/1.4 ui-monospace,monospace;letter-spacing:.06em;direction:ltr;text-align:center;padding:10px;border:1px dashed rgba(255,255,255,.25);border-radius:10px;user-select:all">' + esc(f.pass) + '</div>';
+  if (!PV.PW_FLOW) return '';
+  var f = PV.PW_FLOW, big = '<div style="font:700 26px/1.4 ui-monospace,monospace;letter-spacing:.06em;direction:ltr;text-align:center;padding:10px;border:1px dashed rgba(255,255,255,.25);border-radius:10px;user-select:all">' + esc(f.pass) + '</div>';
   var wa = 'https://wa.me/?text=' + encodeURIComponent(t('اسم المستخدم') + ': ' + f.user + '\n' + t('كلمة المرور') + ': ' + f.pass + '\n' + t('تُبدّلها أوّلَ دخول') + '\n' + location.origin + location.pathname);
   var body = '<p class="hint" style="margin:0 0 8px">' + esc(dispName(f.name)) + ' \u00b7 <span dir="ltr">' + esc(f.user) + '</span></p>' + big
     + '<div class="actions" style="margin-top:10px">'

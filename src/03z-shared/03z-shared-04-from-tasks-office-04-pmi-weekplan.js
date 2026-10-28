@@ -59,14 +59,14 @@ function evm(){
    الأسبوعيُّ: في settings/pmo (قراءةُ المهندس والمدير) تحت wplan، لكلِّ نقطةٍ أسبوعُها
    وعنوانُها وتفاصيلُها وخطواتُها (قائمةُ تحقّق) ومتطلباتُها ونتيجتُها المرجوّة وأولويتُها
    وحالتُها — ومنها مهمةٌ أسبوعيةٌ بضغطة، وما لم يُنجَز يُرحَّل للأسبوع القادم. */
-var WPLAN_WK = '', WPLAN_EDIT = '';
+var WPLAN_WK = ''; PV.WPLAN_EDIT = '';
 
-var WPLAN_PRI = ['عالية', 'متوسطة', 'منخفضة'], WPLAN_ACT = null, WPLAN_PREFILL = null;
+PV.WPLAN_PRI = ['عالية', 'متوسطة', 'منخفضة']; var WPLAN_ACT = null; PV.WPLAN_PREFILL = null;
 
 function wplanUpdates(x){ return (Array.isArray(x.hist) ? x.hist : []).filter(function(h){ return h.f === 'upd' || h.f === 'result' || h.f === 'close'; }); }
 
 function wplanWeek(){ return WPLAN_WK || mfuWeekKey(); }
 
-function wplanItems(wk){ return pmoList('wplan').filter(function(x){ return x.wk === wk; }).sort(function(a, b){ return WPLAN_PRI.indexOf(a.pri || 'متوسطة') - WPLAN_PRI.indexOf(b.pri || 'متوسطة') || (a.at || 0) - (b.at || 0); }); }
+function wplanItems(wk){ return pmoList('wplan').filter(function(x){ return x.wk === wk; }).sort(function(a, b){ return PV.WPLAN_PRI.indexOf(a.pri || 'متوسطة') - PV.WPLAN_PRI.indexOf(b.pri || 'متوسطة') || (a.at || 0) - (b.at || 0); }); }
 
 function wplanLines(v){ return String(v || '').split(/\n+/).map(function(l){ return l.trim(); }).filter(Boolean); }

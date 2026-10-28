@@ -9,7 +9,7 @@
    خمسةُ تيرا في درايفك تكفي المشروعَ كلَّه، ووثيقةُ Firestore لا تتجاوز
    ميغابايتًا — فتُرفَع الصورُ هناك ويُحفَظ معرّفُها هنا. */
 
-var DRV = {
+PV.DRV = {
   /* يُملأ من الإعدادات — يُنشَأ في Google Cloud Console */
   clientId: '',
   folderId: '',                 /* مجلّدُ المشروع في درايفك */
@@ -19,46 +19,46 @@ var DRV = {
 
 function drvCfg(){
   try{
-    DRV.clientId = localStorage.getItem('nsk14.drv.client') || '';
-    DRV.folderId = lsGet('nsk14.drv.folder') || '';
+    PV.DRV.clientId = localStorage.getItem('nsk14.drv.client') || '';
+    PV.DRV.folderId = lsGet('nsk14.drv.folder') || '';
   }catch(e){ LS_ERR = e; }
-  return !!DRV.clientId;
+  return !!PV.DRV.clientId;
 }
 
 /* تُحمَّل مكتبةُ جوجل كسولًا — لا تُطلَب قبل أول رفع */
 function drvLoad(){
-  if (DRV.lib) return Promise.resolve(true);
+  if (PV.DRV.lib) return Promise.resolve(true);
   if (typeof window === 'undefined') return Promise.resolve(false);
   return new Promise(function(res){
     var s = document.createElement('script');
     s.src = 'https://accounts.google.com/gsi/client';
-    s.onload  = function(){ DRV.lib = true; res(true); };
+    s.onload  = function(){ PV.DRV.lib = true; res(true); };
     s.onerror = function(){ res(false); };
     document.head.appendChild(s);
-    setTimeout(function(){ if (!DRV.lib) res(false); }, 9000);
+    setTimeout(function(){ if (!PV.DRV.lib) res(false); }, 9000);
   });
 }
 
 /* الإذنُ يُطلَب مرةً ويُجدَّد قبل انتهائه بدقيقة */
 function drvAuth(){
-  if (DRV.token && Date.now() < DRV.exp - 60000) return Promise.resolve(DRV.token);
+  if (PV.DRV.token && Date.now() < PV.DRV.exp - 60000) return Promise.resolve(PV.DRV.token);
   if (!drvCfg()) return Promise.reject(new Error('no-client'));
   return drvLoad().then(function(ok){
     if (!ok || !window.google || !google.accounts) throw new Error('no-lib');
     return new Promise(function(res, rej){
       var tc = google.accounts.oauth2.initTokenClient({
-        client_id: DRV.clientId,
-        scope: DRV.scope,
+        client_id: PV.DRV.clientId,
+        scope: PV.DRV.scope,
         callback: function(r){
           if (r && r.access_token){
-            DRV.token = r.access_token;
-            DRV.exp = Date.now() + (r.expires_in || 3600) * 1000;
-            DRV.ready = true;
-            res(DRV.token);
+            PV.DRV.token = r.access_token;
+            PV.DRV.exp = Date.now() + (r.expires_in || 3600) * 1000;
+            PV.DRV.ready = true;
+            res(PV.DRV.token);
           } else rej(new Error('denied'));
         }
       });
-      tc.requestAccessToken({ prompt: DRV.token ? '' : 'consent' });
+      tc.requestAccessToken({ prompt: PV.DRV.token ? '' : 'consent' });
     });
   });
 }
@@ -78,7 +78,7 @@ function drvUpload(name, dataUrl){
   return drvAuth().then(function(tok){
     var blob = dataToBlob(dataUrl);
     var meta = { name: name, mimeType: blob.type };
-    if (DRV.folderId) meta.parents = [DRV.folderId];
+    if (PV.DRV.folderId) meta.parents = [PV.DRV.folderId];
     var fd = new FormData();
     fd.append('metadata', new Blob([JSON.stringify(meta)], { type:'application/json' }));
     fd.append('file', blob);
@@ -103,7 +103,7 @@ function drvUpload(name, dataUrl){
    وما تعذّر رفعُه لا يُسقَط: كان يُشطَب بعد خمس محاولاتٍ فيبقى السجلُّ بلا
    صورةٍ والصورةُ على جهازٍ واحدٍ لا يعلم بها أحد. صار يُنقَل إلى قائمةٍ
    تُعرَض في شاشة التخزين بزرِّ إعادة، فالفقدُ المعلَنُ يُعالَج والصامتُ لا. */
-var PHOTO_Q = [], PHOTO_FAIL = [];
+var PHOTO_Q = []; PV.PHOTO_FAIL = [];
 
 /* ═══ اسمُ الصورة على الدرايف ═══
    كان الاسمُ يحمل النوعَ والوقتَ بالثانية: «NSK-…-0001__site__2026-09-06-14-30-05»
@@ -138,7 +138,7 @@ function photoTag(){
 }
 
 function photoQueue(siteId, kind, dataUrl){
-  var pq = dataUrl ? PHOTO_Q_IX[String(dataUrl).length + ':' + String(dataUrl).slice(-64)] : null;   /* (V30.6) */
+  var pq = dataUrl ? PV.PHOTO_Q_IX[String(dataUrl).length + ':' + String(dataUrl).slice(-64)] : null;   /* (V30.6) */
   if (pq && photoDupOf(siteId, pq)) toast('\u26A0 ' + t('هذه الصورة تكاد تطابق صورةً سابقةً لنفس النقطة'));
   PHOTO_Q.push({ site:siteId, kind:kind, data:dataUrl, at:Date.now(), tries:0,
                  seq:photoNext(siteId), q:pq || null });
@@ -180,7 +180,7 @@ function photoFlush(){
     it.why = String(e && e.message || '').slice(0, 80);
     if (it.tries > 5){
       PHOTO_Q.shift();
-      PHOTO_FAIL.push(it);
+      PV.PHOTO_FAIL.push(it);
       CORE.saveSoon();
       logEvent('تعذّر رفع صورة — ' + it.site + ' · ' + it.kind + (it.why ? ' · ' + it.why : ''), it.site);
     }
@@ -196,7 +196,7 @@ function photoFlushCloud(){
   /* سقفُ الوثيقة ميغابايت: ما زاد يُضغَط ثانيةً — وما بقي فوقه يُترَك للدرايف المباشر */
   if (data.length > 900000){
     it.tries++; it.why = 'الصورةُ أكبرُ من سقف القاعدة';
-    if (it.tries > 5){ PHOTO_Q.shift(); PHOTO_FAIL.push(it); CORE.saveSoon(); }
+    if (it.tries > 5){ PHOTO_Q.shift(); PV.PHOTO_FAIL.push(it); CORE.saveSoon(); }
     return Promise.resolve(0);
   }
   PHOTO_Q.shift();
@@ -218,16 +218,16 @@ function photoFlushCloud(){
 var PH_IDX = null; PV.PH_IDX_KEY = '';
 
 function phIdx(){
-  var P = STATE.photos || {}, key = (typeof PH_VER === 'number' ? PH_VER : 0);   /* لا عدَّ للمفاتيح في المسار الساخن — التغييرُ يُعلَن بـphTouch أو بكائنٍ جديد */
+  var P = STATE.photos || {}, key = (typeof PV.PH_VER === 'number' ? PV.PH_VER : 0);   /* لا عدَّ للمفاتيح في المسار الساخن — التغييرُ يُعلَن بـphTouch أو بكائنٍ جديد */
   if (PH_IDX && PV.PH_IDX_KEY === key && phIdx.ref === STATE.photos) return PH_IDX;
   var M = {}; Object.keys(P).forEach(function(k){ var p = P[k]; if (p && p.site){ (M[p.site] = M[p.site] || []).push([k, p]); } });
   Object.keys(M).forEach(function(s){ M[s].sort(function(a, b){ return (b[1].at || 0) - (a[1].at || 0); }); });
   phIdx.ref = STATE.photos; phIdx.len = Object.keys(P).length; PH_IDX = M; PV.PH_IDX_KEY = key; return M;
 }
 
-var PH_VER = 0;
+PV.PH_VER = 0;
 
-function phTouch(){ PH_VER++; PH_IDX = null; }
+function phTouch(){ PV.PH_VER++; PH_IDX = null; }
 
 function photosOf(siteId){ var L = phIdx()[siteId]; return L ? L.slice() : []; }
 
@@ -236,7 +236,7 @@ function photosOf(siteId){ var L = phIdx()[siteId]; return L ? L.slice() : []; }
    مقطوع، يتكرّران ثلاثين مرةً في صفحةٍ واحدة، فلا يُقرأ منهما شيءٌ ولا يُعرَف
    ما العمل. صار الخطأُ يُترجَم إلى جملةٍ واحدة، ويُرفَع سببُه إلى **لافتةٍ
    واحدةٍ** فوق المعرض فيها ما يُفعَل — لا تحت كلِّ صورة. */
-var PH_ERR = [
+PV.PH_ERR = [
   { re:/storage quota|shared drives|storageQuotaExceeded/i,
     s:'حسابُ الخدمة بلا سعةٍ على الدرايف',
     fix:'الحلُّ خطوةٌ واحدةٌ من مديرِ المشروع: يُنشَأ **درايفٌ مشترَك** (Shared drive) ويُضاف إليه حسابُ الخدمة بصلاحية «مدير محتوى»، ثم يوضَع معرِّفُه في GDRIVE_FOLDER. الصورُ محفوظةٌ الآن على الأجهزة وفي القاعدة ولن تضيع — تُرفَع كلُّها تلقائيًّا بعد الضبط.' },

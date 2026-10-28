@@ -11,24 +11,24 @@ var NEWSITE = { lat:0, lng:0, zone:'منى', type:'مخيم', sq:'', sign:'',
 
 /* (V29.7) قرارُ المالك: المربعُ والشاخصُ والشركةُ للمخيمات وحدَها؛ وغيرُها اسمٌ ومشعرٌ ونوع. والسببُ والتحدياتُ وأوّلُ صورتين إلزاميةٌ للكلّ.
    ومراكزُ التفويج تُختار بمركزها (النورية، طريق الهجرة، الزايدي) — كان «الزايدي» لا يُوجَد في الاختيار. */
-var NS_CENTERS = [['النورية', 'النورية'], ['طريق الهجرة', 'محطات طريق الهجرة'], ['الزايدي', 'الزايدي']];
+PV.NS_CENTERS = [['النورية', 'النورية'], ['طريق الهجرة', 'محطات طريق الهجرة'], ['الزايدي', 'الزايدي']];
 
-var NS_REASONS_PT = ['نقطة جديدة لم تكن في السجل', 'موقعها في السجل خاطئ', 'سبب آخر'];
+PV.NS_REASONS_PT = ['نقطة جديدة لم تكن في السجل', 'موقعها في السجل خاطئ', 'سبب آخر'];
 
-var NS_CO_OPEN = false, NS_CO_Q = '';
+var NS_CO_OPEN = false; PV.NS_CO_Q = '';
 
 /* أسبابُ عدم وجوده في السجل — من الميدان لا من الخيال */
-var NS_REASONS = ['مخيم جديد لم يكن موجودًا','مخيم انقسم إلى أكثر من واحد',
+PV.NS_REASONS = ['مخيم جديد لم يكن موجودًا','مخيم انقسم إلى أكثر من واحد',
                   'عدم وجود تخصيص','تغيّر ترقيم الشاخص',
                   'الشاخص مفقود أو غير واضح','سبب آخر'];
 
 /* الصورُ الخمس — الأولى وحدها إلزامية، بها يطابق المكتبُ الموقع */
-var NS_PHOTOS = ['صورة الشاخص أو اللوحة بأرقامها واضحة','لقطة عامة للموقع','المدخل',
+PV.NS_PHOTOS = ['صورة الشاخص أو اللوحة بأرقامها واضحة','لقطة عامة للموقع','المدخل',
                  'نقطة التركيب المقترحة','أي عائق أو ملاحظة'];
 
 /* المسجَّلُ داخل مئةٍ وأربعين مترًا — أغلبُ «المخيم غير موجود» وقوفٌ بجانب مسجَّل */
 function nsNear(){
-  var la = NEWSITE.lat || (MYPOS && MYPOS.lat), lo = NEWSITE.lng || (MYPOS && MYPOS.lng);
+  var la = NEWSITE.lat || (PV.MYPOS && PV.MYPOS.lat), lo = NEWSITE.lng || (PV.MYPOS && PV.MYPOS.lng);
   if (!la || !lo) return null;
   var me = { lat:la, lng:lo };
   return STATE.sites.filter(function(x){ return x.lat && x.lng; })
@@ -45,14 +45,14 @@ function coHit(c, q){
 }
 
 function nsCoRows(){
-  var q = String(NS_CO_Q || '').trim();
+  var q = String(PV.NS_CO_Q || '').trim();
   return CO_LIST.filter(function(c){ return coHit(c, q); });
 }
 
 function nsCoCard(){
   var rows = nsCoRows();
   return card('شركة تقديم الخدمة — القائمة الموحّدة',
-    '<div class="field"><input type="search" id="nsCoQ" data-nsq="1" value="' + esc(NS_CO_Q) + '" '
+    '<div class="field"><input type="search" id="nsCoQ" data-nsq="1" value="' + esc(PV.NS_CO_Q) + '" '
     + 'placeholder="' + esc(t('ابحث باسم الشركة')) + '" spellcheck="false"></div>'
     + '<div style="max-height:44vh;overflow:auto;border:1px solid var(--line);border-radius:var(--radius-sm)">'
     + (rows.length
@@ -85,7 +85,7 @@ function nsCoCard(){
 function nsOffice(){ return rankOf(effRole(ROLE)) >= rankOf('engineer'); }
 
 /* رمزُ النوع في المعرِّف — جدولٌ واحدٌ لكلِّ من يُنشئ نقطة (V17.60) */
-var TYPE_CODE = { 'مخيم':'CMP', 'ممر':'RDR', 'كاميرا':'CAM', 'محطة':'STN', 'جسر':'JMR', 'بوابة':'GTE', 'مبنى':'BLD',
+PV.TYPE_CODE = { 'مخيم':'CMP', 'ممر':'RDR', 'كاميرا':'CAM', 'محطة':'STN', 'جسر':'JMR', 'بوابة':'GTE', 'مبنى':'BLD',
                   'LPR':'LPR', 'جيت واي':'GTW', 'حساس حرارة ورطوبة':'THS' };
 
 
