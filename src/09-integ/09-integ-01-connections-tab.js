@@ -289,76 +289,147 @@ function integExpiryNotify(p){
    (each one a filter), the points with the most trouble, search by point / device / serial / platform name, problems first
    and oldest first, 100 rows at a time, and the filtered list to Excel. One global: its helpers hang on the function. */
 function iotDashHtml(){
-  var F = iotDashHtml.F || (iotDashHtml.F = { st:'bad', kind:'all', q:'', n:100, sort:'old' });
-  var L = IOT.live; if (!L || Date.now() - (L.at || 0) > 60000) liveIotLoad(true);
-  var all = iotDashHtml.rows(), cnt = { all:all.length, bad:0, ok:0, late:0, off:0, nor:0, nof:0, nos:0 };
-  all.forEach(function(r){ cnt[r.st]++; if (r.st !== 'ok') cnt.bad++; });
-  var lv = L && L.v, pull = lv && lv.at ? Date.now() - lv.at : -1;
+  /* (V40.9) the owner: «ليه ٢٦ حساس بس؟ احنا ضايفين فوق ٨٠٠٠» — the camps' full plan (layers/mina-sensors.json) loads only
+     with the map's sensors layer, so this page saw only the two edited camps. It loads it now. And: «فلتر بالمخيم الأول …
+     تاب للمخيمات وتاب للحساسات وتاب للجيت واي؛ أضغط المخيم يطلع بوب فيه حساساته والجيت واي؛ والحساس والجيت واي ليهم بوب
+     للقراءة والتعديل». */
+  var F = iotDashHtml.F || (iotDashHtml.F = { tab:'camps', st:'all', zone:'all', q:'', n:100, sort:'old', pop:null });
+  if (!F.tab) F.tab = 'camps';
+  iotLoad();
+  var L = IOT.live; if (!F.pop && (!L || Date.now() - (L.at || 0) > 60000)) liveIotLoad(true);   /* not while a popup is being edited — a redraw would drop what is typed */
+  var all = iotDashHtml.rows(), lv = L && L.v, pull = lv && lv.at ? Date.now() - lv.at : -1;
+  var zones = {}; all.forEach(function(r){ zones[r.zone] = 1; });
+  var inZone = function(r){ return F.zone === 'all' || r.zone === F.zone; };
   var q = String(F.q || '').trim().toLowerCase();
-  var rows = all.filter(function(r){
-    if (F.st === 'bad' ? r.st === 'ok' : (F.st !== 'all' && r.st !== F.st)) return false;
-    if (F.kind !== 'all' && r.kind !== F.kind) return false;
-    return !q || (r.pn + ' ' + r.camp + ' ' + r.did + ' ' + r.ser + ' ' + r.pnm + ' ' + r.room).toLowerCase().indexOf(q) > -1;
-  });
-  var rank = { off:0, late:1, nof:2, nor:3, nos:4, ok:5 };
-  rows.sort(F.sort === 'name' ? function(a, b){ return a.pn < b.pn ? -1 : a.pn > b.pn ? 1 : (a.did < b.did ? -1 : 1); }
-    : function(a, b){ return (rank[a.st] - rank[b.st]) || ((a.at || 0) - (b.at || 0)); });
-  var chip = function(k, ic, lab, col){ var on = F.st === k;
-    return '<button class="btn btn-sm ' + (on ? 'btn-primary' : 'btn-secondary') + '" data-iotd="st:' + k + '" style="' + (col && !on ? 'border-color:' + col + ';' : '') + '">' + ic + ' ' + esc(t(lab)) + ' <b class="num">' + nm(cnt[k]) + '</b></button>'; };
-  var head = '<div class="hint" style="margin:0 0 8px">' + esc(pull < 0 ? t('لسه مفيش سحب من أفاقي برو — راجع تبويب «الربط»') : t('آخر سحب من أفاقي برو') + ': ' + iotDashHtml.age(pull) + ' \u00b7 ' + t('بيتجدد كل ٥ دقايق')) + '</div>'
-    + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px">'
-    + chip('bad', '\u26A0\uFE0F', 'محتاج تدخّل', '#F59E0B') + chip('ok', '\u{1F7E2}', 'محدّث', '#22C55E') + chip('late', '\u{1F7E1}', 'متأخر', '#EAB308') + chip('off', '\u{1F534}', 'منقطع', '#EF4444')
-    + chip('nof', '\u26AB', 'السيريال مش على المنصة', '') + chip('nor', '\u26AA', 'على المنصة بلا قراءة', '') + chip('nos', '\u25FB', 'بلا سيريال', '') + chip('all', '\u{1F4CB}', 'الكل', '') + '</div>';
-  var byCamp = {}; all.forEach(function(r){ if (r.st === 'ok') return; var b = byCamp[r.camp] || (byCamp[r.camp] = { pn:r.pn, n:0, off:0, late:0 }); b.n++; if (r.st === 'off') b.off++; if (r.st === 'late') b.late++; });
-  var worst = Object.keys(byCamp).map(function(k){ return [k, byCamp[k]]; }).sort(function(a, b){ return (b[1].off - a[1].off) || (b[1].n - a[1].n); }).slice(0, 8);
-  var top = worst.length ? '<div class="hint" style="margin:0 0 4px">' + esc(t('أكتر النقط محتاجة تدخّل')) + ':</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px">'
-    + worst.map(function(w){ return '<button class="btn btn-quiet btn-sm" data-iotd="q:' + esc(w[0]) + '">' + esc(w[1].pn) + ' \u00b7 <b class="num">' + nm(w[1].n) + '</b>' + (w[1].off ? ' \u{1F534}' + nm(w[1].off) : '') + '</button>'; }).join('') + '</div>' : '';
-  var kb = function(k, lab){ return '<button class="btn btn-sm ' + (F.kind === k ? 'btn-primary' : 'btn-quiet') + '" data-iotd="kind:' + k + '">' + esc(t(lab)) + '</button>'; };
-  var sb = function(k, lab){ return '<button class="btn btn-sm ' + (F.sort === k ? 'btn-primary' : 'btn-quiet') + '" data-iotd="sort:' + k + '">' + esc(t(lab)) + '</button>'; };
-  var tools = '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 8px">'
-    + '<input class="in" id="iotdQ" style="max-width:280px" placeholder="' + esc(t('دوّر باسم النقطة أو رقم الجهاز أو السيريال')) + '" value="' + esc(F.q || '') + '">'
-    + (F.q ? btn('\u2715 ' + t('امسح البحث'), 'btn-quiet btn-sm', ' data-iotd="q:"') : '')
-    + kb('all', 'الكل') + kb('s', 'حساسات') + kb('g', 'جيت واي') + '<span style="width:8px"></span>' + sb('old', 'المشاكل والأقدم الأول') + sb('name', 'بالاسم')
-    + btn('\u2B07 ' + t('إكسل'), 'btn-secondary btn-sm', ' data-iotd="xlsx"') + btn('\u21BB ' + t('حدّث الآن'), 'btn-quiet btn-sm', ' data-iotd="refresh"') + '</div>';
-  var lab = { ok:['\u{1F7E2}', 'محدّث'], late:['\u{1F7E1}', 'متأخر'], off:['\u{1F534}', 'منقطع'], nor:['\u26AA', 'على المنصة بلا قراءة'], nof:['\u26AB', 'السيريال مش على المنصة'], nos:['\u25FB', 'بلا سيريال'] };
-  var body = rows.slice(0, F.n).map(function(r){
-    var v = r.v || {}, val = [];
-    if (r.kind === 's'){ if (v.temp != null) val.push(nm(v.temp) + '\u00B0'); if (v.hum != null) val.push(nm(v.hum) + '\u066A'); if (v.bat != null) val.push('\u{1F50B}' + nm(v.bat)); }
-    else { if (v.ext_bat != null) val.push('\u{1F50C}' + nm(v.ext_bat)); if (v.int_bat != null) val.push('\u{1F50B}' + nm(v.int_bat)); if (v.ext_bat == null && v.int_bat == null && v.bat != null) val.push('\u{1F50B}' + nm(v.bat)); }
-    return '<tr><td>' + esc(r.pn) + '</td><td dir="ltr">' + esc(r.did) + (r.room ? ' <span class="hint" style="margin:0">' + esc(r.room) + '</span>' : '') + '</td><td>' + esc(t(r.kind === 's' ? 'حساس' : 'جيت واي')) + '</td>'
-      + '<td dir="ltr">' + (r.ser ? esc(r.ser) : '\u2014') + '</td><td dir="ltr">' + (r.pnm ? esc(r.pnm) : '\u2014') + '</td>'
-      + '<td>' + (r.at ? iotDashHtml.age(Date.now() - r.at) : '\u2014') + '</td><td>' + (val.length ? esc(val.join(' \u00b7 ')) : '\u2014') + '</td>'
-      + '<td>' + lab[r.st][0] + ' ' + esc(t(lab[r.st][1])) + '</td></tr>';
-  }).join('');
-  var table = rows.length ? '<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>' + [t('النقطة'), t('الجهاز'), t('النوع'), t('السيريال'), t('الاسم على المنصة'), t('آخر تحديث'), t('القراءة الحالية'), t('الحالة')].map(esc).join('</th><th>') + '</th></tr></thead><tbody>' + body + '</tbody></table></div>'
-      + '<div class="hint" style="margin:6px 0 0">' + esc(t('معروض')) + ' ' + nm(Math.min(F.n, rows.length)) + ' ' + esc(t('من')) + ' ' + nm(rows.length) + (rows.length > F.n ? ' ' + btn(t('اعرض ١٠٠ كمان'), 'btn-secondary btn-sm', ' data-iotd="more"') : '') + '</div>'
-    : '<div class="hint">' + esc(cnt.all ? t('مفيش أجهزة بالفلتر ده') : t('لسه مفيش خطة حساسات في أي مخيم')) + '</div>';
-  return card('\u{1F4E1} ' + t('تحديث الأجهزة والحساسات') + ' \u00b7 ' + nm(cnt.all) + ' ' + t('جهاز'), head + top + tools + table);   /* the app's own card */
+  var cS = all.filter(function(r){ return r.kind === 's'; }).length, cG = all.length - cS;
+  var camps = iotDashHtml.camps(all);
+  var tb = function(k, ic, lab, n){ return '<button class="btn ' + (F.tab === k ? 'btn-primary' : 'btn-secondary') + '" data-iotd="tab:' + k + '">' + ic + ' ' + esc(t(lab)) + ' <b class="num">' + nm(n) + '</b></button>'; };
+  var zb = function(k, lab){ return '<button class="btn btn-sm ' + (F.zone === k ? 'btn-primary' : 'btn-quiet') + '" data-iotd="zone:' + esc(k) + '">' + esc(t(lab)) + '</button>'; };
+  var head = '<div class="hint" style="margin:0 0 8px">' + esc(pull < 0 ? t('لسه مفيش سحب من أفاقي برو — راجع تبويب «الربط»') : t('آخر سحب من أفاقي برو') + ': ' + iotDashHtml.age(pull) + ' \u00b7 ' + t('بيتجدد كل ٥ دقايق')) + (IOT.data ? '' : ' \u00b7 ' + t('بيحمّل خطة المخيمات…')) + '</div>'
+    + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px">' + tb('camps', '\u26FA', 'المخيمات', camps.length) + tb('s', '\u{1F321}', 'الحساسات', cS) + tb('g', '\u{1F4F6}', 'الجيت واي', cG) + '</div>'
+    + '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 8px">' + zb('all', 'كل المناطق') + Object.keys(zones).sort().map(function(z){ return zb(z, z || 'بلا منطقة'); }).join('')
+    + '<input class="in" id="iotdQ" style="max-width:280px" placeholder="' + esc(t(F.tab === 'camps' ? 'رقم المخيم أو اسمه (مثلًا 2/212)' : 'دوّر باسم النقطة أو رقم الجهاز أو السيريال')) + '" value="' + esc(F.q || '') + '">'
+    + (F.q ? btn('\u2715 ' + t('امسح البحث'), 'btn-quiet btn-sm', ' data-iotd="q:"') : '') + btn('\u2B07 ' + t('إكسل'), 'btn-quiet btn-sm', ' data-iotd="xlsx"') + btn('\u21BB ' + t('حدّث الآن'), 'btn-quiet btn-sm', ' data-iotd="refresh"') + '</div>';
+  var body = F.tab === 'camps' ? iotDashHtml.campsHtml(camps.filter(function(c){ return (F.zone === 'all' || c.zone === F.zone) && (!q || c.key.indexOf(q) > -1); }), F)
+    : iotDashHtml.devHtml(all.filter(function(r){ return r.kind === F.tab && inZone(r) && (!q || (r.pn + ' ' + r.camp + ' ' + r.did + ' ' + r.ser + ' ' + r.pnm + ' ' + r.room).toLowerCase().indexOf(q) > -1); }), F);
+  return card('\u{1F4E1} ' + t('تحديث الأجهزة والحساسات') + ' \u00b7 ' + nm(all.length) + ' ' + t('جهاز'), head + body) + iotDashHtml.popHtml(F, all);
 }
+iotDashHtml.LAB = { ok:['\u{1F7E2}', 'محدّث'], late:['\u{1F7E1}', 'متأخر'], off:['\u{1F534}', 'منقطع'], nor:['\u26AA', 'على المنصة بلا قراءة'], nof:['\u26AB', 'السيريال مش على المنصة'], nos:['\u25FB', 'بلا سيريال'] };
+iotDashHtml.bad = function(st){ return st === 'late' || st === 'off' || st === 'nor' || st === 'nof'; };   /* a planned device with no serial yet is not «broken» — it is just not registered */
+iotDashHtml.val = function(r){ var v = r.v || {}, o = [];
+  if (r.kind === 's'){ if (v.temp != null) o.push(nm(v.temp) + '\u00B0'); if (v.hum != null) o.push(nm(v.hum) + '\u066A'); if (v.bat != null) o.push('\u{1F50B}' + nm(v.bat)); }
+  else { if (v.ext_bat != null) o.push('\u{1F50C}' + nm(v.ext_bat)); if (v.int_bat != null) o.push('\u{1F50B}' + nm(v.int_bat)); if (v.ext_bat == null && v.int_bat == null && v.bat != null) o.push('\u{1F50B}' + nm(v.bat)); }
+  return o.join(' \u00b7 '); };
+iotDashHtml.camps = function(all){
+  var M = {}, out = [];
+  all.forEach(function(r){ var c = M[r.camp] || (M[r.camp] = { id:r.camp, pn:r.pn, zone:r.zone, key:'', s:0, g:0, sOk:0, gOk:0, bad:0, ser:0, at:0 });
+    if (r.kind === 's'){ c.s++; if (r.st === 'ok') c.sOk++; } else { c.g++; if (r.st === 'ok') c.gOk++; }
+    if (iotDashHtml.bad(r.st)) c.bad++; if (r.ser) c.ser++; if (r.at > c.at) c.at = r.at; });
+  Object.keys(M).forEach(function(k){ var c = M[k], x = siteFind(k) || {};
+    c.key = (c.pn + ' ' + k + ' ' + [x.code, x.co, x.company, x.op, x.operator, x.sp].filter(Boolean).join(' ')).toLowerCase();
+    c.st = c.bad ? 'bad' : !c.ser ? 'nos' : (c.sOk + c.gOk) === c.ser ? 'ok' : 'part'; out.push(c); });
+  return out;
+};
+iotDashHtml.campsHtml = function(list, F){
+  var cnt = { all:list.length, bad:0, ok:0, part:0, nos:0 }; list.forEach(function(c){ cnt[c.st]++; });
+  var chip = function(k, ic, lab){ return '<button class="btn btn-sm ' + (F.st === k ? 'btn-primary' : 'btn-secondary') + '" data-iotd="st:' + k + '">' + ic + ' ' + esc(t(lab)) + ' <b class="num">' + nm(cnt[k] || 0) + '</b></button>'; };
+  var rows = list.filter(function(c){ return F.st === 'all' || F.st === c.st; });
+  var rank = { bad:0, part:1, ok:2, nos:3 };
+  rows.sort(F.sort === 'name' ? function(a, b){ return a.pn < b.pn ? -1 : 1; } : function(a, b){ return (rank[a.st] - rank[b.st]) || (b.bad - a.bad) || (a.pn < b.pn ? -1 : 1); });
+  var sl = { bad:'\u26A0\uFE0F ' + t('محتاج تدخّل'), part:'\u{1F7E1} ' + t('جزء محدّث'), ok:'\u{1F7E2} ' + t('كله محدّث'), nos:'\u25FB ' + t('لسه بلا سيريالات') };
+  var tr = rows.slice(0, F.n).map(function(c){
+    return '<tr data-iotd="pop:camp:' + esc(c.id) + '" style="cursor:pointer"><td>' + esc(c.pn) + '</td><td>' + esc(c.zone || '\u2014') + '</td>'
+      + '<td class="num">' + nm(c.sOk) + ' / ' + nm(c.s) + '</td><td class="num">' + nm(c.gOk) + ' / ' + nm(c.g) + '</td><td class="num">' + (c.bad ? nm(c.bad) : '\u2014') + '</td>'
+      + '<td>' + (c.at ? iotDashHtml.age(Date.now() - c.at) : '\u2014') + '</td><td>' + esc(sl[c.st]) + '</td></tr>'; }).join('');
+  return '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px">' + chip('all', '\u{1F4CB}', 'الكل') + chip('bad', '\u26A0\uFE0F', 'محتاج تدخّل') + chip('part', '\u{1F7E1}', 'جزء محدّث') + chip('ok', '\u{1F7E2}', 'كله محدّث') + chip('nos', '\u25FB', 'لسه بلا سيريالات') + '</div>'
+    + (rows.length ? '<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>' + [t('المخيم'), t('المنطقة'), t('الحساسات المحدّثة'), t('الجيت واي المحدّث'), t('محتاج تدخّل'), t('آخر تحديث'), t('الحالة')].map(esc).join('</th><th>') + '</th></tr></thead><tbody>' + tr + '</tbody></table></div>'
+      + iotDashHtml.more(rows.length, F) : '<div class="hint">' + esc(t('مفيش مخيمات بالفلتر ده')) + '</div>');
+};
+iotDashHtml.devHtml = function(list, F){
+  var cnt = { all:list.length, bad:0, ok:0, late:0, off:0, nor:0, nof:0, nos:0 }; list.forEach(function(r){ cnt[r.st]++; if (iotDashHtml.bad(r.st)) cnt.bad++; });
+  var LB = iotDashHtml.LAB, chip = function(k, ic, lab){ return '<button class="btn btn-sm ' + (F.st === k ? 'btn-primary' : 'btn-secondary') + '" data-iotd="st:' + k + '">' + ic + ' ' + esc(t(lab)) + ' <b class="num">' + nm(cnt[k] || 0) + '</b></button>'; };
+  var rows = list.filter(function(r){ return F.st === 'all' || (F.st === 'bad' ? iotDashHtml.bad(r.st) : r.st === F.st); });
+  var rank = { off:0, late:1, nof:2, nor:3, ok:4, nos:5 };
+  rows.sort(F.sort === 'name' ? function(a, b){ return a.pn < b.pn ? -1 : a.pn > b.pn ? 1 : (a.did < b.did ? -1 : 1); } : function(a, b){ return (rank[a.st] - rank[b.st]) || ((a.at || 0) - (b.at || 0)); });
+  var tr = rows.slice(0, F.n).map(function(r){
+    return '<tr data-iotd="pop:dev:' + esc(r.camp) + ':' + r.kind + ':' + r.i + '" style="cursor:pointer"><td>' + esc(r.pn) + '</td><td dir="ltr">' + esc(r.did) + (r.room ? ' <span class="hint" style="margin:0">' + esc(r.room) + '</span>' : '') + '</td>'
+      + '<td dir="ltr">' + (r.ser ? esc(r.ser) : '\u2014') + '</td><td>' + (r.at ? iotDashHtml.age(Date.now() - r.at) : '\u2014') + '</td><td>' + (esc(iotDashHtml.val(r)) || '\u2014') + '</td><td>' + LB[r.st][0] + ' ' + esc(t(LB[r.st][1])) + '</td></tr>'; }).join('');
+  return '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px">' + chip('all', '\u{1F4CB}', 'الكل') + chip('bad', '\u26A0\uFE0F', 'محتاج تدخّل') + chip('ok', '\u{1F7E2}', 'محدّث') + chip('late', '\u{1F7E1}', 'متأخر') + chip('off', '\u{1F534}', 'منقطع')
+    + chip('nof', '\u26AB', 'السيريال مش على المنصة') + chip('nor', '\u26AA', 'على المنصة بلا قراءة') + chip('nos', '\u25FB', 'بلا سيريال') + '</div>'
+    + (rows.length ? '<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>' + [t('المخيم'), t('الجهاز'), t('السيريال'), t('آخر تحديث'), t('القراءة الحالية'), t('الحالة')].map(esc).join('</th><th>') + '</th></tr></thead><tbody>' + tr + '</tbody></table></div>'
+      + iotDashHtml.more(rows.length, F) : '<div class="hint">' + esc(t('مفيش أجهزة بالفلتر ده')) + '</div>');
+};
+iotDashHtml.more = function(n, F){ return '<div class="hint" style="margin:6px 0 0">' + esc(t('معروض')) + ' ' + nm(Math.min(F.n, n)) + ' ' + esc(t('من')) + ' ' + nm(n) + (n > F.n ? ' ' + btn(t('اعرض ١٠٠ كمان'), 'btn-secondary btn-sm', ' data-iotd="more"') : '') + '</div>'; };
+iotDashHtml.popHtml = function(F, all){
+  var P = F.pop; if (!P) return '';
+  var LB = iotDashHtml.LAB, x = siteFind(P.camp), pn = x ? (x.name || P.camp) : P.camp, close = btn('\u2715', 'btn-quiet btn-sm', ' data-iotd="close" aria-label="' + esc(t('إغلاق')) + '"');
+  var box = function(title, inner){ return '<div class="svq-back" role="dialog" aria-modal="true" data-iotd="close"><div class="svq-box" data-iotd="keep" style="max-width:720px;max-height:86vh;overflow:auto">'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 0 8px"><b>' + title + '</b>' + close + '</div>' + inner + '</div></div>'; };
+  if (P.t === 'camp'){
+    var mine = all.filter(function(r){ return r.camp === P.camp; });
+    var list = function(kind){ var L2 = mine.filter(function(r){ return r.kind === kind; });
+      return L2.length ? '<table class="tbl"><tbody>' + L2.map(function(r){ return '<tr data-iotd="pop:dev:' + esc(r.camp) + ':' + r.kind + ':' + r.i + '" style="cursor:pointer"><td dir="ltr">' + esc(r.did) + (r.room ? ' <span class="hint" style="margin:0">' + esc(r.room) + '</span>' : '') + '</td><td dir="ltr">' + (r.ser ? esc(r.ser) : '\u2014') + '</td><td>' + (esc(iotDashHtml.val(r)) || '\u2014') + '</td><td>' + (r.at ? iotDashHtml.age(Date.now() - r.at) : '\u2014') + '</td><td>' + LB[r.st][0] + ' ' + esc(t(LB[r.st][1])) + '</td></tr>'; }).join('') + '</tbody></table>' : '<div class="hint">\u2014</div>'; };
+    var nS = mine.filter(function(r){ return r.kind === 's'; }).length;
+    return box('\u26FA ' + esc(pn), '<div class="hint" style="margin:0 0 6px">' + esc(t('اضغط أي جهاز لقراءته وتعديله')) + '</div>'
+      + '<div style="margin:6px 0 4px"><b>\u{1F4F6} ' + esc(t('الجيت واي')) + ' (' + nm(mine.length - nS) + ')</b></div>' + list('g')
+      + '<div style="margin:12px 0 4px"><b>\u{1F321} ' + esc(t('الحساسات')) + ' (' + nm(nS) + ')</b></div>' + list('s'));
+  }
+  var r = all.filter(function(q2){ return q2.camp === P.camp && q2.kind === P.k && q2.i === +P.i; })[0]; if (!r) return '';
+  var c = iotOf(P.camp) || {}, m = (P.k === 's' ? (c.sm || [])[r.i] : (c.gm || [])[r.i]) || {}, v = r.v || {}, ed = mayIot();
+  var big = function(ic, lab, val, unit){ return '<div style="flex:1;min-width:110px;border:1px solid rgba(148,163,184,.3);border-radius:10px;padding:8px;text-align:center"><div class="hint" style="margin:0">' + ic + ' ' + esc(t(lab)) + '</div><div style="font-size:1.4em;font-weight:700">' + (val != null ? nm(val) + (unit || '') : '\u2014') + '</div></div>'; };
+  var cards = P.k === 's' ? big('\u{1F321}', 'درجة الحرارة', v.temp, '\u00B0') + big('\u{1F4A7}', 'الرطوبة', v.hum, '\u066A') + big('\u{1F50B}', 'البطارية', v.bat, '') + big('\u{1F4F6}', 'الإشارة', v.rssi, '')
+    : big('\u{1F50C}', 'بطارية خارجية', v.ext_bat, '') + big('\u{1F50B}', 'بطارية داخلية', v.int_bat, '') + (v.ext_bat == null && v.int_bat == null ? big('\u{1F50B}', 'البطارية', v.bat, '') : '');
+  var fld = function(id, lab, val){ return '<div class="field" style="margin:6px 0"><label>' + esc(t(lab)) + '</label><input class="in" id="' + id + '" dir="auto" value="' + esc(val || '') + '"' + (ed ? '' : ' disabled') + '></div>'; };
+  return box((P.k === 's' ? '\u{1F321} ' : '\u{1F4F6} ') + '<span dir="ltr">' + esc(r.did) + '</span> \u00b7 ' + esc(pn),
+    '<div style="display:flex;flex-wrap:wrap;gap:8px;margin:0 0 8px">' + cards + '</div>'
+    + '<div class="hint" style="margin:0 0 8px">' + LB[r.st][0] + ' ' + esc(t(LB[r.st][1])) + ' \u00b7 ' + esc(t('آخر تحديث')) + ': ' + (r.at ? iotDashHtml.age(Date.now() - r.at) + ' (' + fmtDT(r.at) + ')' : '\u2014') + (r.pnm ? ' \u00b7 ' + esc(t('الاسم على المنصة')) + ': <span dir="ltr">' + esc(r.pnm) + '</span>' : '') + '</div>'
+    + fld('iotdSer', 'السيريال', m.serial) + fld('iotdMod', 'الطراز', m.model) + (P.k === 's' ? fld('iotdRoom', 'الغرفة', m.room) : '') + fld('iotdTag', 'العلامة على الجهاز', m.tag) + fld('iotdNote', 'ملاحظة', m.note)
+    + '<div class="actions" style="margin-top:8px">' + (ed ? btn('\u{1F4BE} ' + t('احفظ'), 'btn-primary', ' data-iotd="save:' + esc(P.camp) + ':' + P.k + ':' + r.i + '"') : '<span class="hint">' + esc(t('تعديلُ الحساسات للمهندس فما فوق والمشرف')) + '</span>')
+    + ' ' + btn('\u2190 ' + t('المخيم'), 'btn-quiet', ' data-iotd="pop:camp:' + esc(P.camp) + '"') + '</div>');
+};
 iotDashHtml.rows = function(){
   var U = (IOT.live && IOT.live.v && IOT.live.v.units) || {}, now = Date.now(), out = [];
-  iotCampIds().forEach(function(id){ var c = iotOf(id); if (!c) return; var x = siteFind(id), pn = x ? (x.name || id) : id;
-    var add = function(kind, did, m){ var ser = String((m && m.serial) || '').trim(), L = ser ? U[ser.toLowerCase()] : null, at = L && L.t ? +L.t : 0;
-      out.push({ camp:id, pn:String(pn), did:did, kind:kind, ser:ser, room:(m && m.room) || '', pnm:L ? String(L.nm || '') : '', at:at, v:L ? (L.v || {}) : null,
+  iotCampIds().forEach(function(id){ var c = iotOf(id); if (!c) return; var x = siteFind(id), pn = x ? (x.name || id) : id, zn = x && typeof taxOf === 'function' ? (taxOf(x).g || x.zone || '') : ((x && x.zone) || '');
+    var add = function(kind, did, m, ix){ var ser = String((m && m.serial) || '').trim(), L = ser ? U[ser.toLowerCase()] : null, at = L && L.t ? +L.t : 0;
+      out.push({ camp:id, pn:String(pn), zone:zn, i:ix, did:did, kind:kind, ser:ser, room:(m && m.room) || '', pnm:L ? String(L.nm || '') : '', at:at, v:L ? (L.v || {}) : null,
         st:!ser ? 'nos' : !L ? 'nof' : !at ? 'nor' : now - at < 1200000 ? 'ok' : now - at < 7200000 ? 'late' : 'off' }); };
-    iotAllGw(c).forEach(function(g, j){ add('g', iotGid(id, c, j), (c.gm || [])[j] || {}); });
-    (c.sensors || []).forEach(function(q2, i){ add('s', iotSid(id, c, i), (c.sm || [])[i] || {}); });
+    iotAllGw(c).forEach(function(g, j){ add('g', iotGid(id, c, j), (c.gm || [])[j] || {}, j); });
+    (c.sensors || []).forEach(function(q2, i){ add('s', iotSid(id, c, i), (c.sm || [])[i] || {}, i); });
   });
   return out;
 };
 iotDashHtml.age = function(ms){ var m = Math.max(1, Math.round(ms / 60000)); return m < 60 ? t('منذ') + ' ' + nm(m) + ' ' + t('د') : m < 2880 ? t('منذ') + ' ' + nm(Math.round(m / 60)) + ' ' + t('ساعة') : t('منذ') + ' ' + nm(Math.round(m / 1440)) + ' ' + t('يوم'); };
 iotDashHtml.act = function(a){
-  var F = iotDashHtml.F || (iotDashHtml.F = { st:'bad', kind:'all', q:'', n:100, sort:'old' }), k = a.split(':')[0], v = a.slice(k.length + 1);
-  if (k === 'st'){ F.st = v; F.n = 100; } else if (k === 'kind'){ F.kind = v; F.n = 100; } else if (k === 'sort') F.sort = v;
-  else if (k === 'q'){ F.q = v; F.n = 100; if (v) F.st = 'all'; } else if (k === 'more') F.n += 100;
+  var F = iotDashHtml.F || (iotDashHtml.F = { tab:'camps', st:'all', zone:'all', q:'', n:100, sort:'old', pop:null }), k = a.split(':')[0], v = a.slice(k.length + 1);
+  if (k === 'keep') return;
+  if (k === 'tab'){ F.tab = v; F.st = 'all'; F.n = 100; F.q = ''; } else if (k === 'st'){ F.st = v; F.n = 100; } else if (k === 'zone'){ F.zone = v; F.n = 100; } else if (k === 'sort') F.sort = v;
+  else if (k === 'q'){ F.q = v; F.n = 100; } else if (k === 'more') F.n += 100;
+  else if (k === 'close') F.pop = null;
+  else if (k === 'pop'){ var p = v.split(':'); F.pop = p[0] === 'camp' ? { t:'camp', camp:p.slice(1).join(':') } : { t:'dev', camp:p.slice(1, p.length - 2).join(':'), k:p[p.length - 2], i:+p[p.length - 1] }; }
+  else if (k === 'save'){ iotDashHtml.save(v); return; }
   else if (k === 'refresh'){ liveIotLoad(true); toast(t('بيتحدّث…')); }
   else if (k === 'xlsx'){
     var lab = { ok:'محدّث', late:'متأخر', off:'منقطع', nor:'على المنصة بلا قراءة', nof:'السيريال مش على المنصة', nos:'بلا سيريال' };
-    var R = iotDashHtml.rows().map(function(r){ var v = r.v || {}; return [r.pn, r.camp, r.did, t(r.kind === 's' ? 'حساس' : 'جيت واي'), r.room, r.ser, r.pnm, r.at ? fmtDT(r.at) : '', v.temp != null ? v.temp : '', v.hum != null ? v.hum : '', v.bat != null ? v.bat : '', v.ext_bat != null ? v.ext_bat : '', v.int_bat != null ? v.int_bat : '', t(lab[r.st])]; });
-    if (typeof mtXlsx === 'function') mtXlsx('تحديث الحساسات', ['النقطة', 'رقم المخيم', 'رقم الجهاز', 'النوع', 'الغرفة', 'السيريال', 'الاسم على المنصة', 'آخر تحديث', 'درجة الحرارة', 'الرطوبة', 'البطارية', 'بطارية خارجية', 'بطارية داخلية', 'الحالة'], R);
+    var R = iotDashHtml.rows().map(function(r){ var w = r.v || {}; return [r.pn, r.camp, r.zone, r.did, t(r.kind === 's' ? 'حساس' : 'جيت واي'), r.room, r.ser, r.pnm, r.at ? fmtDT(r.at) : '', w.temp != null ? w.temp : '', w.hum != null ? w.hum : '', w.bat != null ? w.bat : '', w.ext_bat != null ? w.ext_bat : '', w.int_bat != null ? w.int_bat : '', t(lab[r.st])]; });
+    if (typeof mtXlsx === 'function') mtXlsx('تحديث الحساسات', ['النقطة', 'رقم المخيم', 'المنطقة', 'رقم الجهاز', 'النوع', 'الغرفة', 'السيريال', 'الاسم على المنصة', 'آخر تحديث', 'درجة الحرارة', 'الرطوبة', 'البطارية', 'بطارية خارجية', 'بطارية داخلية', 'الحالة'], R);
     return;
   }
   render(1);
+};
+/* the device popup's «احفظ»: the same plan the map editor writes (iotPersist), one device's fields changed */
+iotDashHtml.save = function(v){
+  if (!mayIot()){ toast(t('تعديلُ الحساسات للمهندس فما فوق والمشرف')); return; }
+  var p = v.split(':'), i = +p[p.length - 1], kd = p[p.length - 2], id = p.slice(0, p.length - 2).join(':'), c = iotOf(id);
+  if (!c){ toast(t('لا خطّةَ حساساتٍ لهذا المخيم')); return; }
+  var cp = function(q){ return [+q[0], +q[1]]; };
+  var E = { id:id, gw:cp(c.gw), gws:(c.gws || []).map(cp), sensors:c.sensors.map(cp), sm:c.sensors.map(function(_, n){ return Object.assign({ id:iotSid(id, c, n), status:'مخطط' }, (c.sm || [])[n] || {}); }),
+    gm:[c.gw].concat(c.gws || []).map(function(_, n){ return Object.assign({ id:iotGid(id, c, n), status:'مخطط' }, (c.gm || [])[n] || {}); }) };
+  var m = kd === 's' ? E.sm[i] : E.gm[i]; if (!m){ toast(t('الجهاز مش موجود')); return; }
+  var g = function(x){ var el = document.getElementById(x); return el ? String(el.value || '').trim() : null; };
+  [['iotdSer', 'serial'], ['iotdMod', 'model'], ['iotdRoom', 'room'], ['iotdTag', 'tag'], ['iotdNote', 'note']].forEach(function(f){ var val = g(f[0]); if (val !== null) m[f[1]] = val; });
+  iotPersist(E);
+  logEvent('تعديلُ جهازٍ من «الحساسات والجيت واي» — ' + (m.id || id) + (m.serial ? ' \u00b7 ' + m.serial : ''), id);
+  toast(t('اتحفظ')); render(1);
 };
 
 /* (V40.8) the owner: «خلّي الصفحة دي في الميدان — داشبورد الحساسات والجيت واي». Its own page in the field group (admin,

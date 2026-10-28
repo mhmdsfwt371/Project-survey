@@ -54,5 +54,5 @@ function poiLoad(){
 function iotLoad(){
   if (IOT.data || IOT.busy || typeof fetch !== 'function') return;
   IOT.busy = true;
-  fetch('layers/mina-sensors.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(d){ IOT.busy = false; if (!d) return; IOT.data = d; iotPaint(); }).catch(function(e){ IOT.busy = false; LS_ERR = e; });
+  fetch('layers/mina-sensors.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(d){ IOT.busy = false; if (!d) return; IOT.data = d; iotPaint(); if (CUR === 'iotdash' && !((iotDashHtml.F || {}).pop)) render(1); }).catch(function(e){ IOT.busy = false; LS_ERR = e; });
 }
