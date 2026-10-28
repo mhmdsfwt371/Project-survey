@@ -296,11 +296,11 @@
 | `08-data-events-boot-13-toast-wheel-ios-boot.js` | 818 | 9 | Toast, label cells, mouse wheel never types numbers, iOS viewport stability, assistant scroll fix, file-input change handlers and the boot sequence. |
 | `08-data-events-boot-14-view-as.js` | 97 | 8 | «View as user» for the admin: see the app with another person's role and name — nothing is saved meanwhile. |
 
-## `09-integ/` —   (1 ملفات · 438 سطر · 22 دالة)
+## `09-integ/` —   (1 ملفات · 439 سطر · 22 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
-| `09-integ-01-connections-tab.js` | 438 | 22 | The office «Connections» tab: AFAQY PRO account (stored write-only), bridge status, «Refresh now». |
+| `09-integ-01-connections-tab.js` | 439 | 22 | The office «Connections» tab: AFAQY PRO account (stored write-only), bridge status, «Refresh now». |
 
 ## `99-shell/` — الهيكل — ذيلُ الصفحة  (1 ملفات · 4 سطر · 0 دالة)
 
@@ -308,4 +308,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 241 ملفًّا · 49051 سطر · 2268 دالة.
+**الإجمالي:** 241 ملفًّا · 49052 سطر · 2268 دالة.

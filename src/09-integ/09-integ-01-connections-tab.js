@@ -295,7 +295,7 @@ function iotDashHtml(){
      للقراءة والتعديل». */
   var F = iotDashHtml.F || (iotDashHtml.F = { tab:'camps', st:'all', zone:'all', q:'', n:100, sort:'old', pop:null });
   if (!F.tab) F.tab = 'camps';
-  iotLoad();
+  if (typeof iotLoad === 'function') iotLoad();   /* lives in the office part — a field device before it arrives just waits */
   var L = IOT.live; if (!F.pop && (!L || Date.now() - (L.at || 0) > 60000)) liveIotLoad(true);   /* not while a popup is being edited — a redraw would drop what is typed */
   var all = iotDashHtml.rows(), lv = L && L.v, pull = lv && lv.at ? Date.now() - lv.at : -1;
   var zones = {}; all.forEach(function(r){ zones[r.zone] = 1; });
@@ -427,6 +427,7 @@ iotDashHtml.save = function(v){
   var m = kd === 's' ? E.sm[i] : E.gm[i]; if (!m){ toast(t('الجهاز مش موجود')); return; }
   var g = function(x){ var el = document.getElementById(x); return el ? String(el.value || '').trim() : null; };
   [['iotdSer', 'serial'], ['iotdMod', 'model'], ['iotdRoom', 'room'], ['iotdTag', 'tag'], ['iotdNote', 'note']].forEach(function(f){ var val = g(f[0]); if (val !== null) m[f[1]] = val; });
+  if (typeof iotPersist !== 'function'){ toast(t('لحظة — باقي التطبيق لسه بيتحمّل، جرّب تاني')); return; }
   iotPersist(E);
   logEvent('تعديلُ جهازٍ من «الحساسات والجيت واي» — ' + (m.id || id) + (m.serial ? ' \u00b7 ' + m.serial : ''), id);
   toast(t('اتحفظ')); render(1);
