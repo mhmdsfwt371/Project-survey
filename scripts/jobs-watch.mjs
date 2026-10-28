@@ -14,6 +14,8 @@ const d = st.exists ? st.data() : null, running = lk.exists && (lk.data().until 
 const age = d && d.at ? Math.round((now - d.at) / 60000) : null;
 const stale = !running && (age == null || age > 20);
 console.log('آخر دورةٍ سحابية: ' + (age == null ? 'لا شيء بعد' : age + ' دقيقة') + (d ? ' · ' + (d.ok ? 'سليمة' : 'تعثّرت') + ' · ' + (d.steps || []).map(s => s.name + ' ' + Math.round((s.ms || 0) / 1000) + 'ث' + (s.code ? ' ✗' : '')).join(' · ') : '') + (running ? ' · تعمل الآن' : ''));
+/* (V39.91) what each step said last (its own log tail, never a secret) — so a cloud run can be read from GitHub too */
+for (const x of (d && d.steps) || []) if (x.tail) console.log('── ' + x.name + (x.code ? ' ✗' : '') + '\n' + String(x.tail).split('\n').slice(-4).join('\n'));
 if (stale) console.log('::warning::الدالةُ السحابية متأخرة — يشغّل هذا السيرُ الحساباتِ والصورَ احتياطًا');
 await db.collection('settings').doc('jobsWatch').set({ at: now, age, stale, running, ok: d ? !!d.ok : null, fallback: stale ? now : admin.firestore.FieldValue.delete() }, { merge: true });
 out(stale ? 1 : 0);

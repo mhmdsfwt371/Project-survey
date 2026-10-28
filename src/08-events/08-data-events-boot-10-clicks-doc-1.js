@@ -93,6 +93,10 @@ function onDocClickPart1(e){
   if (e.target.closest('[data-swnow]')){ swNow(); return; }
   if (e.target.closest('[data-swlater]')){ swLater(); return; }
   if (e.target.closest('[data-back]')){ e.preventDefault(); navBack(); return; }
+  return onDocClickPart1B(e);   /* (V39.91) split at a statement no local crosses — under the 150-line cap */
+}
+/* (V39.91) the second half of onDocClickPart1 — same steps, same order */
+function onDocClickPart1B(e){
   if (clickA(e)) return;
   if (e.target.closest('[data-ipadd]')){
     var idEl = document.getElementById('ipAddId'), netEl = document.getElementById('ipAddNet');

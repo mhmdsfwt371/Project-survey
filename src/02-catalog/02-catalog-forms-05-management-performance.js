@@ -218,7 +218,7 @@ PAGE.perf = { m:'الفرق', t:'الفرق والأداء',
                 : btn('حذف الفريق','btn-quiet btn-sm',' data-crdel="' + esc(crew.n) + '"'))
             : '')
 
-      + cardFlush(t('موظفو') + ' ' + esc(crew.n) + ' — ' + nm(techs.length),
+      + cardFlush(t('موظفو') + ' ' + esc(t(crew.n)) + ' — ' + nm(techs.length),
           techs.length
             ? table(['الموظف','الوظيفة','الجوال','المشرف','نقاط الشهر',''],
                 techs.map(function(x){
