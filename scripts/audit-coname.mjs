@@ -33,11 +33,11 @@ const co = w.CO_LIST[0];
 w.LANG='ar'; T(w.coName(co)===co, 'بالعربية: الاسمُ كما هو');
 w.LANG='en'; const en=w.coName(co);
 T(en!==co && !/[\u0600-\u06FF]/.test(en), 'بالإنجليزية: نقحرةٌ بلا حرفٍ عربي', en.slice(0,44));
-w.LANG='ur'; T(w.coName(co)===en, 'وبالأردية: الإنجليزيُّ نفسُه — لا العربيّ');
+w.LANG='ur'; T(w.coName(co)===co, 'وبالأردية: بالحرف العربيّ كما هو — الأرديةُ تُكتب به (V39.98، كأسماء الأشخاص منذ V39.5)');
 /* ٢ · التصحيحُ اليدويُّ يغلب */
 w.CFG.nameEn = w.CFG.nameEn || {}; w.CFG.nameEn[co]='Quraish Ltd';
 w.LANG='en'; T(w.coName(co)==='Quraish Ltd', 'التصحيحُ من «أسماء العرض» يغلب النقحرة');
-w.LANG='ur'; T(w.coName(co)==='Quraish Ltd', 'والأرديةُ تقرؤه كذلك');
+w.LANG='ur'; T(w.coName(co)===co, 'والأرديةُ تقرؤه بحرفه العربيّ كذلك (V39.98)');
 delete w.CFG.nameEn[co];
 /* ٣ · القيمةُ المخزَّنةُ تبقى عربيةً — وإلا انفصلت النقطةُ عن شركتها */
 w.LANG='en'; w.ROLE='engineer'; w.STATE.meta.role='engineer';

@@ -23,7 +23,7 @@ w.goPage('sites'); w.FILT.type = 'ممر'; w.render(1); await wait(60);   /* ت�
 const ask = async q => { d.getElementById('siteQ').value = q; d.querySelector('#content [data-sq]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(80); };
 await ask('CAM-0016');
 const c = () => d.getElementById('content');
-T(/لا نتائج لـ«CAM-0016»/.test(c().textContent) && /ضمن التصفية الحالية/.test(c().textContent) && !!c().querySelector('[data-sqall]'), 'تصفيةُ نوعٍ تُخفي CAM-0016: الرسالةُ تقول إن النتائجَ خارج التصفية ومعها «ابحث في الكل»');
+T(/لا نتائج لـ ?«CAM-0016»/.test(c().textContent) && /ضمن التصفية الحالية/.test(c().textContent) && !!c().querySelector('[data-sqall]'), 'تصفيةُ نوعٍ تُخفي CAM-0016: الرسالةُ تقول إن النتائجَ خارج التصفية ومعها «ابحث في الكل»');
 c().querySelector('[data-sqall]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(60);
 T(!w.FILT.type && d.getElementById('siteQ').value === 'CAM-0016' && /NSK-MIN-CAM-0016/.test(c().textContent), 'والزرُّ يرفع التصفيةَ ويُبقي الكلمة — فتظهر النقطة');
 await ask('zzzz-nothing');
