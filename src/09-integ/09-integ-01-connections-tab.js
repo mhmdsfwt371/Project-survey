@@ -321,10 +321,10 @@ function iotDashHtml(){
 }
 iotDashHtml.LAB = { ok:['\u{1F7E2}', 'محدّث'], late:['\u{1F7E1}', 'متأخر'], off:['\u{1F534}', 'منقطع'], nor:['\u26AA', 'على المنصة بلا قراءة'], nof:['\u26AB', 'السيريال مش على المنصة'], nos:['\u25FB', 'بلا سيريال'] };
 /* (V41.1) owner: «فيه parameter اسمه rssi … عاوز أعرف أستخدمه إزاي في منى، مش مجرد الـvalue». RSSI is how strongly the gateway
-   heard the sensor (dBm; closer to 0 is stronger). Bands for a sensor's LoRaWAN link, from field-test guidance (RAK: target
+   heard the sensor (dBm; closer to 0 is stronger). Bands for the LoRaWAN link of a sensor, from field-test guidance (RAK: target
    above −90 post-deployment, below −120 unusable; a common LoRaWAN rule: good above −115 with SNR above −7, at the limit at
    −120 or SNR −13): strong ≥ −90 · acceptable to −110 · weak to −120 · critical below. SNR ≤ −10 means radio noise. Sensors
-   only — a gateway's own signal is cellular, on another scale. */
+   only — the signal of a gateway itself is cellular, on another scale. */
 iotDashHtml.sig = function(r){ var v = r && r.v, x = v && v.rssi; if (r.kind !== 's' || x == null) return null;
   return { k:x >= -90 ? 'good' : x > -110 ? 'ok' : x > -120 ? 'weak' : 'crit', x:x, noisy:v.snr != null && v.snr <= -10 }; };
 iotDashHtml.SIG = { good:['\u{1F7E2}', 'قوية'], ok:['\u{1F7E1}', 'مقبولة'], weak:['\u{1F7E0}', 'ضعيفة'], crit:['\u{1F534}', 'حرجة'] };
@@ -344,7 +344,7 @@ iotDashHtml.camps = function(all){
   all.forEach(function(r){ var c = M[r.camp] || (M[r.camp] = { id:r.camp, pn:r.pn, zone:r.zone, key:'', s:0, g:0, sOk:0, gOk:0, bad:0, ser:0, at:0 });
     if (r.kind === 's'){ c.s++; if (r.st === 'ok') c.sOk++; } else { c.g++; if (r.st === 'ok') c.gOk++; }
     if (iotDashHtml.bad(r.st)) c.bad++; if (r.ser) c.ser++; if (r.at > c.at) c.at = r.at;
-    var g = iotDashHtml.sig(r); if (g && (c.wr == null || g.x < c.wr.x)) c.wr = r; });   /* (V41.1) the camp's weakest sensor — the gateway placement's weak spot */
+    var g = iotDashHtml.sig(r); if (g && (c.wr == null || g.x < c.wr.x)) c.wr = r; });   /* (V41.1) the weakest sensor of the camp — the weak spot of the gateway placement */
   Object.keys(M).forEach(function(k){ var c = M[k], x = siteFind(k) || {};
     c.key = (c.pn + ' ' + k + ' ' + [x.code, x.co, x.company, x.op, x.operator, x.sp].filter(Boolean).join(' ')).toLowerCase();
     c.st = c.bad ? 'bad' : !c.ser ? 'nos' : (c.sOk + c.gOk) === c.ser ? 'ok' : 'part'; out.push(c); });

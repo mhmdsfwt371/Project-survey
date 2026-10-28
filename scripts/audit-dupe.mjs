@@ -31,6 +31,8 @@ T(/rankOf\(ROLE\) >= rankOf\('supervisor'\) && !isCrewRole\(ROLE\) \? '<button t
 async function boot(role, name){
   const dom = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:new VirtualConsole() });
   const w = dom.window, d = w.document;
+/* (V41.1) the map top row folds by group — every chip is checked, so all groups open */
+if (w.PV) w.PV.MTOP = '*';
   w.HTMLCanvasElement.prototype.getContext = () => null; if (!w.CSS) w.CSS = {}; if (!w.CSS.escape) w.CSS.escape = s => String(s);
   if (!w.matchMedia) w.matchMedia = () => ({ matches:false, addListener(){}, removeListener(){}, addEventListener(){}, removeEventListener(){} });
   if (!w.scrollTo) w.scrollTo = () => {};

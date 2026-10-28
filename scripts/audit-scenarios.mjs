@@ -2432,6 +2432,23 @@ console.log('\n══ ١٠٤ · الحساسات والجيت واي ══');
   T(w.PAGE.iotdash && w.PAGE.iotdash.m === 'الميدان' && typeof w.PAGE.iotdash.body === 'function' && (w.ROLES.supervisor.nav || []).indexOf('iotdash') > -1, 'الداشبورد صفحةٌ في «الميدان» للمدير والمهندس والمشرف — لا تبويبٌ في صحة النظام');
 }
 
+/* ── ١٠٥ · (V41.1) مصطلحاتُ الأردو: المخيم «کیمپ» لا «خیمہ»، والتفويج «تفویج»، والمهام «کام»، والتحديات «چیلنج»، ولا حروفَ عربيةً خالصة ── */
+console.log('\n══ ١٠٥ · مصطلحات الأردو ══');
+{
+  const UR = (w.I18N_D || w.D || {}).ur || (w.i18nDict ? w.i18nDict('ur') : null) || {};
+  const K = Object.keys(UR);
+  const bad = (re, test) => K.filter(k => re.test(k) && test(UR[k] || ''));
+  const camp = bad(/مخيم/, v => /خیم/.test(v)).filter(k => !/خيم[ةه]|خيام/.test(k));
+  const tfw = bad(/تفويج/, v => /روانگی/.test(v));
+  const task = bad(/مهام|مهمة/, v => /امور/.test(v));
+  const chal = bad(/تحد/, v => /رکاوٹ/.test(v));
+  const ar = K.filter(k => /[\u064A\u0643\u0649]/.test(String(UR[k] || '').replace(/«[^»]*»/g, '')));   /* a word quoted «…» from the Arabic is discussed, not translated */
+  T(K.length > 1000, 'قاموسُ الأردو محمَّل في الفحص (' + K.length + ')');
+  T(!camp.length, 'المخيم «کیمپ» لا «خیمہ» (الخيمةُ جزءٌ من المخيم)' + (camp.length ? ' — ' + camp.slice(0, 2).join(' | ') : ''));
+  T(!tfw.length && !task.length && !chal.length, 'التفويج «تفویج» · المهام «کام» · التحديات «چیلنج»' + ([...tfw, ...task, ...chal].length ? ' — ' + [...tfw, ...task, ...chal].slice(0, 2).join(' | ') : ''));
+  T(!ar.length, 'لا ي ولا ك ولا ى عربيةً في نصوص الأردو (الأردو: ی ک)' + (ar.length ? ' — ' + ar.slice(0, 2).join(' | ') : ''));
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);
