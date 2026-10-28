@@ -83,7 +83,8 @@ function valuesOf(u){
 async function proPull(why){
   const now = Date.now(), cfgDoc = await db.collection('integ').doc('afaqypro').get(), cfg = cfgDoc.exists ? cfgDoc.data() : null;
   const status = async st => db.collection('settings').doc('integStatus').set({ pro:Object.assign({ at:Date.now(), why }, st) }, { merge:true });
-  if (!cfg || cfg.on === false || !cfg.user || !cfg.pass){ await status({ state:'off' }); return { state:'off' }; }
+  const pasted = cfg ? String(cfg.token || '').trim() : '';   /* (V40.0) a session token pasted in the app — used first; the account renews it */
+  if (!cfg || cfg.on === false || ((!cfg.user || !cfg.pass) && !pasted)){ await status({ state:'off' }); return { state:'off' }; }
   const url = String(cfg.url || PRO_URL).replace(/\/+$/, '');
   const { mine, planned } = await ourDevices(); const imeis = Object.keys(mine);
   if (!imeis.length){ await status({ state:'ok', planned, withImei:0, matched:0, note:'no IMEI recorded yet' }); return { state:'ok', matched:0 }; }
@@ -91,6 +92,8 @@ async function proPull(why){
   const tokRef = db.collection('integ').doc('afaqypro_tok'), T0 = (await tokRef.get()).data() || {}; let tok = T0.tok || '', base = T0.base || '';
   /* (V39.99) a token from the code step belongs to the web host — every call then goes there, in the web client's format */
   const call = (p, body, tk) => base === WEB_URL ? webCall(p.replace(/^\//, ''), body, tk) : proCall(url, p, body, tk);
+  /* (V40.0) a newly pasted token takes over; which host issued it is learned on the first refusal (integration, then web) */
+  if (pasted && pasted !== T0.pasted){ tok = pasted; base = ''; await tokRef.set({ tok, at:Date.now(), base:'', pasted }); }
   const login = async () => { const L = await proCall(url, '/auth/login', { username:cfg.user, password:cfg.pass }); const t = tokOf(L.j);
     if (!t){   /* (V39.76) the documented refusal is {message:'invalid_credentials', status_code:401} with HTTP 200 — «status_code» had
                   matched the old «code» test and showed «asked for a code». A code step is told only by its own words. */
@@ -109,7 +112,14 @@ async function proPull(why){
       const body = { offset:0, limit:1000, simplify:0, projection:['basic', 'last_update', 'sensors'], filters:{ imei:{ value:imeis.slice(i, i + 100), op:'in' } } };
       let R = await call('/units/lists', body, tok);
       const refused = X => X.status === 401 || X.status === 403 || (X.j && (X.j.status_code === 401 || X.j.status_code === 403));
-      if (refused(R)){ tok = await login(); R = await call('/units/lists', body, tok); }
+      if (refused(R) && pasted && tok === pasted && base !== WEB_URL){   /* (V40.0) a token from the web app belongs to the web host */
+        base = WEB_URL; R = await call('/units/lists', body, tok);
+        if (!refused(R)) await tokRef.set({ tok, at:Date.now(), base:WEB_URL, pasted });
+      }
+      if (refused(R)){
+        if (!cfg.user || !cfg.pass) throw Object.assign(new Error('token'), { st:R.status });
+        tok = await login(); R = await call('/units/lists', body, tok);
+      }
       const arr = (R.j && R.j.data && (Array.isArray(R.j.data) ? R.j.data : R.j.data.data)) || [];
       if (!sample && arr.length) sample = { reply:shape(R.j), unit:shape(arr[0]), last:shape(arr[0].last_update), prms:shape((arr[0].last_update || {}).prms), sensors:shape(arr[0].sensors) };
       units.push(...arr);

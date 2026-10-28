@@ -53,6 +53,7 @@ function integStatusLoad(force){
 function integStateLine(p){
   if (!p) return '<span class="pill" style="border-color:#94A3B8;color:#94A3B8">\u23F3 ' + esc(t('لم يعمل الجسرُ بعد — أول سحبٍ خلال ٥ دقائق من الحفظ')) + '</span>';
   var ago = p.at ? nm(Math.max(0, Math.round((Date.now() - p.at) / 60000))) + ' ' + t('د') : '—';
+  if (p.state === 'err' && p.err === 'token') return '<span class="pill" style="border-color:#EF4444;color:#EF4444">\u{1F534} ' + esc(t('التوكين انتهى أو مرفوض — حط توكين جديد، أو احفظ اسم المستخدم وكلمة السر عشان يتجدد لوحده')) + ' \u00b7 ' + ago + '</span>';   /* (V40.0) */
   if (p.state === 'code') return '<span class="pill" style="border-color:#F59E0B;color:#F59E0B">\u{1F510} ' + esc(t('المنصة طلبت كود تحقق — أكمل الخطوة تحت')) + '</span>';   /* (V39.99) */
   if (p.state === 'off') return '<span class="pill" style="border-color:#94A3B8;color:#94A3B8">\u26AA ' + esc(t('غير متصل — لا حساب محفوظ')) + '</span>';
   if (p.state === 'err') return '<span class="pill" style="border-color:#EF4444;color:#EF4444">\u{1F534} ' + esc(t('فشل')) + ': ' + esc(p.err === 'otp' ? t('المنصة طلبت كودَ تحقق — هذا الحساب عليه تأكيدٌ بخطوتين؛ استخدم حسابَ ربطٍ بلا تأكيد، أو اطلب بناءَ خطوة الكود') : p.err === 'login' ? t('الدخول رُفض — راجع اسم المستخدم وكلمة السر') + (p.msg ? ' (' + p.msg + ')' : '') : String(p.err || '')) + (p.httpStatus ? ' (' + nm(p.httpStatus) + ')' : '') + ' \u00b7 ' + esc(t('منذ')) + ' ' + ago + '</span>';
@@ -71,8 +72,10 @@ function integProHtml(){
     + '<div style="margin:0 0 10px">' + integStateLine(p) + '</div>'
     + (p && p.state === 'code' && mayIntegEdit() ? integOtpHtml(p) : '')   /* (V39.99) the code step */
     + (function(){ var pub = integPubOf('afaqypro'), ed = integAcctHtml.edit && integAcctHtml.edit.afaqypro, now = btn('\u21BB ' + t('حدّث الآن'), 'btn-secondary', ' data-integnow="1"' + busy);
-        if (pub && !ed) return '<div class="hint" style="margin:0 0 6px">' + esc(t('الحساب المتصل')) + ': <b dir="ltr">' + esc(pub.user) + '</b></div>' + integAcctHtml('afaqypro', 'integUser', 'integPass', 'اسم المستخدم', now);
+        if (pub && !ed) return '<div class="hint" style="margin:0 0 6px">' + esc(t('الحساب المتصل')) + ': <b dir="ltr">' + esc(pub.user || '—') + '</b>' + (pub.tok ? ' \u00b7 \u{1F511} ' + esc(t('توكين محفوظ')) : '') + '</div>' + integAcctHtml('afaqypro', 'integUser', 'integPass', 'اسم المستخدم', now);   /* (V40.0) */
         return integAcctHtml('afaqypro', 'integUser', 'integPass', 'اسم المستخدم', '')
+          + '<div class="field" style="margin-top:8px"><label>' + esc(t('التوكين (اختياري)')) + '</label><input class="in" id="integTok" type="password" autocomplete="off" dir="ltr" placeholder="' + esc(t('الصقه هنا')) + '">'
+          + '<div class="hint" style="margin:4px 0 0">' + esc(t('يُستعمل أولًا. ومع اسم المستخدم وكلمة السر يتجدد لوحده لما ينتهي؛ ولوحده يشتغل لحد ما ينتهي بس.')) + '</div></div>'
           + '<div class="field" style="margin-top:8px"><label>' + esc(t('عنوان المنصة')) + '</label><input class="in" id="integUrl" value="https://api.afaqy.sa" dir="ltr"></div>'
           + '<div class="actions" style="margin-top:8px">' + btn('\u{1F50C} ' + t('احفظ واتصل'), 'btn-primary', ' data-integsave="afaqypro"') + (pub ? btn(t('إلغاء'), 'btn-quiet', ' data-integedit="afaqypro"') : '') + '</div>'; })()
     + '<p class="hint" style="margin:8px 0 0">' + esc(t('«حدّث الآن» للمهندس والمدير — مرةً في الدقيقة للجميع، وتعود القراءاتُ خلال ثوانٍ إلى الخريطة الثلاثية.')) + '</p>');
@@ -128,19 +131,23 @@ function integSave(name){
   if (!STATE.meta.online || !FB.ready || !FB.db){ toast(t('الحفظُ يحتاج اتصالًا بالشبكة')); return; }
   var g = function(id){ var el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; };
   var nsk = name === 'nusuk', user = g(nsk ? 'nskUser' : 'integUser'), pass = g(nsk ? 'nskPass' : 'integPass'), url = nsk ? '' : (g('integUrl') || 'https://api.afaqy.sa');   /* (V39.72) */
-  if (!user || !pass){ toast(t('اكتب اسمَ المستخدم وكلمةَ السر')); return; }
-  DB.col('integ').doc(name).set({ user:user, pass:pass, url:url, on:true, at:Date.now(), by:STATE.meta.name || '', _by:STATE.meta.uid || '', _at:Date.now() })
-    .then(function(){ var pubD = {}; pubD[name] = { user:user, at:Date.now(), by:STATE.meta.name || '' }; DB.col('settings').doc('integPub').set(Object.assign({ _by:STATE.meta.uid || '', _at:Date.now() }, pubD), { merge:true }).then(function(){ integPubLoad(true); }).catch(function(e){ LS_ERR = e; });   /* (V39.74) */
+  var tok = nsk ? '' : g('integTok');   /* (V40.0) the token alone is enough; with the account it renews itself */
+  if ((!user || !pass) && !tok){ toast(t(nsk ? 'اكتب اسمَ المستخدم وكلمةَ السر' : 'اكتب اسمَ المستخدم وكلمةَ السر، أو الصق التوكين')); return; }
+  var doc = { url:url, on:true, at:Date.now(), by:STATE.meta.name || '', _by:STATE.meta.uid || '', _at:Date.now() };
+  if (user && pass){ doc.user = user; doc.pass = pass; }
+  if (tok){ doc.token = tok; doc.tokenAt = Date.now(); }
+  DB.col('integ').doc(name).set(doc, { merge:true })
+    .then(function(){ var pubD = {}; pubD[name] = { user:user || ((integPubOf(name) || {}).user || ''), tok:!!tok || !!((integPubOf(name) || {}).tok), at:Date.now(), by:STATE.meta.name || '' }; DB.col('settings').doc('integPub').set(Object.assign({ _by:STATE.meta.uid || '', _at:Date.now() }, pubD), { merge:true }).then(function(){ integPubLoad(true); }).catch(function(e){ LS_ERR = e; });   /* (V39.74) */
       if (integAcctHtml.edit) integAcctHtml.edit[name] = false;
-      ['integPass', 'nskPass'].forEach(function(id){ var el = document.getElementById(id); if (el) el.value = ''; }); logEvent('حُفظ حسابُ الربط — ' + name + ' \u00b7 ' + user, ''); toast(t('حُفظ — أول سحبٍ خلال ٥ دقائق، أو اضغط «حدّث الآن»')); integStatusLoad(true); })
+      ['integPass', 'nskPass', 'integTok'].forEach(function(id){ var el = document.getElementById(id); if (el) el.value = ''; }); logEvent('حُفظ حسابُ الربط — ' + name + ' \u00b7 ' + user, ''); toast(t('حُفظ — أول سحبٍ خلال ٥ دقائق، أو اضغط «حدّث الآن»')); integStatusLoad(true); })
     .catch(function(e){ toast(t('تعذّر الحفظ') + ': ' + String(e && e.message || e).slice(0, 80)); });
 }
 function integOff(name){
   if (!mayIntegEdit()) return;
   if (!STATE.meta.online || !FB.ready || !FB.db){ toast(t('يحتاج اتصالًا بالشبكة')); return; }
   if (!confirm(t('فصلُ الربط يحذف الحسابَ المحفوظ ويوقف السحب. متابعة؟'))) return;
-  DB.col('integ').doc(name).set({ on:false, user:'', pass:'', at:Date.now(), by:STATE.meta.name || '', _by:STATE.meta.uid || '', _at:Date.now() })
-    .then(function(){ var pubD = {}; pubD[name] = { user:'', at:Date.now() }; DB.col('settings').doc('integPub').set(Object.assign({ _by:STATE.meta.uid || '', _at:Date.now() }, pubD), { merge:true }).then(function(){ integPubLoad(true); }).catch(function(e){ LS_ERR = e; });   /* (V39.74) */
+  DB.col('integ').doc(name).set({ on:false, user:'', pass:'', token:'', at:Date.now(), by:STATE.meta.name || '', _by:STATE.meta.uid || '', _at:Date.now() })   /* (V40.0) the token goes with the account */
+    .then(function(){ var pubD = {}; pubD[name] = { user:'', tok:false, at:Date.now() }; DB.col('settings').doc('integPub').set(Object.assign({ _by:STATE.meta.uid || '', _at:Date.now() }, pubD), { merge:true }).then(function(){ integPubLoad(true); }).catch(function(e){ LS_ERR = e; });   /* (V39.74) */
       logEvent('فُصل الربط — ' + name, ''); toast(t('فُصل')); integStatusLoad(true); })
     .catch(function(e){ toast(t('تعذّر') + ': ' + String(e && e.message || e).slice(0, 80)); });
 }

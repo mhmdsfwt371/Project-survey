@@ -2351,6 +2351,17 @@ console.log('\n══ ١٠٠ · خطوة كود التحقق ══');
   w.ROLE = R0; w.STATE.meta.role = R0;
 }
 
+/* ── ١٠١ · (V40.0) التوكينُ واسمُ المستخدم معًا ── */
+console.log('\n══ ١٠١ · التوكين والحساب ══');
+{
+  const R0 = w.ROLE; w.ROLE = 'admin';
+  const ed0 = w.integAcctHtml.edit; w.integAcctHtml.edit = { afaqypro:true };
+  const h = w.integProHtml();
+  T(/id="integTok"/.test(h) && /type="password"/.test(h) && /id="integUser"/.test(h), 'نموذجُ الربط فيه خانةُ التوكين (مخفيّةُ الكتابة) بجانب اسم المستخدم وكلمة السر');
+  T(/انتهى أو مرفوض/.test(w.integStateLine({ state:'err', err:'token', at:Date.now() })), 'والتوكينُ المنتهي بلا حسابٍ يُقال صراحةً: حط توكين جديد أو احفظ الحساب');
+  w.integAcctHtml.edit = ed0; w.ROLE = R0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

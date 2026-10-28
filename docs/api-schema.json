@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V39.99",
+  "app_version": "V40.0",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2361,7 +2361,8 @@
   "V39.96": "i18n: مسرد ترددي/المشاعر/التفويج/النقطة/التسليم في D وD2 · ٢٠ تصحيحًا يدويًّا (الدفعة ١ من ١٢ من ٢٬٦٦٧ نصًّا معروضًا) · mywork: t() للجملة والنوع منفصلين · viewAsUsers يستثني test/deleted/active=false · roleName ← ROLES[k].n · viewAsPurge لا يُعلَّم منجزًا أثناء العرض",
   "V39.97": "i18n: الدفعات ٢–٥ (١٬١٥٠ من ٢٬٦٦٧ نصًّا معروضًا) · ١١٨ تصحيحًا في D وD2 · مفتاحٌ مستقلّ «الملخص المجمَّع» لورقة الإكسل",
   "V39.98": "i18nDomPass بعد كل render (مفتاحٌ بعينه أو «مفتاح — رقم»، والنصّ الدليلي والتلميح؛ لا TEXTAREA ولا حقول) · تطبيعُ الترقيم والأرقام في الإنجليزية · coName: الأردية بالعربية، وتجريدُ علامات الاتجاه · perms: المفتاح في title · ٤٩ مدخلًا جديدًا في القاموس · سيناريو ٩٩",
-  "V39.99": "functions: webCall/webLogin (api.afaqy.pro · auth/login is_2fa · auth/send_login_otp · auth/verify_login_otp)، integ/afaqypro_otp للجلسة المؤقتة، afaqypro_tok.base، exports.integOtp (send/verify/restart، مهندس ومدير) · integOtpHtml/integOtp · سيناريو ١٠٠"
+  "V39.99": "functions: webCall/webLogin (api.afaqy.pro · auth/login is_2fa · auth/send_login_otp · auth/verify_login_otp)، integ/afaqypro_otp للجلسة المؤقتة، afaqypro_tok.base، exports.integOtp (send/verify/restart، مهندس ومدير) · integOtpHtml/integOtp · سيناريو ١٠٠",
+  "V40.0": "integ/afaqypro.token (يُكتب ولا يُقرأ) · proPull: التوكين الملصق أولًا ثم مضيفُ الويب ثم الحساب · err 'token' · integPub.tok · سيناريو ١٠١"
   },
   "map_and_geolocation": {
     "tile_layers": {
