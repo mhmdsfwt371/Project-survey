@@ -328,7 +328,7 @@ function iotDashHtml(){
   var table = rows.length ? '<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>' + [t('النقطة'), t('الجهاز'), t('النوع'), t('السيريال'), t('الاسم على المنصة'), t('آخر تحديث'), t('القراءة الحالية'), t('الحالة')].map(esc).join('</th><th>') + '</th></tr></thead><tbody>' + body + '</tbody></table></div>'
       + '<div class="hint" style="margin:6px 0 0">' + esc(t('معروض')) + ' ' + nm(Math.min(F.n, rows.length)) + ' ' + esc(t('من')) + ' ' + nm(rows.length) + (rows.length > F.n ? ' ' + btn(t('اعرض ١٠٠ كمان'), 'btn-secondary btn-sm', ' data-iotd="more"') : '') + '</div>'
     : '<div class="hint">' + esc(cnt.all ? t('مفيش أجهزة بالفلتر ده') : t('لسه مفيش خطة حساسات في أي مخيم')) + '</div>';
-  return '<div class="card"><div class="card-h"><div class="card-t">\u{1F4E1} ' + esc(t('تحديث الأجهزة والحساسات')) + ' <span class="hint" style="margin:0">' + nm(cnt.all) + ' ' + esc(t('جهاز')) + '</span></div></div><div class="card-b">' + head + top + tools + table + '</div></div>';
+  return card('\u{1F4E1} ' + t('تحديث الأجهزة والحساسات') + ' \u00b7 ' + nm(cnt.all) + ' ' + t('جهاز'), head + top + tools + table);   /* the app's own card */
 }
 iotDashHtml.rows = function(){
   var U = (IOT.live && IOT.live.v && IOT.live.v.units) || {}, now = Date.now(), out = [];
