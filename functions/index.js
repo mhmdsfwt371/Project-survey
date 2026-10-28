@@ -94,7 +94,14 @@ async function proPull(why){
   const call = (p, body, tk) => base === WEB_URL ? webCall(p.replace(/^\//, ''), body, tk) : proCall(url, p, body, tk);
   /* (V40.0) a newly pasted token takes over; which host issued it is learned on the first refusal (integration, then web) */
   if (pasted && pasted !== T0.pasted){ tok = pasted; base = ''; await tokRef.set({ tok, at:Date.now(), base:'', pasted }); }
-  const login = async () => { const L = await proCall(url, '/auth/login', { username:cfg.user, password:cfg.pass }); const t = tokOf(L.j);
+  /* (V40.2) the owner changed the account to m.safwat and still saw nothing: the bridge kept the previous account's session
+     (taken 13:59 by «safwat», which sees 2 units). A session older than the saved account is dropped — a new login follows */
+  else if (!pasted && tok && cfg.at && (!T0.at || cfg.at > T0.at)){ tok = ''; base = ''; }
+  const login = async () => {
+    /* (V40.2) a code step in progress is not restarted by the 5-minute tick — a new one-time session would void the code
+       the owner is about to type */
+    const O = (await db.collection('integ').doc('afaqypro_otp').get()).data();
+    if (O && O.token && Date.now() - (O.sentAt || O.at || 0) < 15 * 60000) throw Object.assign(new Error('code'), { methods:O.methods || [], sent:!!O.sentAt, method:O.method || '', expiresIn:O.expiresIn || 0 }); const L = await proCall(url, '/auth/login', { username:cfg.user, password:cfg.pass }); const t = tokOf(L.j);
     if (!t){   /* (V39.76) the documented refusal is {message:'invalid_credentials', status_code:401} with HTTP 200 — «status_code» had
                   matched the old «code» test and showed «asked for a code». A code step is told only by its own words. */
       const sh = shape(L.j), msg = String((L.j && L.j.message) || '').slice(0, 60), needCode = /otp|verif|two.?factor|2fa|mfa/i.test(msg) || /\b(otp|verify|verification)\b/i.test(JSON.stringify(sh || ''));
@@ -133,6 +140,30 @@ async function proPull(why){
       const arr = (R.j && R.j.data && (Array.isArray(R.j.data) ? R.j.data : R.j.data.data)) || [];
       units.push(...arr);
     }
+    /* (V40.2) still missing: find them by the platform's unit id. The units this account sees are read once (light, ids
+       only, at most every 6 hours), our numbers are mapped to their unit id, then fetched by id — the same «id in» filter
+       the official client uses. Only our own numbers are kept in integ/afaqypro_map. */
+    const got2 = new Set(); units.forEach(u => [u.imei, u.device_serial].forEach(x => { const k = String(x || '').trim().toLowerCase(); if (k) got2.add(k); }));
+    const left = imeis.filter(k => !got2.has(k));
+    if (left.length){
+      const mapRef = db.collection('integ').doc('afaqypro_map'); let M = (await mapRef.get()).data() || {};
+      const need = !M.at || Date.now() - M.at > 6 * 3600e3 || M.user !== (cfg.user || '') || left.some(k => !(M.ids || {})[k] && !(M.miss || []).includes(k));
+      if (need){
+        const ids = {}, want = new Set(imeis); let seen = 0;
+        for (let off = 0; off < 30000; off += 1000){
+          const P = await call('/units/lists', { offset:off, limit:1000, projection:['basic'] }, tok);
+          const arr = (P.j && P.j.data && (Array.isArray(P.j.data) ? P.j.data : P.j.data.data)) || []; seen += arr.length;
+          arr.forEach(u => [u.imei, u.device_serial, u.device_gateway].forEach(x => { const k = String(x || '').trim().toLowerCase(); if (k && want.has(k) && u._id) ids[k] = String(u._id); }));
+          if (arr.length < 1000) break;
+        }
+        M = { at:Date.now(), user:cfg.user || '', seen, ids, miss:left.filter(k => !ids[k]) }; await mapRef.set(M);
+      }
+      const idList = [...new Set(left.map(k => (M.ids || {})[k]).filter(Boolean))];
+      for (let i = 0; i < idList.length; i += 100){
+        const R = await call('/units/lists', { offset:0, limit:1000, simplify:0, projection:['basic', 'last_update', 'sensors'], filters:{ id:{ value:idList.slice(i, i + 100), op:'in' } } }, tok);
+        units.push(...((R.j && R.j.data && (Array.isArray(R.j.data) ? R.j.data : R.j.data.data)) || []));
+      }
+    }
     /* (V40.1) none of ours found: how many units does this account see at all? A small number means the wrong account */
     let visible = null;
     if (!units.length){ const V = await call('/units/lists', { offset:0, limit:1, projection:['basic'] }, tok); const pg = V.j && (V.j.pagination || (V.j.data && V.j.data.pagination)); visible = pg && pg.allCount != null ? +pg.allCount : null; }
@@ -149,7 +180,7 @@ async function proPull(why){
     await status({ state:'ok', planned, withImei:imeis.length, found:units.length, matched, visible, ms:Date.now() - now, sample:sample || null, err:'', httpStatus:0, msg:'', shape:'', methods:[], sent:false });   /* (V40.1) a success clears the last failure's fields */
     return { state:'ok', matched, found:units.length };
   } catch (e) {
-    if (e.message === 'code'){ await status({ state:'code', methods:e.methods || [], sent:false, err:'', msg:'' }); return { state:'code' }; }   /* (V39.99) */
+    if (e.message === 'code'){ await status({ state:'code', methods:e.methods || [], sent:!!e.sent, method:e.method || '', expiresIn:e.expiresIn || 0, err:'', msg:'' }); return { state:'code' }; }   /* (V39.99 · V40.2 keeps a pending step as it is) */
     await status({ state:'err', err:String(e.message || e).slice(0, 120), httpStatus:e.st || 0, shape:e.shape || '', msg:e.msg || '' });
     return { state:'err', err:String(e.message || e).slice(0, 120) };
   }
