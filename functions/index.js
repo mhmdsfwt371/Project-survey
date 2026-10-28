@@ -49,6 +49,9 @@ async function sendCode(token, methods){
   await db.collection('integ').doc('afaqypro_otp').set(ok ? { method, sentAt:Date.now(), expiresIn:+ex || 0 } : { method }, { merge:true });
   return { ok, method, expiresIn:+ex || 0, err:ok ? '' : String((R.j && R.j.message) || R.status).slice(0, 40) };
 }
+/* (V40.6) the session token is a JWT: its own «exp» says when it ends (verified: issued 28 Oct 17:14, exp 27 Nov 17:14 —
+   the 720 hours asked for were granted). Read here without verifying or storing anything but the time. */
+function jwtExp(t){ try { const p = String(t || '').split('.'); if (p.length !== 3) return 0; const pl = JSON.parse(Buffer.from(p[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8')); return pl.exp ? pl.exp * 1000 : 0; } catch (e){ return 0; } }
 async function webLogin(cfg){
   const L = await webCall('auth/login', { username:cfg.user, password:cfg.pass, lang:'ar', expire:SESSION_HOURS, captcha:'' });
   const d = (L.j && L.j.data) || {};
@@ -211,7 +214,18 @@ async function proPull(why){
     Object.keys(snap).forEach(ser => { const r = snap[ser], C = camps[r.site] || (camps[r.site] = { at:0, s:{}, g:{} });
       (r.k === 's' ? C.s : C.g)[r.id || ser] = { at:r.t, v:r.v, serial:ser }; if (r.t > C.at) C.at = r.t; });
     await db.collection('iotlive').doc('_all').set({ at:Date.now(), n:matched, total:units.length, planned, src:'afaqy-pro', units:snap, camps });
-    await status({ state:'ok', planned, withImei:imeis.length, found:units.length, matched, visible, ms:Date.now() - now, sample:sample || null, err:'', httpStatus:0, msg:'', shape:'', methods:[], sent:false });   /* (V40.1) a success clears the last failure's fields */
+    /* (V40.6) renewal before the end: two days before the session expires the bridge logs in again by itself — with no
+       two-step the new session simply replaces the old one; with two-step the code is e-mailed (once a day at most) and the
+       card asks for it while the current session still works */
+    const tokExp = jwtExp(tok); let renew = {};
+    const prev = (((await db.collection('settings').doc('integStatus').get()).data() || {}).pro) || {};
+    if (tokExp && tokExp - Date.now() < 48 * 3600e3 && why === 'schedule' && cfg.user && cfg.pass && (!prev.renewAt || Date.now() - prev.renewAt > 24 * 3600e3)){
+      const W = await webLogin(cfg);
+      if (W.tok){ await tokRef.set({ tok:W.tok, at:Date.now(), base:WEB_URL }); renew = { renew:false, renewAt:Date.now(), tokExp:jwtExp(W.tok) }; }
+      else if (W.code){ const O = (await db.collection('integ').doc('afaqypro_otp').get()).data() || {}; const S = await sendCode(O.token, W.methods); renew = { renew:true, renewAt:Date.now(), renewSent:S.ok, method:S.method, methods:W.methods, err:S.err || '' }; }
+    }
+    await status(Object.assign({ state:'ok', planned, withImei:imeis.length, found:units.length, matched, visible, ms:Date.now() - now, sample:sample || null, err:'', httpStatus:0, msg:'', shape:'', methods:[], sent:false,
+      tokExp, renew:false, renewSent:false }, prev.renew && !renew.renewAt && tokExp && tokExp - Date.now() < 48 * 3600e3 ? { renew:true, renewSent:!!prev.renewSent, method:prev.method || '', methods:prev.methods || [], renewAt:prev.renewAt } : {}, renew));   /* (V40.1) a success clears the last failure's fields */
     return { state:'ok', matched, found:units.length };
   } catch (e) {
     if (e.message === 'code'){ await status({ state:'code', methods:e.methods || [], sent:!!e.sent, method:e.method || '', expiresIn:e.expiresIn || 0, err:e.err || '', msg:'' }); return { state:'code', sent:!!e.sent, method:e.method || '' }; }   /* (V39.99 · V40.2 keeps a pending step as it is) */

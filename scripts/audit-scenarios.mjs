@@ -2377,6 +2377,20 @@ console.log('\n══ ١٠٢ · قراءات أفاقي برو على الشاش
   w.ROLE = R0;
 }
 
+/* ── ١٠٣ · (V40.6) عمرُ جلسة أفاقي برو: التاريخ والأيام الباقية، والتنبيه مرةً عند كل عتبة ── */
+console.log('\n══ ١٠٣ · عمر جلسة أفاقي برو ══');
+{
+  const R0 = w.ROLE; w.ROLE = 'admin';
+  const day = 86400000, h1 = w.integSessionHtml({ tokExp:Date.now() + 29 * day + 3600000 });
+  T(/صالحة لحد/.test(h1) && h1.indexOf(w.nm(29)) > -1 && /#22C55E/.test(h1), 'الجلسةُ الجديدة: «صالحة لحد … · فاضل ٢٩ يوم» بالأخضر وشريطٌ يقلّ');
+  T(/#F59E0B/.test(w.integSessionHtml({ tokExp:Date.now() + 5 * day })) && /#EF4444/.test(w.integSessionHtml({ tokExp:Date.now() + 1 * day })), 'وتصفرّ تحت أسبوع وتحمرّ تحت يومين');
+  T(/انتهت/.test(w.integSessionHtml({ tokExp:Date.now() - 1000 })), 'وعند الانتهاء: الخطواتُ مكتوبة');
+  const n0 = (w.notifStore ? w.notifStore().length : 0); try { w.localStorage.removeItem('nsk14.integExp'); } catch (e){}
+  const exp = Date.now() + 2.5 * day; w.integExpiryNotify({ tokExp:exp }); w.integExpiryNotify({ tokExp:exp });
+  T((w.notifStore ? w.notifStore().length : 0) === n0 + 1, 'والتنبيهُ مرةً واحدةً لكل عتبة (٧ · ٣ · ١ · الانتهاء) لا كلَّ فتحة');
+  w.ROLE = R0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

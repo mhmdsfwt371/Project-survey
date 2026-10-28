@@ -360,6 +360,7 @@ function enterShell(){
     if (sp.tab && TABS[sp.cur]) PTAB[sp.cur] = sp.tab;
   }
   try { if (fieldDayStart()){ CUR = 'mywork'; PTAB.mywork = 'mine'; } } catch (e){ LS_ERR = e; }   /* (V39.85) */
+  setTimeout(function(){ try { if (typeof mayIntegEdit === 'function' && mayIntegEdit()) integStatusLoad(true); } catch (e){ LS_ERR = e; } }, 9000);   /* (V40.6) the AFAQY PRO session's days left, for the admin and engineer notification */
   bootStage('shell');
   render();
   bootStage('render:' + CUR);   /* (V34.2) والصفحةُ في المرحلة نفسِها */

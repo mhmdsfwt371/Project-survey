@@ -2,7 +2,7 @@
    FILE    : src/09-integ/09-integ-01-connections-tab.js
    DOMAIN  : Integrations — external platforms read by the cloud bridge
    PURPOSE : The office «Connections» tab: AFAQY PRO account (stored write-only), bridge status, «Refresh now».
-   DEFINES : integOtpHtml, integOtp, jobsStatusLoad, jobsCardHtml, integPubLoad, integPubOf, integAcctHtml, integStatusLoad, integStateLine, integProHtml, integNusukHtml, integStepsHtml, integMissing, integMissingHtml, integTabHtml, mayIntegEdit, integSave, integOff, integNow
+   DEFINES : integSessionHtml, integExpiryNotify, integOtpHtml, integOtp, jobsStatusLoad, jobsCardHtml, integPubLoad, integPubOf, integAcctHtml, integStatusLoad, integStateLine, integProHtml, integNusukHtml, integStepsHtml, integMissing, integMissingHtml, integTabHtml, mayIntegEdit, integSave, integOff, integNow
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              design notes.
    ============================================================================ */
@@ -47,7 +47,7 @@ function integStatusLoad(force){
   if (!force && (S.busy || Date.now() - S.at < 20000)) return;
   if (!FB.ready || !FB.db || !STATE.meta.online) return;
   S.busy = true;
-  DB.col('settings').doc('integStatus').get().then(function(doc){ S.v = doc && doc.exists ? doc.data() : null; S.at = Date.now(); S.busy = false; if (CUR === 'sys' && tabCur('sys') === 'integ') render(1); })
+  DB.col('settings').doc('integStatus').get().then(function(doc){ S.v = doc && doc.exists ? doc.data() : null; S.at = Date.now(); S.busy = false; integExpiryNotify(S.v && S.v.pro); if (CUR === 'sys' && tabCur('sys') === 'integ') render(1); })   /* (V40.6) */
     .catch(function(e){ S.busy = false; S.at = Date.now(); LS_ERR = e; });
 }
 function integStateLine(p){
@@ -73,7 +73,9 @@ function integProHtml(){
   return card('\u{1F50C} ' + t('أفاقي برو') + ' — ' + t('الحساسات والجيت واي'),
     '<p class="hint" style="margin:0 0 8px">' + esc(t('يُسحب كلَّ ٥ دقائق بأرقام أجهزتنا وحدها، للقراءة فقط. الحسابُ يُحفظ في مكانٍ لا يقرؤه أحدٌ من التطبيق — ولا يعود إلى أي جهاز.')) + '</p>'
     + '<div style="margin:0 0 10px">' + integStateLine(p) + '</div>'
+    + integSessionHtml(p)   /* (V40.6) how long the session has left */
     + (p && p.state === 'code' && mayIntegEdit() ? integOtpHtml(p) : '')   /* (V39.99) the code step */
+    + (p && p.state === 'ok' && p.renew && mayIntegEdit() ? integOtpHtml({ state:'code', methods:p.methods || [], sent:!!p.renewSent, method:p.method || 'email', err:p.err || '' }) : '')   /* (V40.6) renewal while the session still works */
     + (function(){ var pub = integPubOf('afaqypro'), ed = integAcctHtml.edit && integAcctHtml.edit.afaqypro, now = btn('\u21BB ' + t('حدّث الآن'), 'btn-secondary', ' data-integnow="1"' + busy);
         if (pub && !ed) return '<div class="hint" style="margin:0 0 6px">' + esc(t('الحساب المتصل')) + ': <b dir="ltr">' + esc(pub.user || '—') + '</b>' + (pub.tok ? ' \u00b7 \u{1F511} ' + esc(t('توكين محفوظ')) : '') + '</div>' + integAcctHtml('afaqypro', 'integUser', 'integPass', 'اسم المستخدم', now);   /* (V40.0) */
         return integAcctHtml('afaqypro', 'integUser', 'integPass', 'اسم المستخدم', '')
@@ -245,4 +247,32 @@ function integOtp(op, extra){
     })
     .catch(function(e){ toast(t('لم يتم') + ': ' + String(e && e.message || e).slice(0, 80)); })
     .then(function(){ integOtp.busy = false; render(1); });
+}
+
+/* (V40.6) the owner: «محتاج كل مرة أفتح البرنامج أكتب يوزر وباسورد؟ ولا التوكين موجود؟ ويكون عندي تايمر قدامه قد إيه ويقلّ
+   كل يوم، ولما ينتهي عرّفني». Nothing is typed when the app opens — the session lives on the server and the bridge pulls
+   every 5 minutes. The card shows the session's end (from the token itself) with the days left; two days before, the
+   bridge starts the renewal by itself; and admins/engineers get a notification with 7 days, 3 days and one day left, and at the end. */
+function integSessionHtml(p){
+  if (!p || !p.tokExp) return '';
+  var left = p.tokExp - Date.now(), d = Math.floor(left / 86400000), h = Math.max(0, Math.floor((left % 86400000) / 3600000));
+  var col = left <= 0 ? '#EF4444' : d < 2 ? '#EF4444' : d < 7 ? '#F59E0B' : '#22C55E';
+  var when = fmtDate(p.tokExp, { day:'numeric', month:'long' }) + ' ' + fmtTime(p.tokExp);
+  var line = left <= 0 ? '\u{1F534} ' + t('الجلسة انتهت') + ' \u2014 ' + t('اضغط «حدّث الآن»: الكود هيوصل إيميلك، تكتبه وتضغط «تحقق»، وتبدأ جلسة جديدة لمدة ٣٠ يوم')
+    : '\u{1F511} ' + t('الجلسة صالحة لحد') + ' ' + when + ' \u00b7 ' + t('فاضل') + ' ' + nm(d) + ' ' + t('يوم') + (d < 2 ? ' ' + nm(h) + ' ' + t('ساعة') : '');
+  var pct = Math.max(0, Math.min(100, Math.round(left / (30 * 86400000) * 100)));
+  return '<div style="margin:0 0 10px"><div class="hint" style="margin:0 0 4px;color:' + col + '">' + esc(line) + '</div>'
+    + (left > 0 ? '<div style="height:6px;border-radius:4px;background:rgba(148,163,184,.25);overflow:hidden"><div style="height:100%;width:' + pct + '%;background:' + col + '"></div></div>' : '')
+    + (left > 0 && d < 2 ? '<div class="hint" style="margin:4px 0 0">' + esc(p.renew ? t('التجديد بدأ: الكود اتبعت على إيميلك — اكتبه تحت وجلستك الحالية شغّالة لحد ما تخلص') : t('التجديد بيبدأ لوحده خلال ساعات: الكود هيوصل إيميلك')) + '</div>' : '')
+    + '</div>';
+}
+function integExpiryNotify(p){
+  if (!p || !p.tokExp || !mayIntegEdit() || typeof notifPush !== 'function') return;
+  var left = p.tokExp - Date.now(), d = left / 86400000, step = left <= 0 ? 0 : d <= 1 ? 1 : d <= 3 ? 3 : d <= 7 ? 7 : -1;
+  if (step < 0) return;
+  var key = 'nsk14.integExp', mark = p.tokExp + ':' + step, seen = '';
+  try { seen = localStorage.getItem(key) || ''; } catch (e){ LS_ERR = e; }
+  if (seen === mark) return;
+  try { localStorage.setItem(key, mark); } catch (e2){ LS_ERR = e2; }
+  notifPush(t('ربط أفاقي برو'), step === 0 ? t('جلسة أفاقي برو انتهت — افتح «الربط» واضغط «حدّث الآن»، والكود هيوصل إيميلك') : t('جلسة أفاقي برو تنتهي خلال') + ' ' + nm(step) + ' ' + t('يوم') + ' \u2014 ' + t('التجديد بيبدأ لوحده قبل يومين والكود هيوصل إيميلك'), { lv:'مهم' });
 }
