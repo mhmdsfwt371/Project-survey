@@ -38,6 +38,10 @@ console.log('كل ما يراه الحساب:', all.s, JSON.stringify({ status_c
 const f = await call('units/lists', { offset:0, limit:50, projection:['basic'], filters:{ imei:{ value:mine.map(x => x.s), op:'in' } } });
 const arr = Array.isArray(f.j.data) ? f.j.data : ((f.j.data && f.j.data.data) || []);
 console.log('بأرقامنا:', f.s, JSON.stringify({ status_code:f.j.status_code, message:f.j.message, n:arr.length, units:arr.slice(0, 10).map(u => ({ name:u.name, imei:u.imei, serial:u.device_serial, owner:u.owner && (u.owner.username || u.owner) })) }));
+/* (V41.2) which parameters do our units report (names only) — is SNR among them? */
+{ const g2 = await call('units/lists', { offset:0, limit:10, projection:['basic', 'last_update', 'sensors'], filters:{ imei:{ value:mine.map(x => x.s), op:'in' } } });
+  const a3 = Array.isArray(g2.j.data) ? g2.j.data : ((g2.j.data && g2.j.data.data) || []);
+  a3.slice(0, 3).forEach(u => console.log('معاملات ' + (u.name || '') + ':', JSON.stringify({ prms:Object.keys((u.last_update || {}).prms || {}), sensors:(u.sensors || []).map(x => (x.name || '') + '←' + (x.param || '')) }))); }
 const one = mine.find(x => /^24e12413605ed65a$/i.test(x.s)) || mine[0];
 if (one){ const g = await call('units/lists', { offset:0, limit:5, projection:['basic'], filters:{ imei:{ value:one.s, op:'like' } } });
   const a2 = Array.isArray(g.j.data) ? g.j.data : ((g.j.data && g.j.data.data) || []);
