@@ -10,6 +10,8 @@ const st = ((await db.collection('settings').doc('integStatus').get()).data() ||
 console.log('آخر سحب:', JSON.stringify({ state:st.state, why:st.why, at:st.at && new Date(st.at).toISOString(), planned:st.planned, withImei:st.withImei, found:st.found, matched:st.matched, visible:st.visible, err:st.err, httpStatus:st.httpStatus, msg:st.msg, sent:st.sent, method:st.method, methods:(st.methods || []).map(m => m.type + ':' + String(m.value || '').replace(/[^*@.]/g, (c, i) => i < 2 ? c : '•')) }));
 const O = (await db.collection('integ').doc('afaqypro_otp').get()).data() || null;
 console.log('خطوة الكود:', JSON.stringify(O ? { at:O.at && new Date(O.at).toISOString(), methods:(O.methods || []).map(m => m.type), method:O.method, sentAt:O.sentAt && new Date(O.sentAt).toISOString(), expiresIn:O.expiresIn, hasToken:!!O.token } : null));
+const nr = ((await db.collection('settings').doc('integStatus').get()).data() || {}).nusukReach || null;
+console.log('وصول السحابة لنسك:', JSON.stringify(nr ? { at:nr.at && new Date(nr.at).toISOString(), st:nr.st, cf:nr.cf, ms:nr.ms } : null));
 const cfg = (await db.collection('integ').doc('afaqypro').get()).data() || {};
 console.log('الحساب:', JSON.stringify({ user:cfg.user, url:cfg.url, on:cfg.on, hasToken:!!cfg.token }));
 const T = (await db.collection('integ').doc('afaqypro_tok').get()).data() || {};
