@@ -36,6 +36,19 @@ async function webCall(path, obj, token){
   return { ok:r.ok, status:r.status, j };
 }
 const SESSION_HOURS = 720;   /* asked for; the platform keeps what it allows */
+/* (V40.5) the owner: «حطيت اليوزر والباسورد وما جاليش أي كود على الإيميل». The diagnosis: the login did reach the code step
+   (16:00, method: email) but nothing sends the code until «بالإيميل» is pressed — the official web client sends it by
+   itself the moment its verification page opens. Now a manual pull (the button, saving the account, «start again») sends it
+   at once to the e-mail (or the only method offered); the 5-minute tick never sends, so no stream of e-mails. */
+async function sendCode(token, methods){
+  const has = t => (methods || []).some(m => m && m.type === t);
+  const method = has('email') ? 'email' : ((methods || [])[0] || {}).type || 'email';
+  const R = await webCall('auth/send_login_otp', { method, token });
+  const ex = (R.j && R.j.data && R.j.data.expires_in) || (R.j && (R.j.expires_in || (R.j.extra && R.j.extra.expires_in))) || 0;
+  const ok = !!(R.j && R.j.status_code === 200);
+  await db.collection('integ').doc('afaqypro_otp').set(ok ? { method, sentAt:Date.now(), expiresIn:+ex || 0 } : { method }, { merge:true });
+  return { ok, method, expiresIn:+ex || 0, err:ok ? '' : String((R.j && R.j.message) || R.status).slice(0, 40) };
+}
 async function webLogin(cfg){
   const L = await webCall('auth/login', { username:cfg.user, password:cfg.pass, lang:'ar', expire:SESSION_HOURS, captcha:'' });
   const d = (L.j && L.j.data) || {};
@@ -114,14 +127,20 @@ async function proPull(why){
     /* (V40.2) a code step in progress is not restarted by the 5-minute tick — a new one-time session would void the code
        the owner is about to type */
     const O = (await db.collection('integ').doc('afaqypro_otp').get()).data();
-    if (O && O.token && Date.now() - (O.sentAt || O.at || 0) < 15 * 60000) throw Object.assign(new Error('code'), { methods:O.methods || [], sent:!!O.sentAt, method:O.method || '', expiresIn:O.expiresIn || 0 }); const L = await proCall(url, '/auth/login', { username:cfg.user, password:cfg.pass }); const two = !!(L.j && L.j.data && L.j.data.is_2fa), t = two ? '' : tokOf(L.j);   /* (V40.3) with two-step on, data.token is the one-time session, not a working token — it gave 401 on every call */
+    if (O && O.token && Date.now() - (O.sentAt || O.at || 0) < 15 * 60000){
+      if (!O.sentAt && why !== 'schedule'){ const S = await sendCode(O.token, O.methods); throw Object.assign(new Error('code'), { methods:O.methods || [], sent:S.ok, method:S.method, expiresIn:S.expiresIn, err:S.err }); }   /* (V40.5) */
+      throw Object.assign(new Error('code'), { methods:O.methods || [], sent:!!O.sentAt, method:O.method || '', expiresIn:O.expiresIn || 0 });
+    } const L = await proCall(url, '/auth/login', { username:cfg.user, password:cfg.pass }); const two = !!(L.j && L.j.data && L.j.data.is_2fa), t = two ? '' : tokOf(L.j);   /* (V40.3) with two-step on, data.token is the one-time session, not a working token — it gave 401 on every call */
     if (!t){   /* (V39.76) the documented refusal is {message:'invalid_credentials', status_code:401} with HTTP 200 — «status_code» had
                   matched the old «code» test and showed «asked for a code». A code step is told only by its own words. */
       const sh = shape(L.j), msg = String((L.j && L.j.message) || '').slice(0, 60), needCode = two || /otp|verif|two.?factor|2fa|mfa/i.test(msg) || /\b(otp|verify|verification)\b/i.test(JSON.stringify(sh || ''));
       if (needCode){   /* (V39.99) the web login gives the one-time session the code step needs */
         const W = await webLogin(cfg);
         if (W.tok){ base = WEB_URL; await tokRef.set({ tok:W.tok, at:Date.now(), base:WEB_URL }); return W.tok; }
-        if (W.code) throw Object.assign(new Error('code'), { methods:W.methods });
+        if (W.code){   /* (V40.5) a manual pull sends the code at once, as the web client does */
+          if (why !== 'schedule'){ const O2 = (await db.collection('integ').doc('afaqypro_otp').get()).data() || {}; const S = await sendCode(O2.token, W.methods); throw Object.assign(new Error('code'), { methods:W.methods, sent:S.ok, method:S.method, expiresIn:S.expiresIn, err:S.err }); }
+          throw Object.assign(new Error('code'), { methods:W.methods });
+        }
         throw Object.assign(new Error('login'), { st:W.st, msg:W.err });
       }
       throw Object.assign(new Error('login'), { st:(L.j && L.j.status_code) || L.status, shape:sh, msg:msg }); } await tokRef.set({ tok:t, at:Date.now(), base:'' }); base = ''; return t; };
@@ -195,7 +214,7 @@ async function proPull(why){
     await status({ state:'ok', planned, withImei:imeis.length, found:units.length, matched, visible, ms:Date.now() - now, sample:sample || null, err:'', httpStatus:0, msg:'', shape:'', methods:[], sent:false });   /* (V40.1) a success clears the last failure's fields */
     return { state:'ok', matched, found:units.length };
   } catch (e) {
-    if (e.message === 'code'){ await status({ state:'code', methods:e.methods || [], sent:!!e.sent, method:e.method || '', expiresIn:e.expiresIn || 0, err:'', msg:'' }); return { state:'code' }; }   /* (V39.99 · V40.2 keeps a pending step as it is) */
+    if (e.message === 'code'){ await status({ state:'code', methods:e.methods || [], sent:!!e.sent, method:e.method || '', expiresIn:e.expiresIn || 0, err:e.err || '', msg:'' }); return { state:'code', sent:!!e.sent, method:e.method || '' }; }   /* (V39.99 · V40.2 keeps a pending step as it is) */
     await status({ state:'err', err:String(e.message || e).slice(0, 120), httpStatus:e.st || 0, shape:e.shape || '', msg:e.msg || '' });
     return { state:'err', err:String(e.message || e).slice(0, 120) };
   }
@@ -229,7 +248,7 @@ exports.integOtp = onCall(async req => {
     if (!cfg || !cfg.user || !cfg.pass) return { ok:false, err:'no_account' };
     const W = await webLogin(cfg);
     if (W.tok){ await db.collection('integ').doc('afaqypro_tok').set({ tok:W.tok, at:Date.now(), base:WEB_URL }); return Object.assign({ ok:true, done:true }, await proPull('code')); }
-    if (W.code){ await status({ state:'code', methods:W.methods, sent:false, err:'', msg:'' }); return { ok:true, methods:W.methods }; }
+    if (W.code){ const O3 = (await otpRef.get()).data() || {}; const S = await sendCode(O3.token, W.methods); await status({ state:'code', methods:W.methods, sent:S.ok, method:S.method, expiresIn:S.expiresIn, err:S.err, msg:'' }); return { ok:true, methods:W.methods, sent:S.ok, method:S.method }; }   /* (V40.5) start again sends the code too */
     await status({ state:'err', err:'login', httpStatus:W.st || 0, msg:W.err || '' }); return { ok:false, err:W.err || 'login' };
   }
   const S = (await otpRef.get()).data() || null;

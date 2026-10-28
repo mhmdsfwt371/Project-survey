@@ -142,6 +142,7 @@ function integSave(name){
   DB.col('integ').doc(name).set(doc, { merge:true })
     .then(function(){ var pubD = {}; pubD[name] = { user:user || ((integPubOf(name) || {}).user || ''), tok:!!tok || !!((integPubOf(name) || {}).tok), at:Date.now(), by:STATE.meta.name || '' }; DB.col('settings').doc('integPub').set(Object.assign({ _by:STATE.meta.uid || '', _at:Date.now() }, pubD), { merge:true }).then(function(){ integPubLoad(true); }).catch(function(e){ LS_ERR = e; });   /* (V39.74) */
       if (integAcctHtml.edit) integAcctHtml.edit[name] = false;
+      if (name === 'afaqypro') setTimeout(function(){ integNow(); }, 600);   /* (V40.5) saving connects at once — and if the platform asks for a code, it is sent to the e-mail now */
       ['integPass', 'nskPass', 'integTok'].forEach(function(id){ var el = document.getElementById(id); if (el) el.value = ''; }); logEvent('حُفظ حسابُ الربط — ' + name + ' \u00b7 ' + user, ''); toast(t('حُفظ — أول سحبٍ خلال ٥ دقائق، أو اضغط «حدّث الآن»')); integStatusLoad(true); })
     .catch(function(e){ toast(t('تعذّر الحفظ') + ': ' + String(e && e.message || e).slice(0, 80)); });
 }
@@ -167,6 +168,7 @@ function integNow(){
       if (err || x.st >= 400){ toast(t('لم يُحدَّث') + ': ' + String((err && err.message) || x.st).slice(0, 80)); }
       else if (res.state === 'off') toast(t('لا حساب محفوظ — احفظ واتصل أولًا'));
       else if (res.state === 'err') toast(t('فشل السحب') + ': ' + String(res.err || '').slice(0, 80));
+      else if (res.state === 'code') toast(res.sent ? '\u2709 ' + t('اتبعت الكود على الإيميل — اكتبه في «خطوة كود التحقق»') : t('المنصة طلبت كود تحقق — أكمل الخطوة تحت'));   /* (V40.5) */
       else toast(t('حُدِّث') + ' \u00b7 ' + nm(res.matched || 0) + ' ' + t('جهازًا') + (res.cached ? ' (' + t('قبل أقل من دقيقة') + ')' : ''));
       integStatusLoad(true);
       if (typeof liveIotLoad === 'function'){ try { liveIotLoad(true); } catch (e){ LS_ERR = e; } }
