@@ -1309,7 +1309,7 @@ console.log('\n══ ٤٦ · «ما الجديد» بلغة الشاشة ══
   w.localStorage.setItem('nsk14.seenVer', 'V38.80'); w.WN = null;
   const ok = w.whatsNewMaybe(), html = ok ? w.wnHtml() : '';
   const body = html.replace(/<[^>]+>/g, ' ');
-  T(ok && w.WN && w.WN.list.length >= 10 && w.WN.list.every(r => /^V39\./.test(r.v)), 'على الشاشة الإنجليزية تظهر الإصداراتُ المترجَمةُ وحدَها (' + (w.WN ? w.WN.list.length : 0) + ')');
+  T(ok && w.WN && w.WN.list.length >= 10 && w.WN.list.every(r => /^V(39|[4-9]\d)\./.test(r.v)), 'على الشاشة الإنجليزية تظهر الإصداراتُ المترجَمةُ وحدَها (' + (w.WN ? w.WN.list.length : 0) + ')');
   T(!/[\u0621-\u064A]/.test(body) && /Talk to the engineer/.test(body) && !/V39\.\d+/.test(body.replace(/Version/g, '')), 'ولا حرفَ عربيًّا في اللوح، والإصدارُ بأرقام اللغة');
   w.setLang('ar'); await new Promise(r => setTimeout(r, 50)); w.localStorage.setItem('nsk14.seenVer', 'V38.80'); w.WN = null;
   T(w.whatsNewMaybe() && w.WN.list.length > w.WN.list.filter(r => /^V39\./.test(r.v)).length, 'وبالعربية كلُّ الإصدارات كما كانت');
