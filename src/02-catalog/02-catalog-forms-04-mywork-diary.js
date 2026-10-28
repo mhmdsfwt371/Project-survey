@@ -248,8 +248,7 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
           meter('الشهري', S.month, S.tgtM)
           + meter('الأسبوعي', S.week, cfgWk(S.tgtM))) : '')
       + cardFlush('مهام الفريق',
-          '<p class="hint" style="padding:16px;text-align:center;margin:0">' + esc(t('لا مهام مفتوحة من نوع '
-          + esc(K ? t(K.n) : t('كل الأنواع')) + '.')) + '</p>',
+          '<p class="hint" style="padding:16px;text-align:center;margin:0">' + esc(t('لا مهام مفتوحة من نوع') + ' ' + (K ? t(K.n) : t('كل الأنواع')) + '.')   /* (V39.96) the sentence and the type translated apart — t() of a joined string never matched */ + '</p>',
           btn('⬇ تقرير فريقي','btn-quiet btn-sm disabled', ' disabled title="'+ esc(t('يحتاج قائمةَ مهامٍ فرديةً — غيرُ مبنيةٍ بعد. الإجماليّاتُ أعلاه حقيقيةٌ وتُقرأ الآن.')) + '"'))
       + card('دورة المهمة', flow(['مطلوب','قيد التنفيذ','منفّذ','معتمد'], 0)
         + '<p class="hint">' + esc(t('المهمة لا تُحتسب نقاطًا حتى يعتمدها المهندس — والإعادة تردّها بحالة «مُعاد» مع سبب.')) + '</p>');})();

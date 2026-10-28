@@ -15,8 +15,8 @@
 function viewAsOn(){ return !!PV.VIEW_AS; }
 function viewAsUsers(){
   var me = STATE.meta.uid || '';
-  return Object.keys(STATE.users || {}).map(function(k){ var u = STATE.users[k] || {}; return { uid:u.uid || k, name:u.name || u.displayName || k, role:u.role || 'tech', off:u.disabled || u.off }; })
-    .filter(function(u){ return u.uid !== me && !u.off; })
+  return Object.keys(STATE.users || {}).map(function(k){ var u = STATE.users[k] || {}; return { uid:u.uid || k, name:u.name || u.displayName || k, role:u.role || 'tech', off:u.disabled || u.off || u.test || u.deleted || u.active === false }; })
+    .filter(function(u){ return u.uid !== me && !u.off; })   /* (V39.96) test accounts and removed accounts are filtered in the map below */
     .sort(function(a, b){ return String(a.name).localeCompare(String(b.name), 'ar'); });
 }
 function viewAsSheet(q){
@@ -81,9 +81,9 @@ function viewAsBanner(){
    (a real «on behalf of» line always carries rec) are dropped, and attendance kept only on this phone for another person
    (never uploaded, so no _at stamp) is removed. */
 function viewAsPurge(){
-  viewAsPurge.done = true;
   var me = STATE.meta.name || '', uid = STATE.meta.uid || '', n = 0;
-  if (!me || PV.VIEW_AS) return 0;
+  if (!me || PV.VIEW_AS) return 0;   /* (V39.96) not «done» yet: it must still run once the admin is back */
+  viewAsPurge.done = true;
   STATE.queue = (STATE.queue || []).filter(function(q){
     var bad = q && q.kind === 'evlog' && q.v && q.v.by && q.v.by !== me && !q.v.rec;
     if (bad){ n++; if (STATE.evlog) delete STATE.evlog[q.id]; }

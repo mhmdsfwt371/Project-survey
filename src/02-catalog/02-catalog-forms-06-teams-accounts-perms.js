@@ -242,7 +242,7 @@ ROLE_ORDER = ['admin','engineer','buyer','store','acct','cprep','casm',
 
 function roleName(k){
   return { engineer:'مهندس', supervisor:'مشرف', tech:'فني', cprep:'تهيئة',
-           casm:'تجميع', cins:'تركيب', viewer:'وزارة' }[k] || k;
+           casm:'تجميع', cins:'تركيب', viewer:'وزارة' }[k] || (typeof ROLES === 'object' && ROLES[k] && ROLES[k].n) || k;   /* (V39.96) admin, exec and custom roles by their own name — not «admin»/«exec» */
 }
 
 /* ═══ إسناد الدور والفريق للمستخدم ═══ */
