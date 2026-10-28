@@ -146,6 +146,7 @@ function clickAPart7(e){
   var igS = e.target.closest('[data-integsave]'); if (igS){ integSave(igS.getAttribute('data-integsave')); return true; }   /* (V39.70) الربط */
   var igO = e.target.closest('[data-integoff]'); if (igO){ integOff(igO.getAttribute('data-integoff')); return true; }
   if (e.target.closest('[data-integnow]')){ integNow(); return true; }
+  var sqj = e.target.closest('[data-svqjump]'); if (sqj){ var sqe = document.getElementById('svqSec' + sqj.getAttribute('data-svqjump')); if (sqe) sqe.scrollIntoView({ behavior:'smooth', block:'start' }); return true; }   /* (V39.86) */
   var ige = e.target.closest('[data-integedit]'); if (ige){ var ign = ige.getAttribute('data-integedit'); integAcctHtml.edit = integAcctHtml.edit || {}; integAcctHtml.edit[ign] = !integAcctHtml.edit[ign]; render(1); return true; }   /* (V39.74) */
   if (e.target.closest('[data-brd]')){ var Bs = brdSt(); Bs.on = !Bs.on; if (Bs.on) brdLoad(); brdPaint(); render(1); return true; }   /* (V39.67) محطات الإركاب (data-bst is the search) */
   if (e.target.closest('[data-cnmall]')){ campNameMismatch.all = !campNameMismatch.all; render(1); return true; }   /* (V39.61) the name/data mismatch list in full */

@@ -2230,6 +2230,20 @@ console.log('\n══ ٩٣ · شغلي أوّلًا ══');
   w.PHOTO_Q.length = 0; q0.forEach(x => w.PHOTO_Q.push(x)); w.STATE.queue = sq0; w.STATE.meta.online = on0;
 }
 
+/* ── ٩٤ · (V39.86) شريطُ القفز في «تعديل المسح»: البياناتُ والصورُ والسجلُّ بلا إخفاء ── */
+console.log('\n══ ٩٤ · شريطُ القفز ══');
+{
+  const x = w.STATE.sites.filter(s => s.type === 'مخيم')[50], id = x.id, r0 = w.STATE.recs[id], s0 = Object.assign({}, w.SVQ);
+  w.STATE.recs[id] = { id, access:'تم الوصول', st:'تمت الزيارة', by:w.STATE.meta.name || 'فني', at:Date.now(), suit:'مناسب', hav:4,
+    edits:[{ k:'hav', o:3, v:4, by:'فني', at:Date.now() }] };
+  w.SVQ.id = id; w.SVQ.key = '';
+  const h = w.svqSheet();
+  T(/data-svqjump="Data"/.test(h) && /data-svqjump="Ph"/.test(h) && /data-svqjump="Hist"/.test(h), 'ثلاثةُ أزرارٍ تحت العنوان: البيانات والصور والسجل');
+  T(h.indexOf('id="svqSecData"') > -1 && h.indexOf('id="svqSecPh"') > -1 && h.indexOf('id="svqSecHist"') > -1 && h.indexOf('id="svqSecPh"') < h.indexOf('صور الزيارة'), 'ولكلٍّ مرساه، ومرساةُ الصور قبل «صور الزيارة» مباشرةً');
+  T(/data-svqk=/.test(h) && /صور الزيارة/.test(h), 'ولا شيءَ أُخفي: الحقولُ والصورُ في الورقة كما كانت');
+  if (r0) w.STATE.recs[id] = r0; else delete w.STATE.recs[id]; Object.assign(w.SVQ, s0);
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

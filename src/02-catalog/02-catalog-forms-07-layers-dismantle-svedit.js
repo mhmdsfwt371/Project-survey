@@ -144,6 +144,15 @@ function svqEditor(k, rec, s){
   if (PV.SVQ_TEXT[k]) return '<textarea id="svqIn" rows="3" dir="auto">' + esc(v) + '</textarea>';
   return '<input id="svqIn" dir="auto" value="' + esc(v) + '">';
 }
+/* (V39.86) the sheet grew long on a phone: fields, then photos, then history — the photos were a long scroll away, which is
+   where Ammar's «لا يمكن رؤية الصور المضافة» was felt. A jump bar under the header goes to each part. Nothing is hidden
+   (tabs were weighed and refused: a tab can hide the photo section from someone who never opens it). */
+function svqJumpBar(rec){
+  var nf = svqKeys(rec).length, np = typeof svqPhotoCount === 'function' ? svqPhotoCount(rec.id) : 0, nh = Array.isArray(rec.edits) ? rec.edits.length : 0;
+  var chip = function(k, ico, label, n){ return '<button type="button" class="btn btn-quiet btn-sm" data-svqjump="' + k + '" style="flex:1;justify-content:center">' + ico + ' ' + esc(t(label)) + ' <b class="num">' + nm(n) + '</b></button>'; };
+  return '<div style="position:sticky;top:-1px;z-index:2;display:flex;gap:6px;margin:0 0 10px;padding:6px 0;background:var(--raise)">'
+    + chip('Data', '\u{1F4DD}', 'البيانات', nf) + chip('Ph', '\u{1F4F7}', 'الصور', np) + (nh ? chip('Hist', '\u{1F558}', 'السجل', nh) : '') + '</div>';
+}
 function svqSheet(){
   if (!SVQ.id) return '';
   var rec = STATE.recs[SVQ.id], s = siteFind(SVQ.id);
@@ -164,10 +173,11 @@ function svqSheet(){
     + '<div class="svq-h"><div><b>\u270E ' + esc(t('تعديل المسح')) + '</b><div class="hint" style="margin:2px 0 0"><span class="num">' + esc(siteKey(s)) + (siteKey(s) !== s.id ? ' \u00b7 ' + esc(s.id) : '') + '</span> \u00b7 ' + esc(s.name) + '</div></div>'
     + '<button type="button" class="npop-x" data-svqx="1" aria-label="' + esc(t('إغلاق')) + '">\u2715</button></div>'
     + '<p class="hint" style="margin:6px 0 10px">' + esc(t(appr && !boss ? 'هذا المسحُ معتمد — تعديلُ أيِّ حقلٍ يعيده لانتظار اعتماد المهندس.' : 'اختر الحقلَ الذي تعدّله — يُحفَظ وحدَه، وتبقى الصورُ وبقيةُ المسح كما هي، ويُسجَّل التعديلُ باسمك.')) + '</p>'
-    + (rows || '<p class="hint">' + esc(t('لا حقولَ مكتوبةً في هذه الزيارة — افتح نموذجَ المسح.')) + '</p>')
-    + svqPhotos(rec) + phDeletedHtml(rec.id, false)   /* (V38.74) */
+    + svqJumpBar(rec)   /* (V39.86) */
+    + '<div id="svqSecData"></div>' + (rows || '<p class="hint">' + esc(t('لا حقولَ مكتوبةً في هذه الزيارة — افتح نموذجَ المسح.')) + '</p>')
+    + '<div id="svqSecPh"></div>' + svqPhotos(rec) + phDeletedHtml(rec.id, false)   /* (V38.74) */
     + (may('approve') ? '<div class="actions" style="margin-top:10px">' + btn('\u21AA ' + t('انقل هذه الزيارة إلى نقطتها الصحيحة'), 'btn-secondary btn-sm', ' data-svqmove="' + esc(rec.id) + '"') + '</div>' : '')   /* (V38.70) */
-    + (hist ? '<div class="wp-sec" style="margin-top:10px">' + esc(t('آخر التعديلات')) + '</div><ul class="wp-steps">' + hist + '</ul>' : '')
+    + (hist ? '<div id="svqSecHist"></div><div class="wp-sec" style="margin-top:10px">' + esc(t('آخر التعديلات')) + '</div><ul class="wp-steps">' + hist + '</ul>' : '')
     + '<div class="actions" style="margin:14px 0 0">' + btn('\u2715 ' + t('إغلاق'), 'btn-secondary', ' data-svqx="1" style="width:100%"') + '</div>'
     + '</div></div>';
 }
