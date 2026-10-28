@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V39.92",
+  "app_version": "V39.93",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2354,7 +2354,8 @@
   "V39.89": "functions: jobsTick (onSchedule ٥ د، secrets JOBS_FIREBASE_SA/GDRIVE_OAUTH/GDRIVE_FOLDER، settings/jobsLock إيجارٌ ٨٫٥ د، settings/jobsStatus) · functions/jobs/ يُحزَم عند النشر · provision.yml: الحسابات والصور يدويًّا فقط، والبلاغات كل ساعة · jobsCardHtml · سيناريو ٩٥",
   "V39.90": "jobs-watch.mjs (settings/jobsStatus · jobsLock · jobsWatch) + provision.yml: steps.watch.outputs.stale · photos-sync: md5Checksum ← photos.md5 للنقاط ذات المسترجَعة · recoveredPhotos.same · clickTablesB / clickAPart7B",
   "V39.91": "jobs-watch: tail لكل خطوة · crewman: t(crew.n) · onDocClickPart1B · asnSheetTail لا تقسيمَ آمن فتُرك",
-  "V39.92": "viewAsStart/viewAsStop/viewAsSheet/viewAsBlock (DocumentReference/CollectionReference/WriteBatch/Firestore + fetch غير GET) · CORE.set وCORE.flush يتوقفان أثناء العرض · PV.VIEW_AS لا يُحفَظ بين الفتحات · سيناريو ٩٦"
+  "V39.92": "viewAsStart/viewAsStop/viewAsSheet/viewAsBlock (DocumentReference/CollectionReference/WriteBatch/Firestore + fetch غير GET) · CORE.set وCORE.flush يتوقفان أثناء العرض · PV.VIEW_AS لا يُحفَظ بين الفتحات · سيناريو ٩٦",
+  "V39.93": "svaClean (access · revisit · execIsNone · suit · svqPhotoCount ≥ 2) · data-svaselclean · may('approve') = admin وengineer وحدهما · سيناريو ٩٧"
   },
   "map_and_geolocation": {
     "tile_layers": {

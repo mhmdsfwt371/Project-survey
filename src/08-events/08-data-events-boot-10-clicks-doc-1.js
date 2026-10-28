@@ -153,6 +153,7 @@ function onDocClickPart1B(e){
   var sall = e.target.closest('[data-svaselall]');
   if (sall){ var rowsT = svaFilter(svaLists().pending); if (sall.getAttribute('data-svaselall') === 'shown') rowsT = rowsT.slice(0, 60);
     var selA = svaSel(); rowsT.forEach(function(x){ selA[x.id] = 1; }); toast(t('حُدِّدت') + ' ' + nm(rowsT.length) + ' ' + t('زيارة')); render(1); return; }
+  if (e.target.closest('[data-svaselclean]')){ if (!may('approve')){ toast(t('الاعتمادُ للمهندس وحده')); return; } var cl = svaClean(svaFilter(svaLists().pending)), selC = svaSel(); cl.forEach(function(x){ selC[x.id] = 1; }); toast(t('حُدِّدت') + ' ' + nm(cl.length) + ' ' + t('زيارةً سليمة — راجع ثم «اعتمد المحدَّد»')); render(1); return; }   /* (V39.93) */
   if (e.target.closest('[data-svaselnone]')){ svaSel.m = {}; toast(t('أُلغي التحديد')); render(1); return; }
   if (e.target.closest('[data-svaselgo]')){ svaSelGo(); return; }
   if (e.target.closest('[data-svaundo]')){ svUndoLast(); render(1); return; }

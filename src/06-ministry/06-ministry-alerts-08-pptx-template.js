@@ -805,6 +805,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
       html += cardRaw(t('اعتمادٌ بالتحديد'), '<div class="actions" style="margin:0">'
           + btn('\u2611 ' + t('حدّد المعروض') + ' (' + nm(Math.min(rows.length, 60)) + ')', 'btn-secondary btn-sm', ' data-svaselall="shown"')
           + (rows.length > 60 ? btn('\u2611 ' + t('حدّد كلَّ النتائج') + ' (' + nm(rows.length) + ')', 'btn-secondary btn-sm', ' data-svaselall="all"') : '')
+          + (function(){ var nc = svaClean(rows).length; return nc ? btn('\u2705 ' + t('حدّد السليمة') + ' (' + nm(nc) + ')', 'btn-secondary btn-sm', ' data-svaselclean="1" title="' + esc(t('وصل الميدان · لا تحديات · فيها صورتان على الأقل · مناسبة للتركيب')) + '"') : ''; })()   /* (V39.93) */
           + btn(t('ألغِ التحديد'), 'btn-quiet btn-sm', ' data-svaselnone="1"' + (selN ? '' : ' hidden'))
           + btn('\u2705 ' + t('اعتمد المحدَّد') + ' (' + nm(selN) + ')', 'btn-primary btn-sm', ' data-svaselgo="1"' + (selN ? '' : ' disabled'))
           + '</div><p class="hint" style="margin:6px 0 0">' + esc(t('كلُّ زيارةٍ تمرّ بشروط الاعتماد نفسِها، وما لا يمرّ يُقال سببُه. والبحثُ أعلاه يضيّق ما يُحدَّد.')) + '</p>'
@@ -1006,6 +1007,22 @@ function svaLists(){
       if (rv === 'revisit' && !svReached(x.rec)) return;
       if (lists[rv]) lists[rv].push(x); });
   return lists;
+}
+/* (V39.93) owner: «الاعتماد الجماعي للمهندس والمدير — المهندس يقدر يعتمد bulk». Bulk approval already existed (V38.93:
+   tick, «حدّد كل النتائج», «اعتمد المحدَّد» in batches of 200, undo of the last batch), for the roles with «approve» —
+   the engineer and the admin only. With 1,787 visits waiting, ticking by hand is the bottleneck, so «حدّد السليمة» ticks
+   in one press the visits nobody needs to read twice: the field reached the point, no challenge, at least two photos,
+   and judged suitable for installation. Every one still passes svApprove's own checks; the rest stay for review. */
+function svaClean(rows){
+  return (rows || []).filter(function(x){
+    var r = x.rec || {}, site = x.site || {};
+    if (r.access && r.access !== 'تم الوصول') return false;
+    if (r.review === 'revisit') return false;
+    var ex = typeof execStatusMemo === 'function' && typeof execLabelOf === 'function' ? execLabelOf(execStatusMemo(site)) : '';
+    if (!execIsNone(ex)) return false;
+    if (r.suit && r.suit !== 'مناسب') return false;
+    return (typeof svqPhotoCount === 'function' ? svqPhotoCount(x.id) : 0) >= 2;
+  });
 }
 function svaFilter(rows){
   return SVA_Q ? rows.filter(function(x){ return (x.id + ' ' + (x.site.name || '') + ' ' + (x.rec.by || '')).indexOf(SVA_Q) > -1; }) : rows;

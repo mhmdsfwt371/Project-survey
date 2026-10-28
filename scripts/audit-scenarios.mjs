@@ -2282,6 +2282,17 @@ console.log('\n══ ٩٦ · اعرض كمستخدم ══');
   w.ROLE = role0; w.STATE.meta.name = name0; w.STATE.meta.uid = uid0; w.STATE.meta.role = mrole0; w.STATE.users = users0;
 }
 
+/* ── ٩٧ · (V39.93) «حدّد السليمة»: ما وصل ولا تحدي وفيه صورتان ومناسب — خاصيّةٌ على الزيارات المنتظرة نفسها ── */
+console.log('\n══ ٩٧ · حدّد السليمة ══');
+{
+  const pend = w.svaLists().pending, clean = w.svaClean(pend), ids = new Set(clean.map(x => x.id));
+  const okOne = x => { const r = x.rec || {}; return (!r.access || r.access === 'تم الوصول') && r.review !== 'revisit' && w.execIsNone(w.execLabelOf(w.execStatusMemo(x.site))) && (!r.suit || r.suit === 'مناسب') && w.svqPhotoCount(x.id) >= 2; };
+  T(clean.every(okOne), 'كلُّ ما يُحدَّد سليمٌ فعلًا: وصل، ولا تحدي، وصورتان، ومناسب (' + clean.length + ' من ' + pend.length + ')');
+  T(pend.filter(x => !ids.has(x.id)).every(x => !okOne(x)), 'وما لا يُحدَّد فيه سببٌ واحدٌ على الأقل');
+  const ROLE0 = w.ROLE; w.ROLE = 'tech';
+  T(!w.may('approve'), 'والفنيُّ لا يملك الاعتماد'); w.ROLE = ROLE0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);
