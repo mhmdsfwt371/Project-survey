@@ -324,6 +324,23 @@ try {
   if (recovered) console.log(`::notice::استُعيد ${recovered} صورةً كانت سجلاتُها كُتبت فوقها`);
   if (found.length) await SEEN.set({ ids: [...seen].slice(-3000), at: Date.now() }, { merge: true });
 } catch (e){ console.log('::warning::الاستعادة: ' + explain(e).slice(0, 160)); }
+/* (V39.90) exact duplicates: Drive gives each file an md5 — on every point that has recovered photos, each photo record gets
+   its file's md5 once, so the app can say «نفس الملف» with certainty instead of guessing by kind and uploader. Nothing is
+   deleted here; the office decides. Bounded: only those points, only records still without md5. */
+try {
+  const rec = await db.collection('photos').where('recovered', '==', true).limit(300).get();
+  const sites = [...new Set(rec.docs.map(d => d.data().site).filter(Boolean))];
+  let n = 0;
+  for (const site of sites){
+    const ps = await db.collection('photos').where('site', '==', site).get();
+    for (const d of ps.docs){
+      const p = d.data(); if (p.md5 || !p.driveId || p.del) continue;
+      try { const f = await drive.files.get({ fileId: p.driveId, fields: 'md5Checksum', supportsAllDrives: true });
+        if (f.data && f.data.md5Checksum){ await d.ref.set({ md5: f.data.md5Checksum }, { merge: true }); n++; } } catch (e){ /* a file gone from Drive keeps no md5 */ }
+    }
+  }
+  if (n) console.log('بصماتُ الملفات: ' + n + ' صورة على ' + sites.length + ' نقطة');
+} catch (e){ console.log('::warning::البصمات: ' + explain(e).slice(0, 160)); }
 
 const snap = await db.collection('photos').where('status', '==', 'pending').limit(150).get();
 if (snap.empty){ console.log('لا صورَ منتظرة'); process.exit(0); }

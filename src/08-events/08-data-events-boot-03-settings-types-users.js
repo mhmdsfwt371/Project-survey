@@ -143,9 +143,9 @@ function typesCard(){
       ? card('إضافة نوع',
           '<div class="grid cols-3">'
           + '<div class="field"><label>' + esc(t('النوع')) + ' <span class="req">*</span></label>'
-          +   '<input id="tyK" dir="auto" placeholder="مبنى خدمات"></div>'
+          +   '<input id="tyK" dir="auto" placeholder="' + esc(t('مبنى خدمات')) + '"></div>'
           + '<div class="field"><label>' + esc(t('الاسم المعروض')) + '</label>'
-          +   '<input id="tyL" dir="auto" placeholder="مباني الخدمات"></div>'
+          +   '<input id="tyL" dir="auto" placeholder="' + esc(t('مباني الخدمات')) + '"></div>'
           + '<div class="field"><label>' + esc(t('الرمز')) + '</label>'
           +   '<input id="tyI" dir="ltr" placeholder="\u25CF"></div>'
           + '<div class="field"><label>' + esc(t('اللون')) + '</label>'

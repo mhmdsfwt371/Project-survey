@@ -112,6 +112,10 @@ function clickTables(e){
   }
   /* (V39.7) a conversation handed to someone at my rank or below: they get the question and a button to reply to its owner,
      and the owner is told who will answer */
+  return clickTablesB(e);   /* (V39.90) split at a statement no local crosses — under the 150-line cap */
+}
+/* (V39.90) the second half of clickTables — same handlers, same order */
+function clickTablesB(e){
   var chf2 = e.target.closest('[data-chfwd]');
   if (chf2){ var fk = chf2.getAttribute('data-chfwd'); chOpenHtml.fwd = chOpenHtml.fwd === fk ? '' : fk; render(1); return true; }
   var chft = e.target.closest('[data-chfwdto]');

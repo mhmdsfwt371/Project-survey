@@ -459,7 +459,7 @@ PAGE.items = { m:'الإعدادات', t:'الكتالوج والقوائم',
         ? card('إضافة نوع',
             '<div class="grid cols-3">'
             + '<div class="field"><label>' + esc(t('اسم النوع')) + ' <span class="req">*</span></label>'
-            +   '<input id="vkN" dir="auto" placeholder="ونش"></div>'
+            +   '<input id="vkN" dir="auto" placeholder="' + esc(t('ونش')) + '"></div>'
             + '<div class="field"><label>' + esc(t('ما يُستعمَل له')) + '</label>'
             +   '<input id="vkD" dir="auto"></div>'
             + '<div class="field"><label>' + esc(t('السعة')) + '</label>'

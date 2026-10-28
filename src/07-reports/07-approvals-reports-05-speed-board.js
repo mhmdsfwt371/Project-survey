@@ -557,7 +557,7 @@ if (cur === 'vers') return head + (function(){
                   ['الأسرع نموًّا','إشارات','wrn'],
                   ['حدّ الخطة المجانية','١ ج.ب','acc']])
       + card('مجموعات البيانات',
-          table(['المجموعة','سجلات','م.ب','مدة الاحتفاظ','السياسة'],
+          table(['المجموعة','سجلات', t('م.ب'),'مدة الاحتفاظ','السياسة'],
             SETS.map(function(s){
               return [esc(t(s[0])), '<span class="num">'+nm(s[1])+'</span>',
                       '<span class="num">'+s[2]+'</span>',
@@ -629,9 +629,11 @@ function recoveredPhotos(){
     (by[p.site] = by[p.site] || []).push(p);
   });
   return Object.keys(by).map(function(id){
-    var L = by[id].sort(function(a, b){ return (b.at || 0) - (a.at || 0); }), seen = {}, dup = 0;
+    var L = by[id].sort(function(a, b){ return (b.at || 0) - (a.at || 0); }), seen = {}, dup = 0, same = 0, md = {};
     L.forEach(function(p){ var k = (p.kind || '') + '|' + (p.by || ''); if (seen[k]) dup++; seen[k] = 1; });
-    return { id:id, x:(STATE.sites || []).filter(function(s){ return s.id === id; })[0] || { id:id }, list:L, dup:dup, at:L[0].at || 0 };
+    /* (V39.90) certainty: the same Drive file (md5) twice on this point, recovered or not */
+    Object.keys(STATE.photos || {}).forEach(function(k){ var p = STATE.photos[k]; if (!p || p.site !== id || p.del || !p.md5) return; if (md[p.md5]) same++; md[p.md5] = 1; });
+    return { id:id, x:(STATE.sites || []).filter(function(s){ return s.id === id; })[0] || { id:id }, list:L, dup:dup, same:same, at:L[0].at || 0 };
   }).sort(function(a, b){ return b.at - a.at; });
 }
 function recoveredPhotosHtml(){
@@ -644,7 +646,7 @@ function recoveredPhotosHtml(){
         var who = {}; o.list.forEach(function(p){ if (p.by) who[typeof dispName === 'function' ? dispName(p.by) : p.by] = 1; });
         return '<button type="button" class="btn btn-quiet btn-sm" data-site="' + esc(o.id) + '" style="width:100%;justify-content:space-between;margin-bottom:4px;text-align:start">'
           + '<span>' + esc(o.x.name ? o.x.name + ' \u00b7 ' + o.id : o.id) + ' <span class="hint" style="margin:0">' + esc(Object.keys(who).join('، ')) + '</span>'
-          + (o.dup ? ' <span class="pill" style="border-color:#F59E0B;color:#F59E0B">' + esc(t('قد تكون مكرّرة')) + '</span>' : '') + '</span>'
+          + (o.same ? ' <span class="pill" style="border-color:#EF4444;color:#EF4444">' + nm(o.same) + ' ' + esc(t('مكرّرة — نفس الملف')) + '</span>' : o.dup ? ' <span class="pill" style="border-color:#F59E0B;color:#F59E0B">' + esc(t('قد تكون مكرّرة')) + '</span>' : '') + '</span>'
           + '<b class="num">' + nm(o.list.length) + '</b></button>';
       }).join(''));
 }

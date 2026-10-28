@@ -220,8 +220,8 @@ function fieldList(){
         }).join('') + '</div>'
         + (L.length > view.length
           ? '<div style="padding:12px 16px;text-align:center">'
-            + btn('اعرض ' + nm(Math.min(PV.LIST_PAGE, L.length - view.length)) + ' أخرى — '
-                  + nm(L.length - view.length) + ' متبقية','btn-secondary btn-sm',' data-more="1"')
+            + btn(t('اعرض') + ' ' + nm(Math.min(PV.LIST_PAGE, L.length - view.length)) + ' ' + t('أخرى') + ' — '
+                  + nm(L.length - view.length) + ' ' + t('متبقية'),'btn-secondary btn-sm',' data-more="1"')
             + '</div>'
           : '')
       : '<p class="hint" style="padding:18px;text-align:center;margin:0">لا نتائج لـ«' + esc(SITE_Q) + '»'

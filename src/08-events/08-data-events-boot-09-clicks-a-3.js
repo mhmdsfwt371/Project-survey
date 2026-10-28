@@ -181,6 +181,10 @@ function clickAPart7(e){
   if (fl){ if (mapUIHtml.s) mapUIHtml.s.open = false; POP_SITE = fl.getAttribute('data-fly'); POP_OPEN = true; if (typeof SV_POP !== 'undefined'){ SV_POP = ''; PV.SV_PHO = ''; } CUR = 'map'; render();   /* (V38.75) the list window closes — it would cover the map */
            if (typeof MAP === 'undefined' || !MAP) toast('\u23F3 ' + t('تُفتَح الخريطةُ على النقطة…'));   /* (V38.21) يرى أن الضغطة وصلت */
            mapFlySoon(POP_SITE); return true; }   /* (V38.20) ينتظر الخريطة */
+  return clickAPart7B(e);   /* (V39.90) split at a statement no local crosses — under the 150-line cap */
+}
+/* (V39.90) the second half of clickAPart7 — same handlers, same order */
+function clickAPart7B(e){
   var fm = e.target.closest('[data-form]');
   if (fm && !/^(INPUT|SELECT|TEXTAREA|OPTION|LABEL)$/.test(fm.tagName)){
     formGo(fm.getAttribute('data-form')); CUR = 'svForm'; render(1); return true; }

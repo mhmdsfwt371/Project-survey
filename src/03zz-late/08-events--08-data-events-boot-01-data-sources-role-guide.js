@@ -56,7 +56,7 @@ function roleGuide(k){
       }).join('')
 
     + (sops.length
-      ? cardFlush('دوراتُ عمله — ' + nm(sops.length),
+      ? cardFlush(t('دوراتُ عمله') + ' — ' + nm(sops.length),
           table(['الدورة','ما يبدؤها','خطواتها'],
             sops.map(function(sp){
               return [sp.i + ' ' + esc(t(sp.n)), esc(t(sp.trig || '')), N(sp.steps.length)];
