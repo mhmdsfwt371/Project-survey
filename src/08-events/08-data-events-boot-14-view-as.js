@@ -2,7 +2,7 @@
    FILE    : src/08-events/08-data-events-boot-14-view-as.js
    DOMAIN  : Data & events — settings, users, click handlers, boot
    PURPOSE : «View as user» for the admin: see the app with another person's role and name — nothing is saved meanwhile.
-   DEFINES : viewAsOn, viewAsUsers, viewAsSheet, viewAsStart, viewAsStop, viewAsBanner, viewAsBlock
+   DEFINES : viewAsPurge, viewAsOn, viewAsUsers, viewAsSheet, viewAsStart, viewAsStop, viewAsBanner, viewAsBlock
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              design notes.
    ============================================================================ */
@@ -57,6 +57,9 @@ function viewAsStart(uid){
 }
 function viewAsStop(quiet){
   var V = PV.VIEW_AS; if (!V) return false;
+  /* (V39.94) leaving reloads the app: whatever the screens changed in memory while viewing (an attendance tap, a log line)
+     is dropped with the page — the device and the queue were never written meanwhile */
+  if (!quiet){ PV.VIEW_AS = null; try { location.reload(); } catch (e){ LS_ERR = e; } return true; }
   ROLE = V.real.role; STATE.meta.role = V.real.mrole; STATE.meta.name = V.real.name; STATE.meta.uid = V.real.uid;
   viewAsBlock(false); PV.VIEW_AS = null;
   if (typeof DB === 'object' && DB.memoReset) DB.memoReset();
@@ -70,4 +73,24 @@ function viewAsBanner(){
   b.setAttribute('style', 'position:fixed;left:0;right:0;bottom:0;z-index:9999;display:flex;gap:8px;align-items:center;justify-content:space-between;padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));background:#7C3AED;color:#fff;font-size:13px');
   b.innerHTML = '<span>\u{1F441} ' + esc(t('تعرض كـ')) + ' <b>' + esc(V.as.name) + '</b> (' + esc(t(typeof roleName === 'function' ? roleName(V.as.role) : V.as.role)) + ') \u00b7 ' + esc(t('لا شيءَ يُحفَظ')) + '</span>'
     + '<button type="button" class="btn btn-sm" data-vastop="1" style="background:#fff;color:#7C3AED">\u21A9 ' + esc(t('رجوع لحسابي')) + '</button>';
+}
+
+/* (V39.94) the first view-as session (V39.92, 28 Oct) let two things through that did not pass CORE.set: the event log
+   («بدأ يومَه — خالد بندر سعيد» / «أنهى يومَه») went straight into the upload queue, and the attendance tap changed this
+   phone's copy. Before any upload, once per session: event lines queued under another person's name with no recorder
+   (a real «on behalf of» line always carries rec) are dropped, and attendance kept only on this phone for another person
+   (never uploaded, so no _at stamp) is removed. */
+function viewAsPurge(){
+  viewAsPurge.done = true;
+  var me = STATE.meta.name || '', uid = STATE.meta.uid || '', n = 0;
+  if (!me || PV.VIEW_AS) return 0;
+  STATE.queue = (STATE.queue || []).filter(function(q){
+    var bad = q && q.kind === 'evlog' && q.v && q.v.by && q.v.by !== me && !q.v.rec;
+    if (bad){ n++; if (STATE.evlog) delete STATE.evlog[q.id]; }
+    return !bad;
+  });
+  if (STATE.events) STATE.events = STATE.events.filter(function(e){ return !(e && e.by && e.by !== me && !e.rec && e.dev === DEV_ID && !e._at); });
+  Object.keys(STATE.att || {}).forEach(function(k){ var r = STATE.att[k]; if (r && r.uid && r.uid !== uid && !r._at && !r._by){ delete STATE.att[k]; n++; } });
+  if (n){ if (typeof logEventQuiet === 'function') logEventQuiet('أُزيل ' + n + ' من أثر جلسة «اعرض كمستخدم»'); if (CORE.saveSoon) CORE.saveSoon(); }
+  return n;
 }

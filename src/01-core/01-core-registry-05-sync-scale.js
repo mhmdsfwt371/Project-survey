@@ -80,6 +80,7 @@ var CORE = {
      فلا يُثقَل القرصُ بخمسين كتابةً كاملةً للحالة. والطابور محدودٌ بألفين
      فلا يملأ الذاكرةَ انقطاعٌ طويل — وأقدمُه يُسقَط أولًا مع تحذير. */
   dirty: function(kind, id, v){
+    if (typeof PV === 'object' && PV.VIEW_AS) return;   /* (V39.94) view-as: nothing enters the upload queue (the event log wrote here directly) */
     /* معرِّفٌ فارغٌ أو فيه «/» ينفجر عند بناء المرجع فيُسقِط الدفعةَ كلَّها —
        يُرفَض هنا ويُقال، ولا يدخل الطابور */
     if (!CORE.validId(id)){
@@ -159,6 +160,7 @@ var CORE = {
     } catch (e){ LS_ERR = e; return 0; }
   },
   saveLocal: function(){
+    if (typeof PV === 'object' && PV.VIEW_AS) return Promise.resolve();   /* (V39.94) view-as: nothing is kept on the device either */
     CORE.qbakSave();
     if (PV.PH_DIRTY){ PV.PH_DIRTY = false; var PHS = {}; Object.keys(STATE.photos || {}).forEach(function(k){ PHS[k] = photoSlim(STATE.photos[k]); }); idbSet('photos', PHS); }   /* (V37.18) */
     return idbSet('state', {
@@ -286,6 +288,7 @@ var CORE = {
   /* الرفع — يُحاوَل ويُترك الطابور إن فشل */
   _busy: false,
   flush: function(){
+    if (typeof viewAsPurge === 'function' && !viewAsPurge.done) viewAsPurge();   /* (V39.94) before anything leaves this phone */
     if (typeof PV === 'object' && PV.VIEW_AS) return Promise.resolve({ ok:[], failed:[], viewAs:true });   /* (V39.92) the queue waits while the admin views as someone */
     if (typeof pzInssRetry === 'function') pzInssRetry();   /* (V38.57) installs the old rule refused come back to the queue */
     if (!STATE.meta.online || !STATE.queue.length) return Promise.resolve(0);

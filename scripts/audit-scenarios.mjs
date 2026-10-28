@@ -2273,6 +2273,9 @@ console.log('\n══ ٩٦ · اعرض كمستخدم ══');
   const before = JSON.stringify(w.STATE.recs['ZZ-VA'] || null);
   w.CORE.set('recs', 'ZZ-VA', { id:'ZZ-VA', st:'تمت الزيارة' });
   T(JSON.stringify(w.STATE.recs['ZZ-VA'] || null) === before && !(w.STATE.queue || []).some(q => q.id === 'ZZ-VA'), 'ولا شيءَ يُحفَظ: الكتابةُ المحليةُ والطابورُ يرفضانها');
+  const qn = (w.STATE.queue || []).length, en = (w.STATE.events || []).length;
+  w.logEvent('بدأ يومَه — عمار التجربة · خارج النطاق');
+  T((w.STATE.queue || []).length === qn, 'وسطرُ السجلّ لا يدخل طابورَ الرفع أثناء العرض (كان يمرّ مباشرةً — V39.94)');
   let posted = 'no'; await w.fetch('https://example.invalid/x', { method:'POST' }).then(() => { posted = 'sent'; }, () => { posted = 'refused'; });
   T(posted === 'refused', 'وأيُّ طلبٍ يكتب على الشبكة يُرفَض');
   w.viewAsStop(true);
@@ -2291,6 +2294,20 @@ console.log('\n══ ٩٧ · حدّد السليمة ══');
   T(pend.filter(x => !ids.has(x.id)).every(x => !okOne(x)), 'وما لا يُحدَّد فيه سببٌ واحدٌ على الأقل');
   const ROLE0 = w.ROLE; w.ROLE = 'tech';
   T(!w.may('approve'), 'والفنيُّ لا يملك الاعتماد'); w.ROLE = ROLE0;
+}
+
+/* ── ٩٨ · (V39.94) تنظيفُ أثر أوّل جلسة عرض قبل أيِّ رفع ── */
+console.log('\n══ ٩٨ · تنظيفُ أثر العرض ══');
+{
+  const q0 = (w.STATE.queue || []).slice(), att0 = Object.assign({}, w.STATE.att || {}), name0 = w.STATE.meta.name, uid0 = w.STATE.meta.uid;
+  w.STATE.meta.name = 'المدير'; w.STATE.meta.uid = 'ADMIN1';
+  w.STATE.queue = [{ kind:'evlog', id:'E1', v:{ id:'E1', what:'بدأ يومَه — خالد', by:'خالد' } }, { kind:'evlog', id:'E2', v:{ id:'E2', what:'اعتماد — X', by:'خالد', rec:'المدير' } }, { kind:'evlog', id:'E3', v:{ id:'E3', what:'دخول', by:'المدير' } }, { kind:'recs', id:'R1', v:{ id:'R1', by:'خالد' } }];
+  w.STATE.att = Object.assign({}, att0, { 'K1|2026-10-28':{ uid:'K1', name:'خالد', in:{ at:1 } }, 'K2|2026-10-28':{ uid:'K2', name:'خالد', in:{ at:1 }, _at:5 } });
+  w.viewAsPurge.done = false; const n = w.viewAsPurge();
+  const ids = w.STATE.queue.map(q => q.id).join(',');
+  T(ids === 'E2,E3,R1' && !w.STATE.att['K1|2026-10-28'] && !!w.STATE.att['K2|2026-10-28'] && n === 2,
+    'يُزال سطرُ السجلّ المكتوب باسم غيرك بلا مسجِّل، والحضورُ الذي لم يُرفَع لغيرك — ويبقى سطرُ «نيابةً» وسطرُك وزيارةُ الفني والحضورُ القادم من القاعدة (' + ids + ')');
+  w.STATE.queue = q0; w.STATE.att = att0; w.STATE.meta.name = name0; w.STATE.meta.uid = uid0;
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

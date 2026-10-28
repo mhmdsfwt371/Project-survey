@@ -1,1 +1,2 @@
-PASS
+FAIL
+✗ سيورُ السحابة —   ✗ لا خطوةَ تثبيتٍ بلا إعادة — viewas-cleanup.yml → npm i firebase-admin@12 --no-save --no-audit | جردُ سيور السحابة فشل ✗ (1)
