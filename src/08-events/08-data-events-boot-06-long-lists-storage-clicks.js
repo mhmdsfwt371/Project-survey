@@ -359,6 +359,7 @@ function enterShell(){
     CUR = sp.cur;
     if (sp.tab && TABS[sp.cur]) PTAB[sp.cur] = sp.tab;
   }
+  try { if (fieldDayStart()){ CUR = 'mywork'; PTAB.mywork = 'mine'; } } catch (e){ LS_ERR = e; }   /* (V39.85) */
   bootStage('shell');
   render();
   bootStage('render:' + CUR);   /* (V34.2) والصفحةُ في المرحلة نفسِها */

@@ -2208,6 +2208,28 @@ console.log('\n══ ٩٢ · القائمةُ الحيّة ══');
   w.pageHist.m = null; w.navPins.m = null;
 }
 
+/* ── ٩٣ · (V39.85) «شغلي» أوّلُ شاشةٍ لحساب الميدان كلَّ يوم، وبطاقةُ ما على الجهاز ── */
+console.log('\n══ ٩٣ · شغلي أوّلًا ══');
+{
+  const role0 = w.ROLE, ds0 = w.localStorage.getItem('nsk14.dayStart'), q0 = w.PHOTO_Q.slice(), sq0 = (w.STATE.queue || []).slice(), on0 = w.STATE.meta.online;
+  w.localStorage.removeItem('nsk14.dayStart');
+  w.ROLE = 'tech';
+  const first = w.seesPage('mywork') ? w.fieldDayStart() : 'n/a', second = w.fieldDayStart();
+  T(first === true && second === false, 'حسابُ الميدان: أوّلُ فتحٍ في اليوم يبدأ بـ«شغلي»، والفتحاتُ بعده ترجع لآخر شاشة');
+  w.localStorage.removeItem('nsk14.dayStart'); w.ROLE = 'admin';
+  const off = w.fieldDayStart(); w.localStorage.removeItem('nsk14.dayStart'); w.ROLE = 'engineer';
+  T(off === false && w.fieldDayStart() === false, 'وحسابُ المكتب والمهندسُ لا يتغيّر عليهما شيء — يبدآن كما كانا');
+  w.PHOTO_Q.length = 0; w.STATE.queue = []; w.STATE.meta.online = true;
+  T(/كلُّ شغلك وصل المكتب/.test(w.myQueueCard()), 'وبلا شيءٍ على الجهاز: «كلُّ شغلك وصل المكتب»');
+  w.PHOTO_Q.push({ site:'X', kind:'extra', data:'d', at:1, seq:1 }); w.STATE.queue.push({ kind:'recs', id:'X', v:{} });
+  const h = w.myQueueCard();
+  T(/على جهازك ولم يصل المكتب بعد/.test(h) && /data-pushnow="1"/.test(h) && /صورة/.test(h) && /تعديل/.test(h), 'ومع صورةٍ وتعديلٍ في الطابور: بطاقةٌ بعددهما وزرُّ «ادفع الآن»');
+  w.STATE.meta.online = false;
+  T(!/data-pushnow/.test(w.myQueueCard()) && /بلا اتصال/.test(w.myQueueCard()), 'وبلا اتصال: لا زرّ، ويقول إنه يُرفع وحده أوّلَ ما يرجع النت');
+  w.ROLE = role0; if (ds0 == null) w.localStorage.removeItem('nsk14.dayStart'); else w.localStorage.setItem('nsk14.dayStart', ds0);
+  w.PHOTO_Q.length = 0; q0.forEach(x => w.PHOTO_Q.push(x)); w.STATE.queue = sq0; w.STATE.meta.online = on0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V39.84",
+  "app_version": "V39.85",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2346,7 +2346,8 @@
   "V39.81": "provision.yml: cron */5، دورة واحدة، timeout 20، cancel-in-progress false · docs-check.yml: ٦ شرائح",
   "V39.82": "train.yml: permissions.issues write + خطوةُ قفل المسائل بعد الترقية (gh issue close)",
   "V39.83": "navMain/navScores (pageHist ١٤ يومًا، آخر ٧ ×٢) · navPins/navPinSet (nsk14.navpin) · navLiveHint · ضغطةٌ مطوّلة/زرٌّ أيمن على a.sub · سيناريو ٩٢ · بلا متغيّرات عامة جديدة",
-  "V39.84": "PV (01-core boot) · scripts/pv-move.mjs: eslint-scope — قراءاتُ الملف وكتاباتُه من globalScope.through · globals ٦٧٥ ← ٥٥٧ · صفرُ أخطاء no-undef"
+  "V39.84": "PV (01-core boot) · scripts/pv-move.mjs: eslint-scope — قراءاتُ الملف وكتاباتُه من globalScope.through · globals ٦٧٥ ← ٥٥٧ · صفرُ أخطاء no-undef",
+  "V39.85": "fieldDayStart (nsk14.dayStart، يومُ مكة، isFieldRole، لا بعد الانهيار) · myQueueCard (PHOTO_Q · STATE.queue · PHOTO_FAIL · data-pushnow) · سيناريو ٩٣"
   },
   "map_and_geolocation": {
     "tile_layers": {

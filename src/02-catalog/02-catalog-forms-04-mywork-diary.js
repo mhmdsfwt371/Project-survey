@@ -16,6 +16,29 @@
    نفسُ الأرقام ونفسُ الجداول ونفسُ الصلاحيات — وإنما صار المدخلُ واحدًا.
    والشريحةُ لا تظهر لمن لا يملك أصلَها: من لا يرى «فريقي» لا تظهر له. */
 
+/* (V39.85) owner approved: «شغلي أول شاشة للفني». A field account's first open of each Makkah day lands on «شغلي»
+   (its own tasks, the day's count, attendance) instead of wherever it was yesterday; later opens the same day return to
+   the last screen as before. Not after a crash (the lite boot keeps its own rule). */
+function fieldDayStart(){
+  /* technicians and installation crews only — the engineer and the supervisor keep their own start (they review and assign) */
+  var who = typeof effRole === 'function' ? effRole(ROLE) : ROLE;
+  if ((typeof BOOT_GUARD === 'object' && BOOT_GUARD && BOOT_GUARD.crashes) || !({ tech:1, cins:1, casm:1, cprep:1 })[who] || !seesPage('mywork')) return false;
+  var dk = dayKey(); if (lsGet('nsk14.dayStart') === dk) return false;
+  lsSet('nsk14.dayStart', dk); return true;
+}
+/* what this phone still holds for the office — photos and edits not uploaded yet — with «ادفع الآن» */
+function myQueueCard(){
+  var ph = (typeof PHOTO_Q !== 'undefined' && PHOTO_Q) ? PHOTO_Q.length : 0, fl = (typeof PHOTO_FAIL !== 'undefined' && PHOTO_FAIL) ? PHOTO_FAIL.length : 0;
+  var ed = (STATE.queue || []).length;
+  if (!ph && !ed && !fl) return '<div class="hint" style="margin:0 0 10px">\u2705 ' + esc(t('كلُّ شغلك وصل المكتب — لا شيء ينتظر على جهازك')) + '</div>';
+  return card('\u{1F4E4} ' + t('على جهازك ولم يصل المكتب بعد'),
+    '<div style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 8px">'
+    + (ph ? '<span class="pill" style="border-color:#F59E0B;color:#F59E0B">' + nm(ph) + ' ' + esc(t('صورة')) + '</span>' : '')
+    + (ed ? '<span class="pill" style="border-color:#F59E0B;color:#F59E0B">' + nm(ed) + ' ' + esc(t('تعديل')) + '</span>' : '')
+    + (fl ? '<span class="pill" style="border-color:#EF4444;color:#EF4444">' + nm(fl) + ' ' + esc(t('صورة تعذّر رفعها')) + '</span>' : '') + '</div>'
+    + '<p class="hint" style="margin:0 0 8px">' + esc(t(STATE.meta.online ? 'يُرفع وحده — أو اضغط «ادفع الآن».' : 'أنت بلا اتصال — يُرفع وحده أوّلَ ما يرجع النت.')) + '</p>'
+    + (STATE.meta.online && (ph || ed) ? '<div class="actions">' + btn('\u2191 ' + t('ادفع الآن'), 'btn-primary btn-sm', ' data-pushnow="1"') + '</div>' : ''));
+}
 PAGE.mywork = { m:'الميدان', t:'شغلي',
   l:'مهامُّك وجدولُك وأداؤك وفريقُك — في شاشةٍ واحدة.',
   body:function(){
@@ -36,7 +59,8 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
     var day = dayKey();
     var doneToday = (e.days && e.days[day]) || 0;
 
-    return attMyCard()
+    return myQueueCard()   /* (V39.85) */
+      + attMyCard()
       + routeCard()
       + stats([['مُسند إليّ', N(mine.length), mine.length ? 'wrn' : 'ok'],
                   ['أنجزتُ اليوم', N(doneToday), 'ok'],
