@@ -299,6 +299,7 @@ function shrink(file, max, q){
    الإعادة كما كان، ويُمسَح عند الحفظ أو تبديل النقطة. مسودةُ حسابٍ آخر على الجهاز نفسِه لا تُفتَح، وتسقط بعد يوم. */
 var SVD = { checked:false, t:0, dirty:false };   /* dirty: في النموذج ما لم يُحفَظ */
 function svDraftSave(){
+  if (PV.VIEW_AS) return;   /* (V39.95) no draft under another person's name */
   try {
     if (typeof FORM !== 'object' || !FORM || !FORM.site || typeof idbSet !== 'function') return;
     idbSet('svDraft', { at:Date.now(), by:(STATE.meta && STATE.meta.name) || '', form:JSON.parse(JSON.stringify(FORM)) }).catch(function(e){ LS_ERR = e; });

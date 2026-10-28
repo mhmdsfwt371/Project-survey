@@ -138,6 +138,7 @@ function photoTag(){
 }
 
 function photoQueue(siteId, kind, dataUrl){
+  if (PV.VIEW_AS){ toast(t('وضعُ العرض — لا شيءَ يُحفَظ')); return false; }   /* (V39.95) no photo queued under another person's name */
   var pq = dataUrl ? PV.PHOTO_Q_IX[String(dataUrl).length + ':' + String(dataUrl).slice(-64)] : null;   /* (V30.6) */
   if (pq && photoDupOf(siteId, pq)) toast('\u26A0 ' + t('هذه الصورة تكاد تطابق صورةً سابقةً لنفس النقطة'));
   PHOTO_Q.push({ site:siteId, kind:kind, data:dataUrl, at:Date.now(), tries:0,

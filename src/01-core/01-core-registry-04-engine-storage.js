@@ -170,6 +170,7 @@ function idbGet(k){
 }
 
 function idbSet(k, v){
+  if (typeof PV === 'object' && PV.VIEW_AS) return Promise.resolve();   /* (V39.95) view-as: the device is never written — drafts, photo queue, caches */
   return idbOpen().then(function(db){
     return new Promise(function(res, rej){
       var tx = db.transaction(PV.IDB_STORE, 'readwrite');
