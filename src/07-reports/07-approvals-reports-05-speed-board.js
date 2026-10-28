@@ -315,7 +315,6 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
         : card('', '<p class="hint" style="text-align:center;margin:0">' + esc(t('لا شيءَ بانتظار الرفع — كلُّ ما سُجّل وصل.')) + '</p>'));
   })();
     if (cur === 'integ') return head + integTabHtml();   /* (V39.70) */
-    if (cur === 'iotdash') return head + iotDashHtml();   /* (V40.7) */
     if (cur === 'dq') return head + (function(){
     var dup = dqDupPos(), noco = dqNoCo(), comp = dqCompound(), nosign = dqNoSign(), far = dqFar();
     var compN = Object.keys(comp).length, compPts = Object.keys(comp).reduce(function(a, k){ return a + comp[k].length; }, 0);

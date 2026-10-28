@@ -14,7 +14,7 @@ var NAV = [
   /* «الطلبات والمسح» كانت وحدةً وحدَها: طلباتٌ ودورةُ نقطةٍ واعتمادٌ — وكلُّها
      عملُ الميدان ومتابعتُه، فتُقرأ من مكانٍ واحد */
   { g:'الميدان', icon:'\u25F1', items:[
-      ['sites','المواقع'],['mywork','شغلي'],['chat','المحادثات'],['survey','متابعة العمل الميداني'],['req','الطلبات والتوزيع'],
+      ['sites','المواقع'],['mywork','شغلي'],['chat','المحادثات'],['survey','متابعة العمل الميداني'],['iotdash','الحساسات والجيت واي'],['req','الطلبات والتوزيع'],
       ['sel','الطبقات والمحدَّد'],['tfwdraw','رسم المسارات من وإلى الجمرات'],['fleet','السيارات'],
       ['forms','النماذج الميدانية'],['recs','السجلات'],['tools','الأدوات']] },
   { g:'المتابعة', icon:'\u25A6', items:[
@@ -143,7 +143,7 @@ function navHtml(){
       + '</div></div>';
   }).join('') + navMoreHtml(more);
 }
-navHtml.main = ['map', 'sites', 'mywork', 'chat', 'survey', 'req', 'sel', 'fleet', 'forms',
+navHtml.main = ['map', 'sites', 'mywork', 'chat', 'survey', 'iotdash', 'req', 'sel', 'fleet', 'forms',
                 'mfu', 'over', 'wtask', 'exec', 'co', 'pts', 'perf', 'users', 'ev', 'guide', 'acct'];
 /* (V39.83) owner: «المفروض تبقى بناءً على الاستخدام — اللي مش بستخدمه كتير يبقى في المزيد». The list above becomes the
    default for a person without enough history; after that, this device's own page history (pageHist — 14 Makkah days,

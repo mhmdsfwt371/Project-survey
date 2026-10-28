@@ -90,6 +90,11 @@ function integNusukHtml(){
      the bridge starts on it once the card system's login steps reach us — nothing is guessed. */
   return card('\u{1F3AB} ' + t('نظام البطاقات') + ' — ' + t('القارئات والكاميرات'),
     '<p class="hint" style="margin:0 0 8px">' + esc(t('يُحفظ الحسابُ الآن في المكان المحمي نفسه. السحبُ منه يبدأ حين تصلنا خطواتُ الدخول من فريقهم (الرسالةُ جاهزة) — وإن طلبت المنصةُ كودًا يظهر لك هنا مكانٌ تكتبه فيه.')) + '</p>'
+    + (function(){   /* (V40.8) can the cloud reach the Nusuk API? measured hourly, without any account */
+        var S = integStatusLoad.S, r = S && S.v && S.v.nusukReach; if (!r || !r.at) return '';
+        var ok = !r.cf && (r.st === 401 || r.st === 403 || r.st === 200);
+        return '<div class="hint" style="margin:0 0 8px;color:' + (r.cf ? '#EF4444' : ok ? '#22C55E' : '#F59E0B') + '">' + (r.cf ? '\u26D4 ' + esc(t('منصة نسك بتقفل الطلبات اللي جاية من السحابة (حماية Cloudflare) قبل أي دخول — محتاجين فريقهم يفتحوا لنا الباب')) : ok ? '\u2705 ' + esc(t('منصة نسك بترد على السحابة — الباب مفتوح، ومستني خطوات الدخول')) : '\u26A0\uFE0F ' + esc(t('منصة نسك ما ردّتش على السحابة')) + ' (' + nm(r.st) + ')') + ' \u00b7 ' + esc(t('آخر فحص')) + ' ' + iotDashHtml.age(Date.now() - r.at) + '</div>';
+      })()
     + (function(){ var pub = integPubOf('nusuk'), ed = integAcctHtml.edit && integAcctHtml.edit.nusuk;
         if (pub && !ed) return '<div class="hint" style="margin:0 0 6px">\u{1F7E1} ' + esc(t('الحساب محفوظ')) + ': <b dir="ltr">' + esc(pub.user) + '</b> \u00b7 ' + esc(t('بانتظار خطوات الدخول من فريقهم')) + '</div>' + integAcctHtml('nusuk', 'nskUser', 'nskPass', 'الإيميل أو اسم المستخدم', '');
         return integAcctHtml('nusuk', 'nskUser', 'nskPass', 'الإيميل أو اسم المستخدم', '') + '<div class="actions" style="margin-top:8px">' + btn('\u{1F4BE} ' + t('احفظ الحساب'), 'btn-secondary', ' data-integsave="nusuk"') + (pub ? btn(t('إلغاء'), 'btn-quiet', ' data-integedit="nusuk"') : '') + '</div>'; })());
@@ -355,3 +360,7 @@ iotDashHtml.act = function(a){
   }
   render(1);
 };
+
+/* (V40.8) the owner: «خلّي الصفحة دي في الميدان — داشبورد الحساسات والجيت واي». Its own page in the field group (admin,
+   engineer, supervisor), no longer a tab under system health. */
+PAGE.iotdash = { m:'الميدان', t:'الحساسات والجيت واي', l:'كلُّ جهاز: محدَّثٌ أم لا، باسم النقطة والسيريال.', body:function(){ return iotDashHtml(); } };

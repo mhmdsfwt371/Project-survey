@@ -2411,6 +2411,9 @@ console.log('\n══ ١٠٤ · داشبورد تحديث الأجهزة ══'
   T(ms < 1500 && (h3.split('<tr>').length - 2) === 100, 'خمسةُ آلاف جهاز: تُحسب كلُّها وتُعرض ١٠٠ — في ' + ms + ' مللي ثانية');
   w.IOT.data = D0; w.IOT.live = L0; w.iotDashHtml.F = F0;
 }
+{ /* (V40.8) the dashboard is its own page in the field group */
+  T(w.PAGE.iotdash && w.PAGE.iotdash.m === 'الميدان' && typeof w.PAGE.iotdash.body === 'function' && (w.ROLES.supervisor.nav || []).indexOf('iotdash') > -1, 'الداشبورد صفحةٌ في «الميدان» للمدير والمهندس والمشرف — لا تبويبٌ في صحة النظام');
+}
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');

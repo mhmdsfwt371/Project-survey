@@ -234,7 +234,19 @@ async function proPull(why){
   }
 }
 
-exports.integTick = onSchedule({ schedule:'every 5 minutes', timeZone:'Asia/Riyadh' }, async () => { await proPull('schedule'); });
+/* (V40.8) can the cloud reach the Nusuk card API at all? The site sits behind Cloudflare, which turned our test machine away
+   («Attention Required», 403) — so once an hour, without any account, ask for one tent: 401 means the door is reachable
+   (it only wants a login); a Cloudflare page means requests from the cloud are blocked before any login. */
+async function nusukProbe(){
+  const ref = db.collection('settings').doc('integStatus'), prev = (((await ref.get()).data() || {}).nusukReach) || {};
+  if (prev.at && Date.now() - prev.at < 3600e3) return;
+  let st = 0, cf = false, ms = Date.now();
+  try { const r = await fetch('https://api.nusukcard.net/api/v1/tents?page=1&perPage=1', { headers:{ accept:'application/json' }, signal:AbortSignal.timeout(15000) });
+    st = r.status; const tx = await r.text(); cf = /cloudflare|attention required|cf-ray/i.test(tx.slice(0, 4000)) || !!r.headers.get('cf-mitigated'); }
+  catch (e){ st = -1; }
+  await ref.set({ nusukReach:{ at:Date.now(), st, cf, ms:Date.now() - ms } }, { merge:true });
+}
+exports.integTick = onSchedule({ schedule:'every 5 minutes', timeZone:'Asia/Riyadh' }, async () => { await proPull('schedule'); try { await nusukProbe(); } catch (e){ /* never blocks the AFAQY PRO pull */ } });
 
 exports.integNow = onCall(async req => {
   if (!req.auth) throw new HttpsError('unauthenticated', 'sign in');
