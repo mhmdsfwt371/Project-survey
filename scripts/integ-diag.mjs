@@ -17,6 +17,17 @@ console.log('الجلسة:', JSON.stringify({ base:T.base || '(integration)', at
 const mine = []; (await db.collection('sites').where('iotJ', '>', '').get()).forEach(d => { try { const c = JSON.parse(d.data().iotJ); [['s', c.sm], ['g', c.gm]].forEach(([k, a]) => (a || []).forEach(m => { const s = String((m && m.serial) || '').trim(); if (s) mine.push({ site:d.id, k, id:m.id || '', s }); })); } catch (e){} });
 console.log('أرقامنا (' + mine.length + '):', mine.map(x => x.site + '/' + x.id + '=' + x.s).join(' | '));
 if (!T.tok){ process.exit(0); }
+/* (V40.6) the session's lifetime — read without printing the token: a JWT's own iat/exp, and what auth/session says */
+{ const parts = String(T.tok).split('.');
+  if (parts.length === 3){ try { const pl = JSON.parse(Buffer.from(parts[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8'));
+      console.log('عمر الجلسة (JWT):', JSON.stringify({ iat:pl.iat && new Date(pl.iat * 1000).toISOString(), exp:pl.exp && new Date(pl.exp * 1000).toISOString(), nbf:pl.nbf, keys:Object.keys(pl) })); } catch (e){ console.log('JWT غير مقروء'); } }
+  else console.log('الجلسة ليست JWT · أجزاء:', parts.length, '· طول:', String(T.tok).length);
+  const b2 = T.base || 'https://api.afaqy.sa';
+  try { const r = await fetch(b2 + '/auth/session?token=' + encodeURIComponent(T.tok), { method:'POST', headers:{ 'content-type':'application/json', accept:'application/json' }, body:'{}' });
+    const j = await r.json().catch(() => ({})); const d = j.data || {};
+    const pick = {}; Object.keys(d).forEach(k => { if (/exp|expire|valid|until|till|session|ttl|time/i.test(k) && typeof d[k] !== 'object') pick[k] = d[k]; });
+    console.log('auth/session:', r.status, JSON.stringify({ status_code:j.status_code, message:j.message, keys:Object.keys(d).slice(0, 40), expiryLike:pick })); } catch (e){ console.log('auth/session: تعذّر', String(e.message || e).slice(0, 80)); }
+}
 const base = T.base || String(cfg.url || 'https://api.afaqy.sa').replace(/\/+$/, '');
 const web = base === 'https://api.afaqy.pro';
 const call = async (p, data) => { const r = await fetch(base + '/' + p + '?token=' + encodeURIComponent(T.tok), { method:'POST', headers:{ 'content-type':'application/json', accept:'application/json' }, body:JSON.stringify({ data: web ? JSON.stringify(data) : data }) }); const j = await r.json().catch(() => ({})); return { s:r.status, j }; };
