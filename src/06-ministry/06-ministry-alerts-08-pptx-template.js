@@ -53,19 +53,19 @@ function ooxWrite(entries){
   return out;
 }
 /* ── رسمٌ بلغة العرض (EMU؛ الشريحة ١٨٬٢٨٨٬٠٠٠ × ١٠٬٢٨٧٬٠٠٠) ── */
-var PX_ID = 1000;
+PV.PX_ID = 1000;
 function pxE(s){ return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 function pxRun(txt, o){ o = o || {}; return '<a:r><a:rPr lang="ar-SA" sz="' + (o.sz || 1600) + '"' + (o.b ? ' b="1"' : '') + ' dirty="0"><a:solidFill><a:srgbClr val="' + (o.c || '163E35') + '"/></a:solidFill><a:latin typeface="Abar Mid"/><a:ea typeface="Abar Mid"/><a:cs typeface="Abar Mid"/></a:rPr><a:t>' + pxE(txt) + '</a:t></a:r>'; }
 function pxP(txt, o){ o = o || {}; return '<a:p><a:pPr algn="' + (o.al || 'r') + '" rtl="1"/>' + pxRun(txt, o) + '</a:p>'; }
 function pxBox(x, y, w, h, paras, o){
-  o = o || {}; var id = ++PX_ID;
+  o = o || {}; var id = ++PV.PX_ID;
   return '<p:sp><p:nvSpPr><p:cNvPr id="' + id + '" name="Box ' + id + '"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="' + Math.round(x) + '" y="' + Math.round(y) + '"/><a:ext cx="' + Math.round(w) + '" cy="' + Math.round(h) + '"/></a:xfrm><a:prstGeom prst="' + (o.geom || 'roundRect') + '"><a:avLst/></a:prstGeom>'
     + (o.fill ? '<a:solidFill><a:srgbClr val="' + o.fill + '"/></a:solidFill>' : '<a:noFill/>')
     + (o.line ? '<a:ln w="' + (o.lw || 12700) + '"><a:solidFill><a:srgbClr val="' + o.line + '"/></a:solidFill></a:ln>' : '<a:ln><a:noFill/></a:ln>')
     + '</p:spPr><p:txBody><a:bodyPr wrap="square" lIns="91440" tIns="45720" rIns="91440" bIns="45720" anchor="' + (o.anchor || 'ctr') + '" rtlCol="1"><a:normAutofit/></a:bodyPr><a:lstStyle/>' + (paras || '<a:p><a:endParaRPr lang="ar-SA"/></a:p>') + '</p:txBody></p:sp>';
 }
 function pxTable(x, y, w, head, rows, o){
-  o = o || {}; var id = ++PX_ID, wt = o.cols || head.map(function(){ return 1; }), sw = wt.reduce(function(a, b){ return a + b; }, 0), rh = o.rh || 520000;
+  o = o || {}; var id = ++PV.PX_ID, wt = o.cols || head.map(function(){ return 1; }), sw = wt.reduce(function(a, b){ return a + b; }, 0), rh = o.rh || 520000;
   var cw = wt.map(function(k){ return Math.floor(w * k / sw); });
   var cell = function(v, hd, i){ var t0 = v && typeof v === 'object' ? v.t : v, c = hd ? 'FFFFFF' : (v && v.c) || '163E35', bg = hd ? (o.hf || '163E35') : (v && v.bg) || (i % 2 ? 'FAF6F3' : 'FFFFFF');
     return '<a:tc><a:txBody><a:bodyPr/><a:lstStyle/>' + pxP(t0, { sz:hd ? (o.hsz || 1500) : (o.sz || 1400), b:hd || (v && v.b), c:c }) + '</a:txBody><a:tcPr marL="91440" marR="91440" marT="45720" marB="45720" anchor="ctr"><a:lnB w="6350"><a:solidFill><a:srgbClr val="E0E0E0"/></a:solidFill></a:lnB><a:solidFill><a:srgbClr val="' + bg + '"/></a:solidFill></a:tcPr></a:tc>'; };
@@ -78,7 +78,7 @@ var PX = { X0:1100000, W:16100000, Y0:1850000 };
 /* (V28.8) ملاحظةُ «تحديثات المنصة»: خطوطُ العرض غيرُ المعتمدة — والقالبُ الموحَّدُ للوزارة لكلِّ التقارير. المولِّدُ يرسم على
    مقاس القالب القديم (٢٠×١١٫٢٥ بوصة) والموحَّدُ ١٣٫٣٣×٧٫٥ — النسبةُ نفسُها، فيُصغَّر كلُّ موضعٍ ومقاسٍ وحجمِ خطٍّ بالثلثين
    فتبقى الشريحةُ كما صُمِّمت، والخطُّ «Abar Mid» كما في القالب. */
-var PX_K = 12192000 / 18288000;
+PV.PX_K = 12192000 / 18288000;
 function pxScale(xml, k){
   var sc = function(v){ return Math.round(+v * k); };
   return String(xml)
@@ -151,9 +151,9 @@ function mfuPptx(){
       var x = dec.decode(e.raw);
       if (e.name === 'ppt/slides/slide1.xml') return { name:e.name, text:x.replace('{{H}}', pxE(R.hijri)).replace('{{G}}', pxE(R.greg)) };
       var k = order.indexOf(e.name); if (k < 0) return e;
-      PX_ID = 1000;
+      PV.PX_ID = 1000;
       var sl = slides[k];
-      x = x.replace('{{T}}', pxE(sl[0])).replace(/<p:sp><p:nvSpPr><p:cNvPr id="990" name="BODY"\/>[\s\S]*?<\/p:sp>/, function(){ return pxScale(sl[1], PX_K); });
+      x = x.replace('{{T}}', pxE(sl[0])).replace(/<p:sp><p:nvSpPr><p:cNvPr id="990" name="BODY"\/>[\s\S]*?<\/p:sp>/, function(){ return pxScale(sl[1], PV.PX_K); });
       return { name:e.name, text:x };
     });
     if (!expGate('باوربوينت', chk.concat(pptxCheck(out)))) return false;   /* (V28.9) فحصُ الملف قبل نزوله */

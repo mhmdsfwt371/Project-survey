@@ -67,12 +67,12 @@ var EVF = { kind:'', by:'', from:'', to:'', q:'', cat:'' };
    يُكتَب على الوثيقة المخزَّنة اسمٌ لم تُكتَب به — تزويرٌ في سجلِّ تدقيق.
    فيُقرأ للعرض فقط: إن ذُكر في النصِّ اسمُ حسابٍ من حسابات النظام غيرِ
    صاحب الجهاز فهو الفاعل، ويُقال إنه مقروءٌ من النصّ لا مختومٌ في الحقل. */
-var EV_NAMES = null, EV_NAMES_V = 0;
+var EV_NAMES = null; PV.EV_NAMES_V = 0;
 
 function evNames(){
   var n = Object.keys(STATE.users || {}).length;
-  if (EV_NAMES && EV_NAMES_V === n) return EV_NAMES;
-  EV_NAMES_V = n;
+  if (EV_NAMES && PV.EV_NAMES_V === n) return EV_NAMES;
+  PV.EV_NAMES_V = n;
   EV_NAMES = Object.keys(STATE.users || {}).map(function(k){ return (STATE.users[k] || {}).name || ''; })
     .filter(function(x){ return x && x.length > 3; })
     .sort(function(a, b){ return b.length - a.length; });   /* الأطولُ أولًا فلا يبتلعه جزءٌ منه */

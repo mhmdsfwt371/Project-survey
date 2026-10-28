@@ -130,7 +130,7 @@ PAGE.acct = { m:'المساعدة', t:'حسابي', l:'دورك وصلاحيات
 /* ── ٢ · مسار التصعيد ─────────────────────────────
    الحالة العالقة تظهر في «الراكد» ولا يُخطَر أحد. القاعدة تُصعّد بالعمر. */
 
-var ESC_RULES = [
+PV.ESC_RULES = [
   ['متعذّر بلا معالجة',      7,  'المشرف',  'المهندس',   'يُعاد فتحه ويُسند لفريق آخر'],
   ['مقترح شركة بانتظار',      3,  'المهندس', 'المهندس',   'يُذكَّر يوميًّا حتى يُبتّ'],
   ['طلب زيارة بلا تنفيذ',    5,  'الفني',   'المشرف',    'يُعاد إسناده'],
@@ -148,7 +148,7 @@ var ESC_RULES = [
 
 function escList(){
   if (!Array.isArray(STATE.escRules) || !STATE.escRules.length){
-    STATE.escRules = ESC_RULES.map(function(r){
+    STATE.escRules = PV.ESC_RULES.map(function(r){
       return { w:r[0], days:r[1], who:r[2], to:r[3], act:r[4] };
     });
   }

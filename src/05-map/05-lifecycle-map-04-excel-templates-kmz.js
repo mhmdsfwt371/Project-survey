@@ -30,14 +30,14 @@ function lsSet(k, v){ try { localStorage.setItem(k, v); return true; } catch (e)
    بصفوفٍ تحمل أنماطَ صفِّه الأوّل ومعادلاتِه، ويُمَدُّ الجدولُ إلى آخر صف،
    ويُطلَب من إكسل إعادةُ الحساب عند الفتح. فما يخرج هو ملفُّ المكتب بعينه
    وفيه بياناتُ النظام. */
-var JSZIP_LOADING = null;
+PV.JSZIP_LOADING = null;
 function jszipLoad(){
   if (typeof JSZip !== 'undefined') return Promise.resolve(true);
   if (typeof toast === 'function') toast('\u23F3 ' + t('يُجهَّز الملف…'));   /* (V38.86) the first load and every press during it say so */
-  if (JSZIP_LOADING) return JSZIP_LOADING;
-  JSZIP_LOADING = libLoad('vendor/jszip/3.10.1/jszip.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js', 15000)   /* (V38.54) */
-    .then(function(ok){ ok = !!(ok && typeof JSZip !== 'undefined'); if (!ok) setTimeout(function(){ JSZIP_LOADING = null; }, 60000); return ok; });
-  return JSZIP_LOADING;
+  if (PV.JSZIP_LOADING) return PV.JSZIP_LOADING;
+  PV.JSZIP_LOADING = libLoad('vendor/jszip/3.10.1/jszip.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js', 15000)   /* (V38.54) */
+    .then(function(ok){ ok = !!(ok && typeof JSZip !== 'undefined'); if (!ok) setTimeout(function(){ PV.JSZIP_LOADING = null; }, 60000); return ok; });
+  return PV.JSZIP_LOADING;
 }
 
 
@@ -57,7 +57,7 @@ var KMZ_STY = {
    عشرَ وخمسةٍ وسبعين مع اسمٍ يشبه = مشكوكٌ فيه يُعرَض ولا يُقرَّر؛ وما فوق
    ذلك جديدٌ يُضاف بمعرِّفٍ من نظامنا. ولا يُكتَب شيءٌ قبل المعاينة. */
 var KMI = null, KMI_ZONE = 'منى', KMI_TYPE = 'مخيم', KMI_WORK = 'موقع جديد', KMI_BUSY = false;
-var KMI_NEAR = 15, KMI_DOUBT = 75;
+PV.KMI_NEAR = 15; PV.KMI_DOUBT = 75;
 
 /* المسافةُ بالمتر — هافرساين مبسَّطٌ يكفي في نطاق المشاعر */
 function geoM(a1, o1, a2, o2){
@@ -168,8 +168,8 @@ function kmiClassify(places){
       if (d < bestD){ bestD = d; best = x; }
     });
     var st = 'new';
-    if (best && bestD <= KMI_NEAR) st = 'same';
-    else if (best && bestD <= KMI_DOUBT && nameLike(p.name, best.name || best.id)) st = 'doubt';
+    if (best && bestD <= PV.KMI_NEAR) st = 'same';
+    else if (best && bestD <= PV.KMI_DOUBT && nameLike(p.name, best.name || best.id)) st = 'doubt';
     return { p:p, near:best, d:bestD, st:st, take:(st === 'new') };
   });
 }

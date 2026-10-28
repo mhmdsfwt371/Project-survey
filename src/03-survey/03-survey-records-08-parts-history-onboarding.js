@@ -23,12 +23,12 @@ var SOL_LINES = {}, SOL_Q = '', PAT_NAME = '';
    المسافةُ من موقعك، وأداةُ فحص الأجهزة، وإشعارُ واتساب. */
 
 /* ── المسافة: الأقربُ أولًا في قائمة المواقع ── */
-var MYPOS = null, POS_WATCH = 0;
+var MYPOS = null; PV.POS_WATCH = 0;
 
 function posWatch(){
   if (typeof navigator === 'undefined' || !navigator.geolocation) return;
   try{
-    POS_WATCH = navigator.geolocation.watchPosition(function(p){
+    PV.POS_WATCH = navigator.geolocation.watchPosition(function(p){
       MYPOS = { lat:p.coords.latitude, lng:p.coords.longitude, at:Date.now() };
       if (CUR === 'sites') render(1);
     }, function(e){
@@ -118,7 +118,7 @@ function siteLog(id){
 /* أحداثٌ تُجلَب من القاعدة عند الطلب — بسقفٍ، ولا تُقرأ إلا لمن فتح السجل */
 var SITE_LOG_MORE = {}, SITE_LOG_BUSY = '';
 
-var LOG_KIND = { visit:'\u{1F4CD}', ins:'\u{1F527}', dis:'\u{1F9E9}', photo:'\u{1F4F7}', ok:'\u2705',
+PV.LOG_KIND = { visit:'\u{1F4CD}', ins:'\u{1F527}', dis:'\u{1F9E9}', photo:'\u{1F4F7}', ok:'\u2705',
                  back:'\u21A9', note:'\u{1F5E8}', task:'\u{1F4CB}', ev:'\u2022' };
 function siteLogHtml(id){
   var L = siteLog(id);
@@ -128,7 +128,7 @@ function siteLogHtml(id){
         ? '<div class="wt-log">' + L.map(function(x){
             return '<div class="wt-le">'
               + '<span class="hint num" style="margin:0">' + esc(x.at ? fmtDT(x.at) : '—') + '</span> '
-              + (LOG_KIND[x.kind] || '\u2022') + ' ' + esc(t(x.what))
+              + (PV.LOG_KIND[x.kind] || '\u2022') + ' ' + esc(t(x.what))
               + (x.who ? ' <b>' + esc(dispName(x.who)) + '</b>' : '')
               + (x.kind === 'photo' && x.extra ? ' <a href="#" data-phview="' + esc(x.extra) + '">' + esc(t('الصورة')) + '</a>' : '')
               + '</div>';

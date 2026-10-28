@@ -181,9 +181,9 @@ function swBusy(){
   try { if (document.querySelector('input:focus, textarea:focus, select:focus')) return true; } catch (e){ LS_ERR = e; }
   return false;
 }
-var SW_TICK = null, SW_LEFT = 0;
+PV.SW_TICK = null; PV.SW_LEFT = 0;
 function swCancel(){
-  clearInterval(SW_TICK); SW_TICK = null;
+  clearInterval(PV.SW_TICK); PV.SW_TICK = null;
   var b = document.getElementById('swBar');
   if (b) b.remove();
 }
@@ -191,13 +191,13 @@ function swCancel(){
    وكان التحديثُ يقع بعد سبعِ أعشارِ ثانيةٍ بلا مهلة — فمن كان يقرأ شيئًا
    فقده بلا إنذار. والتأجيلُ حقٌّ لمن يعمل. */
 function swApply(){
-  if (SW_RELOADED || SW_TICK) return;
+  if (SW_RELOADED || PV.SW_TICK) return;
   if (swBusy()){
     toast(t('نسخةٌ جديدةٌ جاهزة — تُطبَّق فور انتهائك'));
     setTimeout(swApply, 20000);
     return;
   }
-  SW_LEFT = 5;
+  PV.SW_LEFT = 5;
   var bar = document.createElement('div');
   bar.id = 'swBar'; bar.className = 'sw-bar';
   bar.innerHTML = '<span id="swTxt"></span>'
@@ -208,12 +208,12 @@ function swApply(){
   document.body.appendChild(bar);
   var paint = function(){
     var el = document.getElementById('swTxt');
-    if (el) el.textContent = t('نسخةٌ جديدةٌ نزلت — تُطبَّق بعد') + ' ' + nm(SW_LEFT);
+    if (el) el.textContent = t('نسخةٌ جديدةٌ نزلت — تُطبَّق بعد') + ' ' + nm(PV.SW_LEFT);
   };
   paint();
-  SW_TICK = setInterval(function(){
-    SW_LEFT--;
-    if (SW_LEFT > 0){ paint(); return; }
+  PV.SW_TICK = setInterval(function(){
+    PV.SW_LEFT--;
+    if (PV.SW_LEFT > 0){ paint(); return; }
     swCancel(); swNow();
   }, 1000);
 }

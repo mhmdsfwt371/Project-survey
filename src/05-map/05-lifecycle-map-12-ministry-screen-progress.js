@@ -65,7 +65,7 @@ function pmZoomAt(f, fx, fy){
   pmApply();
 }
 
-var PM_DRAG = null, PM_PINCH = null;
+PV.PM_DRAG = null; PV.PM_PINCH = null;
 function pmFrac(svg, ev){ var b = svg.getBoundingClientRect(); return { x:(ev.clientX - b.left) / (b.width || 1), y:(ev.clientY - b.top) / (b.height || 1) }; }
 if (typeof document === 'object'){
   document.addEventListener('wheel', function(e){
@@ -74,21 +74,21 @@ if (typeof document === 'object'){
   }, { passive:false });
   document.addEventListener('pointerdown', function(e){
     var svg = e.target && e.target.closest ? e.target.closest('.kk-pts') : null; if (!svg) return;
-    if (PM_DRAG && PM_DRAG.id !== e.pointerId){ PM_PINCH = { a:PM_DRAG, b:{ id:e.pointerId, x:e.clientX, y:e.clientY }, z:PM_VIEW.z }; return; }
-    PM_DRAG = { id:e.pointerId, x:e.clientX, y:e.clientY, cx:PM_VIEW.cx, cy:PM_VIEW.cy, moved:false, svg:svg };
+    if (PV.PM_DRAG && PV.PM_DRAG.id !== e.pointerId){ PV.PM_PINCH = { a:PV.PM_DRAG, b:{ id:e.pointerId, x:e.clientX, y:e.clientY }, z:PM_VIEW.z }; return; }
+    PV.PM_DRAG = { id:e.pointerId, x:e.clientX, y:e.clientY, cx:PM_VIEW.cx, cy:PM_VIEW.cy, moved:false, svg:svg };
   }, { passive:true });
   document.addEventListener('pointermove', function(e){
-    if (PM_PINCH){
-      var A = PM_PINCH.a, B = PM_PINCH.b; if (e.pointerId === A.id){ A.x = e.clientX; A.y = e.clientY; } else if (e.pointerId === B.id){ B.x = e.clientX; B.y = e.clientY; } else return;
-      if (!PM_PINCH.d0){ PM_PINCH.d0 = Math.hypot(A.x - B.x, A.y - B.y) || 1; return; }
-      var d = Math.hypot(A.x - B.x, A.y - B.y); var z = Math.min(40, Math.max(1, PM_PINCH.z * d / PM_PINCH.d0)); PM_VIEW.z = z; pmApply(); return;
+    if (PV.PM_PINCH){
+      var A = PV.PM_PINCH.a, B = PV.PM_PINCH.b; if (e.pointerId === A.id){ A.x = e.clientX; A.y = e.clientY; } else if (e.pointerId === B.id){ B.x = e.clientX; B.y = e.clientY; } else return;
+      if (!PV.PM_PINCH.d0){ PV.PM_PINCH.d0 = Math.hypot(A.x - B.x, A.y - B.y) || 1; return; }
+      var d = Math.hypot(A.x - B.x, A.y - B.y); var z = Math.min(40, Math.max(1, PV.PM_PINCH.z * d / PV.PM_PINCH.d0)); PM_VIEW.z = z; pmApply(); return;
     }
-    if (!PM_DRAG || e.pointerId !== PM_DRAG.id) return;
-    var b = PM_DRAG.svg.getBoundingClientRect(), dx = (e.clientX - PM_DRAG.x) / (b.width || 1), dy = (e.clientY - PM_DRAG.y) / (b.height || 1);
-    if (Math.abs(dx) + Math.abs(dy) > 0.01) PM_DRAG.moved = true;
-    PM_VIEW.cx = Math.min(Math.max(PM_DRAG.cx - dx / PM_VIEW.z, 0), 1); PM_VIEW.cy = Math.min(Math.max(PM_DRAG.cy - dy / PM_VIEW.z, 0), 1); pmApply();
+    if (!PV.PM_DRAG || e.pointerId !== PV.PM_DRAG.id) return;
+    var b = PV.PM_DRAG.svg.getBoundingClientRect(), dx = (e.clientX - PV.PM_DRAG.x) / (b.width || 1), dy = (e.clientY - PV.PM_DRAG.y) / (b.height || 1);
+    if (Math.abs(dx) + Math.abs(dy) > 0.01) PV.PM_DRAG.moved = true;
+    PM_VIEW.cx = Math.min(Math.max(PV.PM_DRAG.cx - dx / PM_VIEW.z, 0), 1); PM_VIEW.cy = Math.min(Math.max(PV.PM_DRAG.cy - dy / PM_VIEW.z, 0), 1); pmApply();
   }, { passive:true });
-  var pmUp = function(e){ if (PM_PINCH && (e.pointerId === PM_PINCH.a.id || e.pointerId === PM_PINCH.b.id)){ PM_PINCH = null; PM_DRAG = null; return; } if (PM_DRAG && e.pointerId === PM_DRAG.id){ if (PM_DRAG.moved) PM_CLICK_SKIP = Date.now(); PM_DRAG = null; } };
+  var pmUp = function(e){ if (PV.PM_PINCH && (e.pointerId === PV.PM_PINCH.a.id || e.pointerId === PV.PM_PINCH.b.id)){ PV.PM_PINCH = null; PV.PM_DRAG = null; return; } if (PV.PM_DRAG && e.pointerId === PV.PM_DRAG.id){ if (PV.PM_DRAG.moved) PM_CLICK_SKIP = Date.now(); PV.PM_DRAG = null; } };
   document.addEventListener('pointerup', pmUp, { passive:true }); document.addEventListener('pointercancel', pmUp, { passive:true });
 }
 /* ═══ القمرُ الصناعيُّ في شاشة الوزارة (V18.4) ═══

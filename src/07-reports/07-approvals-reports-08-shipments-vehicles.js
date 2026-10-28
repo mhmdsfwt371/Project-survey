@@ -254,7 +254,7 @@ PAGE.ev = { m:'النظام', t:'السجلات والإشعارات',
   })();
   }};
 
-var VEH_OWN    = ['ملك','مستأجرة'];
+PV.VEH_OWN = ['ملك','مستأجرة'];
 
 function vehOfWho(who){
   return vehAsnList().filter(function(a){ return a.to === who; });
@@ -602,7 +602,7 @@ PAGE.fleet = { m:'الميدان', t:'السيارات',
             + '<div class="field"><label>' + esc(t('انتهاء الرخصة')) + '</label><input id="vhLicExp" type="date"></div>'
             + '<div class="field"><label>' + esc(t('انتهاء التأمين')) + '</label><input id="vhInsExp" type="date"></div>'
             + '<div class="field"><label>' + esc(t('الملكية')) + '</label><select id="vhOwn">'
-            +   VEH_OWN.map(function(o){ return '<option value="' + esc(o) + '">' + esc(t(o)) + '</option>'; }).join('') + '</select></div>'
+            +   PV.VEH_OWN.map(function(o){ return '<option value="' + esc(o) + '">' + esc(t(o)) + '</option>'; }).join('') + '</select></div>'
             + '<div class="field"><label>' + esc(t('التكلفة الشهرية')) + '</label><input id="vhCost" type="number" min="0"></div>'
             + '<div class="field"><label>' + esc(t('من تاريخ')) + '</label><input id="vhStart" type="date" value="' + esc(todayISO()) + '"></div>'
             + '</div>',

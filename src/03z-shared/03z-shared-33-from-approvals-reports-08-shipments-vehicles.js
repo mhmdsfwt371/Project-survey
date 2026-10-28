@@ -56,7 +56,7 @@ var VEH_KINDS_SEED = [
   { id:'truck',  n:'شاحنة',           d:'نقلُ توريدٍ ثقيلٍ إلى المستودع',  cap:2 }
 ];
 
-var VEH_Q = '', VEH_EDIT = '';
+var VEH_Q = ''; PV.VEH_EDIT = '';
 
 function vehKinds(){
   if (!Array.isArray(STATE.vehKinds) || !STATE.vehKinds.length)

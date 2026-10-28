@@ -25,8 +25,8 @@ var DEV_ID = (function(){
     return v;
   } catch(e){ return 'd' + Math.random().toString(36).slice(2, 10); }
 })();
-var _uidSeq = 0;
-function uid36(){ return DEV_ID + '-' + Date.now().toString(36) + '-' + (++_uidSeq).toString(36); }
+PV._uidSeq = 0;
+function uid36(){ return DEV_ID + '-' + Date.now().toString(36) + '-' + (++PV._uidSeq).toString(36); }
 
 var CORE = {
   get:  function(kind, id){ var b = STATE[kind]; return b ? b[id] : undefined; },

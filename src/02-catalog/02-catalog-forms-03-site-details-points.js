@@ -168,7 +168,7 @@ var STAGE_ROLES = {
 };
 
 /* لكلِّ فنيٍّ مرحلتُه — تُضبط في إسناد الأدوار */
-var TECH_STAGE = {
+PV.TECH_STAGE = {
   'أحمد':'ins', 'سالم':'ins', 'ماجد':'ins',
   'ياسر':'cfg', 'عبدالله':'ins', 'طارق':'ins',
   'خالد':'eng', 'فهد':'eng', 'محمد صفوت':'eng'
@@ -180,11 +180,11 @@ function stageOf(name){
   var role = x && x.job ? (jobOf(x.job) || {}).role : '';
   var map = { tech:'srv', cprep:'prep', casm:'asm', cins:'ins' };
   if (map[role]) return map[role];
-  return TECH_STAGE[name] || 'srv';
+  return PV.TECH_STAGE[name] || 'srv';
 }
 
 /* ── حصادُ العمل: يُمشَّط السجلُّ مرةً ويُخزَّن ── */
-var SCORE_CACHE = null, SCORE_VER = -1;
+PV.SCORE_CACHE = null; PV.SCORE_VER = -1;
 
 /* ── نقاطُ الزيادة اليدوية: يضيفها مشرفٌ أو مهندسٌ بسببٍ مكتوب ──
    ليست تصحيحًا صامتًا لرقمٍ، بل سطرٌ جديدٌ له صاحبٌ ووقتٌ وسببٌ — يُحذَف
@@ -201,7 +201,7 @@ function mayBonus(){ return rankOf(ROLE) >= rankOf('engineer'); }
 
 
 function scores(){
-  if (SCORE_CACHE && SCORE_VER === STAT_VER) return SCORE_CACHE;
+  if (PV.SCORE_CACHE && PV.SCORE_VER === STAT_VER) return PV.SCORE_CACHE;
   var by = Object.create(null);
 
   function ent(who){
@@ -309,9 +309,9 @@ function scores(){
   list.sort(function(a,b){ return b.total - a.total; });
   list.forEach(function(e, i){ e.rank = i + 1; });
 
-  SCORE_CACHE = { list:list, byName:by, n:list.length };
-  SCORE_VER = STAT_VER;
-  return SCORE_CACHE;
+  PV.SCORE_CACHE = { list:list, byName:by, n:list.length };
+  PV.SCORE_VER = STAT_VER;
+  return PV.SCORE_CACHE;
 }
 
 function scoreOf(name){

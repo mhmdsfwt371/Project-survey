@@ -7,6 +7,11 @@
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
    ============================================================================ */
+/* (V39.84) PV — one namespace for state that only one file uses: top-level variables of a single file became PV.<name>
+   (scripts/_pv-move.mjs, by scope analysis), so the global names fall without any behaviour change. A name moves only if no
+   other file, no audit and no inline handler names it. */
+var PV = {};
+
 /* (V38.55) swallowed errors are counted and recorded, not just the last one kept. 228 «catch (e){ LS_ERR = e; }» sites
    keep the field running; LS_ERR is now an accessor on the global object, so each assignment also feeds the soft-error
    log (per place, rate-limited) and the black box — shown in «Sync and conflicts» and attached to bug reports.
@@ -76,7 +81,7 @@ function nskChunkReady(){
   /* (V38.51) the what's-new sheet waits for the release-notes log that ships in the chunk */
   try { if (typeof whatsNewMaybe === 'function' && whatsNewMaybe.pending){ whatsNewMaybe.pending = false; if (whatsNewMaybe() && typeof render === 'function') render(1); } } catch (e3){ LS_ERR = e3; }
 }
-var I18N_FILE = 'i18n/dict-800b16ed76.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-3d8a64af82.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -127,16 +132,16 @@ function fmtDate(v, o){ try { return new Date(v).toLocaleDateString(locOf(), o |
 function fmtTime(v, o){ try { return new Date(v).toLocaleTimeString(locOf(), o || { hour:'2-digit', minute:'2-digit' }); } catch (e){ return String(v); } }
 function fmtDT(v){ try { return new Date(v).toLocaleString(locOf()); } catch (e){ return String(v); } }
 function fmtDT2(v, o){ try { return new Date(v).toLocaleString(locOf(), o || undefined); } catch (e){ return String(v); } }
-var NM_CACHE = {}, NM_N = 0;   /* (V26.2) toLocaleString بطيئةٌ وتُنادى آلافَ المرات في الرسمة — الأعدادُ الصحيحةُ تُحفَظ */
+PV.NM_CACHE = {}; PV.NM_N = 0;   /* (V26.2) toLocaleString بطيئةٌ وتُنادى آلافَ المرات في الرسمة — الأعدادُ الصحيحةُ تُحفَظ */
 function nm(v){
   var cacheable = (typeof v === 'number') && isFinite(v) && Math.floor(v) === v && Math.abs(v) < 1e7, ck = cacheable ? (LANG + ':' + v) : '';
-  if (cacheable){ var hit = NM_CACHE[ck]; if (hit !== undefined) return hit; }
+  if (cacheable){ var hit = PV.NM_CACHE[ck]; if (hit !== undefined) return hit; }
   var s = String(v), dg = (I18N[LANG] || I18N.ar).dig;
   if (LANG === 'ar' || LANG === 'ur'){
     s = Number(v).toLocaleString('ar-EG');
     if (LANG === 'ur') s = s.replace(/[٠-٩]/g, function(c){ return dg['٠١٢٣٤٥٦٧٨٩'.indexOf(c)]; });
   } else s = Number(v).toLocaleString('en-US');
-  if (cacheable){ if (NM_N > 20000){ NM_CACHE = {}; NM_N = 0; } NM_CACHE[ck] = s; NM_N++; }
+  if (cacheable){ if (PV.NM_N > 20000){ PV.NM_CACHE = {}; PV.NM_N = 0; } PV.NM_CACHE[ck] = s; PV.NM_N++; }
   return s;
 }
 
@@ -273,8 +278,8 @@ function scanSheet(){
    فتُطفَأ الشاشةُ فيعود إلى الدخول. يُمسَك قفلُ الشاشة ما دام نموذجٌ مفتوحًا،
    ويُعاد عند الرجوع إلى التبويب، ويُترَك عند الإغلاق أو الإخفاء أو بعد عشر
    دقائقَ بلا لمس. بكشف الميزة — وبلا صوتٍ حين تغيب. */
-var WAKE = { lock:null, t:0, at:0 }, WAKE_PAGES = { svForm:1, insForm:1, maintForm:1, disForm:1, opsForm:1 };
-function wakeWanted(){ var tab = (typeof TABS === 'object' && TABS[CUR] && typeof tabCur === 'function') ? tabCur(CUR) : ''; return !!WAKE_PAGES[CUR] || !!WAKE_PAGES[tab]; }   /* الصفحةُ أو شريحتُها (نماذجُ التركيب شرائحُ تحت forms) */
+var WAKE = { lock:null, t:0, at:0 }; PV.WAKE_PAGES = { svForm:1, insForm:1, maintForm:1, disForm:1, opsForm:1 };
+function wakeWanted(){ var tab = (typeof TABS === 'object' && TABS[CUR] && typeof tabCur === 'function') ? tabCur(CUR) : ''; return !!PV.WAKE_PAGES[CUR] || !!PV.WAKE_PAGES[tab]; }   /* الصفحةُ أو شريحتُها (نماذجُ التركيب شرائحُ تحت forms) */
 function wakeAcquire(){
   var nav = (typeof navigator === 'object') ? navigator : null;
   if (!nav || !nav.wakeLock || typeof nav.wakeLock.request !== 'function') return Promise.resolve(false);

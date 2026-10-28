@@ -225,7 +225,7 @@ function photoCard(){
    مظلمةٌ أو محترقةٌ أو مهزوزةٌ → تنبيهٌ فوريٌّ «أعد الالتقاط» بلا منع؛ ومكررةٌ لنفس النقطة → تنبيه. وتُحفَظ المقاييسُ في
    وثيقة الصورة فيراها المكتبُ: قائمةُ «صور تحتاج إعادة» في متابعة الوزارة ← المسح الميداني. */
 var PHOTO_Q_IX = {};
-var PQ = { dark:35, bright:238, blur:18 };
+PV.PQ = { dark:35, bright:238, blur:18 };
 function photoQuality(cx, W, H){
   try {
     var n = 128, c2 = document.createElement('canvas'); c2.width = n; c2.height = n; var g = c2.getContext('2d'); if (!g) return null;
@@ -243,7 +243,7 @@ function photoQuality(cx, W, H){
     return { b:Math.round(mean), s:Math.round(sharp * 10) / 10, h:hex };
   } catch (e){ return null; }
 }
-function photoQualityFlags(pq){ var f = []; if (!pq) return f; if (pq.b < PQ.dark) f.push('مظلمة'); else if (pq.b > PQ.bright) f.push('محترقة'); if (pq.s < PQ.blur) f.push('مهزوزة'); return f; }
+function photoQualityFlags(pq){ var f = []; if (!pq) return f; if (pq.b < PV.PQ.dark) f.push('مظلمة'); else if (pq.b > PV.PQ.bright) f.push('محترقة'); if (pq.s < PV.PQ.blur) f.push('مهزوزة'); return f; }
 function photoQualityWarn(pq){ var f = photoQualityFlags(pq); if (f.length) toast('\u26A0 ' + t('الصورة') + ' ' + f.map(function(x){ return t(x); }).join(' و') + ' \u2014 ' + t('أعد الالتقاط لو أمكن')); }
 function photoHamming(a, b){ if (!a || !b || a.length !== b.length) return 99; var d = 0; for (var i = 0; i < a.length; i++){ var x = parseInt(a[i], 16) ^ parseInt(b[i], 16); while (x){ d += x & 1; x >>= 1; } } return d; }
 function photoDupOf(siteId, pq){

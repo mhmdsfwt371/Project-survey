@@ -11,12 +11,12 @@
    صفحةٌ تبني ثلاثَمئة صفٍّ (أربعةُ آلافِ عنصر) تأخذ ربعَ ثانيةٍ على المكتب وثانيةً على الهاتف مع كلِّ ضغطة — وهو أقربُ
    شيءٍ إلى «التعليق». صارت كلُّ قائمةٍ تبني مئةً، وزرٌّ واحدٌ أسفلَ الصفحة يزيد مئتين كلَّ ضغطة؛ والبحثُ في الصفحة
    يفتح الكلَّ كما كان (حتى خمسة آلاف). المفتاحُ صفحةٌ وشريحة، فلا يحمل عدُّ صفحةٍ إلى أخرى. */
-var MORE_SHOWN = {}, MORE_FIRST = 100, MORE_STEP = 200, MORE_CUT = 0;
+var MORE_SHOWN = {}; PV.MORE_FIRST = 100; var MORE_STEP = 200, MORE_CUT = 0;
 function moreKey(){ return CUR + ':' + ((typeof PTAB === 'object' && PTAB && PTAB[CUR]) || ''); }
 /* (V37.80) توكنُ نظام البطاقات يُحمَّل عند فتح «المخيمات المركزية» أو قائمة التجارب فقط — لا لكلِّ مستخدمٍ عند الدخول */
 function capList(L, base){
   if (PG_Q) return L.slice(0, 5000);
-  var n = Math.min(base || MORE_FIRST, MORE_FIRST) + (MORE_SHOWN[moreKey()] || 0);
+  var n = Math.min(base || PV.MORE_FIRST, PV.MORE_FIRST) + (MORE_SHOWN[moreKey()] || 0);
   if (L.length > n){ MORE_CUT += L.length - n; return L.slice(0, n); }
   return L;
 }

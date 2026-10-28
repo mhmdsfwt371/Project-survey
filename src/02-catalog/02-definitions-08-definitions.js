@@ -64,8 +64,8 @@ function svObstacle(r){ return svVisited(r) && !svClean(r); }
    سببُ التعذّر الحقيقيُّ باقٍ في السجلّ لسير العمل (التصاريح والتصعيد) — لا يُمحى ولا يُغيَّر. */
 /* (V34.0) بلاغُ المالك على «أبرز التحديات»: «المدخل غير واضح — لم يُستدل عليه» تُعرض «تحتاج زيارة تقنية»، و«أخرى» تُعرض
    «ملاحظات فنية متنوعة» — لا ما يوحي بتصريحٍ أو بتعذّر الوصول. عرضٌ فقط: قيمةُ السجل ونموذجُ الميدان كما هما. */
-var CHAL_SHOW = { 'المدخل غير واضح — لم يُستدل عليه':'المدخل غير واضح — يحتاج تحديد', 'أخرى':'ملاحظات فنية متنوعة' };   /* (V37.29) */
-function chalShow(k){ return t(CHAL_SHOW[k] || k); }
+PV.CHAL_SHOW = { 'المدخل غير واضح — لم يُستدل عليه':'المدخل غير واضح — يحتاج تحديد', 'أخرى':'ملاحظات فنية متنوعة' };   /* (V37.29) */
+function chalShow(k){ return t(PV.CHAL_SHOW[k] || k); }
 
 /* ── التركيبُ والتسليمُ والفك ── */
 /* (V38.58) the status compared without diacritics: «مُركّب» and «مركب» are the same word, and a record that carried the
@@ -188,7 +188,7 @@ var CHAL_CATS = [   /* تحدياتُ التركيب لما مُسح — أكث�
 ];
 function arKey(s){ return String(s || '').replace(/[\u064B-\u0652\u0640\u200f\u200e]/g, '').replace(/[أإآ]/g, 'ا').replace(/ة(?=\s|$)/g, 'ه').replace(/ى(?=\s|$)/g, 'ي').replace(/\s+/g, ' ').trim(); }
 /* سببُ عدم المسح: المختارُ في الميدان (r.why) أوّلًا، ثم قواعدُ الكلمات على النصّ، ثم حالةُ الوصول؛ وإلا null (يراجعه المهندس) */
-var WHY_RULES = [
+PV.WHY_RULES = [
   ['permit',  /تصريح|تواصل رسمي|التصوير ممنوع/],
   ['denied',  /منعنا|تم منع|منع الدخول من|من قبل شرك|حراس|الامن|امن الدول/],
   ['closed',  /مغلق|مقفل|اغلاق|مسدود/],
@@ -199,14 +199,14 @@ function visitWhy(r){
   if (!r || r.deleted || !svStuck(r)) return null;
   if (r.why && whyList().some(function(o){ return o.k === r.why; })) return r.why;
   var txt = arKey([r.note, r.chal_note, r.chalNote].join(' '));
-  for (var i = 0; i < WHY_RULES.length; i++) if (WHY_RULES[i][1].test(txt)) return WHY_RULES[i][0];
+  for (var i = 0; i < PV.WHY_RULES.length; i++) if (PV.WHY_RULES[i][1].test(txt)) return PV.WHY_RULES[i][0];
   return { 'منع دخول':'denied', 'غير موجود':'missing', 'يحتاج تصريح':'permit' }[r.access] || null;
 }
 /* تحدياتُ التركيب: الصيغُ القديمةُ الثابتةُ تُترجَم مباشرةً، و«أخرى» تُصنَّف من نصّها، وما لا يُقطع فيه يُعَدّ «يراجعه المهندس» */
 var CHAL_FROM = { 'العارضة الحديدية ناقصة أو غير مكتملة':'beam', 'يوجد ديكور أو لافتات على العارضة':'beam', 'المدخل غير واضح — لم يُستدل عليه':'entry',
   'المدخل مشترك مع مخيم آخر':'multi', 'المسار أعرض من طقم واحد':'wide', 'عائق إنشائي':'block', 'المسار تحت كوبري':'block', 'المسار داخل نفق':'block',
   'تصميم المدخل لا يسمح بالتركيب':'block', 'ازدحام دائم يمنع العمل نهارًا':'block', 'لا يوجد مسار كابل':'block', 'ارتفاع صعب الوصول':'height', 'مبنى متعدد الأدوار (أبراج)':'height' };
-var CHAL_RULES = [   /* (V37.0) رُتّبت بعد فحصها على السجلات الحقيقية: ٨٣٣ نقطةً بتحديات، وبقي للمراجعة نحوُ ١٧ نصًّا */
+PV.CHAL_RULES = [   /* (V37.0) رُتّبت بعد فحصها على السجلات الحقيقية: ٨٣٣ نقطةً بتحديات، وبقي للمراجعة نحوُ ١٧ نصًّا */
   ['legacy', /كاميرا (واحده )?متحرك|متحركه|قارئات لشرك|تركيبات قارئ/],
   ['wide',   /عرض|عرضها|واسع|كاميرتين|اتنين كاميرا|اتني كاميرا|عدد اتن/],
   ['multi',  /بوابات|بوابتين|مدخلين|مداخل|منفصل|مخيمين|مشترك|بوابه ممر|اكثر من بوابه|اكثر من مدخل|دراسه/],
@@ -215,11 +215,11 @@ var CHAL_RULES = [   /* (V37.0) رُتّبت بعد فحصها على السجل
   ['block',  /درج|كونتينر|حفر|صبات|مظله|انارات|عائق|مائل|ضيق|المطبخ|مغلق|مقفل/],
   ['mount',  /قائم|هيكل|عمود|عامود|لوح|سطح|تثبيت/]
 ];
-var CHAL_NONE_RX = /يمكن التركيب عليها مباشره|دون الحاجه الي هيكل|دون هيكل|^\(? ?ربوه مني ?\)?$/;   /* ملاحظاتٌ لا تحديات: «يمكن التركيب مباشرة»، واسمُ الحيّ */
-var CC_MEMO = (typeof WeakMap === 'function') ? new WeakMap() : null;   /* (V37.13) فئاتُ السجلّ تُحسَب مرةً لكلِّ سجلٍّ وإصدارِ إعدادات */
+PV.CHAL_NONE_RX = /يمكن التركيب عليها مباشره|دون الحاجه الي هيكل|دون هيكل|^\(? ?ربوه مني ?\)?$/;   /* ملاحظاتٌ لا تحديات: «يمكن التركيب مباشرة»، واسمُ الحيّ */
+PV.CC_MEMO = (typeof WeakMap === 'function') ? new WeakMap() : null;   /* (V37.13) فئاتُ السجلّ تُحسَب مرةً لكلِّ سجلٍّ وإصدارِ إعدادات */
 function chalCats(r){
   if (!r || r.deleted) return [];
-  if (CC_MEMO){ var mm = CC_MEMO.get(r), ver = typeof CFG_VER === 'number' ? CFG_VER : 0; if (mm && mm.v === ver) return mm.c.slice(); var cc = chalCats0(r); CC_MEMO.set(r, { v:ver, c:cc }); return cc.slice(); }
+  if (PV.CC_MEMO){ var mm = PV.CC_MEMO.get(r), ver = typeof CFG_VER === 'number' ? CFG_VER : 0; if (mm && mm.v === ver) return mm.c.slice(); var cc = chalCats0(r); PV.CC_MEMO.set(r, { v:ver, c:cc }); return cc.slice(); }
   return chalCats0(r);
 }
 /* (V38.26) قرارُ المالك: «موقع النقطة» تحدٍّ بنفسه — «أيُّ حاجةٍ مش على مظلة تحدّي»: تحت كوبري ومدخلُ النفق ومخرجُه عائقٌ في الموقع
@@ -256,8 +256,8 @@ function chalCats0(r){
     var nc = arKey(c); if (/^المدخل غير واضح/.test(nc)){ add('entry'); return; }
     if (/^اخري/.test(nc)){
       var txt = arKey(r.chal_note || r.chalNote || r.note || '');
-      if (CHAL_NONE_RX.test(txt)) return;
-      for (var i = 0; i < CHAL_RULES.length; i++) if (CHAL_RULES[i][1].test(txt)){ add(CHAL_RULES[i][0]); return; }
+      if (PV.CHAL_NONE_RX.test(txt)) return;
+      for (var i = 0; i < PV.CHAL_RULES.length; i++) if (PV.CHAL_RULES[i][1].test(txt)){ add(PV.CHAL_RULES[i][0]); return; }
       add('review'); return;
     }
     add('review');
@@ -268,12 +268,12 @@ function chalCats0(r){
    بالمفتاح: يتغيّر الاسمُ أو الجهةُ أو صورةُ الإثبات، ويُعطَّل البندُ من قائمة الميدان، ويُضاف بندٌ جديد. المفتاحُ لا يتغيّر أبدًا،
    فالسجلّاتُ (r.why وr.chalCats) تبقى مقروءةً بأحدث اسم. */
 if (!('cats' in CFG)) CFG.cats = null;
-var CAT_LEGACY = { entry:['تحتاج زيارة تقنية — المدخل غير واضح'] };   /* (V37.41) ظهر الاسمُ القديمُ في لقطة المالك — كان محفوظًا في الإعدادات السحابية منذ محرّر V37.4 */
+PV.CAT_LEGACY = { entry:['تحتاج زيارة تقنية — المدخل غير واضح'] };   /* (V37.41) ظهر الاسمُ القديمُ في لقطة المالك — كان محفوظًا في الإعدادات السحابية منذ محرّر V37.4 */
 function catMerge(base, ov){
   var L = base.map(function(o){ return { k:o.k, n:o.n, who:o.who, photo:!!o.photo, base:o.n, sup:o.sup ? o.sup.slice() : null }; });
   (Array.isArray(ov) ? ov : []).forEach(function(o){
     if (!o || !o.k) return; var e = L.filter(function(x){ return x.k === o.k; })[0];
-    if (e){ if (o.n && !(CAT_LEGACY[o.k] && CAT_LEGACY[o.k].indexOf(String(o.n)) > -1)) e.n = String(o.n);   /* (V37.41) اسمٌ قديمٌ محفوظٌ لا يغلب الجديد */ if (o.who != null && String(o.who) !== String(e.who)){ e.who = String(o.who); e.sup = null; } if (o.photo != null) e.photo = !!o.photo; e.off = !!o.off;
+    if (e){ if (o.n && !(PV.CAT_LEGACY[o.k] && PV.CAT_LEGACY[o.k].indexOf(String(o.n)) > -1)) e.n = String(o.n);   /* (V37.41) اسمٌ قديمٌ محفوظٌ لا يغلب الجديد */ if (o.who != null && String(o.who) !== String(e.who)){ e.who = String(o.who); e.sup = null; } if (o.photo != null) e.photo = !!o.photo; e.off = !!o.off;
       if (Array.isArray(o.sup) && o.sup.length) e.sup = o.sup.map(function(x){ return { p:String(x.p || ''), s:String(x.s || '') }; }).filter(function(x){ return x.p; }); }   /* (V37.14) جهاتُ الدعم */
     else if (o.n) L.push({ k:String(o.k), n:String(o.n), who:String(o.who || ''), photo:!!o.photo, off:!!o.off, extra:true, sup:Array.isArray(o.sup) ? o.sup.map(function(x){ return { p:String(x.p || ''), s:String(x.s || '') }; }).filter(function(x){ return x.p; }) : null });
   });
@@ -406,7 +406,7 @@ function phQueueAge(){ var Q = (typeof PHOTO_Q === 'object' && PHOTO_Q) || []; i
    سطح تثبيت في الممرات فقط حتى الآن — لأن المخيمات وضعها مختلف». وما زير ولم يُستكمل (مغلقٌ أو بلا تصريح…) «تحتاج زيارة أخرى».
    تُحسَب لما مُسح ولم يُركَّب: ممرٌّ في فئة «لا يوجد سطح تثبيت»، أو نصُّ تحدّيه أو ملاحظتُه يذكر كوبري أو جسرًا أو نفقًا. */
 /* «تحت كوبري» أو «داخل نفق» من اختيار الفني أو ملاحظته — لا من اسم فئة «عائق في الموقع (… نفق أو كوبري)» نفسِه، ولا «على الجسر» */
-var TECH_BT_RX = /تحت (ال)?(جسر|كوبري|كبري)|كوبري|كبري|نفق|انفاق/;
+PV.TECH_BT_RX = /تحت (ال)?(جسر|كوبري|كبري)|كوبري|كبري|نفق|انفاق/;
 function techVisit(x, r){
   if (!x || !r || r.deleted || !svDone(r)) return false;
   if (x.techDone) return false;   /* (V37.52) قرارُ المهندس: الزيارةُ التقنيةُ تمّت */
@@ -416,7 +416,7 @@ function techVisit(x, r){
   if (locList(r.loc).some(function(v){ return /كوبري|نفق/.test(v); })) return true;   /* (V38.26) «موقع النقطة» صريحًا */
   var nm0 = {}; ccList().forEach(function(o){ nm0[o.n] = 1; if (o.base) nm0[o.base] = 1; });
   var parts = (Array.isArray(r.chals) ? r.chals : []).filter(function(c){ return !nm0[c]; });
-  return TECH_BT_RX.test(arKey(parts.concat([r.note || '', r.chal_note || '']).join(' ')));
+  return PV.TECH_BT_RX.test(arKey(parts.concat([r.note || '', r.chal_note || '']).join(' ')));
 }
 
 /* ── (V37.18) الذاكرةُ على الموبايل: وثيقةُ صورةٍ واردةٌ لا تحمل خامًا أبدًا — الخامُ في الطابور المحليِّ لمن التقطها، وعلى الدرايف لمن سواه */
@@ -453,7 +453,7 @@ function appResetGo(){
 
 /* ── (V37.23 المرحلة ١) الأجهزةُ القديمة — والميدانُ ليس كلُّه آيفون: الوضعُ الخفيفُ يُفعَّل تلقائيًّا بالقياس.
    نظامٌ قديمٌ (آيفون قبل ١٥، أندرويد قبل ١٠)، أو ثلاثُ رسماتٍ من آخر خمسٍ تجاوزت ١٬٥٠٠ م.ث على جهازٍ لمسيّ — وللمستخدم إيقافُه يومًا. */
-var LITE_AUTO = { ms:[], told:false };
+PV.LITE_AUTO = { ms:[], told:false };
 function oldOS(){
   var ua = String((typeof navigator === 'object' && navigator.userAgent) || '');
   var ios = /OS (\d+)_\d/.exec(ua); if (ios && +ios[1] && +ios[1] < 15) return 'ios' + ios[1];
@@ -463,10 +463,10 @@ function oldOS(){
 function liteMeasure(ms){
   if (LITE || typeof ms !== 'number') return;
   try { var off = +(lsGet('nsk14.liteoff') || 0); if (off && Date.now() - off < 864e5) return; } catch (e){ LS_ERR = e; }
-  LITE_AUTO.ms.push(ms); if (LITE_AUTO.ms.length > 5) LITE_AUTO.ms.shift();
+  PV.LITE_AUTO.ms.push(ms); if (PV.LITE_AUTO.ms.length > 5) PV.LITE_AUTO.ms.shift();
   var touch = (typeof L !== 'undefined' && L.Browser && L.Browser.touch) || ('ontouchstart' in window);
-  var slow = LITE_AUTO.ms.filter(function(x){ return x > 1500; }).length;
-  if ((oldOS() && slow >= 1) || (touch && slow >= 3)){ LITE = true; LITE_AUTO.told = true; logEventQuiet && logEventQuiet('الوضعُ الخفيفُ تلقائيًّا — ' + (oldOS() || 'رسمٌ بطيء ' + Math.max.apply(null, LITE_AUTO.ms) + 'م.ث')); if (typeof liteSync === 'function') liteSync(); toast(t('الجهازُ بطيء — شغّلنا الوضعَ الخفيف')); }
+  var slow = PV.LITE_AUTO.ms.filter(function(x){ return x > 1500; }).length;
+  if ((oldOS() && slow >= 1) || (touch && slow >= 3)){ LITE = true; PV.LITE_AUTO.told = true; logEventQuiet && logEventQuiet('الوضعُ الخفيفُ تلقائيًّا — ' + (oldOS() || 'رسمٌ بطيء ' + Math.max.apply(null, PV.LITE_AUTO.ms) + 'م.ث')); if (typeof liteSync === 'function') liteSync(); toast(t('الجهازُ بطيء — شغّلنا الوضعَ الخفيف')); }
 }
 function liteOn(){ LITE = true; try { lsSet('nsk14.liteoff', '0'); } catch (e){ LS_ERR = e; } if (typeof liteSync === 'function') liteSync(); toast(t('الوضعُ الخفيف يعمل')); try { location.reload(); } catch (e){ LS_ERR = e; } }
 
@@ -477,7 +477,7 @@ var BUG_FROM_ASSIST = '';
 if (!('known' in CFG)) CFG.known = null;
 /* (V37.29) البندُ ٤ — قائمةٌ أولى بمصطلحات المشروع (من عدسة مهندس الكهرباء وما تكرّر في الميدان) تعمل حتى يكتب المهندسُ قائمتَه؛
    ما يكتبه في الإعدادات يحلّ محلَّها كلَّها. */
-var KNOWN_DEFAULT = [
+PV.KNOWN_DEFAULT = [
   'القارئ لا يعمل، القارئ مطفي، القارئ ساقط، القارئ مش شغال | افحص الراوتر أولًا: القارئ بلا راوتر حيّ لا يُرى ولو كان يعمل. لو الراوتر حيّ والقارئ ساقط فالعطل في القارئ أو منفذه: افصل الكابل دقيقة وأعده، وإن لم يقلع فاستبدله من العُهدة وسجّل المنفذ.',
   'الراوتر ساقط، الراوتر مطفي، مفيش نت في النقطة | تأكد من التيار عند الراوتر نفسه (بالقياس لا بالنظر). لو سقطت نقاط المشعر كلها في الدقيقة نفسها فالعطل في المغذّي أو الراوتر المجمّع: بلاغ واحد للمنبع لا عشرة.',
   'متذبذب، يفصل، بيفصل، يفصل ويرجع، بيقطع كتير، بيقطع | غالبًا جهد متردد أو وصلة رخوة أو حرارة الظهيرة: زيارة نهارية لشد الأطراف وقياس الجهد تحت الحمل وتظليل الجهاز.',
@@ -500,33 +500,33 @@ function knownNorm(x){ x = String(x || '').trim(); x = typeof arNorm === 'functi
    كانت نصًّا خامًّا (سطرٌ لكلِّ مشكلة). صارت كروتًا: الكلماتُ والحلُّ والحالةُ (قائمة / حُلّت في إصدار) ولمن تظهر (الكل / الميدان / الوزارة)،
    والمحلولةُ تخرج من المساعد وتبقى للتاريخ. ومعها «جرّب سؤالًا» قبل الحفظ، و«تغطيةُ المساعد» على أسئلة الفريق الفعلية آخر ١٤ يومًا،
    و«أضفها» من أيِّ سؤالٍ بلا جواب تفتح كرتًا جاهزَ الكلمات. التخزينُ هو هو (CFG.known سطورًا) بحقلٍ ثالثٍ اختياريٍّ: «حُلّت V… · الميدان». */
-var KN_ED = null, KN_ST = ['قائمة', 'حُلّت'], KN_AUD = ['الكل', 'الميدان', 'الوزارة'];
-var KN_STOP = { 'في':1, 'من':1, 'على':1, 'عن':1, 'الى':1, 'إلى':1, 'مش':1, 'ليه':1, 'ازاي':1, 'إزاي':1, 'هل':1, 'لما':1, 'لو':1, 'انا':1, 'أنا':1, 'ده':1, 'دي':1, 'اللي':1, 'مع':1, 'بعد':1, 'قبل':1, 'او':1, 'أو':1, 'و':1, 'يا':1, 'ما':1, 'لا':1, 'عند':1, 'كده':1 };
+PV.KN_ED = null; PV.KN_ST = ['قائمة', 'حُلّت']; PV.KN_AUD = ['الكل', 'الميدان', 'الوزارة'];
+PV.KN_STOP = { 'في':1, 'من':1, 'على':1, 'عن':1, 'الى':1, 'إلى':1, 'مش':1, 'ليه':1, 'ازاي':1, 'إزاي':1, 'هل':1, 'لما':1, 'لو':1, 'انا':1, 'أنا':1, 'ده':1, 'دي':1, 'اللي':1, 'مع':1, 'بعد':1, 'قبل':1, 'او':1, 'أو':1, 'و':1, 'يا':1, 'ما':1, 'لا':1, 'عند':1, 'كده':1 };
 function knownParse(l){ var p = String(l || '').split('|'); if (p.length < 2) return null; var kw = p[0].trim(), a = p[1].trim(), m = (p[2] || '').trim(); if (!kw || !a) return null;
   return { kw:kw, a:a, st:/حُلّت|حلت|حُلت/.test(m) ? 'حُلّت' : 'قائمة', v:(m.match(/V\d+\.\d+/) || [''])[0], aud:/الوزارة/.test(m) ? 'الوزارة' : (/الميدان/.test(m) ? 'الميدان' : 'الكل') }; }
 function knownLine(k){ var m = []; if (k.st === 'حُلّت') m.push('حُلّت' + (k.v ? ' ' + k.v : '')); if (k.aud && k.aud !== 'الكل') m.push(k.aud); return k.kw + ' | ' + k.a + (m.length ? ' | ' + m.join(' · ') : ''); }
-function knownAll(raw){ raw = raw != null ? raw : (CFG.known || KNOWN_DEFAULT); if (!raw) return []; return String(raw).split(/\n+/).map(knownParse).filter(Boolean); }
+function knownAll(raw){ raw = raw != null ? raw : (CFG.known || PV.KNOWN_DEFAULT); if (!raw) return []; return String(raw).split(/\n+/).map(knownParse).filter(Boolean); }
 function knownList(){ return knownAll().filter(function(k){ return k.st !== 'حُلّت'; }); }   /* المحلولةُ لا تُجيب */
 function knownMatch(L, q){ q = knownNorm(q); if (q.length < 3) return []; var minis = typeof ROLE !== 'undefined' && ROLE === 'viewer';
   return L.filter(function(k){ return k.st !== 'حُلّت' && (minis ? k.aud !== 'الميدان' && !/تصريح|منع|متعذر|متعذّر|رفض/.test(k.a) : k.aud !== 'الوزارة'); })   /* (V37.31) والوزارةُ لا ترى إرشادَ الميدان الداخلي */
     .filter(function(k){ return k.kw.split(/[،,]/).some(function(w){ w = knownNorm(w); return w && q.indexOf(w) > -1; }); }).slice(0, 3); }
 function knownHits(q){ return knownMatch(knownList(), q); }
 function knownKw(q){   /* كلماتٌ مقترحةٌ من السؤال: السؤالُ نفسُه، وكلُّ كلمةٍ دالّةٍ فيه (بلا حروف الجر والأدوات) */
-  var w = String(q || '').replace(/[؟?!.،,«»"()]/g, ' ').split(/\s+/).filter(function(x){ return x && x.length > 2 && !KN_STOP[x]; });
+  var w = String(q || '').replace(/[؟?!.،,«»"()]/g, ' ').split(/\s+/).filter(function(x){ return x && x.length > 2 && !PV.KN_STOP[x]; });
   var out = [String(q || '').trim()]; w.forEach(function(x){ if (out.indexOf(x) < 0) out.push(x); }); return out.slice(0, 6).join('، '); }
-function knEdInit(){ if (!KN_ED) KN_ED = knownAll().map(function(k){ return Object.assign({}, k); }); return KN_ED; }
+function knEdInit(){ if (!PV.KN_ED) PV.KN_ED = knownAll().map(function(k){ return Object.assign({}, k); }); return PV.KN_ED; }
 function knEdRead(){   /* الكروتُ من الشاشة إلى الحالة — قبل أيِّ إضافةٍ أو حذفٍ أو حفظ */
-  if (!KN_ED || typeof document === 'undefined') return KN_ED;
-  KN_ED.forEach(function(k, i){ var g = function(p){ var el = document.getElementById('kn-' + p + '-' + i); return el ? String(el.value || '').trim() : null; };
+  if (!PV.KN_ED || typeof document === 'undefined') return PV.KN_ED;
+  PV.KN_ED.forEach(function(k, i){ var g = function(p){ var el = document.getElementById('kn-' + p + '-' + i); return el ? String(el.value || '').trim() : null; };
     var kw = g('kw'), a = g('a'), st = g('st'), aud = g('aud'); if (kw != null) k.kw = kw; if (a != null) k.a = a; if (st != null){ if (st === 'حُلّت' && k.st !== 'حُلّت' && !k.v) k.v = knVer(); k.st = st; } if (aud != null) k.aud = aud; });
-  return KN_ED; }
+  return PV.KN_ED; }
 function knVer(){ var m = String(document.documentElement.innerHTML.match(/V\d+\.\d+(?=\s*<\/)/) || '').match(/V\d+\.\d+/); var e = document.querySelector('[aria-label="فحص التحديثات"]'); var v = e && (e.textContent.match(/V\d+\.\d+/) || [])[0]; return v || (m ? m[0] : ''); }   /* الإصدارُ المعروضُ في التطبيق */
 function knEdSave(){
   if (!(typeof may === 'function' && may('settings'))) return false; knEdRead();
-  var L = (KN_ED || []).filter(function(k){ return k.kw && k.a; }); CFG.known = L.map(knownLine).join('\n') || null; cfgPushSoon('known');
+  var L = (PV.KN_ED || []).filter(function(k){ return k.kw && k.a; }); CFG.known = L.map(knownLine).join('\n') || null; cfgPushSoon('known');
   CFG_VER = (typeof CFG_VER === 'number' ? CFG_VER : 0) + 1; logEvent('تعديلُ المشاكل المعروفة — ' + L.length + ' مشكلة · ' + L.filter(function(k){ return k.st !== 'حُلّت'; }).length + ' قائمة');
-  KN_ED = null; toast(t('حُفظت — تصل كلَّ الأجهزة مع المزامنة')); return true; }
-function knEdAdd(q){ knEdRead(); knEdInit(); KN_ED.unshift({ kw:q ? knownKw(q) : '', a:'', st:'قائمة', v:'', aud:'الكل', fresh:1 }); }
+  PV.KN_ED = null; toast(t('حُفظت — تصل كلَّ الأجهزة مع المزامنة')); return true; }
+function knEdAdd(q){ knEdRead(); knEdInit(); PV.KN_ED.unshift({ kw:q ? knownKw(q) : '', a:'', st:'قائمة', v:'', aud:'الكل', fresh:1 }); }
 function knCover(L){   /* تغطيةُ المساعد على أسئلة الفريق الفعلية */
   var R = (typeof AQ === 'object' && AQ.rows) || []; if (!R.length) return null; var ok = 0; R.forEach(function(r){ if (knownMatch(L, r.q).length) ok++; }); return { ok:ok, n:R.length, pc:Math.round(100 * ok / R.length) }; }
 function knownCard(){
@@ -536,7 +536,7 @@ function knownCard(){
   var cards = E.map(function(k, i){ var done = k.st === 'حُلّت';
     return '<div style="border:1px solid ' + (k.fresh ? '#F5A623' : 'var(--line)') + ';border-radius:12px;padding:10px;margin:8px 0;' + (done ? 'opacity:.6' : '') + '">'
       + '<div class="wt-row" style="gap:6px;flex-wrap:wrap;align-items:center;margin:0"><b style="flex:1;min-width:120px">' + (done ? '\u2705 ' : '\u{1F527} ') + esc(t(done ? 'حُلّت' : 'قائمة')) + (done && k.v ? ' <span class="hint" style="margin:0">' + esc(k.v) + '</span>' : '') + '</b>'
-      + sel('kn-st-' + i, KN_ST, k.st) + sel('kn-aud-' + i, KN_AUD, k.aud || 'الكل') + btn('\u{1F5D1}', 'btn-quiet btn-sm', ' data-kndel="' + i + '" title="' + esc(t('احذفها')) + '"') + '</div>'
+      + sel('kn-st-' + i, PV.KN_ST, k.st) + sel('kn-aud-' + i, PV.KN_AUD, k.aud || 'الكل') + btn('\u{1F5D1}', 'btn-quiet btn-sm', ' data-kndel="' + i + '" title="' + esc(t('احذفها')) + '"') + '</div>'
       + '<label class="hint" for="kn-kw-' + i + '" style="display:block;margin:6px 0 2px">' + esc(t('الكلمات اللي تدلّ عليها (بفاصلة)')) + '</label><input id="kn-kw-' + i + '" dir="auto" value="' + esc(k.kw) + '" style="width:100%;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)">'
       + '<label class="hint" for="kn-a-' + i + '" style="display:block;margin:6px 0 2px">' + esc(t('الحل')) + '</label><textarea id="kn-a-' + i + '" dir="auto" rows="2" style="width:100%;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)">' + esc(k.a) + '</textarea></div>'; }).join('');
   return '<div id="knownCard">' + card('المساعد — المشاكل المعروفة وحلولها',
@@ -547,13 +547,13 @@ function knownCard(){
     + cards,
     btn('حفظ المشاكل المعروفة', 'btn-primary btn-sm', ' data-knownsave="1"')) + '</div>';
 }
-function knTry(){ knEdRead(); var el = document.getElementById('knTry'), out = document.getElementById('knTryOut'); if (!el || !out) return; var H = knownMatch(KN_ED || knownAll(), el.value);
+function knTry(){ knEdRead(); var el = document.getElementById('knTry'), out = document.getElementById('knTryOut'); if (!el || !out) return; var H = knownMatch(PV.KN_ED || knownAll(), el.value);
   out.innerHTML = H.length ? '\u2705 ' + esc(t('هيرد بـ')) + ' ' + nm(H.length) + ': ' + H.map(function(k){ return '<b>' + esc(k.kw.split(/[،,]/)[0]) + '</b> \u2014 ' + esc(k.a.slice(0, 90)); }).join(' · ') : '\u26A0 ' + esc(t('مفيش مشكلة معروفة بتطابق — أضف كلمةً من السؤال لكرتٍ مناسب أو اعمل كرتًا جديدًا')); }
 
 
 /* ── (V37.33) المظهرُ الإضافيّ — طلبُ المالك: «الموجودُ كويسٌ جدًّا، و٢ و٣ حلوين — نعملهم زيادة» ── */
 /* (V37.73) قرارُ المالك: يُلغى الشكلُ القديم، و«غرفة التحكم» هو الافتراضي، و«هوية أفاقي» تُسمّى «النهاري» — زوجٌ كالداكن والفاتح (لا اسمَ المنصّة القديم: العلامةُ البيضاء V16.92) */
-var SKINS = [['ops', 'الافتراضي'], ['brand', 'النهاري']];
+PV.SKINS = [['ops', 'الافتراضي'], ['brand', 'النهاري']];
 function skinSet(k){
   k = (k === 'brand') ? 'brand' : 'ops';   /* (V37.73) لا شكلَ بلا مظهر — الافتراضيُّ غرفةُ التحكم */
   var el = document.documentElement; if (k) el.setAttribute('data-skin', k); else el.removeAttribute('data-skin');
@@ -563,6 +563,6 @@ function skinSet(k){
 }
 function skinRowSync(){
   var row = document.getElementById('skinRow'); if (!row) return; var cur = document.documentElement.getAttribute('data-skin') || 'ops';
-  var html = SKINS.map(function(x){ return '<button type="button" class="chip' + (x[0] === cur ? ' on' : '') + '" data-skin="' + x[0] + '">' + esc(t(x[1])) + '</button>'; }).join('');
+  var html = PV.SKINS.map(function(x){ return '<button type="button" class="chip' + (x[0] === cur ? ' on' : '') + '" data-skin="' + x[0] + '">' + esc(t(x[1])) + '</button>'; }).join('');
   if (row.getAttribute('data-h') !== cur + '|' + LANG){ row.innerHTML = html; row.setAttribute('data-h', cur + '|' + LANG); row.setAttribute('aria-label', t('المظهر')); }
 }

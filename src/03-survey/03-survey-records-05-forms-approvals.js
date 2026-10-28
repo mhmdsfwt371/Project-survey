@@ -136,8 +136,8 @@ var SV_KITS  = ['','١','٢','٣'];
    كانت الحقولُ كلُّها اختياريةً في الشيفرة: يحفظ الفنيُّ زيارةً بلا نوعِ تركيبٍ
    ولا مصدرِ كهرباءَ ولا مقاسات، فيصل المكتبَ سجلٌّ لا يُبنى عليه حلٌّ ويُردُّ
    فتُعاد الزيارة. صار المطلوبُ معلَّمًا بنجمةٍ ومحروسًا عند الحفظ. */
-var SV_REQ = ['mount','power','wid_m','hgt_m','fit'];
-function reqStar(key){ return SV_REQ.indexOf(key) > -1 ? ' <span class="req">*</span>' : ''; }
+PV.SV_REQ = ['mount','power','wid_m','hgt_m','fit'];
+function reqStar(key){ return PV.SV_REQ.indexOf(key) > -1 ? ' <span class="req">*</span>' : ''; }
 function svNum(key, label, hint){
   return '<div class="field"><label>' + esc(t(label)) + reqStar(key) + '</label>'
     + '<input type="number" min="0" step="0.5" data-form="' + key + '" value="'

@@ -35,7 +35,7 @@ function selTechDone(){ var n = 0; selIds().forEach(function(id){ var x = siteFi
 function selExecSet(st){ var n = 0; selIds().forEach(function(id){ if (execOvSet(id, st)) n++; }); if (n) logEvent('تصنيفُ التقرير التنفيذي: ' + n + ' نقطة ← ' + (st ? EXEC_L[st][0] : 'تلقائي')); return n; }
 
 /* صفوفٌ ثابتةٌ بلا عدد — «قراراتٌ معلّقة» كتبها المالك؛ تظهر بلا عددٍ ما لم يكن في النظام نقاطٌ لمجموعتها (فتظهر بعددها) */
-var EXEC_STATIC = [
+PV.EXEC_STATIC = [
   ['مراكز تفويج', 'النورية', 'كاميرات البث', '', 'SCOPE'], ['مراكز تفويج', 'الزايدي', 'كاميرات البث', '', 'SCOPE'],
   ['مراكز تفويج', 'الهجرة 1', 'كاميرات البث', '', 'SCOPE'], ['مراكز تفويج', 'الهجرة 2', 'كاميرات البث', '', 'SCOPE'],
   ['المشاعر المقدسة', 'منى', 'كاميرات مزودين الخدمة', '', 'SP_MINA'],
@@ -59,7 +59,7 @@ function execRows(){
     agg[k] = (agg[k] || 0) + 1; if (r && svVisited(r)) tot.visited++; if (r && svDone(r)) tot.surveyed++;
     if (st === 'INSTALLED') tot.installed++; else if (/^READY/.test(st)) tot.ready++; else if (st === 'PERMIT' || st === 'LOC') tot.revisit++; else if (/^(SCOPE|WAIT_|ARAFAT_BTH|SP_)/.test(st)) tot.pending++; else tot.chal++; });
   var rows = Object.keys(agg).map(function(k){ var p = k.split('|'); return { c1:p[0], c2:p[1], c3:p[2], c4:p[3], b:p[4], n:agg[k] }; });
-  EXEC_STATIC.forEach(function(s0){ if (!rows.some(function(r){ return r.c2 === s0[1] && r.c3 === s0[2] && r.c4 === s0[3]; })) rows.push({ c1:s0[0], c2:s0[1], c3:s0[2], c4:s0[3], b:s0[4], n:null }); });
+  PV.EXEC_STATIC.forEach(function(s0){ if (!rows.some(function(r){ return r.c2 === s0[1] && r.c3 === s0[2] && r.c4 === s0[3]; })) rows.push({ c1:s0[0], c2:s0[1], c3:s0[2], c4:s0[3], b:s0[4], n:null }); });
   var ix = function(L, v){ var i = (L || []).indexOf(v); return i < 0 ? 99 : i; };
   var key = function(r){ var c4r = r.c3 === 'ممرات' ? (r.c4 === 'ممرات الطرق' && /^READY/.test(r.b) ? 9 : ix(EXEC_O.c4, r.c4)) : 0;   /* ممراتُ الطرق الجاهزةُ بعد الجبل ونمرة والقطار كما رتّبها المالك */
     var tail = r.b === 'SP_ARAFAT' ? 1 : 0;   /* كاميراتُ مزودي الخدمة في عرفة آخرَ الملف كما وضعها */

@@ -33,14 +33,14 @@ var VIS_LAST = 0;
 /* على الهاتف تبدأ مطويّةً — الشاشةُ للخريطة؛ ومن فتحها تبقى له */
 var LEGEND_ON = (function(){ var v = lsGet('nsk14.legend'); if (v === '0') return false; if (v === '1') return true;
   return !(typeof window !== 'undefined' && window.innerWidth < 640); })();
-var VER_CHASE = 0;
+PV.VER_CHASE = 0;
 function verChase(cloud){
   STATE.appVerCloud = cloud;
-  if (verNum(cloud) <= verNum(appVer())){ clearInterval(VER_CHASE); VER_CHASE = 0; return; }
+  if (verNum(cloud) <= verNum(appVer())){ clearInterval(PV.VER_CHASE); PV.VER_CHASE = 0; return; }
   var b = document.querySelector('.ver-tag'); if (b) b.classList.add('upd');
   swPoll();
-  if (!VER_CHASE) VER_CHASE = setInterval(function(){
-    if (verNum(STATE.appVerCloud || '') <= verNum(appVer())){ clearInterval(VER_CHASE); VER_CHASE = 0; return; }
+  if (!PV.VER_CHASE) PV.VER_CHASE = setInterval(function(){
+    if (verNum(STATE.appVerCloud || '') <= verNum(appVer())){ clearInterval(PV.VER_CHASE); PV.VER_CHASE = 0; return; }
     swPoll();
   }, 60000);
 }

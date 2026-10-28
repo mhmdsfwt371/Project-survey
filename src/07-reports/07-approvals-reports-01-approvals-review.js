@@ -9,7 +9,7 @@
    ============================================================================ */
 
    /* المحضرُ المعروض: نقطةً أو شركة */
-var SV_LABEL = { mount:'التثبيت', power:'الكهرباء', height:'الارتفاع (متر)', cable:'طول الكابل (متر)',
+PV.SV_LABEL = { mount:'التثبيت', power:'الكهرباء', height:'الارتفاع (متر)', cable:'طول الكابل (متر)',
   len_m:'الطول المتاح (متر)', wid_m:'العرض المتاح (متر)', hgt_m:'الارتفاع المتاح (متر)',
   fit:'هل الموقع مناسب للتركيب؟', tents:'عدد الغرف أو الخيام', gates:'عدد بوابات المخيم', ctype:'نوع المخيم', tbar:'الحاجز التنظيمي للتفويج — العدد',
   corr_w:'عرض المسار للاتجاه الواحد (متر)', kits:'عدد الأطقم الكاملة المطلوبة', jam_pos:'الدور والجهة',
@@ -31,7 +31,7 @@ function svFacts(r){
   ['mount','power','height','cable'].concat(SV_EXTRA_KEYS).forEach(function(k){
     var v = r[k];
     if (v === '' || v == null || v === 0 || v === '0') return;
-    out.push([SV_LABEL[k] || k, String(v)]);
+    out.push([PV.SV_LABEL[k] || k, String(v)]);
   });
   if (r.chals && r.chals.length) out.push(['التحديات', r.chals.map(function(c){ return t(c); }).join(' \u00b7 ')]);
   if (r.note) out.push(['ملاحظة المشرف', r.note]);

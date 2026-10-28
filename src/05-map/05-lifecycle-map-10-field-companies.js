@@ -9,7 +9,7 @@
    ============================================================================ */
 /* ═══ الميدان — الخريطة أولًا ═══ */
 
-var FIELD_MODE = 'survey', FIELD_PREV = 'survey';
+var FIELD_MODE = 'survey'; PV.FIELD_PREV = 'survey';
 var EXP_OPEN = false;
 var POP_SITE = '';
 var CO_OPEN = false;
@@ -44,8 +44,8 @@ var CO_POP_LBL = { all:'كلُّ المخيّمات', sv:'تمت الزيارة'
 
 
 var CO_CMP = null, CO_CMP_KEYS = [];
-var CO_HEAD = /^(شرك[ةه]|مؤسس[ةه]|مكتب|مجموع[ةه]|مصنع|جمعي[ةه])\s/;
-var CO_FORM = /^شرك[ةه]\s+(شخص\s+واحد|ذات\s+مسؤولي[ةه]\s+محدود[ةه]|مساهم[ةه]|تضامن|توصي[ةه]\s+بسيط[ةه])\s*$/;
+PV.CO_HEAD = /^(شرك[ةه]|مؤسس[ةه]|مكتب|مجموع[ةه]|مصنع|جمعي[ةه])\s/;
+PV.CO_FORM = /^شرك[ةه]\s+(شخص\s+واحد|ذات\s+مسؤولي[ةه]\s+محدود[ةه]|مساهم[ةه]|تضامن|توصي[ةه]\s+بسيط[ةه])\s*$/;
 function coSplit(v){
   var raw = String(v || '').replace(/[\u200e\u200f\u202a-\u202e]/g, '').trim();
   if (!raw) return [];
@@ -53,7 +53,7 @@ function coSplit(v){
   var out = [];
   parts.forEach(function(x){
     /* صيغةٌ قانونيةٌ أو جزءٌ لا يبدأ بكيان: يعود إلى ما قبله */
-    if (out.length && (CO_FORM.test(x) || !CO_HEAD.test(x))) out[out.length - 1] += '، ' + x;
+    if (out.length && (PV.CO_FORM.test(x) || !PV.CO_HEAD.test(x))) out[out.length - 1] += '، ' + x;
     else out.push(x);
   });
   return out.length ? out : [raw];
@@ -230,7 +230,7 @@ function legendRows(){
   return out;
 }
 /* أسطرُ الأشكال: المخيمُ بحدوده، ثم كلُّ شكلٍ بأنواعه — بالهندسة التي يُرسَم بها */
-var SHAPE_ORDER = ['diamond','circle','square','triangle','star','drop'];
+PV.SHAPE_ORDER = ['diamond','circle','square','triangle','star','drop'];
 /* اسمُ النوع القصير: المفتاحُ العربيُّ نفسُه، وإلا اسمُه المعروض (LPR لا يُقرأ حرفًا) */
 function typeShort(k){
   if (/[\u0600-\u06FF]/.test(k)) return t(k);
@@ -245,7 +245,7 @@ function legendShapes(){
     (by[sh] = by[sh] || []).push(k);
   });
   var order = Object.keys(by).sort(function(a, b){
-    var ia = SHAPE_ORDER.indexOf(a), ib = SHAPE_ORDER.indexOf(b);
+    var ia = PV.SHAPE_ORDER.indexOf(a), ib = PV.SHAPE_ORDER.indexOf(b);
     return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
   });
   return '<div class="lg-row"><i class="lg-sh sh-c"></i>' + esc(t('مخيم')) + '</div>'

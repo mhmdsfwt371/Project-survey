@@ -14,7 +14,7 @@
    فصار تحت عنوان كلِّ شاشةٍ سطرُ نسبٍ: من أين تأتي بياناتُها (أيُّ شاشةٍ
    تكتبها)، وأين تُقرأ (أيُّ شاشةٍ تسمعها). يُملأ للشاشات التي بياناتُها
    تعبر الصفحات — لا لما يشرح نفسَه. */
-var PROV = {
+PV.PROV = {
   names:   ['تُولَّد آليًّا من أسماء الحسابات والشركات — لا تُخزَّن؛ يُخزَّن تصحيحُك اليدويُّ وحدَه',
             'كلُّ شاشةٍ وتقريرٍ يعرض اسمًا بالواجهة الإنجليزية'],
   jobs:    ['الوظائفُ تُعرَّف هنا، والأشخاصُ من «الحسابات»',
@@ -44,7 +44,7 @@ var PROV = {
             'المخالفاتُ والمساءلة: من كانت معه اللوحةُ في ذلك اليوم']
 };
 function provHtml(id){
-  var pv = PROV[id];
+  var pv = PV.PROV[id];
   if (!pv) return '';
   return '<p class="hint" style="margin:-6px 0 14px">'
     + '\u{1F4E5} ' + esc(t('تأتي من')) + ': ' + esc(t(pv[0]))
@@ -93,14 +93,14 @@ function goPage(id){
 /* ═══ استعمالُ الصفحات (V17.95) ═══
    كم فُتحت كلُّ صفحةٍ اليومَ على هذا الجهاز — يُعَدُّ محليًّا ويركب نبضةَ
    الحضور نفسَها (لا كتابةَ جديدة)، ويجمعه النبضُ الصباحيُّ عبر الأجهزة. */
-var PG_USE = null;
+PV.PG_USE = null;
 function pageUse(){
   var day = dayKey();
-  if (!PG_USE || PG_USE.day !== day){
+  if (!PV.PG_USE || PV.PG_USE.day !== day){
     var raw = null; try { raw = JSON.parse(lsGet('nsk14.pg') || 'null'); } catch (e){ LS_ERR = e; }
-    PG_USE = (raw && raw.day === day && raw.n) ? raw : { day:day, n:{} };
+    PV.PG_USE = (raw && raw.day === day && raw.n) ? raw : { day:day, n:{} };
   }
-  return PG_USE;
+  return PV.PG_USE;
 }
 /* (V38.84) and a per-day history (Makkah days, the last 14 kept) that the beat carries as pgh_<device>: the morning pulse
    alone kept only the day each device happened to report last, so the usage log lost most opens — the server job now
@@ -118,7 +118,7 @@ function pageTick(id){
   try { lsSet('nsk14.pgh', JSON.stringify(h)); } catch (e){ LS_ERR = e; }
   var u = pageUse(); u.n[id] = (u.n[id] || 0) + 1;
   if (Object.keys(u.n).length > 60) return;   /* سقفٌ: لا يتضخّم المفتاحُ بمعرِّفاتٍ غريبة */
-  try { lsSet('nsk14.pg', JSON.stringify(u)); } catch (e){ /* تخزينٌ ممنوعٌ في التصفّح الخاص — يُعَدُّ في الذاكرة فقط */ PG_USE.noStore = 1; }
+  try { lsSet('nsk14.pg', JSON.stringify(u)); } catch (e){ /* تخزينٌ ممنوعٌ في التصفّح الخاص — يُعَدُّ في الذاكرة فقط */ PV.PG_USE.noStore = 1; }
 }
 function seesRaw(id){ var n = R().nav; var cap = PAGE_CAP[id]; if (cap && !may(cap)) return false;
   return n === '*' || n.indexOf(id) > -1;

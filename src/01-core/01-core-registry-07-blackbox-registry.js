@@ -13,7 +13,7 @@
    ويُرفَق تلقائيًّا بكلِّ بلاغٍ في الكتابة نفسِها (سقفٌ ٢٠ كيلوبايت)، ويُنسَخ نصًّا
    من الأدوات للإرسال بلا شبكة. لا نصَّ حرًّا ولا اسمًا ولا جوالًا: معرِّفاتٌ
    وأزمنةٌ ورموزُ أخطاءٍ فقط — كلُّ سطرٍ يمرُّ بالتنقية قبل أن يُحفَظ. */
-var BOX = null, BOX_T = 0, BOX_MAX = 100, BOX_BYTES = 20000, BOX_ERR = null;
+var BOX = null, BOX_T = 0; PV.BOX_MAX = 100; var BOX_BYTES = 20000, BOX_ERR = null;
 function boxRedact(s){
   return String(s == null ? '' : s)
     .replace(/[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]+/g, '')   /* لا حرفَ عربيًّا — النصُّ الحرُّ والأسماء */
@@ -32,7 +32,7 @@ function boxNote(kind, what){
   var last = B.e[B.e.length - 1];
   if (last && last.k === kind && last.w === w && Date.now() - last.t < 1000) return;   /* لا تكرارَ في الثانية نفسِها */
   B.e.push({ t:Date.now(), k:kind, w:w });
-  while (B.e.length > BOX_MAX) B.e.shift();
+  while (B.e.length > PV.BOX_MAX) B.e.shift();
   var now = Date.now();
   if (now - BOX_T > 2000){ BOX_T = now; try { lsSet('nsk14.box', JSON.stringify(B)); } catch (e){ B.noStore = 1; } }
 }

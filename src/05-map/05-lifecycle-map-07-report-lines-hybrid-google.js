@@ -11,7 +11,7 @@
    قرارُ المالك: «دي الخطوط اللي يتكتب بيها التقرير». الباوربوينت يضمّنها من قالب الوزارة نفسِه. والـPDF يطبعه المتصفّح
    فيحتاج الخطَّ نفسَه: يرفعه المديرُ مرةً (العاديَّ والعريض) فيُحفَظ في وثيقة الإعدادات «fonts» — لا في المستودع العامّ لأن
    الخطَّ مرخَّص — ويُقرأ عند الطباعة وحدَها، فيُضمَّن في الـPDF ويُقرأ على أيِّ جهاز. */
-var FONTS_MAX = 450 * 1024;
+PV.FONTS_MAX = 450 * 1024;
 function fontsCard(){
   var F = CFG.fonts || {}, ed = may('settings');
   var st = function(k, l){ return '<span class="pill ' + (F[k] ? 'ok' : 'wrn') + '">' + (F[k] ? '\u2713 ' : '') + esc(t(l)) + (F[k + 'n'] ? ' \u00b7 ' + esc(F[k + 'n']) : '') + '</span>'; };
@@ -24,7 +24,7 @@ function fontsCard(){
 
 function fontUp(kind, file){
   if (!may('settings')){ toast(t('الإعداداتُ للمهندس فما فوق')); return; }
-  if (!file || file.size > FONTS_MAX){ toast(t('ملفُّ الخط كبير — الحدُّ ٤٥٠ ك.ب')); return; }
+  if (!file || file.size > PV.FONTS_MAX){ toast(t('ملفُّ الخط كبير — الحدُّ ٤٥٠ ك.ب')); return; }
   var fr = new FileReader();
   fr.onload = function(){ var b64 = String(fr.result || '').split(',')[1] || ''; if (!b64){ toast(t('تعذّرت قراءةُ الملف')); return; }
     var v = Object.assign({}, CFG.fonts || {}); v[kind] = b64; v[kind + 'n'] = file.name; v.at = Date.now(); v.by = STATE.meta.name || '';
@@ -127,9 +127,9 @@ function basemapAttach(){
    على امتداد الشارع، بهالةٍ بيضاء، وبلا تداخل. تُركَّب مع القمر على اتصال، وتُرفَع مع خريطة الشوارع (لها أسماؤها) ومع خريطة
    الجهاز بلا شبكة. يُخزَّن الملفُّ في مخزن الخريطة فيعمل لاحقًا بلا شبكة. */
 var NAMES = { data:null, busy:false, layer:null, ok:true };
-var NAMES_FILE = 'maps/mashaer-names.json', NAMES_REGION = 'maps/region-names.json';   /* (V27.8) الإقليمُ للتكبير البعيد */
-var NAMES_RANK = { motorway:1, trunk:1, primary:2, secondary:3, tertiary:4, unclassified:5, residential:5, pedestrian:5, living_street:5, service:6, footway:6, path:6, track:6, steps:7 };
-var NAMES_PLACE = { city:0, town:1, airport:1, suburb:2, village:2, peak:3, quarter:3, neighbourhood:4, hamlet:4, locality:5, station:6, hospital:6, mosque:6, place_of_worship:6, police:6, bus_station:6 };
+PV.NAMES_FILE = 'maps/mashaer-names.json'; PV.NAMES_REGION = 'maps/region-names.json';   /* (V27.8) الإقليمُ للتكبير البعيد */
+PV.NAMES_RANK = { motorway:1, trunk:1, primary:2, secondary:3, tertiary:4, unclassified:5, residential:5, pedestrian:5, living_street:5, service:6, footway:6, path:6, track:6, steps:7 };
+PV.NAMES_PLACE = { city:0, town:1, airport:1, suburb:2, village:2, peak:3, quarter:3, neighbourhood:4, hamlet:4, locality:5, station:6, hospital:6, mosque:6, place_of_worship:6, police:6, bus_station:6 };
 function namesFetch(file){
   var fromCache = (typeof caches === 'object' && caches.open) ? caches.open(BASEMAP_CACHE).then(function(c){ return c.match(file); }).catch(function(){ return null; }) : Promise.resolve(null);
   return fromCache.then(function(r){
@@ -145,7 +145,7 @@ function namesFetch(file){
 function namesLoad(){
   if (NAMES.data || NAMES.busy || !NAMES.ok) return;
   NAMES.busy = true;
-  Promise.all([namesFetch(NAMES_FILE), namesFetch(NAMES_REGION)]).then(function(a){
+  Promise.all([namesFetch(PV.NAMES_FILE), namesFetch(PV.NAMES_REGION)]).then(function(a){
     var loc = a[0], reg = a[1];
     if (!loc && !reg){ NAMES.ok = false; return; }
     /* الإقليميُّ يُعلَّم ليُرسَم في التكبير البعيد ويُخفى داخل المشاعر عند الاقتراب (فالمحلّيُّ أدقّ) */
@@ -187,12 +187,12 @@ function namesLayerClass(){   /* ليفلت يُحمَّل بعد هذا الم�
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
     /* الأماكنُ أوّلًا (أكبرُ وأهمّ)، ثم الطرقُ بترتيب أهميتها */
     var pts = D.points || [], k, p, pr, px, f;
-    for (k = 0; k < pts.length; k++){ p = pts[k]; pr = NAMES_PLACE[p[1]]; if (pr == null) pr = 6; if (pr > maxPlace) continue;   /* المدينةُ رتبتُها صفرٌ — لا تسقط بـ|| */ if (!b.contains([p[2], p[3]])) continue;
+    for (k = 0; k < pts.length; k++){ p = pts[k]; pr = PV.NAMES_PLACE[p[1]]; if (pr == null) pr = 6; if (pr > maxPlace) continue;   /* المدينةُ رتبتُها صفرٌ — لا تسقط بـ|| */ if (!b.contains([p[2], p[3]])) continue;
       if (p[4] === 1 && z >= 13 && inLoc(p[2], p[3])) continue;   /* الإقليميُّ داخل المشاعر عند الاقتراب: المحلّيُّ يكفي */
       px = map.latLngToContainerPoint([p[2], p[3]]); f = pr === 0 ? 17 : pr <= 1 ? 15 : pr <= 3 ? 13 : 12; ctx.font = 'bold ' + f + 'px system-ui, sans-serif';
       var w = ctx.measureText(p[0]).width + 8; if (!free(px.x, px.y, w, f + 6)) continue;
       ctx.lineWidth = 3.5; ctx.strokeStyle = 'rgba(255,255,255,.95)'; ctx.strokeText(p[0], px.x, px.y); ctx.fillStyle = pr <= 3 ? '#1a1a1a' : '#2b2b2b'; ctx.fillText(p[0], px.x, px.y); }
-    var lines = D.lines, order = lines.map(function(l, i){ return [NAMES_RANK[l[1]] || 6, i]; }).filter(function(o){ var l = lines[o[1]]; if (l[4] === 1){ if (z >= 14) return false; return o[0] <= maxRank; } return z >= 12 && o[0] <= maxRank; }).sort(function(a, b2){ return a[0] - b2[0]; });
+    var lines = D.lines, order = lines.map(function(l, i){ return [PV.NAMES_RANK[l[1]] || 6, i]; }).filter(function(o){ var l = lines[o[1]]; if (l[4] === 1){ if (z >= 14) return false; return o[0] <= maxRank; } return z >= 12 && o[0] <= maxRank; }).sort(function(a, b2){ return a[0] - b2[0]; });
     ctx.font = 'bold 12px system-ui, sans-serif';
     for (k = 0; k < order.length; k++){ var ln = lines[order[k][1]], g = ln[2], i, pts2 = [], tot = 0;
       if (ln[4] === 1 && z >= 13 && g.length && inLoc(g[0][0], g[0][1])) continue;

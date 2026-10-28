@@ -96,7 +96,7 @@ function briefMay(){ var r = effRole(ROLE); if (r === 'exec') return false; retu
    يُكتَب الصوابُ مرةً في «الإعدادات ← أسماءُ العرض» فيثبت لكلِّ من يقرأ. */
 
 /* أسماءٌ شائعةٌ لها كتابةٌ لاتينيةٌ متعارَفةٌ لا تُشتقّ بالحرف */
-var NAME_FIX = {
+PV.NAME_FIX = {
   'محمد':'Mohamed', 'أحمد':'Ahmed', 'احمد':'Ahmed', 'محمود':'Mahmoud',
   'عبدالله':'Abdullah', 'عبد الله':'Abdullah', 'عبدالرحمن':'Abdulrahman',
   'عبد الخالق':'Abdulkhaliq', 'خالد':'Khaled', 'سعد':'Saad', 'فهد':'Fahd',
@@ -124,7 +124,7 @@ var NAME_FIX = {
 };
 
 /* جدولُ النقحرة — حرفًا حرفًا، وما لا مقابلَ له يسقط */
-var TRANSLIT = {
+PV.TRANSLIT = {
   'ا':'a','أ':'a','إ':'i','آ':'aa','ب':'b','ت':'t','ث':'th','ج':'j','ح':'h',
   'خ':'kh','د':'d','ذ':'dh','ر':'r','ز':'z','س':'s','ش':'sh','ص':'s','ض':'d',
   'ط':'t','ظ':'z','ع':'a','غ':'gh','ف':'f','ق':'q','ك':'k','ل':'l','م':'m',
@@ -133,13 +133,13 @@ var TRANSLIT = {
 };
 
 function translitWord(w){
-  if (NAME_FIX[w]) return NAME_FIX[w];
+  if (PV.NAME_FIX[w]) return PV.NAME_FIX[w];
   var out = '', i = 0;
   /* «ال» التعريفُ تُكتَب Al- كما هو متعارَف */
   if (w.length > 3 && w.slice(0, 2) === 'ال'){ out = 'Al-'; i = 2; }
   for (; i < w.length; i++){
     var c = w[i];
-    out += (TRANSLIT[c] !== undefined) ? TRANSLIT[c] : c;
+    out += (PV.TRANSLIT[c] !== undefined) ? PV.TRANSLIT[c] : c;
   }
   /* أولُ حرفٍ لاتينيٍّ يُرفَع، وبعد الشرطة كذلك */
   return out.replace(/(^|-)([a-z])/g, function(m, a, b){ return a + b.toUpperCase(); });

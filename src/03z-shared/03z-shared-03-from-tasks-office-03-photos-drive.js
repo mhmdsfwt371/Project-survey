@@ -215,14 +215,14 @@ function photoFlushCloud(){
 
 /* (V37.22) بلاغُ المالك «صفحة المتابعة بتاخد أكتر من ٥ ثواني»: كانت كلُّ نداءٍ يمسح الصورَ كلَّها (٣٬٩٠٠)، وبطاقةُ «صور ليست على الدرايف»
    تنادي لكلِّ نقطة (١٬٩٤٥) — سبعةُ ملايين دورةٍ في الرسمة الواحدة. صار فهرسًا بالنقطة يُبنى مرةً ويُعاد حين تتغيّر الصور. */
-var PH_IDX = null, PH_IDX_KEY = '';
+var PH_IDX = null; PV.PH_IDX_KEY = '';
 
 function phIdx(){
   var P = STATE.photos || {}, key = (typeof PH_VER === 'number' ? PH_VER : 0);   /* لا عدَّ للمفاتيح في المسار الساخن — التغييرُ يُعلَن بـphTouch أو بكائنٍ جديد */
-  if (PH_IDX && PH_IDX_KEY === key && phIdx.ref === STATE.photos) return PH_IDX;
+  if (PH_IDX && PV.PH_IDX_KEY === key && phIdx.ref === STATE.photos) return PH_IDX;
   var M = {}; Object.keys(P).forEach(function(k){ var p = P[k]; if (p && p.site){ (M[p.site] = M[p.site] || []).push([k, p]); } });
   Object.keys(M).forEach(function(s){ M[s].sort(function(a, b){ return (b[1].at || 0) - (a[1].at || 0); }); });
-  phIdx.ref = STATE.photos; phIdx.len = Object.keys(P).length; PH_IDX = M; PH_IDX_KEY = key; return M;
+  phIdx.ref = STATE.photos; phIdx.len = Object.keys(P).length; PH_IDX = M; PV.PH_IDX_KEY = key; return M;
 }
 
 var PH_VER = 0;

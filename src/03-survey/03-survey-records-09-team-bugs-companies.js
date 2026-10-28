@@ -38,7 +38,7 @@ function phonesCard(){
    الشبكة وآخرُ خطأٍ وقع في جلسته. ويُرفَع إلى القاعدة، ومنها يفتحه الخادمُ
    بلاغًا في مستودع المشروع بنفسه — فيصل إلى من يُصلح بلا أن يبعثه أحد. */
 var BUG_OPEN = false, BUG_KIND = 'عطل';
-var BUG_KINDS = ['عطل', 'طلب جديد', 'اقتراح'];
+PV.BUG_KINDS = ['عطل', 'طلب جديد', 'اقتراح'];
 function bugCtx(){
   var nav = (typeof navigator === 'object' ? navigator : {});
   return {
@@ -82,7 +82,7 @@ function bugSheet(){
     + '<div class="pop-head"><div><h3 style="margin:0">\u{1F6E0} ' + esc(t('بلّغ عن عطلٍ أو اطلب جديدًا')) + '</h3></div>'
     + '<button type="button" class="btn btn-quiet btn-sm pop-x" data-bugclose="0" aria-label="' + esc(t('إغلاق')) + '">\u2715</button></div>'
     + '<div class="pop-body">'
-    + '<div class="chips" style="margin:0 0 8px">' + BUG_KINDS.map(function(k){
+    + '<div class="chips" style="margin:0 0 8px">' + PV.BUG_KINDS.map(function(k){
         return '<button type="button" class="chip' + (BUG_KIND === k ? ' on' : '') + '" data-bugkind="' + esc(k) + '">' + esc(t(k)) + '</button>';
       }).join('') + '</div>'
     + '<div class="field"><label>' + esc(t('ما الذي حدث؟')) + '</label>'

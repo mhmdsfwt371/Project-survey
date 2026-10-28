@@ -64,15 +64,15 @@ function cfgKey(k){ return (k === undefined || k === null || k === '') ? null : 
    والمستحقَّ صفرًا، ومديرٌ بالإنجليزية يكتب وزنًا بمفتاحٍ إنجليزيٍّ لا يراه غيرُه.
    صار المفتاحُ يُردُّ إلى الاسم العربيِّ الخام عند كلِّ قراءةٍ وكتابةٍ للأوزان —
    فالرقمُ واحدٌ على كلِّ جهازٍ بأيِّ لغة. */
-var WKEY_CACHE = { lang:'', n:-1, map:null };
+PV.WKEY_CACHE = { lang:'', n:-1, map:null };
 function wKeyNorm(k){
   if (LANG === 'ar' || !k) return k;
   var n = Object.keys(CAT_DEF).length;
-  if (WKEY_CACHE.lang !== LANG || WKEY_CACHE.n !== n || !WKEY_CACHE.map){
+  if (PV.WKEY_CACHE.lang !== LANG || PV.WKEY_CACHE.n !== n || !PV.WKEY_CACHE.map){
     var m = {}; Object.keys(CAT_DEF).forEach(function(ty){ var d = CAT_DEF[ty]; if (d && d.l){ m[t(d.l)] = d.l; } });
-    WKEY_CACHE = { lang:LANG, n:n, map:m };
+    PV.WKEY_CACHE = { lang:LANG, n:n, map:m };
   }
-  var M = WKEY_CACHE.map, i = k.indexOf('|');
+  var M = PV.WKEY_CACHE.map, i = k.indexOf('|');
   if (i < 0) return M[k] || k;
   var lab = k.slice(i + 1); return k.slice(0, i) + '|' + (M[lab] || lab);
 }
@@ -108,16 +108,16 @@ function cfgSet(path, key, val){
    بقيمته الحالية بدمجٍ (merge)، فلا يمحو جهازٌ قديمُ الذاكرة ما ضبطه غيرُه في
    مسارٍ لم يلمسه. ويُجمَّع بعد سكونٍ قصيرٍ فلا ترتفع كلُّ نقرةٍ وحدَها.
    ولا يُقيَّد إلا لمن يملك الإعدادات — فالقاعدةُ تردُّ غيرَه. */
-var _cfgT = 0, _cfgTouched = {};
+PV._cfgT = 0; PV._cfgTouched = {};
 function cfgPushSoon(path){
-  _cfgTouched[path] = 1;
+  PV._cfgTouched[path] = 1;
   if (typeof may !== 'function' || !may('settings')) return;
-  if (_cfgT) return;
-  _cfgT = setTimeout(function(){ _cfgT = 0; cfgPush(); }, 1200);
+  if (PV._cfgT) return;
+  PV._cfgT = setTimeout(function(){ PV._cfgT = 0; cfgPush(); }, 1200);
 }
 function cfgPush(){
   var doc = {};
-  Object.keys(_cfgTouched).forEach(function(k){ if (k in CFG) doc[k] = CFG[k]; });
+  Object.keys(PV._cfgTouched).forEach(function(k){ if (k in CFG) doc[k] = CFG[k]; });
   if (!Object.keys(doc).length) return;
   CORE.dirty('cfg', 'points', doc);
 }

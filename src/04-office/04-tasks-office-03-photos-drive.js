@@ -15,12 +15,12 @@
 
 /* المشاهدةُ تُسجَّل مرةً لكلِّ صورةٍ لكلِّ مستخدمٍ في اليوم: لو سُجّلت كلَّ
    فتحةٍ لأغرقت الحصةَ في يوم، ولو لم تُسجَّل لضاع الأثر. */
-var SEEN_TODAY = {};
+PV.SEEN_TODAY = {};
 function photoSeen(id){
   var day = dayKey();
   var k = day + '|' + (STATE.meta.uid || STATE.meta.name || '?') + '|' + id;
-  if (SEEN_TODAY[k]) return;
-  SEEN_TODAY[k] = 1;
+  if (PV.SEEN_TODAY[k]) return;
+  PV.SEEN_TODAY[k] = 1;
   logEvent('اطّلاع على صورة — ' + id, id);
 }
 

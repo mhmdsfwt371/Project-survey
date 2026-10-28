@@ -21,7 +21,7 @@ var FB_CFG = {
 };
 
 /* ── المخزن المحلي: IndexedDB وإن تعذّر فذاكرةٌ حيّة ── */
-var IDB_NAME = 'nusuk-v14', IDB_STORE = 'kv', _idb = null, _mem = null;
+var IDB_NAME = 'nusuk-v14'; PV.IDB_STORE = 'kv'; var _idb = null, _mem = null;
 
 /* ═══ المخزنُ المحلي لا يستسلم (V17.93) ═══
    كان الفتحُ إن أبطأ أربعَ ثوانٍ أو أخطأ يقلب الجلسةَ كلَّها إلى ذاكرةٍ لا
@@ -30,9 +30,7 @@ var IDB_NAME = 'nusuk-v14', IDB_STORE = 'kv', _idb = null, _mem = null;
    (١ · ٣ · ١٠ · ٣٠ ثوانٍ ثم كلَّ دقيقة)، وما كُتب في الذاكرة يُدفَق إلى القاعدة
    حين تُفتَح لأنه الأحدث، وما دام الحفظُ المحليُّ لا يعمل تظهر لافتةٌ حمراءُ
    لا تُغلَق ويُسأل قبل إغلاق الصفحة. */
-var IDB_LOG_ERR = null, IDB_TIMEOUT = (typeof window === 'object' && +window.NSK_IDB_TIMEOUT) || 4000,
-    IDB_BACKOFF = (typeof window === 'object' && Array.isArray(window.NSK_IDB_BACKOFF)) ? window.NSK_IDB_BACKOFF : [1000, 3000, 10000, 30000, 60000],
-    IDB_TRY = 0, IDB_RETRY_T = 0, IDB_BAD = false, IDB_PENDING = null;
+var IDB_LOG_ERR = null; PV.IDB_TIMEOUT = (typeof window === 'object' && +window.NSK_IDB_TIMEOUT) || 4000; PV.IDB_BACKOFF = (typeof window === 'object' && Array.isArray(window.NSK_IDB_BACKOFF)) ? window.NSK_IDB_BACKOFF : [1000, 3000, 10000, 30000, 60000]; PV.IDB_TRY = 0; var IDB_RETRY_T = 0, IDB_BAD = false; PV.IDB_PENDING = null;
 /* (V19.5) سببُ تعطّل الحفظ بلغةٍ يفهمها الفنيّ — وما يفعله */
 var IDB_WHY = '';
 function idbWhyText(w){
@@ -68,10 +66,10 @@ function idbBannerUpdate(){
       + ' <button type="button" class="ib-sync" data-idbretry="1">\u21BB ' + esc(t('أعد المحاولة')) + '</button>';
   } else if (ib){ ib.parentNode.removeChild(ib); }
 }
-var IDB_WATCH_T = 0;
+PV.IDB_WATCH_T = 0;
 function idbWatchStart(){
-  if (IDB_WATCH_T || typeof setInterval !== 'function') return;
-  IDB_WATCH_T = setInterval(function(){
+  if (PV.IDB_WATCH_T || typeof setInterval !== 'function') return;
+  PV.IDB_WATCH_T = setInterval(function(){
     if (!IDB_BAD){ idbBannerUpdate(); return; }
     try { if (STATE.meta.online && FB.ready && CORE.pending() > 0) CORE.flush(); } catch (e){ LS_ERR = e; }
     idbBannerUpdate();
@@ -89,12 +87,12 @@ function idbTellBad(on, why){
 function idbAdopt(db){
   _idb = db;
   if (IDB_RETRY_T){ clearTimeout(IDB_RETRY_T); IDB_RETRY_T = 0; }
-  IDB_TRY = 0;
+  PV.IDB_TRY = 0;
   /* الذاكرةُ أحدثُ مما في القاعدة: تُدفَق كلُّها ثم تُطوى */
   if (_mem && _mem.size){
     var pairs = []; _mem.forEach(function(v, k){ pairs.push([k, v]); });
     try {
-      var tx = db.transaction(IDB_STORE, 'readwrite'), st = tx.objectStore(IDB_STORE);
+      var tx = db.transaction(PV.IDB_STORE, 'readwrite'), st = tx.objectStore(PV.IDB_STORE);
       pairs.forEach(function(p){ st.put(p[1], p[0]); });
       tx.oncomplete = function(){ _mem = null; idbTellBad(false); };
       tx.onerror = function(){ idbTellBad(true, tx.error && tx.error.message); };
@@ -106,7 +104,7 @@ function idbDrop(){
   idbRetryLater();
 }
 function idbRetryNow(){
-  IDB_TRY = 0;
+  PV.IDB_TRY = 0;
   if (IDB_RETRY_T){ clearTimeout(IDB_RETRY_T); IDB_RETRY_T = 0; }
   if (_idb){ try { _idb.close(); } catch (e){ IDB_LOG_ERR = e; } _idb = null; }
   return idbStart().catch(function(){ return null; });
@@ -115,33 +113,33 @@ function idbRetryNow(){
 if (typeof document === 'object') document.addEventListener('visibilitychange', function(){ if (!document.hidden && IDB_BAD && typeof indexedDB !== 'undefined') idbRetryNow(); });
 function idbRetryLater(){
   if (IDB_RETRY_T) return;
-  var wait = IDB_BACKOFF[Math.min(IDB_TRY, IDB_BACKOFF.length - 1)]; IDB_TRY++;
+  var wait = PV.IDB_BACKOFF[Math.min(PV.IDB_TRY, PV.IDB_BACKOFF.length - 1)]; PV.IDB_TRY++;
   IDB_RETRY_T = setTimeout(function(){ IDB_RETRY_T = 0; idbStart().catch(function(){}); }, wait);
 }
 /* طلبُ الفتح نفسُه: يبقى حيًّا حتى ينجح أو يخطئ — لا يُفتَح طلبٌ ثانٍ ما دام هذا معلَّقًا */
 function idbStart(){
-  if (IDB_PENDING) return IDB_PENDING;
-  IDB_PENDING = new Promise(function(res, rej){
+  if (PV.IDB_PENDING) return PV.IDB_PENDING;
+  PV.IDB_PENDING = new Promise(function(res, rej){
     var q;
     var fail = function(e){
-      IDB_PENDING = null;
+      PV.IDB_PENDING = null;
       if (!_mem) _mem = new Map();
       idbTellBad(true, e && e.message); idbRetryLater(); rej(e);
     };
     /* متصفّحٌ بلا IndexedDB أصلًا (بيئاتُ الفحص): ذاكرةٌ بصمتٍ كما كان — لا إعادةَ ولا لافتة، فلا شيءَ يُنتظَر */
-    if (typeof indexedDB === 'undefined'){ IDB_PENDING = null; if (!_mem) _mem = new Map(); rej(new Error('no-idb')); return; }
+    if (typeof indexedDB === 'undefined'){ PV.IDB_PENDING = null; if (!_mem) _mem = new Map(); rej(new Error('no-idb')); return; }
     try { q = indexedDB.open(IDB_NAME, 1); } catch (e){ fail(e); return; }
-    q.onupgradeneeded = function(){ q.result.createObjectStore(IDB_STORE); };
-    q.onsuccess = function(){ IDB_PENDING = null; idbAdopt(q.result); res(_idb); };   /* ولو بعد المهلة: يُتبنّى ويُدفَق */
+    q.onupgradeneeded = function(){ q.result.createObjectStore(PV.IDB_STORE); };
+    q.onsuccess = function(){ PV.IDB_PENDING = null; idbAdopt(q.result); res(_idb); };   /* ولو بعد المهلة: يُتبنّى ويُدفَق */
     q.onerror = function(){ fail(q.error || new Error('idb-error')); };
   });
-  return IDB_PENDING;
+  return PV.IDB_PENDING;
 }
 function idbOpen(){
   if (_idb) return Promise.resolve(_idb);
   if (typeof indexedDB === 'undefined'){ if (!_mem) _mem = new Map(); return Promise.reject(new Error('no-idb')); }
   /* سبقت مهلةٌ والطلبُ ما زال معلَّقًا، أو إعادةٌ مجدولةٌ بعد خطأ: نعمل في الذاكرة ولا نفتح طلبًا ثانيًا */
-  if ((IDB_PENDING && _mem) || IDB_RETRY_T) return Promise.reject(new Error('mem-mode'));
+  if ((PV.IDB_PENDING && _mem) || IDB_RETRY_T) return Promise.reject(new Error('mem-mode'));
   var p = idbStart();
   return new Promise(function(res, rej){
     var done = false;
@@ -149,7 +147,7 @@ function idbOpen(){
       if (done) return; done = true;
       if (!_mem) _mem = new Map();
       idbTellBad(true, 'idb-timeout'); rej(new Error('idb-timeout'));   /* مهلةٌ لا استسلام */
-    }, IDB_TIMEOUT);
+    }, PV.IDB_TIMEOUT);
     p.then(function(db){ clearTimeout(t); if (!done){ done = true; res(db); } },
            function(e){ clearTimeout(t); if (!done){ done = true; rej(e); } });
   });
@@ -159,7 +157,7 @@ function idbUnsynced(){ return !!(_mem && _mem.size) || (STATE && STATE.queue &&
 function idbGet(k){
   return idbOpen().then(function(db){
     return new Promise(function(res, rej){
-      var r = db.transaction(IDB_STORE, 'readonly').objectStore(IDB_STORE).get(k);
+      var r = db.transaction(PV.IDB_STORE, 'readonly').objectStore(PV.IDB_STORE).get(k);
       r.onsuccess = function(){ res(r.result); };
       r.onerror   = function(){ rej(r.error); };
     });
@@ -174,8 +172,8 @@ function idbGet(k){
 function idbSet(k, v){
   return idbOpen().then(function(db){
     return new Promise(function(res, rej){
-      var tx = db.transaction(IDB_STORE, 'readwrite');
-      tx.objectStore(IDB_STORE).put(v, k);
+      var tx = db.transaction(PV.IDB_STORE, 'readwrite');
+      tx.objectStore(PV.IDB_STORE).put(v, k);
       tx.oncomplete = function(){ res(true); };
       tx.onerror    = function(){ rej(tx.error); };
     });

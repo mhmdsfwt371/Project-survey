@@ -199,11 +199,11 @@ var CREW_SPEC = [
     d:'عشر نقاط ممرٍّ في اليوم.' }
 ];
 
-var UNITS = { camp:1392, cor:190 };
+PV.UNITS = { camp:1392, cor:190 };
 
 function crewNeed(spec, months){
   var days = cfgGet('days') * months;
-  var units = UNITS[spec.zone] || 0;
+  var units = PV.UNITS[spec.zone] || 0;
   var rate = crewVal(spec.k,'Rate') || spec.rate;
   var crewDays = rate ? (units / rate) : 0;
   var crews = days ? Math.ceil(crewDays / days) : 0;

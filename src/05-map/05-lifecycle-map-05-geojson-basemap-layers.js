@@ -72,7 +72,7 @@ function basemapStale(){
    خريطةٌ فقط بقرار المالك: لا نقاطُ مسحٍ ولا تدخل في عدّادٍ ولا في أرقام الوزارة. تُحمَّل عند أوّل اختيارٍ
    من «تصفية» (layers/poi.json — يخزّنه العاملُ لما بعد)، وتُرسَم على لوح النقاط، والاسمُ بلمسة. */
 var POIL = { on:{ ministry:false, tafweej:false }, data:null, busy:false, layer:null };
-var POIL_C = { ministry:'#8E44AD', tafweej:'#E67E22' };
+PV.POIL_C = { ministry:'#8E44AD', tafweej:'#E67E22' };
 
 function poiPaint(){
   if (typeof MAP === 'undefined' || !MAP || typeof L === 'undefined') return;
@@ -85,7 +85,7 @@ function poiPaint(){
     var g = POIL.data[k]; if (!POIL.on[k] || !g || !g.items) return;
     g.items.forEach(function(p){
       if (!(+p.lat) || !(+p.lng)) return;
-      L.circleMarker([+p.lat, +p.lng], { renderer:MAP_CV || undefined, radius:7, color:'#fff', weight:2, fillColor:POIL_C[k], fillOpacity:.95, bubblingMouseEvents:false })
+      L.circleMarker([+p.lat, +p.lng], { renderer:MAP_CV || undefined, radius:7, color:'#fff', weight:2, fillColor:PV.POIL_C[k], fillOpacity:.95, bubblingMouseEvents:false })
         .bindPopup('<b>' + esc(p.name) + '</b><br><span class="hint">' + esc(t(g.name)) + '</span>')
         .addTo(POIL.layer);
     });

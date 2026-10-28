@@ -9,7 +9,7 @@
    ============================================================================ */
 /* ═══ الاستيراد — قالب يُنزَّل ثم يُملأ ثم يُرفع ═══ */
 
-var IMPORTS = [
+PV.IMPORTS = [
   ['sites','المواقع', ['المعرّف','المشعر','النوع','الشاخص','المربع','الشركة','خط العرض','خط الطول'],
    'يحدّث بيانات موقع موجود بمعرّفه — ولا ينشئ مواقع جديدة.'],
   ['ips','عناوين الأجهزة', ['معرّف الموقع','بادئة الشبكة','الراوتر','القارئ','الكاميرا'],
@@ -34,7 +34,7 @@ function importCard(){
     '<p class="hint" style="margin:0 0 14px">'
     + esc(t('نزّل القالب، املأه، ثم ارفعه. القالب يحمل الأعمدة بأسمائها وصفًّا نموذجيًّا يُحتذى.'))
     + '</p>'
-    + IMPORTS.map(function(im){
+    + PV.IMPORTS.map(function(im){
         return '<div style="border:1px solid var(--line);border-radius:var(--radius-sm);'
           + 'padding:12px 14px;margin-bottom:10px">'
           + '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center">'
@@ -65,7 +65,7 @@ function importCard(){
 
 function impPreviewCard(){
   var p = IMP_PREVIEW;
-  var nm2 = p.kind === 'mohu' ? 'تقرير كاميرات الوزارة' : (IMPORTS.filter(function(i){ return i[0] === p.kind; })[0] || ['',''])[1];
+  var nm2 = p.kind === 'mohu' ? 'تقرير كاميرات الوزارة' : (PV.IMPORTS.filter(function(i){ return i[0] === p.kind; })[0] || ['',''])[1];
   return card(t('معاينة ما رُفع') + ' — ' + t(nm2),
       (p.missing.length
         ? alertBox('error','أعمدةٌ ناقصةٌ في الملف: ' + p.missing.join(' · ') + ' — نزّل القالب واملأه.')

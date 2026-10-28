@@ -60,7 +60,7 @@ var WT_MEET = false, WT_MI = 0, WT_MEND = 0;
 function wtMeetList(){ var G = wtGroups(wtRows()); return G.late.concat(G.week, G.later, G.none); }
 function wtFieldTxt(e){
   if (e.f === 'due') return (e.from && e.to && e.to > e.from ? t('تأجيل الموعد') : t('الموعد')) + ': ' + (e.from || '\u2014') + ' \u2190 ' + (e.to || '\u2014');
-  return t(WT_LOGF[e.f] || e.f) + ': ' + (e.from || '\u2014') + ' \u2190 ' + (e.to || '\u2014');
+  return t(PV.WT_LOGF[e.f] || e.f) + ': ' + (e.from || '\u2014') + ' \u2190 ' + (e.to || '\u2014');
 }
 function wtSince(){
   var since = (STATE.wtask && STATE.wtask.meetAt) || 0, out = [];
@@ -110,7 +110,7 @@ function wtMeetHtml(me){
   var L = wtMeetList();
   if (!L.length){ WT_MEET = false; return ''; }
   if (WT_MI >= L.length) WT_MI = L.length - 1;
-  var r = L[WT_MI], late = wtLate(r), col = late ? '#E05252' : (WT_STC[r.st] || '#9FB0AA');
+  var r = L[WT_MI], late = wtLate(r), col = late ? '#E05252' : (PV.WT_STC[r.st] || '#9FB0AA');
   var S = wtSince();
   return card('', '<div class="wt-row" style="justify-content:space-between">'
       + '<div><b>\u{1F5E3} ' + esc(t('اجتماع الأسبوع')) + '</b> <span class="num hint" style="margin:0">' + nm(WT_MI + 1) + ' ' + esc(t('من')) + ' ' + nm(L.length) + '</span>'
@@ -130,9 +130,9 @@ function wtMeetHtml(me){
         return '<button type="button" class="chip' + (i === WT_MI ? ' on' : '') + '" data-wtmeetgo="' + i + '" title="' + esc(x.n) + '" style="' + (wtLate(x) ? 'border-color:#E05252' : '') + '">' + nm(i + 1) + '</button>';
       }).join('') + '</div>';
 }
-var WT_STC = { 'مكتمل':'#3AD6A0', 'جاري العمل':'#E8C34B', 'قيد الانتظار':'#9FB0AA', 'متوقف':'#E05252' };
+PV.WT_STC = { 'مكتمل':'#3AD6A0', 'جاري العمل':'#E8C34B', 'قيد الانتظار':'#9FB0AA', 'متوقف':'#E05252' };
 function wtCardOf(r){
-  var late = wtLate(r), col = late ? '#E05252' : (WT_STC[r.st] || '#9FB0AA');
+  var late = wtLate(r), col = late ? '#E05252' : (PV.WT_STC[r.st] || '#9FB0AA');
   var last = Array.isArray(r.log) && r.log[0];
   var lastTxt = last ? (esc(dispName(last.by || '')) + ' \u00b7 ' + esc(stepAgo(last.at || 0)) + (last.st ? ' \u00b7 ' + esc(t(last.st)) : '') + (last.note ? ' \u00b7 ' + esc(String(last.note).slice(0, 80)) : ''))
                      : (r.upd ? esc(String(r.upd).slice(0, 80)) : '');
@@ -229,11 +229,11 @@ function wtDue(r){
 }
 function wtLate(r){ var d = wtDue(r); return d != null && d < 0; }
 
-var WT_LOGF = { due:'الموعد', who:'المسؤول', track:'المسار', n:'الاسم', wbs:'بند الخطة' };
+PV.WT_LOGF = { due:'الموعد', who:'المسؤول', track:'المسار', n:'الاسم', wbs:'بند الخطة' };
 function wtSet(id, patch){
   var r = wtRows().filter(function(x){ return String(x.id) === String(id); })[0]; if (!r) return;
   /* (V20.7) ما يهمُّ الوزارةَ من التعديل يُسجَّل بقيمتيه — التأجيلُ وتغييرُ المسؤول كانا يقعان بصمت */
-  Object.keys(patch).forEach(function(k){ if (WT_LOGF[k] && String(r[k] || '') !== String(patch[k] || '')) wtLogPush(r, { f:k, from:String(r[k] || ''), to:String(patch[k] || '') }); });
+  Object.keys(patch).forEach(function(k){ if (PV.WT_LOGF[k] && String(r[k] || '') !== String(patch[k] || '')) wtLogPush(r, { f:k, from:String(r[k] || ''), to:String(patch[k] || '') }); });
   Object.keys(patch).forEach(function(k){ r[k] = patch[k]; });
   if (wtSave()){ logEvent('مهمةٌ أسبوعية — ' + id + ' \u00b7 ' + Object.keys(patch).join(','), id); render(1); }
 }

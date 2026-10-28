@@ -38,7 +38,7 @@ var NAV = [
 
 /* أيقوناتُ الوحدات (V24.0): خطوطٌ بلون النص، هي نفسُها في القائمة المفتوحة وفي شريط الأيقونات
    حين تُطوى — فيُتعلَّم موضعُ كلِّ وحدةٍ مرةً. وما لا أيقونةَ له يبقى برمزه القديم. */
-var NAV_ICO = {
+PV.NAV_ICO = {
   map:'<path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4.5L15 7 9 4z"/><path d="M9 4v13.5M15 7v13.5"/>',
   'الميدان':'<path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/>',
   'المتابعة':'<path d="M4 20h16"/><path d="M7 16v-4M12 16V7M17 16v-7"/>',
@@ -51,7 +51,7 @@ var NAV_ICO = {
   'المساعدة':'<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .8-1 1.6"/><path d="M12 16.6v.1"/>'
 };
 function navIco(s){
-  var p = NAV_ICO[s.id || s.g];
+  var p = PV.NAV_ICO[s.id || s.g];
   return p ? '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false">' + p + '</svg>' : s.icon;
 }
 
@@ -206,7 +206,7 @@ var SCROLL_KEEP = null;
 /* (V26.1) كانت الرسمةُ تقرأ scrollTop لكلِّ صندوقٍ قابلٍ للتمرير قبل أن تُبدِّل المحتوى — والقراءةُ تُجبر المتصفّحَ على
    تخطيط الصفحة كلِّها (٣٠–٨٠ م.ث) ثم يُرمى التخطيطُ مع المحتوى. صارت المواضعُ تُسجَّل لحظةَ التمرير (حدثٌ خفيف)
    وتُقرأ من السجل عند الرسم بلا تخطيط. */
-var SCROLL_SEEN = [], SCROLL_WIN = 0, SCROLL_TOPS = (typeof WeakMap === 'function') ? new WeakMap() : null, SCROLL_SELS = ['#content .pop-body', '#mapUI .pop-body', '#content .sheet-body', '#content [style*="overflow:auto"]', '#mapUI [style*="overflow:auto"]'];
+var SCROLL_SEEN = [], SCROLL_WIN = 0, SCROLL_TOPS = (typeof WeakMap === 'function') ? new WeakMap() : null; PV.SCROLL_SELS = ['#content .pop-body', '#mapUI .pop-body', '#content .sheet-body', '#content [style*="overflow:auto"]', '#mapUI [style*="overflow:auto"]'];
 if (typeof document === 'object'){
   document.addEventListener('scroll', function(e){
     var el = e.target;
@@ -224,9 +224,9 @@ function scrollGrab(){
   SCROLL_SEEN = SCROLL_SEEN.filter(function(el){ return el.isConnected; });
   SCROLL_SEEN.forEach(function(el){
     var top = SCROLL_TOPS ? SCROLL_TOPS.get(el) : el.__nskTop; if (!top) return;
-    for (var q = 0; q < SCROLL_SELS.length; q++){
-      var L = document.querySelectorAll(SCROLL_SELS[q]), i = Array.prototype.indexOf.call(L, el);
-      if (i > -1){ boxes.push([SCROLL_SELS[q], i, top]); return; }
+    for (var q = 0; q < PV.SCROLL_SELS.length; q++){
+      var L = document.querySelectorAll(PV.SCROLL_SELS[q]), i = Array.prototype.indexOf.call(L, el);
+      if (i > -1){ boxes.push([PV.SCROLL_SELS[q], i, top]); return; }
     }
   });
   var keys = {};   /* (V37.8) النوافذُ بمفتاحها: يُعاد موضعُها ولو تغيّر ترتيبُ ما قبلها */
@@ -246,9 +246,9 @@ function scrollBack(sameScreen){
 /* ═══ الأداءُ يُقاس لا يُحكى (V17.34) ═══
    زمنُ كلِّ رسمٍ وكلِّ سحبٍ يُقاس على الجهاز ويُرفَع مع نبضة الحضور —
    فيُرى من المكتب أيُّ جهازٍ بطيءٌ وأيُّ سحبٍ طويل، قبل أن يُشكى. */
-var PERF = { r:[], p:[] }, COLD_N = 0;
-function perfNote(kind, ms){ var L = PERF[kind]; if (!L) return; L.push(Math.round(ms)); if (L.length > 30) L.shift(); if (kind === 'r'){ try { liteMeasure(ms); } catch (eLM){ LS_ERR = eLM; } } }   /* (V37.23) القياسُ يغذّي الوضعَ الخفيف */
-function perfAvg(kind){ var L = PERF[kind] || []; return L.length ? Math.round(L.reduce(function(a, b){ return a + b; }, 0) / L.length) : 0; }
+PV.PERF = { r:[], p:[] }; var COLD_N = 0;
+function perfNote(kind, ms){ var L = PV.PERF[kind]; if (!L) return; L.push(Math.round(ms)); if (L.length > 30) L.shift(); if (kind === 'r'){ try { liteMeasure(ms); } catch (eLM){ LS_ERR = eLM; } } }   /* (V37.23) القياسُ يغذّي الوضعَ الخفيف */
+function perfAvg(kind){ var L = PV.PERF[kind] || []; return L.length ? Math.round(L.reduce(function(a, b){ return a + b; }, 0) / L.length) : 0; }
 /* ═══ مؤشّراتُ الأداء الأصليةُ في المتصفّح (V17.98) ═══
    ما يشعر به الفنيُّ لا ما نحكيه: أوّلُ رسمٍ للخريطة بعد الفتح، وأكبرُ رسمٍ
    (LCP)، واستجابةُ اللمس (INP تقريبًا من أحداث الإدخال)، والاهتزازُ (CLS)، وعددُ

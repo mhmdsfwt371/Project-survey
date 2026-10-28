@@ -246,18 +246,18 @@ function mapInit(){
 }
 
 /* الرسم — نقاطٌ دائمًا، ومضلّعاتٌ عند التقريب وحده */
-var _mapT = 0;
+PV._mapT = 0;
 /* ═══ نقاطٌ على الإحداثية نفسِها تُرى كلُّها (V22.5) ═══
    «النوارية ١٧ ومش شايف غير ١٦»: نقطتان على الإحداثية نفسِها حتى خمس خانات، فالعليا تغطّي
    السفلى ولا تُلمَس. تُوزَّع النقاطُ المتطابقةُ على دائرةٍ صغيرةٍ حول موضعها بإزاحةٍ ثابتةٍ
    بالبكسل (ثلاثة عشر) في كلِّ تقريب — تُرى وتُلمَس كلٌّ منها، والإحداثيةُ المحفوظةُ لا تتغيّر. */
-var MAP_DUP = { v:-1, n:0, k:{} };
+PV.MAP_DUP = { v:-1, n:0, k:{} };
 function mapDupIndex(){
   var sv = (typeof STAT_VER !== 'undefined') ? STAT_VER : 0, n = (STATE.sites || []).length;
-  if (MAP_DUP.v === sv && MAP_DUP.n === n) return MAP_DUP.k;
+  if (PV.MAP_DUP.v === sv && PV.MAP_DUP.n === n) return PV.MAP_DUP.k;
   var k = {};
   (STATE.sites || []).forEach(function(x){ if (!(+x.lat) || !(+x.lng)) return; var key = (+x.lat).toFixed(5) + ',' + (+x.lng).toFixed(5); (k[key] = k[key] || []).push(x.id); });
-  MAP_DUP = { v:sv, n:n, k:k };
+  PV.MAP_DUP = { v:sv, n:n, k:k };
   return k;
 }
 function mapPosOf(x){
@@ -269,12 +269,12 @@ function mapPosOf(x){
   return [lat + off * Math.sin(ang) / 111320, lng + off * Math.cos(ang) / (111320 * cs)];
 }
 function mapPaintDebounced(){
-  clearTimeout(_mapT);
-  _mapT = setTimeout(mapPaint, 120);
+  clearTimeout(PV._mapT);
+  PV._mapT = setTimeout(mapPaint, 120);
 }
-var _mapMoveT = null;
+PV._mapMoveT = null;
 function mapPaintMove(){
-  clearTimeout(_mapMoveT);
-  _mapMoveT = setTimeout(function(){ mapPaint(true); }, 120);
+  clearTimeout(PV._mapMoveT);
+  PV._mapMoveT = setTimeout(function(){ mapPaint(true); }, 120);
 }
 

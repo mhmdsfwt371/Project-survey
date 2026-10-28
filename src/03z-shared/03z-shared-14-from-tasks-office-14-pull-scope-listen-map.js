@@ -122,20 +122,20 @@ function pullDelta(opt){
    مدير المشروع في يومٍ عاديٍّ (سحبةٌ باردةٌ وسجلُّ صورٍ وسجلُّ أحداث) وصار
    «السحبُ التالي» أربعين دقيقةً بلا تفسير. الإبطاءُ لجهازٍ جامحٍ لا لمن يعمل:
    خمسةَ عشرَ ألفًا في اليوم، وبمعامل اثنين لا أربعة، ويُقال السببُ في الشريط. */
-var READ_CAP_WARN = 5000, READ_CAP_SLOW = 15000, READ_DAY = '', READ_DAY_N = 0, READ_WARNED = 0;
+var READ_CAP_WARN = 5000, READ_CAP_SLOW = 15000; PV.READ_DAY = ''; PV.READ_DAY_N = 0; PV.READ_WARNED = 0;
 
 function readBudget(){
   var day = dayKey(Date.now());
-  if (READ_DAY !== day){ READ_DAY = day; READ_DAY_N = FB.readCount || 0; READ_WARNED = 0; }
-  var n = (FB.readCount || 0) - READ_DAY_N;
+  if (PV.READ_DAY !== day){ PV.READ_DAY = day; PV.READ_DAY_N = FB.readCount || 0; PV.READ_WARNED = 0; }
+  var n = (FB.readCount || 0) - PV.READ_DAY_N;
   rdhTick();
-  if (n > READ_CAP_SLOW && READ_WARNED < 2){
-    READ_WARNED = 2;
+  if (n > READ_CAP_SLOW && PV.READ_WARNED < 2){
+    PV.READ_WARNED = 2;
     /* (V33.1) قرارُ المالك ق-٠١١: الخطةُ بالاستهلاك — يُسجَّل للعلم ولا يُبطَّأ سحبُ الجهاز (كان يُضاعَف موعدُه فيتأخّر الميدان) */
     logEvent('جهازٌ تجاوز سقفَ القراءات — ' + nm(n) + ' قراءةً اليوم · للعلم، لا إبطاء');
     toast(t('هذا الجهازُ يقرأ أكثرَ من المعتاد اليوم') + ': ' + nm(n));
-  } else if (n > READ_CAP_WARN && READ_WARNED < 1){
-    READ_WARNED = 1;
+  } else if (n > READ_CAP_WARN && PV.READ_WARNED < 1){
+    PV.READ_WARNED = 1;
     toast(t('قراءاتُ هذا الجهاز اليوم') + ': ' + nm(n) + ' — ' + t('تُراقَب'));
   }
   return n;
@@ -219,7 +219,7 @@ function readDelta(col, key, cap){
    تتغيّر يُقارَن وقتُ كلِّ مجموعةٍ فيها بمؤشِّر سحبِ هذا الجهاز؛ فإن كان في
    القاعدة أحدثُ مما عندنا سُحب فارقُ تلك المجموعة وحدَها — مجمَّعًا بثانيتين
    حتى لا تتوالى السحباتُ على دفعةٍ من عشر وثائق. */
-var PULSE_UNSUB = null, PULSE_T = 0, PULSE_LAST = 0;
+var PULSE_UNSUB = null; PV.PULSE_T = 0; PV.PULSE_LAST = 0;
 
 function pulseWatch(){
   if (!FB.ready || !FB.db || PULSE_UNSUB) return;
@@ -230,9 +230,9 @@ function pulseWatch(){
       var p = doc.data() || {}, at = STATE.meta.pullAt || {}, mine = pullScope().cols || [];
       var stale = mine.filter(function(col){ return (+p[col] || 0) > (+at[col] || 0); });
       if (!stale.length) return;
-      PULSE_LAST = Date.now();
-      clearTimeout(PULSE_T);
-      PULSE_T = setTimeout(function(){
+      PV.PULSE_LAST = Date.now();
+      clearTimeout(PV.PULSE_T);
+      PV.PULSE_T = setTimeout(function(){
         if (typeof pullDelta === 'function') pullDelta({ only:stale, why:'pulse' }).then(function(n){
           if (n && CUR === 'map' && typeof mapPaint === 'function') mapPaint();
           else if (n) render(1);
@@ -314,14 +314,14 @@ var POLY = null, POLY_LOADING = null;
 /* بيانةُ الموسم الماضي التي كان الفنيُّ يقرؤها في القديم: الجنسيةُ والسعةُ
    المسجَّلةُ والجهةُ والمتعهّد وما بقي مفتوحًا. سقطت عند إعادة البناء لأن
    الأعمدةَ اختُصرت، فصار الفنيُّ يقف أمام مخيمٍ لا يعرف عنه ما كان يعرفه. */
-var S47 = null, S47_LOADING = null;
+var S47 = null; PV.S47_LOADING = null;
 
 function s47Of(id){ return S47 ? (S47[id] || null) : null; }
 
 function s47Load(){
   if (S47) return Promise.resolve(true);
-  if (S47_LOADING) return S47_LOADING;
-  S47_LOADING = idbGet('s47').then(function(v){
+  if (PV.S47_LOADING) return PV.S47_LOADING;
+  PV.S47_LOADING = idbGet('s47').then(function(v){
     if (v){ S47 = v; return true; }
     return fetch('season1447.json').then(function(r){ return r.ok ? r.json() : null; })
       .then(function(j){ if (!j) return false; S47 = j; idbSet('s47', j); return true; });
@@ -329,7 +329,7 @@ function s47Load(){
     softErr('بيانة الموسم الماضي', e, 'تعذّر جلبُ بيانة الموسم الماضي — النموذجُ يعمل بدونها');
     return false;
   }).then(function(ok){ if (ok && CUR === 'svForm') render(1); return ok; });
-  return S47_LOADING;
+  return PV.S47_LOADING;
 }
 
 function polyFetch(){

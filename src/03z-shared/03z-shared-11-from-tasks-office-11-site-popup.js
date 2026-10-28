@@ -9,7 +9,7 @@
    وسمُ الحالة لا يُتاح إلا لنقطةٍ أُسندت، والتحريكُ يكتب موقعًا معدَّلًا،
    والتفاصيلُ تفتح شاشتها، والاتجاهاتُ تفتح خرائط جوجل. */
 
-var MOVE_ID = '', MOVE_AT = null;
+var MOVE_ID = ''; PV.MOVE_AT = null;
 
 function siteTitle(x){ return (x && x.type === 'مخيم' && x.sign) ? t('شاخص') + ' ' + x.sign : ((x && x.name) || ''); }
 

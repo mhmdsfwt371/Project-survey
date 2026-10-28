@@ -692,8 +692,8 @@ function reflow(){
     }
   }
 }
-var REFLOW_T = null;
-function reflowSoon(){ clearTimeout(REFLOW_T); REFLOW_T = setTimeout(reflow, 80); }
+PV.REFLOW_T = null;
+function reflowSoon(){ clearTimeout(PV.REFLOW_T); PV.REFLOW_T = setTimeout(reflow, 80); }
 
 window.addEventListener('resize', reflowSoon, { passive:true });
 window.addEventListener('orientationchange', function(){ setTimeout(reflow, 250); }, { passive:true });

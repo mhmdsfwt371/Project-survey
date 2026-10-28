@@ -28,7 +28,7 @@ function wbsPct(r){
    المخطّطُ من التواريخ: نسبةُ ما انقضى من مدة البند حتى اليوم (المعلَمُ صفرٌ قبل موعده ومئةٌ بعده)، والآباءُ بأوزان الأبناء.
    الفعليُّ التلقائي: البنودُ التي يقيسها النظامُ بنفسه (المسحُ بالمشعر، تأكيدُ الجمرات، مواقعُ التفويج، التركيبُ) تُقرأ من
    بياناته لا من يد — وغيرُها بما يُكتَب في الملف. والانحرافُ = الفعلي − المخطّط. */
-var WBS_AUTO = [
+PV.WBS_AUTO = [
   [/^مسح.*(النوارية|النورية)/, function(){ return wbsSvPctT('النورية'); }],
   [/^مسح.*(الزايدي)/, function(){ return wbsSvPctT('الزايدي'); }],
   [/^مسح.*(الهجرة)/, function(){ return wbsSvPctT('محطات طريق الهجرة'); }],
@@ -48,7 +48,7 @@ var WBS_AUTO = [
 function wbsSvPct(g){ var n = 0, d = 0; (STATE.sites || []).forEach(function(x){ if (taxOf(x).g !== g) return; n++; if (svVisited(STATE.recs[x.id])) d++; }); return n ? Math.round(d / n * 100) : 0; }
 function wbsSvPctT(ty){ var n = 0, d = 0; (STATE.sites || []).forEach(function(x){ if (taxOf(x).t !== ty) return; n++; if (svVisited(STATE.recs[x.id])) d++; }); return n ? Math.round(d / n * 100) : 0; }
 function wbsInsPct(g){ var n = 0, d = 0; (STATE.sites || []).forEach(function(x){ if (taxOf(x).g !== g) return; n++; var st = (STATE.inss[x.id] || {}).status; if (st === 'مُركّب' || x.fstat === 'مُركّب') d++; }); return n ? Math.round(d / n * 100) : 0; }
-function wbsAutoPct(r){ if (wbsChildren(r.id).length || r.manual) return null; var nm0 = String(r.n || ''); for (var i = 0; i < WBS_AUTO.length; i++){ if (WBS_AUTO[i][0].test(nm0)){ try { return Math.max(0, Math.min(100, +WBS_AUTO[i][1]() || 0)); } catch (e){ return null; } } } return null; }
+function wbsAutoPct(r){ if (wbsChildren(r.id).length || r.manual) return null; var nm0 = String(r.n || ''); for (var i = 0; i < PV.WBS_AUTO.length; i++){ if (PV.WBS_AUTO[i][0].test(nm0)){ try { return Math.max(0, Math.min(100, +PV.WBS_AUTO[i][1]() || 0)); } catch (e){ return null; } } } return null; }
 function wbsPlanPct(r){
   var kids = wbsChildren(r.id), today = dayKey(Date.now());
   if (kids.length){ var tot = 0, w = 0; kids.forEach(function(k){ var d = Math.max(1, +k.w || +k.dur || 1); tot += wbsPlanPct(k) * d; w += d; }); return w ? Math.round(tot / w) : 0; }

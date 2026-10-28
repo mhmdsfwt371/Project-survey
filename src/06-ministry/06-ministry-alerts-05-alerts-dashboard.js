@@ -29,8 +29,8 @@ function mfuWtRow(r){ return [String(r.n || ''), String(dispName(r.who || '')), 
       /* (V37.27) صفوفُ القائمة المعروضة — تزيد بزرّ «عرض المزيد» */
 
    /* تصفيةُ المشعر داخل النافذة */
-var SV_ZONE_COLORS = { 'منى':'#2E86DE', 'عرفات':'#27AE60', 'المزدلفة':'#8E44AD', 'مزدلفة':'#8E44AD', 'كاميرات المتابعة':'#E67E22', 'مراكز التفويج':'#C0392B', 'الجمرات':'#D4AC0D' };
-function svZoneColor(z){ return SV_ZONE_COLORS[z] || '#E74C3C'; }
+PV.SV_ZONE_COLORS = { 'منى':'#2E86DE', 'عرفات':'#27AE60', 'المزدلفة':'#8E44AD', 'مزدلفة':'#8E44AD', 'كاميرات المتابعة':'#E67E22', 'مراكز التفويج':'#C0392B', 'الجمرات':'#D4AC0D' };
+function svZoneColor(z){ return PV.SV_ZONE_COLORS[z] || '#E74C3C'; }
 
 function svMiniMap(rows){
   var all = (STATE.sites || []).filter(function(x){ return x.lat && x.lng; }); if (all.length < 10) return '';

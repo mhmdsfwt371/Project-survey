@@ -226,7 +226,7 @@ function evPillKind(what){
    وتقول «كل الأحداث ١»، والأثرُ كلُّه في القاعدة سليمٌ لا يُرى. فصارت
    الشاشةُ تجلب آخرَ خمسمئةِ حدثٍ مرةً عند فتحها إن كان ما بيدها قليلًا —
    بسقفٍ، ويُحصى في عدّاد القراءات، ولا يُعاد في الجلسة نفسِها. */
-var EV_FETCHED = 0, EV_FETCHING = false, EV_MORE = false, EV_PAGE = 500;
+PV.EV_FETCHED = 0; PV.EV_FETCHING = false; var EV_MORE = false, EV_PAGE = 500;
 /* ═══ الأثرُ كلُّه متاحٌ — على دفعاتٍ لا دفعةً واحدة (V17.28) ═══
    «آخرُ خمسمئة» كانت سقفَ أمانٍ لا حدَّ الأثر: الأثرُ كلُّه في القاعدة، وسحبُه
    جملةً قراءاتٌ بلا داعٍ وذاكرةٌ تُملأ بما لا يُقرأ. فصار على دفعات: خمسُمئةٍ
@@ -234,9 +234,9 @@ var EV_FETCHED = 0, EV_FETCHING = false, EV_MORE = false, EV_PAGE = 500;
    وإن حُدِّد مدًى بالتاريخ في التصفية جُلب **ذلك المدى بعينه** من القاعدة —
    فتُقرأ فترةٌ قديمةٌ بلا المرور بكلِّ ما بعدها. */
 function evFetch(force, mode){
-  if (!FB.ready || !FB.db || EV_FETCHING) return;
-  if (!force && !mode && EV_FETCHED) return;
-  EV_FETCHING = true;
+  if (!FB.ready || !FB.db || PV.EV_FETCHING) return;
+  if (!force && !mode && PV.EV_FETCHED) return;
+  PV.EV_FETCHING = true;
   var q = DB.col('events').orderBy('ts', 'desc');
   var ranged = false;
   if (mode === 'site' && /^NSK-/i.test(String(EVF.q || '').trim())){   /* (V30.8) تاريخُ نقطةٍ كاملًا — حقلٌ واحدٌ بلا ترتيبٍ فلا يحتاج فهرسًا مركّبًا */
@@ -254,11 +254,11 @@ function evFetch(force, mode){
     sn.forEach(function(dd){ STATE.evlog[dd.id] = dd.data(); });
     FB.readCount = (FB.readCount || 0) + sn.size;
     EV_MORE = !ranged && sn.size >= EV_PAGE;     /* امتلأت الدفعةُ؟ فثمّةَ أقدمُ منها */
-    EV_FETCHED = Date.now(); EV_FETCHING = false;
+    PV.EV_FETCHED = Date.now(); PV.EV_FETCHING = false;
     toast(nm(sn.size) + ' ' + t('حدثًا جُلبت') + (EV_MORE ? ' — ' + t('وثمّةَ أقدم') : ''));
     if (CUR === 'ev') render(1);
   }).catch(function(e){
-    EV_FETCHING = false; EV_FETCHED = Date.now();
+    PV.EV_FETCHING = false; PV.EV_FETCHED = Date.now();
     softErr('جلب السجل', e, '');
   });
 }

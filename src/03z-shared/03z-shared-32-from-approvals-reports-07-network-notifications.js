@@ -134,7 +134,7 @@ function bonusLogHtml(techs){
 
    والإشعارُ الذي لا يُقرأ لا يُحذَف: يبقى في المركز بمن أنشأه ومتى ولمن. */
 
-var NOTIF_MAX = 200;
+PV.NOTIF_MAX = 200;
 
 function notifStore(){ if (!STATE.notifs) STATE.notifs = []; return STATE.notifs; }
 
@@ -146,7 +146,7 @@ function notifStore(){ if (!STATE.notifs) STATE.notifs = []; return STATE.notifs
    السحب: كلُّ وصولٍ يمرُّ بـCORE.applyDoc، وهناك يُقارَن الجديدُ بالقديم ويُقال
    لصاحب الشأن ما يعنيه. وعلامةٌ عاليةٌ (notifAt) تمنع إعادةَ الإخبار بما
    قيل، وتُهمِل التاريخَ عند أوّل دخول. */
-var NOTIF_SEEN = {};
+PV.NOTIF_SEEN = {};
 
 function notifConcerns(v){
   var me = STATE.meta.name || '';
@@ -160,7 +160,7 @@ function notifOnArrival(kind, id, prev, v){
   var at = v._at || v.at || 0, mark = STATE.meta.notifAt || 0;
   if (!mark){ STATE.meta.notifAt = Date.now(); return; }          /* أوّلُ دخول: التاريخُ لا يُخبَر به */
   if (at < mark - 120000) return;
-  var key = kind + ':' + id + ':' + at; if (NOTIF_SEEN[key]) return; NOTIF_SEEN[key] = 1;
+  var key = kind + ':' + id + ':' + at; if (PV.NOTIF_SEEN[key]) return; PV.NOTIF_SEEN[key] = 1;
   if (at > STATE.meta.notifAt) STATE.meta.notifAt = at;
   var p = prev || {}, who = dispName(v.by || v._byName || '') || '';
   var me = STATE.meta.name || '';
@@ -202,7 +202,7 @@ function notifOnArrival(kind, id, prev, v){
 }
 
 /* الأهميةُ تحدّد ما يُدفَع إلى نظام التشغيل وما يُترَك للمركز */
-var NOTIF_LV = { عاجل:3, مهم:2, عادي:1 };
+PV.NOTIF_LV = { عاجل:3, مهم:2, عادي:1 };
 
 /* ═══ كلُّ خطوةٍ تُحفَظ تُعلَن ═══
    كان الحفظُ يُسجَّل في السجل ولا يُشعِر: يزور الفنيُّ ويركّب ويفكُّ ويصون —
@@ -260,10 +260,10 @@ function notifPush(kind, text, opt){
             lv:opt.lv || 'عادي', to:opt.to || '', site:opt.site || '',
             by:opt.actor || STATE.meta.name || '', at:+opt.at || Date.now(), read:false };
   notifStore().unshift(n);
-  if (notifStore().length > NOTIF_MAX) notifStore().length = NOTIF_MAX;
+  if (notifStore().length > PV.NOTIF_MAX) notifStore().length = PV.NOTIF_MAX;
   CORE.saveSoon();
   logEvent('إشعار — ' + kind + ' · ' + n.text.slice(0, 60), n.site || '', n.by, n.at);
-  if (NOTIF_LV[n.lv] >= 2) notifSystem(n);
+  if (PV.NOTIF_LV[n.lv] >= 2) notifSystem(n);
   /* داخل التطبيق: بطاقةٌ عائمةٌ تُرى فورًا — كانت الإشعاراتُ تُخزَّن ويعدُّ الجرسُ
      وحدَه، فمن لم ينظر إلى الشريط لم يعلم بشيءٍ حتى يفتح الصفحة. */
   notifPop(n);
@@ -282,7 +282,7 @@ function npopMuted(){ return lsGet('nsk14.npop') === '0' || Date.now() < (+lsGet
 
 function nsysMuted(){ return lsGet('nsk14.nsys') === '0' || Date.now() < (+lsGet('nsk14.nmute') || 0); }
 
-var NPOP_BURST = { at:0, n:0, el:null };
+PV.NPOP_BURST = { at:0, n:0, el:null };
 
 function notifSettingsCard(){
   var pop = lsGet('nsk14.npop') !== '0', sys = lsGet('nsk14.nsys') !== '0', mute = +lsGet('nsk14.nmute') || 0, muted = Date.now() < mute;
@@ -296,26 +296,26 @@ function notifSettingsCard(){
     + '<p class="hint">' + esc(t('الجرسُ يعدّ كلَّ شيءٍ دائمًا — هذا يوقف الإزعاجَ لا الإشعارات. ولإيقافها من النظام نفسِه: آيفون ← الإعدادات ← الإشعارات ← «متابعة المشروع» ← أوقف «السماح بالإشعارات». أندرويد: اضغط مطوّلًا على الإشعار ← إيقاف.')) + '</p>');
 }
 
-var POP_T = 0;
+PV.POP_T = 0;
 
 function notifPop(n){
   if (!n || typeof document === 'undefined' || !document.body) return;
   if (npopMuted()) return;   /* (V20.8) */
   var wrap0 = document.getElementById('notifPop'), now0 = Date.now();
   /* دفعةٌ (أكثرُ من اثنين في ثلاث ثوانٍ): بطاقةٌ واحدةٌ بالعدد بدل كومةٍ تغطّي الشاشة */
-  if (now0 - NPOP_BURST.at < 3000){ NPOP_BURST.n++; } else { NPOP_BURST = { at:now0, n:1, el:null }; }
-  NPOP_BURST.at = now0;
-  if (NPOP_BURST.n > 2 && wrap0){
-    if (!NPOP_BURST.el || !NPOP_BURST.el.parentNode){
+  if (now0 - PV.NPOP_BURST.at < 3000){ PV.NPOP_BURST.n++; } else { PV.NPOP_BURST = { at:now0, n:1, el:null }; }
+  PV.NPOP_BURST.at = now0;
+  if (PV.NPOP_BURST.n > 2 && wrap0){
+    if (!PV.NPOP_BURST.el || !PV.NPOP_BURST.el.parentNode){
       while (wrap0.firstChild) wrap0.removeChild(wrap0.firstChild);
-      NPOP_BURST.el = document.createElement('div'); NPOP_BURST.el.className = 'notif-pop'; NPOP_BURST.el.dir = 'auto';
-      NPOP_BURST.el.style.cssText = 'background:var(--card,#161b22);border:1px solid var(--line,#2a2f36);border-inline-start:4px solid #E8C34B;border-radius:12px;padding:10px 12px;box-shadow:0 10px 30px rgba(0,0,0,.45);cursor:pointer;position:relative';
-      wrap0.appendChild(NPOP_BURST.el);
-      setTimeout(function(){ if (NPOP_BURST.el && NPOP_BURST.el.parentNode) NPOP_BURST.el.remove(); }, 9000);
+      PV.NPOP_BURST.el = document.createElement('div'); PV.NPOP_BURST.el.className = 'notif-pop'; PV.NPOP_BURST.el.dir = 'auto';
+      PV.NPOP_BURST.el.style.cssText = 'background:var(--card,#161b22);border:1px solid var(--line,#2a2f36);border-inline-start:4px solid #E8C34B;border-radius:12px;padding:10px 12px;box-shadow:0 10px 30px rgba(0,0,0,.45);cursor:pointer;position:relative';
+      wrap0.appendChild(PV.NPOP_BURST.el);
+      setTimeout(function(){ if (PV.NPOP_BURST.el && PV.NPOP_BURST.el.parentNode) PV.NPOP_BURST.el.remove(); }, 9000);
     }
-    NPOP_BURST.el.setAttribute('data-p', 'notif');   /* إلى صفحة الإشعارات — الجرسُ مخفيٌّ على الهاتف */
-    NPOP_BURST.el.innerHTML = '<button type="button" class="npop-x" data-npopx="1" aria-label="' + esc(t('إغلاق')) + '">\u2715</button>'
-      + '<div style="font-weight:700;font-size:13px">\u{1F514} ' + nm(NPOP_BURST.n) + ' ' + esc(t('إشعاراتٍ جديدة')) + '</div>'
+    PV.NPOP_BURST.el.setAttribute('data-p', 'notif');   /* إلى صفحة الإشعارات — الجرسُ مخفيٌّ على الهاتف */
+    PV.NPOP_BURST.el.innerHTML = '<button type="button" class="npop-x" data-npopx="1" aria-label="' + esc(t('إغلاق')) + '">\u2715</button>'
+      + '<div style="font-weight:700;font-size:13px">\u{1F514} ' + nm(PV.NPOP_BURST.n) + ' ' + esc(t('إشعاراتٍ جديدة')) + '</div>'
       + '<div class="hint" style="margin:2px 0 0;font-size:12.5px">' + esc(t('اضغط لرؤيتها في الجرس')) + ' \u00b7 <a href="#" data-nmute="1">' + esc(t('كتم ساعة')) + '</a></div>';
     return;
   }
@@ -337,7 +337,7 @@ function notifPop(n){
     + '<div class="hint" style="margin:2px 0 0;font-size:12.5px">' + esc(n.text) + '</div>'
     + '<div class="hint" style="margin:4px 0 0;font-size:11.5px"><a href="#" data-nmute="1">' + esc(t('كتم ساعة')) + '</a></div>';
   wrap.appendChild(el);
-  clearTimeout(POP_T);
+  clearTimeout(PV.POP_T);
   setTimeout(function(){ if (el.parentNode) el.remove(); }, 9000);
   while (wrap.children.length > 3) wrap.removeChild(wrap.firstChild);
 }

@@ -14,10 +14,10 @@
    أم خارجها. ولا يُرفَض الخارجُ: يُسجَّل ويُعلَّم «خارج النطاق» فيراه المشرفُ
    ويسأل — فالرفضُ في الميدان بجهازٍ يخطئ موقعَه عذاب. وثيقةٌ لكلِّ شخصٍ في
    كلِّ يوم، يكتبها صاحبُها وحدَه ويقرؤها من فوقه. */
-var ATT_IN  = { s:21.2, n:21.6, w:39.7, e:40.2 };   
+PV.ATT_IN = { s:21.2, n:21.6, w:39.7, e:40.2 };   
 
 function attInZone(lat, lng){
-  return lat > ATT_IN.s && lat < ATT_IN.n && lng > ATT_IN.w && lng < ATT_IN.e;
+  return lat > PV.ATT_IN.s && lat < PV.ATT_IN.n && lng > PV.ATT_IN.w && lng < PV.ATT_IN.e;
 }
 function attLocate(){
   return new Promise(function(res){

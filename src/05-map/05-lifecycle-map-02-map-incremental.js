@@ -19,10 +19,10 @@ var MK = { by:{}, pLast:0, pTimer:0, pFull:false, sig:'', gen:0, defer:null };
 /* علامةُ الشكل على اللوح بحجمٍ ثابتٍ بالبكسل (V24.1): المعيّنُ والمربّعُ والمثلّثُ وغيرُها تُرسَم برؤوس
    SHAPE_UNIT حول نقطتها على لوح النقاط نفسِه — فلا تُعاد مع كلِّ تقريبٍ كما كانت مضلّعاتُ shapeRing،
    ولا تكون عناصرَ DOM. النقرُ يُحسَب كالدائرة بنصف قطرها مع هامش اللوح. */
-var ShapeMk = null;
+PV.ShapeMk = null;
 function shapeMk(ll, opt, shape){
-  if (!ShapeMk && typeof L !== 'undefined' && L.CircleMarker){
-    ShapeMk = L.CircleMarker.extend({
+  if (!PV.ShapeMk && typeof L !== 'undefined' && L.CircleMarker){
+    PV.ShapeMk = L.CircleMarker.extend({
       _updatePath: function(){
         var r = this._renderer, U = SHAPE_UNIT[this.options.shape];
         if (!r || !r._ctx || !U || this._empty()) return L.CircleMarker.prototype._updatePath.call(this);
@@ -39,7 +39,7 @@ function shapeMk(ll, opt, shape){
     });
   }
   opt.shape = shape;
-  return ShapeMk ? new ShapeMk(ll, opt) : L.circleMarker(ll, L.extend({ renderer:MAP_CV }, opt));
+  return PV.ShapeMk ? new PV.ShapeMk(ll, opt) : L.circleMarker(ll, L.extend({ renderer:MAP_CV }, opt));
 }
 function mapClickFn(id){
   return function(ev){
@@ -99,11 +99,11 @@ function mkPlace(x, z, r, sun, TOUCH){
   if (kind === 'poly'){ try { mk.bringToBack(); } catch (e2){ LS_ERR = e2; } }
   MK.by[x.id] = { l:mk, kind:kind, shp:shp, key:key, pos:posK };
 }
-var MK_FIRST = 400;
+PV.MK_FIRST = 400;
 function mkDrain(gen, z, r, sun, TOUCH){
   requestAnimationFrame(function(){
     if (gen !== MK.gen || !MK.defer) return;   /* رسمةٌ أحدثُ بدأت: هذه الدفعةُ لم تعد مطلوبة */
-    var chunk = MK.defer.splice(0, MK_FIRST);
+    var chunk = MK.defer.splice(0, PV.MK_FIRST);
     MK.lifeMemo = {};
     for (var i = 0; i < chunk.length; i++) if (!MK.by[chunk[i].id]) mkPlace(chunk[i], z, r, sun, TOUCH);
     MK.lifeMemo = null;
@@ -191,7 +191,7 @@ function mapPaint(light){
     if (x.lat >= bS && x.lat <= bN && x.lng >= bW && x.lng <= bE) inView++;
     if (!(x.lat >= kS && x.lat <= kN && x.lng >= kW && x.lng <= kE)) continue;
     want[x.id] = 1;
-    if (MK.defer && !MK.by[x.id] && made >= MK_FIRST){ MK.defer.push(x); continue; }   /* (V31.8) */
+    if (MK.defer && !MK.by[x.id] && made >= PV.MK_FIRST){ MK.defer.push(x); continue; }   /* (V31.8) */
     if (!MK.by[x.id]) made++;
     mkPlace(x, z, r, sun, TOUCH);
   }

@@ -130,15 +130,15 @@ function statsHistory(days){
    تغيّر بعد القراءة الأولى — فلا يُثقِل الحصّة.
      أما الكبيرةُ — الزياراتُ والتركيباتُ والمهامُّ — فتُسحَب بالفارق كلَّ
    دقيقتين وعند العودة من الخلفية: كثيرةٌ ولا تحتمل إنصاتًا دائمًا. */
-var LIVE_SMALL = [], LIVE_TICK = null;
+PV.LIVE_SMALL = []; PV.LIVE_TICK = null;
 /* الشاشاتُ التي تُعاد رسمُها حين يصل عملٌ جديد */
-var LIVE_WORK_PAGES = ['mfu','over','exec','now','req','survey','svappr','qa','disp','maintForm','reg','mine','mywork','sites','dis','inst','pace','map','co','plan','perf','ipc'];
+PV.LIVE_WORK_PAGES = ['mfu','over','exec','now','req','survey','svappr','qa','disp','maintForm','reg','mine','mywork','sites','dis','inst','pace','map','co','plan','perf','ipc'];
 function liveSmallStop(){
   /* إلغاءُ إنصاتٍ مات لا يُبلَّغ عنه — لكنه يُسجَّل كي لا يُبتلَع صامتًا */
-  LIVE_SMALL.forEach(function(f){
+  PV.LIVE_SMALL.forEach(function(f){
     try { f(); } catch (e){ if (typeof softErr === 'function') softErr('إغلاق إنصات', e, ''); }
   });
-  LIVE_SMALL = [];
+  PV.LIVE_SMALL = [];
   liveTickStop();
 }
 function liveSmall(){
@@ -156,7 +156,7 @@ function liveSmall(){
       if (filt) q = filt.length === 3 ? q.where(filt[0], filt[1], filt[2]) : q.where(filt[0], '==', filt[1]);
       if (filt2) q = q.where(filt2[0], filt2[1], filt2[2]);
       if (cap) q = q.limit(cap);
-      LIVE_SMALL.push(q.onSnapshot(function(sn){
+      PV.LIVE_SMALL.push(q.onSnapshot(function(sn){
         snapReads(sn);   /* (V38.92) */
         var n = 0;
         sn.docChanges().forEach(function(ch){
@@ -166,7 +166,7 @@ function liveSmall(){
           STATE.meta.lastSync = Date.now();
           statBump();
           if (CUR === 'users' || CUR === 'crews' || CUR === 'assignRole') render(1);
-          else if (LIVE_WORK_PAGES.indexOf(CUR) > -1 && CUR !== 'map') render(1);
+          else if (PV.LIVE_WORK_PAGES.indexOf(CUR) > -1 && CUR !== 'map') render(1);
           else if (CUR === 'map' && typeof mapPaint === 'function') mapPaint();
         }
       }, function(e){ softErr('إنصات ' + col, e, ''); }));
@@ -180,7 +180,7 @@ function liveSmall(){
   watch('sites', function(id, v){ if (v) siteOvIncoming(id, v); }, 500, ['_at', '>', Math.max(0, ((STATE.meta.pullAt || {}).sites || Date.now()) - 600000)]);
   var scope = pullScope(), sig0 = scope.tree ? treeKeys().sig : '';
   try {
-    LIVE_SMALL.push(DB.col('settings').doc('app').onSnapshot(function(doc){
+    PV.LIVE_SMALL.push(DB.col('settings').doc('app').onSnapshot(function(doc){
       snapReads(doc);
       var dv = doc && doc.exists ? (doc.data() || {}) : {};
       if (dv.epoch && epochApply(dv.epoch)){ SYNC.pullAsk = true; FB._staticAt = 0; syncCycle(); }
@@ -191,7 +191,7 @@ function liveSmall(){
   } catch (e){ softErr('إنصات النسخة', e, ''); }
   /* جدولُ المتابعة: وثيقةٌ واحدةٌ يُنصِت إليها الجميع — فتحديثُ المكتب يصل الوزارةَ في ثوانٍ */
   try {
-    LIVE_SMALL.push(DB.col('settings').doc('wtask').onSnapshot(function(doc){
+    PV.LIVE_SMALL.push(DB.col('settings').doc('wtask').onSnapshot(function(doc){
       snapReads(doc);
       if (!doc || !doc.exists) return;
       var k = doc.data() || {}; if (!Array.isArray(k.rows)) return;
@@ -199,7 +199,7 @@ function liveSmall(){
       wtRemind();
       if (CUR === 'wtask' && !document.querySelector('#content input:focus')) render(1);
     }, function(e){ softErr('إنصات المهام', e, ''); }));
-    LIVE_SMALL.push(DB.col('settings').doc('wbs').onSnapshot(function(doc){
+    PV.LIVE_SMALL.push(DB.col('settings').doc('wbs').onSnapshot(function(doc){
       snapReads(doc);
       if (!doc || !doc.exists) return;
       var w = doc.data() || {}; if (!Array.isArray(w.rows)) return;
@@ -214,7 +214,7 @@ function liveSmall(){
      الحالات وقوعًا (ترقيةُ فنيٍّ إلى مشرف). ووثيقةٌ واحدةٌ لا تكلّف شيئًا. */
   if (STATE.meta.uid && rankOf(ROLE) <= 30){
     try {
-      LIVE_SMALL.push(DB.col('users').doc(STATE.meta.uid).onSnapshot(function(doc){
+      PV.LIVE_SMALL.push(DB.col('users').doc(STATE.meta.uid).onSnapshot(function(doc){
         snapReads(doc);
         if (!doc || !doc.exists) return;
         var mv = doc.data() || {};
@@ -314,10 +314,10 @@ function liveSmallTail(watch, scope, sig0){
   liveTick();
 }
 function liveTickStop(){
-  if (LIVE_TICK){ clearInterval(LIVE_TICK); LIVE_TICK = null; }
-  if (BADGE_TICK){ clearInterval(BADGE_TICK); BADGE_TICK = null; }
+  if (PV.LIVE_TICK){ clearInterval(PV.LIVE_TICK); PV.LIVE_TICK = null; }
+  if (PV.BADGE_TICK){ clearInterval(PV.BADGE_TICK); PV.BADGE_TICK = null; }
 }
-var BADGE_TICK = null;
+PV.BADGE_TICK = null;
 /* ═══ عدّادُ المزامنة ═══
    كان الرأسُ يعرض «آخر مزامنة» وحدَها، والسحبُ الدوريُّ يجري خلف الستار كلَّ
    دقيقتين بلا أثرٍ يُرى — فيُظنُّ أنه واقف. صار في الرأس عدٌّ تنازليٌّ من ثلاث
@@ -379,7 +379,7 @@ function syncCycle(){
     if (CUR === 'map' && typeof mapPaint === 'function') mapPaint();
     /* سحبةٌ جلبت جديدًا تُعيد رسمَ شاشات المتابعة — لا النماذجَ ولا الخريطة،
        فمن يكتب لا يُقذَف مما يكتب */
-    else if (n && LIVE_WORK_PAGES.indexOf(CUR) > -1 && !document.querySelector('#content input:focus, #content textarea:focus')) render(1);
+    else if (n && PV.LIVE_WORK_PAGES.indexOf(CUR) > -1 && !document.querySelector('#content input:focus, #content textarea:focus')) render(1);
     return n;
   }).catch(function(e){ softErr('دورة المزامنة', e, ''); return 0; })
     .then(function(n){ SYNC.busy = false; SYNC.left = SYNC.cycle; return n; });
@@ -389,7 +389,7 @@ function liveTick(){
      الخروج، فلا يبقى نبضٌ يسحب لحسابٍ خرج صاحبُه. */
   liveTickStop();
   SYNC.left = SYNC.cycle;
-  LIVE_TICK = setInterval(function(){
+  PV.LIVE_TICK = setInterval(function(){
     SYNC.left = Math.max(0, SYNC.left - 1);
     var cd = document.getElementById('syncCd');
     if (cd) cd.textContent = syncCdTxt();
@@ -400,7 +400,7 @@ function liveTick(){
       else SYNC.left = SYNC.cycle;   /* بلا شبكةٍ يُعاد العدُّ ولا يُحاوَل */
     }
   }, 1000);
-  if (!BADGE_TICK) BADGE_TICK = setInterval(function(){
+  if (!PV.BADGE_TICK) PV.BADGE_TICK = setInterval(function(){
     try { syncBadge(); } catch (e){ softErr('شارة المزامنة', e, ''); }
   }, 30000);
   /* العودةُ إلى التطبيق تسحب الجديدَ فارقيًّا — لا الثوابتَ كلَّها؛ ومرةً كلَّ

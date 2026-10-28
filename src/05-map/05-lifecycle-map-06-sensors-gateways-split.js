@@ -11,7 +11,7 @@
    وتحريكٌ وإضافةٌ وحذفٌ للحساسات والجيت واي (أكثرُ من جيت واي للمخيم الكبير)، وخطّةٌ تُولَّد للمخيم الجديد أو الجزء المقسوم (١٢ حساسًا داخل حدوده)،
    وما خرج عن الحدود بعد تعديلها يُعلَّم بالأحمر ويُوزَّع من جديد، وإكسلٌ للحساسات. وتبقى خارجَ أرقام الوزارة بعدّادها الخاص (قرارُ V25.7).
    البنيةُ متوافقةٌ مع القديم: gw وsensors إحداثياتٌ كما كانت، ومعها gws (جيت واي إضافي) وsm/gm (بياناتُ الأجهزة بالترتيب نفسِه). */
-var IOT_ST = ['مخطط', 'مُركّب', 'معطّل'];
+PV.IOT_ST = ['مخطط', 'مُركّب', 'معطّل'];
 var IOT_N = 12;
 function iotOf(id){
   var ov = STATE.siteOv && STATE.siteOv[id] && STATE.siteOv[id].iot;
@@ -232,7 +232,7 @@ function iotPanelHtml(){
   var sel = !E.sel ? t('لا شيءَ محدَّد') : (E.sel.k === 'g' ? t('جيت واي') : t('حساس')) + ' ' + ((m && m.id) || '');
   var fld = function(idx, lab, val){ return '<label style="display:flex;flex-direction:column;gap:2px;font-size:12px;min-width:120px;flex:1">' + esc(t(lab)) + '<input id="' + idx + '" value="' + esc(val || '') + '" style="padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)"></label>'; };
   var form = m ? '<div class="wt-row" style="gap:6px;flex-wrap:wrap;margin:6px 0">' + (E.sel.k === 's' ? fld('iotRoom', 'الغرفة', m.room) : '') + fld('iotSerial', 'السيريال', m.serial) + fld('iotModel', 'الطراز', m.model).replace('<input ', '<input list="iotModels" ') + fld('iotTag', 'العلامة على الجهاز', m.tag) + '<datalist id="iotModels"><option value="EM300"><option value="EM320"><option value="UG65"><option value="UG67"></datalist>'   /* (V39.22) */
-      + '<label style="display:flex;flex-direction:column;gap:2px;font-size:12px;min-width:110px">' + esc(t('الحالة')) + '<select id="iotStatus" style="padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)">' + IOT_ST.map(function(s){ return '<option' + ((m.status || 'مخطط') === s ? ' selected' : '') + ' value="' + esc(s) + '">' + esc(t(s)) + '</option>'; }).join('') + '</select></label>'
+      + '<label style="display:flex;flex-direction:column;gap:2px;font-size:12px;min-width:110px">' + esc(t('الحالة')) + '<select id="iotStatus" style="padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)">' + PV.IOT_ST.map(function(s){ return '<option' + ((m.status || 'مخطط') === s ? ' selected' : '') + ' value="' + esc(s) + '">' + esc(t(s)) + '</option>'; }).join('') + '</select></label>'
       + fld('iotNote', 'ملاحظة', m.note) + btn('\u2713 ' + t('حفظ البيانات'), 'btn-secondary btn-sm', ' data-iotmeta="1"') + '</div>' : '';
   var out = iotRing(E.id) ? E.sensors.filter(function(q){ return !polyIn(q, iotRing(E.id)); }).length : 0;
   return '<div class="map-route-box"><div class="wt-row" style="justify-content:space-between;align-items:center;gap:8px;margin:0">'
@@ -252,7 +252,7 @@ function iotPanelHtml(){
 function iotCount(){ var g = 0, s = 0; iotCampIds().forEach(function(id){ var c = iotOf(id); if (c){ g += 1 + (c.gws || []).length; s += c.sensors.length; } }); return { g:g, s:s }; }
 
 
-var BED = null, BED_L = null;
+var BED = null; PV.BED_L = null;
 function bedArea(P){
   if (!P || P.length < 3) return 0;
   var r = Math.PI / 180, kx = 111320 * Math.cos(P[0][0] * r), ky = 110540, a = 0;
@@ -264,20 +264,20 @@ function bedSnap(){ if (BED){ BED.hist = BED.hist || []; BED.hist.push(BED.pts.m
 function bedPaint(){
   if (typeof MAP === 'undefined' || !MAP || typeof L === 'undefined') return;
   try {
-    if (BED_L && BED_L._map !== MAP) BED_L = null;
-    if (BED_L) BED_L.clearLayers(); else BED_L = L.layerGroup().addTo(MAP);
+    if (PV.BED_L && PV.BED_L._map !== MAP) PV.BED_L = null;
+    if (PV.BED_L) PV.BED_L.clearLayers(); else PV.BED_L = L.layerGroup().addTo(MAP);
   } catch (e){ LS_ERR = e; return; }
   if (!BED) return;
   var P = BED.pts, poly = null;
-  if (P.length >= 3) poly = L.polygon(P, { renderer:MAP_CV, color:'#F5A623', weight:2.5, fillOpacity:0.18, dashArray:'6 4', interactive:false }).addTo(BED_L);
-  else if (P.length === 2) poly = L.polyline(P, { renderer:MAP_CV, color:'#F5A623', weight:2.5, dashArray:'6 4', interactive:false }).addTo(BED_L);
+  if (P.length >= 3) poly = L.polygon(P, { renderer:MAP_CV, color:'#F5A623', weight:2.5, fillOpacity:0.18, dashArray:'6 4', interactive:false }).addTo(PV.BED_L);
+  else if (P.length === 2) poly = L.polyline(P, { renderer:MAP_CV, color:'#F5A623', weight:2.5, dashArray:'6 4', interactive:false }).addTo(PV.BED_L);
   P.forEach(function(q, i){
     var mk = L.marker(q, { draggable:true, zIndexOffset:1000, icon:L.divIcon({ className:'bed-v' + (BED.sel === i ? ' on' : ''), iconSize:[30, 30] }) });
     mk.on('dragstart', function(){ bedSnap(); });
     mk.on('drag', function(e){ var ll = e.target.getLatLng(); BED.pts[i] = [+ll.lat.toFixed(6), +ll.lng.toFixed(6)]; if (poly) poly.setLatLngs(BED.pts); });
     mk.on('dragend', function(){ BED.sel = i; bedPaint(); render(1); });
     mk.on('click', function(){ BED.sel = i; bedPaint(); render(1); });
-    mk.addTo(BED_L);
+    mk.addTo(PV.BED_L);
   });
   if (BED.draw || P.length < 3) return;   /* وضعُ الرسم: الزوايا وحدَها حتى «تمّ الرسم» */
   for (var k = 0; k < P.length; k++){
@@ -285,7 +285,7 @@ function bedPaint(){
       var a = P[k], b = P[(k + 1) % P.length], mid = [+((a[0] + b[0]) / 2).toFixed(6), +((a[1] + b[1]) / 2).toFixed(6)];
       L.marker(mid, { icon:L.divIcon({ className:'bed-m', iconSize:[18, 18] }) })
         .on('click', function(){ bedSnap(); BED.pts.splice(k + 1, 0, mid); BED.sel = k + 1; bedPaint(); render(1); })
-        .addTo(BED_L);
+        .addTo(PV.BED_L);
     })(k);
   }
   /* مقبضُ الوسط: يُسحَب فينتقل الشكلُ كلُّه كما هو */
@@ -294,7 +294,7 @@ function bedPaint(){
     .on('dragstart', function(e){ bedSnap(); start = e.target.getLatLng(); base = BED.pts.map(function(q){ return [q[0], q[1]]; }); })
     .on('drag', function(e){ if (!start) return; var ll = e.target.getLatLng(), dy = ll.lat - start.lat, dx = ll.lng - start.lng; BED.pts = base.map(function(q){ return [+(q[0] + dy).toFixed(6), +(q[1] + dx).toFixed(6)]; }); if (poly) poly.setLatLngs(BED.pts); })
     .on('dragend', function(){ start = null; bedPaint(); render(1); })
-    .addTo(BED_L);
+    .addTo(PV.BED_L);
 }
 
 
@@ -305,8 +305,8 @@ function bedPaint(){
 var SPLIT = null;   
 
 
-var SPLIT_COL = ['#4FA3FF', '#FF8C42', '#3AD6A0', '#E64980', '#F5C400', '#9B51E0'];
-function splitPaint(){ if (!SPLIT || !MAP_TMP) return; SPLIT.parts.forEach(function(pp, i){ L.polygon(pp, { renderer:MAP_CV, color:SPLIT_COL[i % 6], weight:2.5, dashArray:'6 4', fillColor:SPLIT_COL[i % 6], fillOpacity:0.3, interactive:false }).addTo(MAP_TMP); }); }
+PV.SPLIT_COL = ['#4FA3FF', '#FF8C42', '#3AD6A0', '#E64980', '#F5C400', '#9B51E0'];
+function splitPaint(){ if (!SPLIT || !MAP_TMP) return; SPLIT.parts.forEach(function(pp, i){ L.polygon(pp, { renderer:MAP_CV, color:PV.SPLIT_COL[i % 6], weight:2.5, dashArray:'6 4', fillColor:PV.SPLIT_COL[i % 6], fillOpacity:0.3, interactive:false }).addTo(MAP_TMP); }); }
 function splitPanelHtml(){ if (!SPLIT) return ''; var x = siteFind(SPLIT.id) || {};
   return '<div class="map-route-box"><div class="wt-row" style="justify-content:space-between;align-items:center;gap:8px;margin:0"><b>\u2702 ' + esc(t('قسّم المخيم')) + ' \u2014 ' + esc(x.name || SPLIT.id) + '</b><span class="hint">' + nm(SPLIT.parts.length) + ' ' + esc(t('أجزاء')) + '</span></div>'
     + '<div class="chips" style="margin:8px 0">' + [2, 3, 4, 5, 6].map(function(k){ return '<button type="button" class="chip' + (SPLIT.n === k ? ' on' : '') + '" data-splitn="' + k + '">' + nm(k) + '</button>'; }).join('') + '</div>'

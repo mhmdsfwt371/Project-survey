@@ -8,8 +8,8 @@
              decision log by version (owner decisions); new comments are written in English.
    ============================================================================ */
 
-var EXT_LIVE  = 'https://livefeed.nusukcard.net';
-var EXT_LIVE_KEY = 'DJsowqfnR2qlP32BzySo_8hNUy3Wypn2xFBzCcPELlo';
+PV.EXT_LIVE = 'https://livefeed.nusukcard.net';
+PV.EXT_LIVE_KEY = 'DJsowqfnR2qlP32BzySo_8hNUy3Wypn2xFBzCcPELlo';
 
 /* ── حفظ توكن جديد ── */
 function extTokSave(tok){

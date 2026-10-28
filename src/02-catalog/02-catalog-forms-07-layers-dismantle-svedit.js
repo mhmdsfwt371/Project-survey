@@ -89,8 +89,8 @@ function LAYER(){ return LAYERS[FIELD_MODE] || LAYERS.survey; }
 var SVQ = { id:'', key:'', tmp:null, delAsk:'' };
 var TYPES_OPEN = false;   /* بطاقةُ التصنيفات في «المواقع» مطويّةٌ حتى تُفتَح (V23.0) */
 var SVQ_NUM = { tbar:1, len_m:1, wid_m:1, hgt_m:1, height:1, cable:1, tents:1, gates:1, corr_w:1, pdist:1, n_ant:1, n_rdr:1, n_cam:1, n_sens:1, hours:1, crew_n:1, kits:1, kits_done:1 };
-var SVQ_OPT = { ctype:['عادي','ترددي'], mount:['عمود','جدار','سور','هيكل قائم'], power:['شبكة','مولد','طاقة شمسية','لا يوجد'] };   /* (V38.25) «موقع النقطة» شرائحُ متعدّدةٌ لا قائمة */
-var SVQ_TEXT = { note:1, chal_note:1, power_note:1, civil:1, equip:1 };
+PV.SVQ_OPT = { ctype:['عادي','ترددي'], mount:['عمود','جدار','سور','هيكل قائم'], power:['شبكة','مولد','طاقة شمسية','لا يوجد'] };   /* (V38.25) «موقع النقطة» شرائحُ متعدّدةٌ لا قائمة */
+PV.SVQ_TEXT = { note:1, chal_note:1, power_note:1, civil:1, equip:1 };
 function svqMay(id){ var r = STATE.recs[id]; return !!r && !r.deleted && may('edit'); }
 function svqKeys(rec){
   var ks = SV_ORDER.filter(function(k){ return k !== 'access' && rec[k] !== undefined && rec[k] !== null && rec[k] !== ''; });
@@ -138,10 +138,10 @@ function svqEditor(k, rec, s){
           + '</label><textarea id="svqNote" rows="3" dir="auto" placeholder="' + esc(t('مثال: الجدار مائل ولا يتحمّل الحامل — نحتاج عمودًا بارتفاع ٣ م')) + '"' + (SVQ.err ? ' style="border-color:var(--bad,#e05252)"' : '') + '>' + esc(noteV) + '</textarea></div>'
           + (SVQ.err ? alertBox('bad', t(SVQ.err)) : '') : '');
   }
-  if (SVQ_OPT[k]) return '<select id="svqIn">' + SVQ_OPT[k].filter(function(o){ return k !== 'mount' || o !== 'لوحة استرشادية' || locApplies(s) || v === o; }).map(function(o){   /* (V38.24) */ return '<option value="' + esc(o) + '"' + (v === o ? ' selected' : '') + '>' + esc(t(o)) + '</option>'; }).join('') + '</select>';
+  if (PV.SVQ_OPT[k]) return '<select id="svqIn">' + PV.SVQ_OPT[k].filter(function(o){ return k !== 'mount' || o !== 'لوحة استرشادية' || locApplies(s) || v === o; }).map(function(o){   /* (V38.24) */ return '<option value="' + esc(o) + '"' + (v === o ? ' selected' : '') + '>' + esc(t(o)) + '</option>'; }).join('') + '</select>';
   if (v === 'نعم' || v === 'لا') return '<select id="svqIn">' + ['نعم','لا'].map(function(o){ return '<option value="' + o + '"' + (v === o ? ' selected' : '') + '>' + esc(t(o)) + '</option>'; }).join('') + '</select>';
   if (SVQ_NUM[k]) return '<input id="svqIn" type="number" step="0.1" min="0" inputmode="decimal" value="' + esc(v) + '">';
-  if (SVQ_TEXT[k]) return '<textarea id="svqIn" rows="3" dir="auto">' + esc(v) + '</textarea>';
+  if (PV.SVQ_TEXT[k]) return '<textarea id="svqIn" rows="3" dir="auto">' + esc(v) + '</textarea>';
   return '<input id="svqIn" dir="auto" value="' + esc(v) + '">';
 }
 function svqSheet(){
