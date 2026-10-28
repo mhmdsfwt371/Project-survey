@@ -2334,6 +2334,23 @@ console.log('\n══ ٩٩ · الترجمة الاحتياطية ══');
   box.remove(); w.LANG = L0; w.D.en = D0;
 }
 
+/* ── ١٠٠ · (V39.99) خطوةُ كود التحقق في «الربط» ── */
+console.log('\n══ ١٠٠ · خطوة كود التحقق ══');
+{
+  const R0 = w.ROLE; w.ROLE = 'admin';
+  const p1 = { state:'code', at:Date.now(), methods:[{ type:'phone', value:'05****12' }, { type:'email', value:'s***@afaqy.com' }], sent:false };
+  const h1 = w.integOtpHtml(p1);
+  T(/data-integotpsend="phone"/.test(h1) && /data-integotpsend="email"/.test(h1) && /05\*\*\*\*12/.test(h1) && !/integOtpCode/.test(h1), 'المنصةُ طلبت الكود: يظهر الجوالُ والإيميلُ كما أرسلتهما المنصة، ولا خانةَ للكود قبل الإرسال');
+  const h2 = w.integOtpHtml(Object.assign({}, p1, { sent:true, method:'phone', expiresIn:300 }));
+  T(/id="integOtpCode"/.test(h2) && /data-integotpverify/.test(h2) && /data-integotprestart/.test(h2), 'بعد الإرسال: خانةُ الكود و«تحقق» و«ابعت كود جديد» و«ابدأ من جديد»');
+  const h3 = w.integOtpHtml(Object.assign({}, p1, { sent:true, method:'phone', err:'Invalid_OTP' }));
+  T(/الكود غلط/.test(h3), 'والكودُ الغلط يُقال بكلامٍ مفهوم');
+  T(/طلبت كود تحقق/.test(w.integStateLine(p1)), 'وسطرُ الحالة يقول إن المنصة طلبت كودًا');
+  w.ROLE = 'tech'; w.STATE.meta.role = 'tech';
+  T(!w.mayIntegEdit(), 'والفنيُّ لا يرى الخطوة ولا يستطيعها');
+  w.ROLE = R0; w.STATE.meta.role = R0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

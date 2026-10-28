@@ -146,6 +146,10 @@ function clickAPart7(e){
   var igS = e.target.closest('[data-integsave]'); if (igS){ integSave(igS.getAttribute('data-integsave')); return true; }   /* (V39.70) الربط */
   var igO = e.target.closest('[data-integoff]'); if (igO){ integOff(igO.getAttribute('data-integoff')); return true; }
   if (e.target.closest('[data-integnow]')){ integNow(); return true; }
+  /* (V39.99) AFAQY PRO code step */
+  var ios = e.target.closest('[data-integotpsend]'); if (ios){ integOtp('send', { method:ios.getAttribute('data-integotpsend') }); return true; }
+  if (e.target.closest('[data-integotpverify]')){ var oc = document.getElementById('integOtpCode'); integOtp('verify', { code:oc ? oc.value : '' }); return true; }
+  if (e.target.closest('[data-integotprestart]')){ integOtp('restart'); return true; }
   /* (V39.92) view as user */
   if (e.target.closest('[data-vaopen]')){ e.preventDefault(); var vs0 = document.getElementById('vaSheet'); if (vs0) vs0.remove(); document.body.insertAdjacentHTML('beforeend', viewAsSheet('')); return true; }
   if (e.target.closest('[data-vaclose]') || e.target.id === 'vaSheet'){ var vs1 = document.getElementById('vaSheet'); if (vs1) vs1.remove(); return true; }

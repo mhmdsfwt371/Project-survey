@@ -21,6 +21,33 @@ const db = admin.firestore();
 setGlobalOptions({ region:'us-central1', maxInstances:2, memory:'256MiB', timeoutSeconds:120 });
 
 const PRO_URL = 'https://api.afaqy.sa';
+/* (V39.99) the code step, built from the official AFAQY PRO web client (afaqy.pro, its own bundles — not guessed):
+     POST {web}/auth/login            { data:JSON.stringify({ username, password, lang, expire, captcha }) }
+        → status_code 200 + data.is_2fa + data.token (one-time) + data.methods [{ type:'phone'|'email', value }]
+     POST {web}/auth/send_login_otp   { data:JSON.stringify({ method, token }) }          → data.expires_in
+     POST {web}/auth/verify_login_otp { data:JSON.stringify({ otpcode:int, method, token }) } → status_code 200 + data.token
+   Refusals by message: otp_expired, otp_blocked, Invalid_OTP, validation_error; 405 = wrong code. «expire» is the session
+   length in hours (the web client asks 24). The one-time session lives in integ/afaqypro_otp — server-only like integ/*. */
+const WEB_URL = 'https://api.afaqy.pro';
+async function webCall(path, obj, token){
+  const r = await fetch(WEB_URL + '/' + path + (token ? '?token=' + encodeURIComponent(token) : ''), {
+    method:'POST', headers:{ 'content-type':'application/json', accept:'application/json' }, body:JSON.stringify({ data:JSON.stringify(obj) }) });
+  const j = await r.json().catch(() => ({}));
+  return { ok:r.ok, status:r.status, j };
+}
+const SESSION_HOURS = 720;   /* asked for; the platform keeps what it allows */
+async function webLogin(cfg){
+  const L = await webCall('auth/login', { username:cfg.user, password:cfg.pass, lang:'ar', expire:SESSION_HOURS, captcha:'' });
+  const d = (L.j && L.j.data) || {};
+  if (L.j && L.j.status_code === 200 && d.is_2fa && d.token){
+    const methods = (Array.isArray(d.methods) ? d.methods : []).map(m => ({ type:String(m.type || ''), value:String(m.value || '').slice(0, 60) })).filter(m => m.type);
+    await db.collection('integ').doc('afaqypro_otp').set({ token:d.token, methods, at:Date.now() });
+    return { code:true, methods };
+  }
+  const t = tokOf(L.j);
+  if (t) return { tok:t };
+  return { err:String((L.j && L.j.message) || L.status).slice(0, 60), st:(L.j && L.j.status_code) || L.status };
+}
 const shape = o => o && typeof o === 'object' ? (Array.isArray(o) ? '[' + (o.length ? shape(o[0]) : '') + ']' : '{' + Object.keys(o).slice(0, 40).join(',') + '}') : typeof o;
 const num = x => (x == null || x === '' || !Number.isFinite(+x)) ? null : Math.round(+x * 100) / 100;
 const ms = t => { if (!t) return 0; const n = +t; if (Number.isFinite(n)) return n < 1e12 ? n * 1000 : n; const d = Date.parse(t); return Number.isFinite(d) ? d : 0; };
@@ -61,19 +88,28 @@ async function proPull(why){
   const { mine, planned } = await ourDevices(); const imeis = Object.keys(mine);
   if (!imeis.length){ await status({ state:'ok', planned, withImei:0, matched:0, note:'no IMEI recorded yet' }); return { state:'ok', matched:0 }; }
   /* the token is kept between runs and renewed when refused — not a fresh login every five minutes */
-  const tokRef = db.collection('integ').doc('afaqypro_tok'); let tok = ((await tokRef.get()).data() || {}).tok || '';
+  const tokRef = db.collection('integ').doc('afaqypro_tok'), T0 = (await tokRef.get()).data() || {}; let tok = T0.tok || '', base = T0.base || '';
+  /* (V39.99) a token from the code step belongs to the web host — every call then goes there, in the web client's format */
+  const call = (p, body, tk) => base === WEB_URL ? webCall(p.replace(/^\//, ''), body, tk) : proCall(url, p, body, tk);
   const login = async () => { const L = await proCall(url, '/auth/login', { username:cfg.user, password:cfg.pass }); const t = tokOf(L.j);
     if (!t){   /* (V39.76) the documented refusal is {message:'invalid_credentials', status_code:401} with HTTP 200 — «status_code» had
                   matched the old «code» test and showed «asked for a code». A code step is told only by its own words. */
       const sh = shape(L.j), msg = String((L.j && L.j.message) || '').slice(0, 60), needCode = /otp|verif|two.?factor|2fa|mfa/i.test(msg) || /\b(otp|verify|verification)\b/i.test(JSON.stringify(sh || ''));
-      throw Object.assign(new Error(needCode ? 'otp' : 'login'), { st:(L.j && L.j.status_code) || L.status, shape:sh, msg:msg }); } await tokRef.set({ tok:t, at:Date.now() }); return t; };
+      if (needCode){   /* (V39.99) the web login gives the one-time session the code step needs */
+        const W = await webLogin(cfg);
+        if (W.tok){ base = WEB_URL; await tokRef.set({ tok:W.tok, at:Date.now(), base:WEB_URL }); return W.tok; }
+        if (W.code) throw Object.assign(new Error('code'), { methods:W.methods });
+        throw Object.assign(new Error('login'), { st:W.st, msg:W.err });
+      }
+      throw Object.assign(new Error('login'), { st:(L.j && L.j.status_code) || L.status, shape:sh, msg:msg }); } await tokRef.set({ tok:t, at:Date.now(), base:'' }); base = ''; return t; };
   try {
     if (!tok) tok = await login();
     const units = []; let sample = null;
     for (let i = 0; i < imeis.length; i += 100){
       const body = { offset:0, limit:1000, simplify:0, projection:['basic', 'last_update', 'sensors'], filters:{ imei:{ value:imeis.slice(i, i + 100), op:'in' } } };
-      let R = await proCall(url, '/units/lists', body, tok);
-      if (R.status === 401 || R.status === 403){ tok = await login(); R = await proCall(url, '/units/lists', body, tok); }
+      let R = await call('/units/lists', body, tok);
+      const refused = X => X.status === 401 || X.status === 403 || (X.j && (X.j.status_code === 401 || X.j.status_code === 403));
+      if (refused(R)){ tok = await login(); R = await call('/units/lists', body, tok); }
       const arr = (R.j && R.j.data && (Array.isArray(R.j.data) ? R.j.data : R.j.data.data)) || [];
       if (!sample && arr.length) sample = { reply:shape(R.j), unit:shape(arr[0]), last:shape(arr[0].last_update), prms:shape((arr[0].last_update || {}).prms), sensors:shape(arr[0].sensors) };
       units.push(...arr);
@@ -91,6 +127,7 @@ async function proPull(why){
     await status({ state:'ok', planned, withImei:imeis.length, found:units.length, matched, ms:Date.now() - now, sample:sample || null });
     return { state:'ok', matched, found:units.length };
   } catch (e) {
+    if (e.message === 'code'){ await status({ state:'code', methods:e.methods || [], sent:false, err:'', msg:'' }); return { state:'code' }; }   /* (V39.99) */
     await status({ state:'err', err:String(e.message || e).slice(0, 120), httpStatus:e.st || 0, shape:e.shape || '', msg:e.msg || '' });
     return { state:'err', err:String(e.message || e).slice(0, 120) };
   }
@@ -108,6 +145,44 @@ exports.integNow = onCall(async req => {
   const st = ((await db.collection('settings').doc('integStatus').get()).data() || {}).pro || {};
   if (st.at && Date.now() - st.at < 60000 && st.why === 'button') return { state:st.state, cached:true, at:st.at, matched:st.matched || 0 };
   return proPull('button');
+});
+
+/* ═══ (V39.99) integOtp — the code step from the app: send the code by phone or e-mail, verify it, or start again ═══ */
+exports.integOtp = onCall(async req => {
+  if (!req.auth) throw new HttpsError('unauthenticated', 'sign in');
+  const boss = ['mohammed.safwat@afaqy.com', 'm.safwat@nusuk.local'].includes(String((req.auth.token || {}).email || '').toLowerCase());
+  const u = boss ? null : await db.collection('users').doc(req.auth.uid).get(), role = boss ? 'admin' : (u && u.exists ? (u.data().role || 'tech') : 'none');
+  if (role !== 'admin' && role !== 'engineer') throw new HttpsError('permission-denied', 'engineer or admin');
+  if (u && u.exists && u.data().active === false) throw new HttpsError('permission-denied', 'inactive');
+  const d = req.data || {}, op = String(d.op || ''), otpRef = db.collection('integ').doc('afaqypro_otp');
+  const status = st => db.collection('settings').doc('integStatus').set({ pro:Object.assign({ at:Date.now(), why:'code' }, st) }, { merge:true });
+  if (op === 'restart'){
+    const cfg = (await db.collection('integ').doc('afaqypro').get()).data() || null;
+    if (!cfg || !cfg.user || !cfg.pass) return { ok:false, err:'no_account' };
+    const W = await webLogin(cfg);
+    if (W.tok){ await db.collection('integ').doc('afaqypro_tok').set({ tok:W.tok, at:Date.now(), base:WEB_URL }); return Object.assign({ ok:true, done:true }, await proPull('code')); }
+    if (W.code){ await status({ state:'code', methods:W.methods, sent:false, err:'', msg:'' }); return { ok:true, methods:W.methods }; }
+    await status({ state:'err', err:'login', httpStatus:W.st || 0, msg:W.err || '' }); return { ok:false, err:W.err || 'login' };
+  }
+  const S = (await otpRef.get()).data() || null;
+  if (!S || !S.token) return { ok:false, err:'no_session' };
+  if (op === 'send'){
+    const method = d.method === 'email' ? 'email' : 'phone';
+    const R = await webCall('auth/send_login_otp', { method, token:S.token });
+    const ex = (R.j && R.j.data && R.j.data.expires_in) || (R.j && (R.j.expires_in || (R.j.extra && R.j.extra.expires_in))) || 0;
+    if (R.j && R.j.status_code === 200){ await otpRef.set({ method, sentAt:Date.now(), expiresIn:+ex || 0 }, { merge:true }); await status({ state:'code', methods:S.methods || [], sent:true, method, expiresIn:+ex || 0, err:'' }); return { ok:true, expiresIn:+ex || 0 }; }
+    const m = String((R.j && R.j.message) || R.status).slice(0, 40); await status({ state:'code', methods:S.methods || [], sent:false, err:m }); return { ok:false, err:m, expiresIn:+ex || 0 };
+  }
+  if (op === 'verify'){
+    const code = String(d.code || '').replace(/\D/g, '');
+    if (code.length < 4) return { ok:false, err:'validation_error' };
+    const R = await webCall('auth/verify_login_otp', { otpcode:parseInt(code, 10), method:S.method || 'phone', token:S.token });
+    const tk = R.j && R.j.status_code === 200 && R.j.data && R.j.data.token;
+    if (tk){ await db.collection('integ').doc('afaqypro_tok').set({ tok:tk, at:Date.now(), base:WEB_URL }); await otpRef.delete(); return Object.assign({ ok:true, done:true }, await proPull('code')); }
+    const m = R.j && R.j.status_code === 405 ? 'Invalid_OTP' : String((R.j && R.j.message) || R.status).slice(0, 40);
+    await status({ state:'code', methods:S.methods || [], sent:true, method:S.method || 'phone', err:m }); return { ok:false, err:m };
+  }
+  return { ok:false, err:'op' };
 });
 
 /* ═══ (V39.89) the accounts-and-photos job, moved from GitHub's best-effort cron to an exact 5-minute schedule ═══
