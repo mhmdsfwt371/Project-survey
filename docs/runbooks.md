@@ -15,6 +15,7 @@
 | **فحص ما بعد النشر** (`post-deploy.yml`) | يفحص التطبيقَ المنشورَ فعلًا | بعد كلِّ نشر، وكلَّ ست ساعات | — |
 | **الحسابات مع كلِّ دفع** (`provision-on-push.yml`) | ينفّذ طلباتِ الحسابات مع كلِّ دفع | عند كلِّ دفع | `FIREBASE_SERVICE_ACCOUNT` |
 | **الحسابات والصور والبلاغات** (`provision.yml`) | الحسابات، ومحوُ كلماتها بعد ٧٢ ساعة، والصورُ إلى الدرايف، والبلاغات | كلَّ عشر دقائق، وعند الدفع إلى الأصل | `FIREBASE_SERVICE_ACCOUNT`، `GDRIVE_FOLDER`، `GDRIVE_OAUTH`، `GITHUB_TOKEN` |
+| **نقلُ الأسرار إلى خزنة جوجل** (`secrets-to-gsm.yml`) | ينقل مفتاحَ الدرايف وحسابَ الخدمة من أسرار GitHub إلى Secret Manager لتعمل الحساباتُ والصورُ دالةً سحابيةً كلَّ ٥ دقائق — لا يطبع قيمة | مرةً واحدةً عند وصوله إلى الاختبار، ويدويًّا | `FIREBASE_SERVICE_ACCOUNT`، `GDRIVE_OAUTH`، `GDRIVE_FOLDER` |
 | **جسر أفاقي برو** (`afaqy-pro.yml`) | الحساساتُ والجيت واي لكل نقطة من أفاقي برو إلى `iotlive/_all` — قراءةٌ فقط | كلَّ ١٠ دقائق، ويدويًّا | `AFAQY_PRO_USER`، `AFAQY_PRO_PASS`، `AFAQY_PRO_URL` (اختياري)، `FIREBASE_SERVICE_ACCOUNT` |
 | **اختبار القواعد الحيّ** (`rules-live.yml`) | قواعدُ القاعدة الحيّة بحساباتٍ مؤقّتةٍ لكل دور — بلا كتابة | السبت ٥:٠٠ صباحًا، ويدويًّا | `FIREBASE_SERVICE_ACCOUNT` |
 | **نبض المشروع** (`pulse.yml`) | بريدُ نبض المشروع وتقريرُ الحالة | يوميًّا ٦:٣٠ صباحًا | `FIREBASE_SERVICE_ACCOUNT`، `MAIL_FROM`، `MAIL_TO`، `SMTP_HOST`، `SMTP_PASS`، `SMTP_PORT`، `SMTP_USER` |
@@ -238,6 +239,14 @@
 | `SMTP_PASS` | البوابة، النسخ الاحتياطي اليومي، تقرير النظام، ملفات الوزارة، نبض المشروع |
 | `SMTP_PORT` | البوابة، النسخ الاحتياطي اليومي، تقرير النظام، ملفات الوزارة، نبض المشروع |
 | `SMTP_USER` | البوابة، النسخ الاحتياطي اليومي، تقرير النظام، ملفات الوزارة، نبض المشروع |
+
+## نقلُ الأسرار إلى خزنة جوجل — `secrets-to-gsm.yml`
+
+**ما يفعله:** يقرأ `FIREBASE_SERVICE_ACCOUNT` و`GDRIVE_OAUTH` و`GDRIVE_FOLDER` من أسرار GitHub ويضعها في Secret Manager باسم `JOBS_FIREBASE_SA` و`GDRIVE_OAUTH` و`GDRIVE_FOLDER` — نسخةً جديدةً إن وُجد السرّ، وإنشاءً إن لم يوجد. لا يطبع أيَّ قيمة.
+
+**متى:** مرةً واحدةً حين يصل الملفُّ إلى فرع الاختبار، ويدويًّا من Actions بعد تغيير مفتاح الدرايف.
+
+**إن سقط:** «Secret Manager API has not been used» ← فعّل الخدمة من وحدة جوجل كلاود. «Permission denied» ← أضِف صلاحية «Secret Manager Admin» لحساب `firebase-adminsdk-fbsvc` في IAM.
 
 ## نشر الدوال السحابية — `deploy-functions.yml`
 - **ما تفعله:** `integTick` كلَّ ٥ دقائق، و`integNow` لزرّ «⟳ حدّث الآن» (المهندس والمدير، مرةً في الدقيقة للجميع). تقرأ حسابَ أفاقي برو من `integ/afaqypro` (يكتبه التطبيقُ ولا يقرؤه)، وتبحث بأرقام أجهزتنا وحدها (`filters.imei`)، وتكتب `iotlive/_all` و`settings/integStatus`.

@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V39.87",
+  "app_version": "V39.88",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2349,7 +2349,8 @@
   "V39.84": "PV (01-core boot) · scripts/pv-move.mjs: eslint-scope — قراءاتُ الملف وكتاباتُه من globalScope.through · globals ٦٧٥ ← ٥٥٧ · صفرُ أخطاء no-undef",
   "V39.85": "fieldDayStart (nsk14.dayStart، يومُ مكة، isFieldRole، لا بعد الانهيار) · myQueueCard (PHOTO_Q · STATE.queue · PHOTO_FAIL · data-pushnow) · سيناريو ٩٣",
   "V39.86": "svqJumpBar · مراسي svqSecData/svqSecPh/svqSecHist · data-svqjump · سيناريو ٩٤",
-  "V39.87": "pv-move.mjs --multi: لكل ملفٍ globalScope.through + خصائصُ مختصرة { x } ← { x: PV.x } · لا ما يُعلَن في الحزمة ويُستعمل من النواة · لا window.X ولا ما في HTML · globals ٥٥٧ ← ٢٨٦"
+  "V39.87": "pv-move.mjs --multi: لكل ملفٍ globalScope.through + خصائصُ مختصرة { x } ← { x: PV.x } · لا ما يُعلَن في الحزمة ويُستعمل من النواة · لا window.X ولا ما في HTML · globals ٥٥٧ ← ٢٨٦",
+  "V39.88": "secrets-to-gsm.yml: JOBS_FIREBASE_SA · GDRIVE_OAUTH · GDRIVE_FOLDER ← Secret Manager"
   },
   "map_and_geolocation": {
     "tile_layers": {
