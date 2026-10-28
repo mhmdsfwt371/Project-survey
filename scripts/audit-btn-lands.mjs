@@ -60,6 +60,8 @@ const offered = new Map();   /* زرّ → الأدوارُ التي يُعرَ�
    ليُفحَص الزرُّ لا لتُفحَص شروطُ ظهوره (لها جردُها) */
 w.FIELD_MODE = 'install';
 w.taskKindOf = (id, k) => k === 'install';
+/* (V41.0) the map's tool buttons fold behind «▴ الأدوات» — opened here so the buttons themselves are checked */
+w.PV.FAB_ON = true;
 for (const role of ROLES){
   w.ROLE = role;
   /* الشريطُ والبطاقةُ على الخريطة: من لا يرى الخريطةَ لا يبلغه زرُّها،
