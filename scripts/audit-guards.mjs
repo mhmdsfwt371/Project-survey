@@ -103,8 +103,8 @@ const MUT = [
     a:"function field()  { return role() in ['tech', 'cprep', 'casm', 'cins', 'helper', 'driver']; }",
     b:"function field()  { return false; }" },
   { n:'شاشةٌ تعود إلى بيانةٍ مزروعةٍ لها مصدرٌ حيّ', g:'scripts/audit-data.mjs',
-    a:"      + cardFlush(t('موظفو') + ' ' + esc(crew.n) + ' — ' + nm(techs.length),",
-    b:"      + cardFlush(t('موظفو') + ' ' + esc(crew.n) + ' — ' + nm(DATA.techs.length)," },
+    a:"      + cardFlush(t('موظفو') + ' ' + esc(t(crew.n)) + ' — ' + nm(techs.length),",   /* (V39.91) the crew name now goes through t() */
+    b:"      + cardFlush(t('موظفو') + ' ' + esc(t(crew.n)) + ' — ' + nm(DATA.techs.length)," },
   { n:'صنفٌ يُستعمَل ولا قاعدةَ له في التنسيق', g:'scripts/audit-data.mjs',
     a:".btn-light{background:#F4F6F8;border-color:#D6DDE4;color:#14181D;font-weight:600}",
     b:".btn-lite-x{background:#F4F6F8}" },
