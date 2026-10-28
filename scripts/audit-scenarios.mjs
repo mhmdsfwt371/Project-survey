@@ -2363,6 +2363,20 @@ console.log('\n══ ١٠١ · التوكين والحساب ══');
   w.integAcctHtml.edit = ed0; w.ROLE = R0;
 }
 
+/* ── ١٠٢ · (V40.4) قراءاتُ الجسر بأسماء التطبيق، وبطاريتا الجيت واي، ورسالةُ «هات التوكين» ── */
+console.log('\n══ ١٠٢ · قراءات أفاقي برو على الشاشة ══');
+{
+  const L0 = w.IOT.live; w.IOT.live = { at:Date.now(), busy:false, v:{ units:{ 's1':{ t:Date.now() - 900000, v:{ temp:36.9, hum:42, bat:73, rssi:-80 } }, 'g1':{ t:Date.now() - 60000, v:{ ext_bat:12.6, int_bat:4.1, bat:12.6 } } } } };
+  const a = w.liveIotLine('S1'), b = w.liveIotLine('g1');
+  const has = (h, n) => h.indexOf(w.nm(n)) > -1;
+  T(has(a, 36.9) && has(a, 42) && has(a, 73), 'الحساسُ: الحرارةُ والرطوبةُ والبطاريةُ كما على المنصة (٣٦٫٩ · ٤٢ · ٧٣)');
+  T(/خارجية/.test(b) && /داخلية/.test(b) && b.split(w.nm(12.6)).length === 2, 'والجيت واي: البطاريةُ الخارجيةُ والداخليةُ، بلا تكرار');
+  w.IOT.live = L0;
+  const R0 = w.ROLE; w.ROLE = 'admin';
+  T(/هات التوكين/.test(w.integOtpHtml({ state:'code', methods:[{ type:'email', value:'m***@afaqy.com' }], sent:true, method:'email', err:'login_blocked' })) && !/هات التوكين/.test(w.integOtpHtml({ state:'code', methods:[], sent:true, err:'Invalid_OTP' })), 'وإن تعذّر الدخولُ بالكود يقول «هات التوكين» — لا لكودٍ غلطٍ فقط');
+  w.ROLE = R0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

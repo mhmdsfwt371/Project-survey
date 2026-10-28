@@ -77,6 +77,19 @@ function valuesOf(u){
     if (val != null) v[String(s.name || s.type || p).slice(0, 40)] = val; });
   ['temperature', 'temp', 'humidity', 'hum', 'battery', 'bat', 'battery_level', 'rssi', 'snr', 'ext_battery', 'int_battery', 'power', 'pwr_ext', 'pwr_int']
     .forEach(p => { const val = num(prms[p]); if (val != null && v[p] == null) v[p] = val; });
+  /* (V40.4) the app reads temp / hum / bat (and ext_bat / int_bat for a gateway); the platform names its sensors
+     «Temperature», «Humidity», «Device Battery», «RSSI» with params temp / humidity / rssi — each reading also gets its
+     canonical key, by the sensor's type or name first, then by the param */
+  const pick = (re, params) => { const ss = Array.isArray(u.sensors) ? u.sensors : [];
+    for (const s of ss){ const p = s && (s.param || s.parameter); const val = p != null ? num(prms[p]) : null; if (val != null && re.test(String((s.type || '') + ' ' + (s.name || '')))) return val; }
+    for (const p of params){ const val = num(prms[p]); if (val != null) return val; } return null; };
+  const set = (k, val) => { if (val != null && v[k] == null) v[k] = val; };
+  set('temp', pick(/temp|حرار/i, ['temperature', 'temp']));
+  set('hum', pick(/humid|رطوب/i, ['humidity', 'hum']));
+  set('ext_bat', pick(/ext|خارج/i, ['ext_battery', 'pwr_ext', 'power']));
+  set('int_bat', pick(/int(?!er)|internal|داخل/i, ['int_battery', 'pwr_int']));
+  set('bat', pick(/batt|بطار|volt/i, ['battery', 'bat', 'battery_level']));
+  set('rssi', pick(/rssi|signal|إشار/i, ['rssi']));
   return v;
 }
 

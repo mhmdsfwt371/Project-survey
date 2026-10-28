@@ -50,7 +50,8 @@ function liveIotLine(serial){
   var x = liveIotOf(serial); if (!x) return '';
   var age = x.t ? Date.now() - x.t : Infinity, col = age < 1200000 ? '#3FB27F' : age < 7200000 ? '#E0A100' : '#E05252';
   var v = x.v || {}, parts = [];
-  if (v.temp != null) parts.push(nm(v.temp) + '\u00B0'); if (v.hum != null) parts.push(nm(v.hum) + '\u066A'); if (v.bat != null) parts.push('\u{1F50B} ' + nm(v.bat));
+  if (v.temp != null) parts.push(nm(v.temp) + '\u00B0'); if (v.hum != null) parts.push(nm(v.hum) + '\u066A'); if (v.bat != null && v.ext_bat == null && v.int_bat == null) parts.push('\u{1F50B} ' + nm(v.bat));
+  if (v.ext_bat != null) parts.push('\u{1F50C} ' + t('خارجية') + ' ' + nm(v.ext_bat)); if (v.int_bat != null) parts.push('\u{1F50B} ' + t('داخلية') + ' ' + nm(v.int_bat));   /* (V40.4) a gateway's two batteries */
   return '<div style="margin-top:4px"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + col + '"></span> <b>' + esc(t('القراءة الحية')) + ':</b> '
     + (parts.length ? esc(parts.join(' \u00B7 ')) : esc(t('لا قيم'))) + ' <span class="hint" style="margin:0">' + esc(age === Infinity ? t('بلا وقت') : age < 7200000 ? t('منذ') + ' ' + nm(Math.max(1, Math.round(age / 60000))) + ' ' + t('د') : t('غير متصل')) + '</span></div>';
 }

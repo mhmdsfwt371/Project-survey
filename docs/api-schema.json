@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V40.3",
+  "app_version": "V40.4",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2365,7 +2365,8 @@
   "V40.0": "integ/afaqypro.token (يُكتب ولا يُقرأ) · proPull: التوكين الملصق أولًا ثم مضيفُ الويب ثم الحساب · err 'token' · integPub.tok · سيناريو ١٠١",
   "V40.1": "proPull: device_serial in للباقي · visible (pagination.allCount) حين لا يُعثر على شيء · النجاحُ يمسح err/httpStatus/msg · integ-diag.yml",
   "V40.2": "proPull: الجلسةُ الأقدم من حفظ الحساب تُسقَط · integ/afaqypro_map (imei/serial → _id، كل ٦ ساعات) ثم filters.id in · login لا يعيد خطوة الكود المعلّقة (١٥ د)",
-  "V40.3": "login: data.is_2fa ← خطوةُ الكود لا توكين · رفضٌ بعد دخولٍ جديد ← err 'refused'"
+  "V40.3": "login: data.is_2fa ← خطوةُ الكود لا توكين · رفضٌ بعد دخولٍ جديد ← err 'refused'",
+  "V40.4": "valuesOf: temp/hum/bat/rssi وext_bat/int_bat بنوع الحساس أو اسمه ثم بالمعامل · liveIotLine: بطاريتا الجيت واي · integOtpHtml/integStateLine: «هات التوكين» · سيناريو ١٠٢"
   },
   "map_and_geolocation": {
     "tile_layers": {

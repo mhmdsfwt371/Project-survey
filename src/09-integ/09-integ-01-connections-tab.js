@@ -54,6 +54,7 @@ function integStateLine(p){
   if (!p) return '<span class="pill" style="border-color:#94A3B8;color:#94A3B8">\u23F3 ' + esc(t('لم يعمل الجسرُ بعد — أول سحبٍ خلال ٥ دقائق من الحفظ')) + '</span>';
   var ago = p.at ? nm(Math.max(0, Math.round((Date.now() - p.at) / 60000))) + ' ' + t('د') : '—';
   if (p.state === 'err' && p.err === 'token') return '<span class="pill" style="border-color:#EF4444;color:#EF4444">\u{1F534} ' + esc(t('التوكين انتهى أو مرفوض — حط توكين جديد، أو احفظ اسم المستخدم وكلمة السر عشان يتجدد لوحده')) + ' \u00b7 ' + ago + '</span>';   /* (V40.0) */
+  if (p.state === 'err' && p.err === 'login' && /2fa|otp|captcha|verif/i.test(String(p.msg || ''))) return '<span class="pill" style="border-color:#EF4444;color:#EF4444">\u{1F534} ' + esc(t('مش قادر أكمّل الدخول بالكود من هنا — هات التوكين من موقع أفاقي برو وحطه في خانة «التوكين»')) + ' \u00b7 ' + ago + '</span>';   /* (V40.4) */
   if (p.state === 'err' && p.err === 'refused') return '<span class="pill" style="border-color:#EF4444;color:#EF4444">\u{1F534} ' + esc(t('المنصة رفضت الجلسة حتى بعد تسجيل دخول جديد')) + (p.msg ? ' \u2014 ' + esc(p.msg) : '') + ' \u00b7 ' + ago + '</span>';   /* (V40.3) */
   if (p.state === 'code') return '<span class="pill" style="border-color:#F59E0B;color:#F59E0B">\u{1F510} ' + esc(t('المنصة طلبت كود تحقق — أكمل الخطوة تحت')) + '</span>';   /* (V39.99) */
   if (p.state === 'off') return '<span class="pill" style="border-color:#94A3B8;color:#94A3B8">\u26AA ' + esc(t('غير متصل — لا حساب محفوظ')) + '</span>';
@@ -211,7 +212,9 @@ function integOtpHtml(p){
   var h = '<div class="card" style="margin:0 0 10px;padding:10px;border-color:#F59E0B">'
     + '<b>\u{1F510} ' + esc(t('خطوة كود التحقق')) + '</b>'
     + '<p class="hint" style="margin:4px 0 8px">' + esc(t('الحساب ده عليه تأكيد بخطوتين. اختار تستلم الكود فين، وبعدين اكتبه هنا. التطبيق بيحتفظ بالجلسة، فمش هيطلب الكود تاني غير لما المنصة تنهيها.')) + '</p>'
-    + (errL ? '<div class="hint" style="margin:0 0 8px;color:#EF4444">' + esc(errL) + '</div>' : '');
+    + (errL ? '<div class="hint" style="margin:0 0 8px;color:#EF4444">' + esc(errL) + '</div>' : '')
+    /* (V40.4) the owner: «لو مش قادر تعمل ده، طلّع لي رسالة: مش قادر — لازم تجيب التوكين» */
+    + (p.err && !/^(Invalid_OTP|otp_expired|validation_error)$/.test(p.err) ? '<div class="hint" style="margin:0 0 8px;color:#F59E0B">' + esc(t('مش قادر أكمّل الدخول بالكود من هنا — هات التوكين من موقع أفاقي برو وحطه في خانة «التوكين»')) + ' ' + btn('\u270E ' + t('حط التوكين'), 'btn-secondary btn-sm', ' data-integedit="afaqypro"') + '</div>' : '');
   if (!p.sent){
     h += M.length ? '<div class="actions">' + M.map(function(m){ return btn(esc(lbl(m)), 'btn-primary btn-sm', ' data-integotpsend="' + esc(m.type) + '"' + busy); }).join('') + '</div>'
       : '<div class="actions">' + btn('\u{1F4F1} ' + t('برسالة على الجوال'), 'btn-primary btn-sm', ' data-integotpsend="phone"' + busy) + btn('\u2709 ' + t('بالإيميل'), 'btn-secondary btn-sm', ' data-integotpsend="email"' + busy) + '</div>';
