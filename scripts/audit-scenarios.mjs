@@ -2261,6 +2261,27 @@ console.log('\n══ ٩٥ · التشغيل الدوري على السحابة 
   S.v = v0; S.at = at0;
 }
 
+/* ── ٩٦ · (V39.92) «اعرض كمستخدم»: دورُه واسمُه، ولا شيءَ يُحفَظ، والرجوعُ يعيد كلَّ شيء ── */
+console.log('\n══ ٩٦ · اعرض كمستخدم ══');
+{
+  const role0 = w.ROLE, name0 = w.STATE.meta.name, uid0 = w.STATE.meta.uid, mrole0 = w.STATE.meta.role, users0 = w.STATE.users;
+  w.ROLE = 'admin'; w.STATE.meta.role = 'admin'; w.STATE.meta.name = 'المدير'; w.STATE.meta.uid = 'ADMIN1';
+  w.STATE.users = Object.assign({}, users0 || {}, { T9:{ uid:'T9', name:'عمار التجربة', role:'tech' }, M9:{ uid:'M9', name:'موظف الوزارة', role:'ministry' } });
+  T(/data-vaopen="1"/.test(w.navHtml()) && /عمار التجربة/.test(w.viewAsSheet('')) && !/عمار التجربة/.test(w.viewAsSheet('خالد')), 'المديرُ يرى «اعرض كمستخدم»، والقائمةُ تُبحَث بالاسم');
+  const ok = w.viewAsStart('T9');
+  T(ok && w.ROLE === 'tech' && w.STATE.meta.name === 'عمار التجربة' && w.STATE.meta.uid === 'T9' && !!w.document.getElementById('vaBar') && !/data-vaopen/.test(w.navHtml()), 'يصير الدورُ والاسمُ والمعرّفُ للفني، ويظهر شريطُ العرض، وتختفي «اعرض كمستخدم»');
+  const before = JSON.stringify(w.STATE.recs['ZZ-VA'] || null);
+  w.CORE.set('recs', 'ZZ-VA', { id:'ZZ-VA', st:'تمت الزيارة' });
+  T(JSON.stringify(w.STATE.recs['ZZ-VA'] || null) === before && !(w.STATE.queue || []).some(q => q.id === 'ZZ-VA'), 'ولا شيءَ يُحفَظ: الكتابةُ المحليةُ والطابورُ يرفضانها');
+  let posted = 'no'; await w.fetch('https://example.invalid/x', { method:'POST' }).then(() => { posted = 'sent'; }, () => { posted = 'refused'; });
+  T(posted === 'refused', 'وأيُّ طلبٍ يكتب على الشبكة يُرفَض');
+  w.viewAsStop(true);
+  T(w.ROLE === 'admin' && w.STATE.meta.name === 'المدير' && w.STATE.meta.uid === 'ADMIN1' && !w.document.getElementById('vaBar') && !w.PV.VIEW_AS, 'والرجوعُ يعيد الدورَ والاسمَ والمعرّفَ ويُزيل الشريط');
+  w.ROLE = 'tech';
+  T(w.viewAsStart('M9') === false && w.ROLE === 'tech', 'وغيرُ المدير لا يستطيع');
+  w.ROLE = role0; w.STATE.meta.name = name0; w.STATE.meta.uid = uid0; w.STATE.meta.role = mrole0; w.STATE.users = users0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

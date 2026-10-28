@@ -595,6 +595,8 @@ document.addEventListener('keydown', function(e){
   var x0 = 0, y0 = 0, on = false;
   var sb = document.querySelector('.sidebar');
   if (!sb) return;
+  /* (V39.92) the view-as list filters as you type */
+  document.addEventListener('input', function(e){ if (e.target && e.target.id === 'vaQ'){ var L = document.getElementById('vaList'), tmp = document.createElement('div'); tmp.innerHTML = viewAsSheet(e.target.value); var nl = tmp.querySelector('#vaList'); if (L && nl) L.innerHTML = nl.innerHTML; } });
   /* (V39.83) a long press (or right-click) on a menu screen: pinned up → folded down → by use */
   var navLP = null;
   var navPinCycle = function(a){

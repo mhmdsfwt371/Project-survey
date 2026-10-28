@@ -32,6 +32,7 @@ var CORE = {
   get:  function(kind, id){ var b = STATE[kind]; return b ? b[id] : undefined; },
   all:  function(kind){ return STATE[kind]; },
   set:  function(kind, id, v){
+    if (typeof PV === 'object' && PV.VIEW_AS){ if (typeof toast === 'function') toast(t('وضعُ العرض — لا شيءَ يُحفَظ')); return v; }   /* (V39.92) view-as is read-only */
     if (!STATE[kind]) STATE[kind] = {};
     STATE[kind][id] = v; DB.memoReset();   /* (V31.6) */
     /* كلُّ كتابةٍ محليةٍ للمهامِّ تُبطِل فهرسَها — الفهرسُ سريعٌ لأنه مبنيٌّ
@@ -285,6 +286,7 @@ var CORE = {
   /* الرفع — يُحاوَل ويُترك الطابور إن فشل */
   _busy: false,
   flush: function(){
+    if (typeof PV === 'object' && PV.VIEW_AS) return Promise.resolve({ ok:[], failed:[], viewAs:true });   /* (V39.92) the queue waits while the admin views as someone */
     if (typeof pzInssRetry === 'function') pzInssRetry();   /* (V38.57) installs the old rule refused come back to the queue */
     if (!STATE.meta.online || !STATE.queue.length) return Promise.resolve(0);
     /* لا يُرفَع شيءٌ قبل أن يُعرَف العهدُ — وإلا عاد القديمُ إلى قاعدةٍ صُفِّرت */

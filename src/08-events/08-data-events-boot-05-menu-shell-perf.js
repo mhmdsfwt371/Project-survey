@@ -109,7 +109,8 @@ function navHtml(){
     + esc(t('ابحث في القائمة')) + '" '
     + 'style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14);'
     + 'color:var(--sidebar-ink);min-height:38px;font-size:13px" aria-label="'
-    + esc(t('ابحث في القائمة')) + '"></div>' + navLiveHint();   /* (V39.83) */
+    + esc(t('ابحث في القائمة')) + '"></div>' + navLiveHint()   /* (V39.83) */
+    + (!PV.VIEW_AS && typeof effRole === 'function' && effRole(ROLE) === 'admin' ? '<a href="#" class="sub" data-vaopen="1" style="opacity:.85">\u{1F441} ' + esc(t('اعرض كمستخدم')) + '</a>' : '');   /* (V39.92) */
   /* (V39.3) owner: «كل دور يشوف الشاشات اللي بيستخدمها فعلًا، والباقي تحت المزيد — ولا شاشة تتشال». Measured on production
      (five weeks of screen opens): eight screens took 80% of the opens and about ninety of 123 were never opened. Each group
      keeps its screens in navHtml.main (opened five times or more, plus help); the others move to one last group, «المزيد»,
