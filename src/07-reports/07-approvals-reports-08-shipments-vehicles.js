@@ -538,9 +538,9 @@ PAGE.fleet = { m:'الميدان', t:'السيارات',
                   ['نقصٌ عن الحاجة', N(need.gap), need.gap ? 'bad' : 'ok']])
 
       + (need.gap
-        ? alertBox('warn', 'الفرقُ الميدانيةُ ' + nm(need.crews) + ' وتحتاج ' + nm(need.want)
-            + ' سيارةً — المتاحُ ' + nm(need.have) + '، فالنقصُ ' + nm(need.gap)
-            + '. سجّل طلبَ شراءٍ أو استئجار.')
+        ? alertBox('warn', t('الفرق الميدانية') + ': ' + nm(need.crews) + ' · ' + t('السيارات المطلوبة') + ': ' + nm(need.want)
+            + ' · ' + t('المتاح') + ': ' + nm(need.have) + ' · ' + t('النقص') + ': ' + nm(need.gap)
+            + ' — ' + t('سجّل طلبَ شراءٍ أو استئجار.'))   /* (V39.98) one translatable piece per part — the joined sentence never matched a key */
         : '')
       + (exp.length
         ? alertBox('warn', nm(exp.length) + ' سيارةً رخصتُها أو تأمينُها ينتهي خلال شهر: '

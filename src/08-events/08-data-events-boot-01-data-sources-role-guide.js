@@ -138,7 +138,8 @@ var CAP_SAY = {
   exportAll:'يصدّر الكل', importAll:'يستورد', delete:'يحذف',
   users:'يدير الحسابات', phones:'يرى الهواتف', roles:'يدير الأدوار', fleet:'يدير الأسطول',
   perms:'يضبط صلاحيات القاعدة',
-  propose:'يقترح نقاطًا جديدة', provision:'يفعّل الحسابات الجديدة'   /* (V39.12) were shown as their keys */
+  propose:'يقترح نقاطًا جديدة', provision:'يفعّل الحسابات الجديدة',   /* (V39.12) were shown as their keys */
+  minapprove:'يعتمد للوزارة'   /* (V39.98) the last one still shown as its key */
 };
 
 /* ═══ دليلُ الدور — يُولَّد من صلاحياته لا يُكتَب بيد ═══

@@ -2,7 +2,7 @@
    FILE    : src/01-core/01-core-registry-01-boot-i18n.js
    DOMAIN  : Core — language, engine, sync, registry
    PURPOSE : Boot guard (crash-loop breaker), language engine (Arabic/English/Urdu), number and date formatting per language, barcode scan of serials, screen wake-lock during forms, and the shared dictionary tail.
-   DEFINES : bootStage, bootOk, i18nLoad, i18nThen, i18nFlush, i18nReady, noTashkeel, t, locOf, fmtDate, fmtTime, fmtDT, fmtDT2, nm … (+22 more)
+   DEFINES : i18nDomPass, bootStage, bootOk, i18nLoad, i18nThen, i18nFlush, i18nReady, noTashkeel, t, locOf, fmtDate, fmtTime, fmtDT, fmtDT2, nm … (+22 more)
    GLOBALS : BOOT_GUARD, I18N, D, I18N_FILE, LANG, TASHKEEL_RE, NM_CACHE, SCAN, WAKE, SUN_ON
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
@@ -81,7 +81,7 @@ function nskChunkReady(){
   /* (V38.51) the what's-new sheet waits for the release-notes log that ships in the chunk */
   try { if (typeof whatsNewMaybe === 'function' && whatsNewMaybe.pending){ whatsNewMaybe.pending = false; if (whatsNewMaybe() && typeof render === 'function') render(1); } } catch (e3){ LS_ERR = e3; }
 }
-var I18N_FILE = 'i18n/dict-e784ad4366.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-7c7c17b07c.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -121,6 +121,47 @@ function t(s){
   if (I18N_STATE !== 2) i18nLoad();   /* (V21.6) القاموسُ ملفٌّ مستقلٌّ يُطلَب أوّلَ حاجة — والعربيةُ تُعرَض حتى يصل */
   var d = D[LANG] || {};
   return (d[s] != null) ? d[s] : s;
+}
+
+/* (V39.98) the owner: «في حاجات لسه في الأردو بتبان عربي… وحاجات في الإنجليزي بتبان عربي». A text written into a page
+   without t() stayed Arabic in English and Urdu — a sweep of 4 roles × 3 languages × every page found 205 such texts in
+   English. After every render, outside Arabic, each text node, placeholder and tooltip that is exactly a dictionary key
+   (or «key — number», «key: number») is replaced by its translation. Names of points, people and companies are never
+   dictionary keys, so data is left as written. Typed fields are inputs, not text nodes, so nothing typed is touched. */
+function i18nDomPass(root){
+  if (LANG === 'ar' || typeof document !== 'object') return 0;
+  var d = D[LANG] || {}, n = 0, seen = 0;
+  if (!Object.keys(d).length) return 0;
+  root = root || document.body; if (!root) return 0;
+  var tr = function(s){
+    var k = String(s).trim(); if (!k || k.length > 400 || !/[\u0600-\u06FF]/.test(k)) return null;
+    if (d[k] != null) return s.replace(k, d[k]);
+    var m = /^(.+?)(\s*[\u2014:]\s*)([\d\u0660-\u0669\u06F0-\u06F9,\u066C.\/\u066A%\s]+)$/.exec(k);
+    if (m && d[m[1]] != null) return s.replace(k, d[m[1]] + m[2] + m[3]);
+    return null;
+  };
+  try {
+    var tw = document.createTreeWalker(root, 4), nd;
+    while ((nd = tw.nextNode()) && seen < 40000){
+      seen++;
+      var p = nd.parentNode; if (p && /^(SCRIPT|STYLE|TEXTAREA)$/.test(p.nodeName)) continue;
+      var r = tr(nd.nodeValue); if (r != null && r !== nd.nodeValue){ nd.nodeValue = r; n++; }
+      /* English text built in code with an Arabic comma, Arabic digits or a “…» quote pair: no Arabic letters left, so it is
+         English — its punctuation and digits become English too */
+      if (LANG === 'en'){ var v2 = nd.nodeValue;
+        if (/[\u060C\u061B\u061F\u0660-\u0669]|\u201C\s*[^\u201D\u00BB]{1,60}\u00BB/.test(v2) && !/[\u0621-\u064A\u0671-\u06D3]/.test(v2)){
+          var v3 = v2.replace(/\u060C/g, ',').replace(/\u061B/g, ';').replace(/\u061F/g, '?').replace(/[\u0660-\u0669]/g, function(c){ return String(c.charCodeAt(0) - 0x0660); })
+                     .replace(/\u201C\s*([^\u201D\u00BB]{1,60}?)\u00BB/g, '\u00AB$1\u00BB');
+          if (v3 !== v2){ nd.nodeValue = v3; n++; } } }
+    }
+    var els = root.querySelectorAll('[placeholder],[title],[aria-label]');
+    for (var i = 0; i < els.length && i < 4000; i++){
+      for (var j = 0; j < 3; j++){ var at = ['placeholder', 'title', 'aria-label'][j], v = els[i].getAttribute(at);
+        if (v){ var r2 = tr(v); if (r2 != null && r2 !== v){ els[i].setAttribute(at, r2); n++; }
+          else if (LANG === 'en' && /[\u060C\u0660-\u0669]/.test(v) && !/[\u0621-\u064A\u0671-\u06D3]/.test(v)){ els[i].setAttribute(at, v.replace(/\u060C/g, ',').replace(/[\u0660-\u0669]/g, function(c){ return String(c.charCodeAt(0) - 0x0660); })); n++; } } }
+    }
+  } catch (e){ LS_ERR = e; }
+  return n;
 }
 
 /* ═══ الأرقامُ والتواريخُ تتبع اللغة (V16.99) ═══

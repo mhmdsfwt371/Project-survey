@@ -224,7 +224,7 @@ function fieldList(){
                   + nm(L.length - view.length) + ' ' + t('متبقية'),'btn-secondary btn-sm',' data-more="1"')
             + '</div>'
           : '')
-      : '<p class="hint" style="padding:18px;text-align:center;margin:0">لا نتائج لـ«' + esc(SITE_Q) + '»'
+      : '<p class="hint" style="padding:18px;text-align:center;margin:0">' + esc(t('لا نتائج لـ')) + ' «' + esc(SITE_Q) + '»'
         /* (V22.1) «بحثتُ عن 0016 فلم يظهر»: التصفيةُ الباقيةُ من قبل (نوعٌ أو مشعرٌ أو حالة) كانت تُخفي
            النتيجةَ والرسالةُ لا تقول — فيُظَنّ أن النقطةَ غيرُ موجودة */
         + (outside ? ' ' + esc(t('ضمن التصفية الحالية')) + ' — ' + esc(t('وخارجها')) + ' <b class="num">' + nm(outside) + '</b>.</p>'

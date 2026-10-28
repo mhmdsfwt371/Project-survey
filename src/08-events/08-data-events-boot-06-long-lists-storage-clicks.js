@@ -30,7 +30,7 @@ function render(force){   /* (V31.8) ذاكرةُ الرسمة: تُفتَح ه�
      sync badge) rebuilt the field from the page's state and erased what was being typed and closed the keyboard. The field
      being typed in survives every redraw: same value, focus and caret. */
   var keep = renderKeepGrab();
-  try { return render0(force); } finally { DB.memoReset(); renderKeepPut(keep); a11yFieldNames(); }
+  try { return render0(force); } finally { DB.memoReset(); renderKeepPut(keep); if (typeof i18nDomPass === 'function') i18nDomPass(); a11yFieldNames(); }   /* (V39.98) */
 }
 /* (V39.37) the review sweep (13 roles × every page): 119 fields on the engineer's pages, 149 on the buyer's and 127 on the
    accountant's had no name a screen reader could say — selects and inputs placed beside a text, not inside a <label>. After

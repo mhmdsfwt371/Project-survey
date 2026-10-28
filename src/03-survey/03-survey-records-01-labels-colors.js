@@ -157,11 +157,12 @@ function translitWord(w){
    عربيةً، وإلا لم تُطابَق نقطةٌ بشركتها. */
 function coName(c){
   if (!c || typeof c !== 'string') return c;
-  if (LANG === 'ar') return c;
+  if (LANG === 'ar' || LANG === 'ur') return c;   /* (V39.98) Urdu is written in the Arabic script — as dispName (V39.5); Latin letters in the Urdu screens were the complaint */
   if (!/[؀-ۿ]/.test(c)) return c;
   var fix = (CFG.nameEn || {})[c];
   if (fix) return fix;
-  return c.split(/\s+/).map(translitWord).join(' ');
+  /* (V39.98) direction marks (\u202B «‫shrka») and the Arabic comma came through into the English name */
+  return c.replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, '').replace(/\u060C/g, ',').split(/\s+/).filter(Boolean).map(translitWord).join(' ');
 }
 /* (V39.5) Urdu is written in the Arabic script: a name stays as written («Hussein» was shown for حسين). In English a
    generic word inside an account name is a word, not a name: «فني ٣» is «Technician 3», not «Fny 3». */

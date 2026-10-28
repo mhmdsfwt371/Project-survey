@@ -284,7 +284,7 @@ function pmCard(){
     + cardFlush(t('صلاحيات') + ' — ' + esc(t(ROLES[PV.PM_ROLE].n)),
         table(['المجموعة'].concat(PV.PM_OPS.map(function(o){ return o[1]; })),
           PM_COLS.map(function(c){
-            return ['<strong>' + esc(t(c[1])) + '</strong> <span class="hint" style="margin:0" dir="ltr">' + esc(c[0]) + '</span>'].concat(
+            return ['<strong title="' + esc(c[0]) + '">' + esc(t(c[1])) + '</strong>'].concat(   /* (V39.98) the technical key moved to the tooltip — Latin words in the Arabic screen were the complaint */
               PV.PM_OPS.map(function(o){
                 if (!c[2][o[0]]) return '<span class="hint" style="margin:0">—</span>';
                 var lock = pmLocked(c[0], o[0], PV.PM_ROLE), on = pmGet(c[0], o[0], PV.PM_ROLE), ov = pmOverride(c[0], o[0], PV.PM_ROLE);

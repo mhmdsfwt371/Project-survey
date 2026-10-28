@@ -2314,6 +2314,26 @@ console.log('\n══ ٩٨ · تنظيفُ أثر العرض ══');
   w.STATE.queue = q0; w.STATE.att = att0; w.STATE.meta.name = name0; w.STATE.meta.uid = uid0;
 }
 
+/* ── ٩٩ · (V39.98) الترجمةُ الاحتياطيةُ بعد الرسم: ما كُتب بلا t() يُترجَم إن كان مفتاحًا، والبياناتُ تبقى ── */
+console.log('\n══ ٩٩ · الترجمة الاحتياطية ══');
+{
+  const L0 = w.LANG, D0 = w.D.en;
+  w.D.en = Object.assign({}, D0, { 'امسح السجل':'Clear the log', 'الأسماء':'Names' });
+  w.LANG = 'en';
+  const box = w.document.createElement('div');
+  box.innerHTML = '<p>امسح السجل</p><p>الأسماء — 166</p><p>reached 0، unreachable ١</p><p>شركة إيثار المحدودة</p><input placeholder="امسح السجل"><textarea>امسح السجل</textarea>';
+  w.document.body.appendChild(box);
+  w.i18nDomPass(box);
+  const ps = [...box.querySelectorAll('p')].map(p => p.textContent);
+  T(ps[0] === 'Clear the log' && ps[1] === 'Names — 166', 'نصٌّ هو مفتاحٌ بعينه، أو «مفتاح — رقم»، يُترجَم بعد الرسم');
+  T(ps[2] === 'reached 0, unreachable 1', 'والنصُّ الإنجليزيُّ المبنيُّ بفاصلةٍ وأرقامٍ عربية يصير إنجليزيَّ الترقيم والأرقام');
+  T(ps[3] === 'شركة إيثار المحدودة', 'واسمُ الشركة ليس مفتاحًا فيبقى كما هو — البياناتُ لا تُترجَم');
+  T(box.querySelector('input').getAttribute('placeholder') === 'Clear the log' && box.querySelector('textarea').value === 'امسح السجل', 'والنصُّ الدليليُّ يُترجَم، وما في حقلٍ للكتابة لا يُمَسّ');
+  w.LANG = 'ar'; box.innerHTML = '<p>امسح السجل</p>'; w.i18nDomPass(box);
+  T(box.querySelector('p').textContent === 'امسح السجل', 'وفي العربية لا يعمل شيئًا');
+  box.remove(); w.LANG = L0; w.D.en = D0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

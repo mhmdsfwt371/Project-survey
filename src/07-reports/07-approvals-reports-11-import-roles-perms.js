@@ -159,7 +159,7 @@ function repcenterBody(){ return (function(){
           + esc(t('كلُّ تقارير هذه الجهة في ملفٍّ واحدٍ بأوراقه — للأرشيف أو للمراجعة.'))
           + '</p>',
           may('exportAll')
-            ? btn('📦 حزمة ' + (EXP.repSide==='co' ? t('الشركة') : t('الوزارة')),
+            ? btn('📦 ' + (EXP.repSide==='co' ? t('حزمة الشركة') : t('حزمة الوزارة')),   /* (V39.98) one key per label — «حزمة» was left Arabic */
                   'btn-primary',' data-reppack="' + EXP.repSide + '"')
             : '');
   })(); }
