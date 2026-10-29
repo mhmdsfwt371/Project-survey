@@ -149,6 +149,10 @@ function errCapture(msg, src, line){
        اتصالاتِ الموقع ومنها اتصالُنا. */
     var plat = /Indexed Database server|IndexedDB|IDBDatabase|IDBTransaction|in-progress transaction|Failed to update a ServiceWorker|sw\.js load failed/i.test(String(msg || ''));
     if (plat && /Indexed Database|IDB|transaction/i.test(String(msg || '')) && typeof idbRetryNow === 'function' && typeof indexedDB !== 'undefined'){ try { idbRetryNow(); } catch (e1){ PV.IDB_LOG_ERR = e1; } }
+    /* (V43.3) the review of the week's events: 18 of the shared log's entries were one device's «Failed to update a
+       ServiceWorker» — the app checking for a new version while the network was away. Nothing to act on, so it stays on the
+       device's own diagnostics (SOFT_ERRS) and no longer fills the shared event log. */
+    if (plat && /Failed to update a ServiceWorker|sw\.js load failed/i.test(String(msg || '')) && typeof logEventQuiet === 'function'){ logEventQuiet('تحديثُ عامل الخدمة تعذّر — الشبكة غائبة لحظةَ الفحص'); return; }
     logEvent((plat ? 'عطلٌ في متصفّح الجهاز — ' : 'خطأ برمجي — ') + String(msg || '').slice(0, 140)
              + ' \u00b7 ' + String(src || '').split('/').pop().slice(0, 40) + ':' + (line || 0)
              + (ver ? ' \u00b7 ' + String(ver).replace(/\s+/g, ' ').trim().slice(0, 20) : ''));

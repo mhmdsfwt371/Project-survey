@@ -35,7 +35,7 @@ function xlsPage(){
       if (rows.length < 2) return;
       var card = tb.closest('.card'); var h = card ? card.querySelector('h2,h3,h4,.card-title') : null;
       var name = ((h && h.textContent) || (t(p.t) + ' ' + (i + 1))).replace(/[\\\/\?\*\[\]:]/g, ' ').trim().slice(0, 28) || ('جدول ' + (i + 1));
-      if (used[name]) name = (name + ' ' + (++used[name])).slice(0, 31); else used[name] = 1;
+      { var base0 = name, kk = 1; while (used[name.toLowerCase()]) name = (base0.slice(0, 28) + ' ' + (++kk)).slice(0, 31); used[name.toLowerCase()] = 1; }   /* (V43.3) Excel sheet names are case-insensitive: «daily»/«Daily» clashed and the export died */
       var ws = XLSX.utils.aoa_to_sheet(rows);
       ws['!cols'] = rows[0].map(function(_, ci){ var w = 8; rows.forEach(function(r){ w = Math.max(w, Math.min(46, String(r[ci] == null ? '' : r[ci]).length + 2)); }); return { wch:w }; });
       XLSX.utils.book_append_sheet(wb, ws, name); n++;
@@ -52,7 +52,7 @@ function xlsPage(){
       if (rows.length < 2) return;
       var card = ls.closest('.card'); var h = card ? card.querySelector('h2,h3,h4,.card-title') : null;
       var name = ((h && h.textContent) || (t(p.t) + ' ' + (n + i + 1))).replace(/[\\\/\?\*\[\]:]/g, ' ').trim().slice(0, 28) || ('قائمة ' + (i + 1));
-      if (used[name]) name = (name + ' ' + (++used[name])).slice(0, 31); else used[name] = 1;
+      { var base0 = name, kk = 1; while (used[name.toLowerCase()]) name = (base0.slice(0, 28) + ' ' + (++kk)).slice(0, 31); used[name.toLowerCase()] = 1; }   /* (V43.3) Excel sheet names are case-insensitive: «daily»/«Daily» clashed and the export died */
       var ws = XLSX.utils.aoa_to_sheet(rows); ws['!cols'] = [{ wch:34 }, { wch:46 }, { wch:16 }];
       XLSX.utils.book_append_sheet(wb, ws, name); n++;
     });

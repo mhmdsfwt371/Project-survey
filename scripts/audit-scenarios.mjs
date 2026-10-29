@@ -2551,6 +2551,15 @@ console.log('\n══ ١١٢ · لوحةُ الحساسات: مربعاتٌ تف
   w.iotDashHtml.F = null;
 }
 
+/* ── ١١٣ · (V43.3) مراجعةُ الأحداث: تصديرٌ بأسماء أوراقٍ مكرَّرة، وضجيجُ عامل الخدمة ── */
+console.log('\n══ ١١٣ · تصديرُ الصفحة لا يسقط على ورقتين بالاسم نفسِه ══');
+{
+  const src = readFileSync(new URL('../src/03zz-late/05-map--05-lifecycle-map-04-excel-templates-kmz.js', import.meta.url), 'utf8');
+  T(!/if \(used\[name\]\) name = \(name \+ ' ' \+ \(\+\+used\[name\]\)\)/.test(src) && (src.match(/while \(used\[name\.toLowerCase\(\)\]\)/g) || []).length === 2, 'أسماءُ الأوراق تُفرَّد بحلقةٍ وبلا حساسيةٍ لحالة الحرف — «daily» و«Daily» لا يتصادمان');
+  const err = readFileSync(new URL('../src/03-survey/03-survey-records-07-demo-single-errors.js', import.meta.url), 'utf8');
+  T(/Failed to update a ServiceWorker\|sw\\\.js load failed\/i\.test\(String\(msg \|\| ''\)\) && typeof logEventQuiet === 'function'/.test(err), 'وفشلُ تحديث عامل الخدمة لغياب الشبكة يبقى على الجهاز ولا يملأ سجلَّ الأحداث المشترك');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);
