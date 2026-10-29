@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V42.8",
+  "app_version": "V42.9",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2390,7 +2390,8 @@
   "V42.5": "integSessionHtml: state 'off' ← سطرٌ رماديٌّ بلا شريط · سيناريو ١٠٧",
   "V42.6": "sync: coreqs تُقرأ لكل الأدوار ثم coFill() وإعادةُ رسم نموذج المخيم/الشركات · سيناريو ١٠٨",
   "V42.7": "mayBoundsEdit/mayPhotoEdit (مشرف فما فوق) · bedStart/bedSave/bedReset · svqCanDel/insqCanDel · زرُّ حذف الصورة · photoDelete بلا درايف لغير المهندس · قسّم المخيم يبقى maySiteEdit · سيناريو ١٠٩",
-  "V42.8": "over: tgates (tgatesRows/tgatesBody/tgatesXlsx) · added (addedRows/addedBody/addedXlsx · addedSrc) · data-tgf/data-adf/data-tgx/data-adx · tgQ/adQ · سيناريو ١١٠"
+  "V42.8": "over: tgates (tgatesRows/tgatesBody/tgatesXlsx) · added (addedRows/addedBody/addedXlsx · addedSrc) · data-tgf/data-adf/data-tgx/data-adx · tgQ/adQ · سيناريو ١١٠",
+  "V42.9": "reg: arfTypeRows/arfTypeHtml/arfTypeXlsx · data-arft/data-arfx · SVD_CARDS: tard/tbar/tbar0/tnorm (sumf) · سيناريو ١١١"
   },
   "map_and_geolocation": {
     "tile_layers": {

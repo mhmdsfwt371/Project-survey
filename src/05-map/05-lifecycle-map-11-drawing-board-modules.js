@@ -335,7 +335,16 @@ var SVD_CARDS = [
   { k:'metal',   t:'تحتاج هيكلًا أو عارضة',     w:'حديدٌ يُشترى ويُجهَّز — يُخطَّط له مبكّرًا',          f:function(o){ return o.metal; } },
   { k:'other',   t:'ممراتٌ ونقاطٌ أخرى',        w:'ما ليس مخيمًا مما مُسح',                             f:function(o){ return !o.camp; } },
   /* التقديرُ للموسم لا ما حُصر: منى كلُّها، المعدودُ بعدِّه وما لم يُعَدَّ بالمتوسط */
-  { k:'sensors', t:'حساساتٌ مطلوبةٌ لمنى — تقدير', w:'كلُّ مخيمات منى: المعدودُ بعدِّه، وغيرُه بالمتوسط', f:function(o){ return true; }, sum:true, pool:'mina' }
+  { k:'sensors', t:'حساساتٌ مطلوبةٌ لمنى — تقدير', w:'كلُّ مخيمات منى: المعدودُ بعدِّه، وغيرُه بالمتوسط', f:function(o){ return true; }, sum:true, pool:'mina' },
+  /* (V42.9) the owner, on an Arafat camp's survey («نوع المخيم: ترددي · الحاجز التنظيمي للتفويج — العدد: ٤»): «عاوز داش بورد فى
+     عرفات فى المسح يبين الأرقام دى بالتوتال». The same field-chosen values the rest of the app counts (siteTard / siteTbar — only
+     what a technician or supervisor picked), in Arafat: camps set ترددي, the barriers they hold in total, those still without a
+     count, and those set عادي — each a card that opens its list, exports, and flies to the camp. */
+  { k:'tard',  t:'عرفات: مخيمات ترددي', w:'«نوع المخيم: ترددي» — اختارها الفني أو المشرف في المسح', f:function(o){ return o.camp && o.x.zone === 'عرفات' && siteTard(o.x); },
+    of:function(){ return (STATE.sites || []).filter(function(x){ return x.type === 'مخيم' && x.zone === 'عرفات' && !x.hidden && !x.deleted; }).length; } },
+  { k:'tbar',  t:'عرفات: الحاجز التنظيمي للتفويج — مجموع العدد', w:'مجموعُ «الحاجز التنظيمي للتفويج — العدد» في المخيمات الترددي', f:function(o){ return o.camp && o.x.zone === 'عرفات' && siteTbar(o.x) > 0; }, sumf:function(o){ return siteTbar(o.x); } },
+  { k:'tbar0', t:'عرفات: ترددي بلا عدد بعد', w:'اختيرت ترددي ولم يُكتب عددُ الحاجز — تُكمَّل من «تعديل المسح»', f:function(o){ return o.camp && o.x.zone === 'عرفات' && siteTard(o.x) && !siteTbar(o.x); } },
+  { k:'tnorm', t:'عرفات: مخيمات عادي', w:'«نوع المخيم: عادي» — اختارها الميدان', f:function(o){ var cs = o.camp && o.x.zone === 'عرفات' ? ctypeSrc(o.x) : null; return !!(cs && cs.field && cs.v === 'عادي'); } }
 ];
 /* الصفوفُ تُحسَب مرةً لكلِّ رسمة (V17.70) — كانت تُعاد لكلِّ بطاقةٍ على حدة */
 var SVD_MEMO = null;

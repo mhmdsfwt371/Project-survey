@@ -2523,6 +2523,26 @@ console.log('\n══ ١١٠ · بوابات التفويج والمضاف يد�
   w.STATE.sites.length = 0; S0.forEach(x => w.STATE.sites.push(x)); w.STATE.recs = R0; w.STATE.users = U0;
 }
 
+/* ── ١١١ · (V42.9) لوحةُ عرفات في تفاصيل المسح ── */
+console.log('\n══ ١١١ · عرفات: الترددي والحاجز التنظيمي بالمجموع ══');
+{
+  const S0 = w.STATE.sites.slice(), R0 = Object.assign({}, w.STATE.recs || {}), U0 = w.STATE.users;
+  w.STATE.users = Object.assign({}, U0 || {}, { 'u-g':{ name:'مشرف عرفات', role:'supervisor' } });
+  const mk = (id, ct, tb) => { w.STATE.sites.push({ id, name:id, type:'مخيم', zone:'عرفات', lat:21.35, lng:39.98 });
+    w.STATE.recs[id] = Object.assign({ id, access:'تم الوصول', at:Date.now(), by:'مشرف عرفات' }, ct ? { ctype:ct, ctypeBy:'مشرف عرفات', ctypeAt:Date.now() } : {}, tb ? { tbar:tb, tbarBy:'مشرف عرفات', tbarAt:Date.now() } : {}); };
+  mk('ARF-T1', 'ترددي', 4); mk('ARF-T2', 'ترددي', 3); mk('ARF-T3', 'ترددي', 0); mk('ARF-N1', 'عادي', 0);
+  w.SVD_MEMO = null;
+  const val = k => { const c = w.SVD_CARDS.find(x => x.k === k); const R = w.svdPool(c).filter(c.f); return c.sumf ? R.reduce((a, o) => a + c.sumf(o), 0) : R.length; };
+  const tard = val('tard'), tbar = val('tbar'), tbar0 = val('tbar0'), tnorm = val('tnorm');
+  T(tard >= 3 && tbar >= 7 && tbar0 >= 1 && tnorm >= 1, 'عرفات: ترددي ' + tard + ' · مجموع الحاجز ' + tbar + ' · بلا عدد ' + tbar0 + ' · عادي ' + tnorm);
+  { const G = w.arfTypeRows(); w.PV.ARFT = 'tard'; const hh = String(w.arfTypeHtml()); w.PV.ARFT = '';
+    T(G.tard.length >= 3 && G.norm.length >= 1 && /data-arft="tard"/.test(hh) && /data-arft="norm"/.test(hh) && /data-fly="ARF-T1"/.test(hh) && /data-arfx="tard"/.test(hh) && hh.indexOf(w.nm(7)) > -1,
+      'المتابعة ← حسب المشعر: عرفات ترددي/عادي/لم يُحدَّد، والترددي يفتح كلَّ مخيمٍ بعدد بواباته ومجموعها'); }
+  const h = String(w.svdashBody());
+  T(/data-svd="tbar"/.test(h) && /data-svd="tard"/.test(h) && /data-svd="tbar0"/.test(h), 'وبطاقاتُها في «تفاصيل المسح» تفتح قوائمَها');
+  w.STATE.sites.length = 0; S0.forEach(x => w.STATE.sites.push(x)); w.STATE.recs = R0; w.STATE.users = U0; w.SVD_MEMO = null;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

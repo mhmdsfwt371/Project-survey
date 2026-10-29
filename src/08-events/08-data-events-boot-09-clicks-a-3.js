@@ -158,6 +158,8 @@ function clickAPart7(e){
   var sqj = e.target.closest('[data-svqjump]'); if (sqj){ var sqe = document.getElementById('svqSec' + sqj.getAttribute('data-svqjump')); if (sqe) sqe.scrollIntoView({ behavior:'smooth', block:'start' }); return true; }   /* (V39.86) */
   var mtp = e.target.closest('[data-mtop]'); if (mtp){ PV.MTOP = mtp.getAttribute('data-mtop') || ''; render(1); return; }   /* (V41.1) the top groups of the map fold */
   /* (V42.8) the two new overview tabs: filters, Excel */
+  var arft = e.target.closest('[data-arft]'); if (arft){ var ak = arft.getAttribute('data-arft'); PV.ARFT = PV.ARFT === ak ? '' : ak; render(1); return; }   /* (V42.9) Arafat camp types */
+  var arfx = e.target.closest('[data-arfx]'); if (arfx){ if (typeof arfTypeXlsx === 'function') arfTypeXlsx(arfx.getAttribute('data-arfx')); return; }
   var tgf = e.target.closest('[data-tgf]'); if (tgf){ PV.TGF = tgf.getAttribute('data-tgf'); render(1); return; }
   var adf = e.target.closest('[data-adf]'); if (adf){ PV.ADF = adf.getAttribute('data-adf'); render(1); return; }
   if (e.target.closest('[data-tgx]')){ if (typeof tgatesXlsx === 'function') tgatesXlsx(); return; }

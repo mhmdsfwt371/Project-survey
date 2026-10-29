@@ -95,7 +95,7 @@ function svdPool(c){
 
 function svdCard(c){
   var R = svdPool(c).filter(c.f);
-  var v = c.sum ? R.reduce(function(a, o){ return a + o.rooms; }, 0) : R.length;
+  var v = c.sumf ? R.reduce(function(a, o){ return a + (+c.sumf(o) || 0); }, 0) : c.sum ? R.reduce(function(a, o){ return a + o.rooms; }, 0) : R.length;   /* (V42.9) a card may sum its own value */
   var on = SVD_PICK === c.k;
   return '<button class="btn ' + (on ? 'btn-primary' : 'btn-quiet') + '" data-svd="' + esc(c.k) + '"'
     + ' style="flex:1 1 160px;min-width:160px;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;text-align:start">'
