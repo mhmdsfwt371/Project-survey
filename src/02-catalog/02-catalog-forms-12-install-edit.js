@@ -25,7 +25,7 @@ function insqPhotos(rec){
     var act = insqCanDel(ph, rec)
       ? (ask ? btn(t('تأكيد الحذف'), 'btn-sm', ' data-insqdel="' + esc(p[0]) + '" style="background:#C0392B;color:#fff"') + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-insqdelx="1"')
              : btn('\u{1F5D1} ' + t('احذف'), 'btn-quiet btn-sm', ' data-insqdelask="' + esc(p[0]) + '"'))
-      : '<span class="hint" style="margin:0;font-size:11px">' + esc(t('حذفُها للمهندس')) + '</span>';
+      : '<span class="hint" style="margin:0;font-size:11px">' + esc(t('حذفُها للمشرف فما فوق')) + '</span>';
     return row(img(ph, p[0]), insqKindLabel(ph.kind), esc(fmtDT(ph.at)) + (ph.by ? ' \u00b7 ' + esc(dispName(ph.by)) : '') + (ph.link || ph.driveId ? ' \u00b7 ' + esc(t('على الدرايف')) : (ph.status === 'pending' ? ' \u00b7 \u23F3 ' + esc(t('تُنقَل إلى الدرايف')) : '')), act);
   }).join('');
   h += q.map(function(e){ return row(img(e[1]), insqKindLabel(e[1].kind), esc(t('في طابور جهازك — تُرفَع مع المزامنة')), btn('\u2715 ' + t('ألغِها'), 'btn-quiet btn-sm', ' data-insqqx="' + e[0] + '"')); }).join('');

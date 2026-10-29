@@ -212,7 +212,7 @@ function svqPhotos(rec){
     var act = svqCanDel(ph, rec)
       ? (ask ? btn(t('تأكيد الحذف'), 'btn-sm', ' data-svqdel="' + esc(p[0]) + '" style="background:#C0392B;color:#fff"') + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-svqdelx="1"')
              : btn('\u{1F5D1} ' + t('احذف'), 'btn-quiet btn-sm', ' data-svqdelask="' + esc(p[0]) + '"'))
-      : '<span class="hint" style="margin:0;font-size:11px">' + esc(t('حذفُها للمهندس')) + '</span>';
+      : '<span class="hint" style="margin:0;font-size:11px">' + esc(t('حذفُها للمشرف فما فوق')) + '</span>';
     return row(img((typeof phSrc === 'function' ? phSrc(p[0], ph, 200) : '') || ph.data || ph.thumb || '', p[0]), svqKindLabel(ph.kind), esc(fmtDT(ph.at)) + (ph.by ? ' \u00b7 ' + esc(dispName(ph.by)) : '') + (ph.link || ph.driveId ? ' \u00b7 ' + esc(t('على الدرايف')) : ''), act);
   }).join('');
   h += q.map(function(e){

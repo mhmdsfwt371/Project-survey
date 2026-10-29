@@ -115,7 +115,7 @@ console.log('\n══ ٤ · لا حبسَ في اللوح، والصورُ تُ�
   T(!!d.querySelector('#svqSheet [data-svqdel="' + x.id + '-1"]') && !w.STATE.photos[x.id + '-1'].del, 'الحذفُ يطلب تأكيدًا ثانيًا قبل أن يقع');
   d.querySelector('#svqSheet [data-svqdel="' + x.id + '-1"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(40);
   T(!!w.STATE.photos[x.id + '-1'].del && w.STATE.recs[x.id].edits.slice(-1)[0].v === 'حُذفت', 'وبعد التأكيد تُعلَّم محذوفةً وتُسجَّل تعديلًا');
-  T(!d.querySelector('#svqSheet [data-svqdelask="' + x.id + '-2"]') && /حذفُها للمهندس/.test(d.getElementById('svqSheet').textContent), 'وصورةُ غيرِه لا تُحذَف إلا من المهندس');
+  T(!!d.querySelector('#svqSheet [data-svqdelask="' + x.id + '-2"]'), 'وصورةُ غيرِه يحذفها المشرفُ أيضًا — قرارُ المالك (V42.7)');
   const qn = w.PHOTO_Q.length; w.PHOTO_Q.push({ site:x.id, kind:'extra', data:'data:image/jpeg;base64,AA', at:Date.now() }); w.render(1); await wait(30);
   d.querySelector('#svqSheet [data-svqqx="' + qn + '"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(30);
   T(w.PHOTO_Q.length === qn, 'وما في طابور الجهاز يُلغى قبل أن يُرفَع');
