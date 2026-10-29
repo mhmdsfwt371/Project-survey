@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V43.1",
+  "app_version": "V43.2",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2393,7 +2393,8 @@
   "V42.8": "over: tgates (tgatesRows/tgatesBody/tgatesXlsx) · added (addedRows/addedBody/addedXlsx · addedSrc) · data-tgf/data-adf/data-tgx/data-adx · tgQ/adQ · سيناريو ١١٠",
   "V42.9": "reg: arfTypeRows/arfTypeHtml/arfTypeXlsx · data-arft/data-arfx · SVD_CARDS: tard/tbar/tbar0/tnorm (sumf) · سيناريو ١١١",
   "V43.0": "svDashHtml0: ctSec (عرفات، في الآخر) · SV_SUB 'ct:tard|norm|none' (svCtOf/svCtSec/svCtGates/svSubPass/svSubLabel) · svListXlsx: نوع المخيم + عدد البوابات · أُزيلت من «نظرة عامة»: arfType وبطاقاتُ SVD الأربع وتبويبُ tgates · سيناريو ١١١",
-  "V43.1": "ur: ملاحظات «ما الجديد» — كنسُ الأنماط الـ١٧ — تصحيحان"
+  "V43.1": "ur: ملاحظات «ما الجديد» — كنسُ الأنماط الـ١٧ — تصحيحان",
+  "V43.2": "iotDashHtml.board (F.view dash|list) · act: view/sig/bat/g · devHtml: sig:g|y|r · bat:hi|mid|low · lowext · offlate · سيناريو ١١٢"
   },
   "map_and_geolocation": {
     "tile_layers": {

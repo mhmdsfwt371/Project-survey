@@ -322,6 +322,10 @@ function iotDashHtml(){
     + '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 8px">' + zb('all', 'كل المناطق') + Object.keys(zones).sort().map(function(z){ return zb(z, z || 'بلا منطقة'); }).join('')
     + '<input class="in" id="iotdQ" style="max-width:280px" placeholder="' + esc(t(F.tab === 'camps' ? 'رقم المخيم أو اسمه (مثلًا 2/212)' : 'دوّر باسم النقطة أو رقم الجهاز أو السيريال')) + '" value="' + esc(F.q || '') + '">'
     + (F.q ? btn('\u2715 ' + t('امسح البحث'), 'btn-quiet btn-sm', ' data-iotd="q:"') : '') + btn('\u2B07 ' + t('إكسل'), 'btn-quiet btn-sm', ' data-iotd="xlsx"') + btn('\u21BB ' + t('حدّث الآن'), 'btn-quiet btn-sm', ' data-iotd="refresh"') + '</div>';
+  /* (V43.2) the owner: «في الموديول بتاع الجيت واي والحساسات خلّي فيه داش بورد view مش مجرد list» — a board beside the list */
+  var vb = '<div style="display:flex;gap:6px;margin:0 0 10px">' + btn('\u{1F4CA} ' + t('اللوحة'), (F.view === 'dash' ? 'btn-primary' : 'btn-secondary') + ' btn-sm', ' data-iotd="view:dash"') + btn('\u2630 ' + t('القائمة'), (F.view !== 'dash' ? 'btn-primary' : 'btn-secondary') + ' btn-sm', ' data-iotd="view:list"') + '</div>';
+  if (F.view === 'dash') return card('\u{1F4E1} ' + t('تحديث الأجهزة والحساسات') + ' \u00b7 ' + nm(all.length) + ' ' + t('جهاز'), iotDashHtml.alertsHtml(all) + vb + head.replace(/<div style="display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px">[\s\S]*?<\/div>/, '') + iotDashHtml.board(all.filter(inZone), camps.filter(function(c){ return F.zone === 'all' || c.zone === F.zone; }), F)) + iotDashHtml.popHtml(F, all);
+  head = vb + head;
   var body = F.tab === 'camps' ? iotDashHtml.campsHtml(camps.filter(function(c){ return (F.zone === 'all' || c.zone === F.zone) && (!q || c.key.indexOf(q) > -1); }), F)
     : iotDashHtml.devHtml(all.filter(function(r){ return r.kind === F.tab && inZone(r) && (!q || (r.pn + ' ' + r.camp + ' ' + r.did + ' ' + r.ser + ' ' + r.pnm + ' ' + r.room).toLowerCase().indexOf(q) > -1); }), F);
   return card('\u{1F4E1} ' + t('تحديث الأجهزة والحساسات') + ' \u00b7 ' + nm(all.length) + ' ' + t('جهاز'), iotDashHtml.alertsHtml(all) + head + body) + iotDashHtml.popHtml(F, all);   /* (V41.5) alerts first */
@@ -363,7 +367,7 @@ iotDashHtml.campsHtml = function(list, F){
   var sl = { bad:'\u26A0\uFE0F ' + t('محتاج تدخّل'), part:'\u{1F7E1} ' + t('جزء محدّث'), ok:'\u{1F7E2} ' + t('كله محدّث'), nos:'\u25FB ' + t('لسه بلا سيريالات') };
   var tr = rows.slice(0, F.n).map(function(c){
     return '<tr data-iotd="pop:camp:' + esc(c.id) + '" style="cursor:pointer"><td>' + esc(c.pn) + '</td><td>' + esc(c.zone || '\u2014') + '</td>'
-      + '<td class="num">' + nm(c.sOk) + ' / ' + nm(c.s) + '</td><td class="num">' + nm(c.gOk) + ' / ' + nm(c.g) + '</td><td class="num">' + (c.bad ? nm(c.bad) : '\u2014') + '</td>'
+      + '<td class="num">' + nm(c.sOk) + ' ' + esc(t('من')) + ' ' + nm(c.s) + '</td><td class="num">' + nm(c.gOk) + ' ' + esc(t('من')) + ' ' + nm(c.g) + '</td><td class="num">' + (c.bad ? nm(c.bad) : '\u2014') + '</td>'   /* (V43.2) «٠ من ١٢»: the slash reordered the digits on screen */
       + '<td>' + (c.at ? iotDashHtml.age(Date.now() - c.at) : '\u2014') + '</td><td>' + (c.wr ? iotDashHtml.sigCell(c.wr) : '\u2014') + '</td><td>' + esc(sl[c.st]) + '</td></tr>'; }).join('');
   return '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px">' + chip('all', '\u{1F4CB}', 'الكل') + chip('bad', '\u26A0\uFE0F', 'محتاج تدخّل') + chip('part', '\u{1F7E1}', 'جزء محدّث') + chip('ok', '\u{1F7E2}', 'كله محدّث') + chip('nos', '\u25FB', 'لسه بلا سيريالات') + '</div>'
     + (rows.length ? '<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>' + [t('المخيم'), t('المنطقة'), t('الحساسات المحدّثة'), t('الجيت واي المحدّث'), t('محتاج تدخّل'), t('آخر تحديث'), t('أضعف إشارة'), t('الحالة')].map(esc).join('</th><th>') + '</th></tr></thead><tbody>' + tr + '</tbody></table></div>'
@@ -374,7 +378,13 @@ iotDashHtml.devHtml = function(list, F){
   var LB = iotDashHtml.LAB, chip = function(k, ic, lab){ return '<button class="btn btn-sm ' + (F.st === k ? 'btn-primary' : 'btn-secondary') + '" data-iotd="st:' + k + '">' + ic + ' ' + esc(t(lab)) + ' <b class="num">' + nm(cnt[k] || 0) + '</b></button>'; };
   var weakSig = function(r){ var G = iotDashHtml.sig(r); return r.kind === 's' && (G.rs === 'y' || G.rs === 'r' || G.sn === 'r'); };
   cnt.sig = list.filter(weakSig).length; cnt.cw = list.filter(function(r){ return iotDashHtml.sig(r).flag === 'cw'; }).length;   /* (V41.2) */
-  var rows = list.filter(function(r){ if (F.st === 'sig') return weakSig(r); if (F.st === 'cw') return iotDashHtml.sig(r).flag === 'cw'; return F.st === 'all' || (F.st === 'bad' ? iotDashHtml.bad(r.st) : r.st === F.st); });
+  var rows = list.filter(function(r){ if (F.st === 'sig') return weakSig(r); if (F.st === 'cw') return iotDashHtml.sig(r).flag === 'cw';
+    /* (V43.2) the board's tiles: a signal grade, a battery band, a weak external battery */
+    if (/^sig:/.test(F.st)) return r.kind === 's' && iotDashHtml.sig(r).rs === F.st.slice(4);
+    if (/^bat:/.test(F.st)){ var b = r.v && r.v.bat; if (r.kind !== 's' || b == null) return false; return F.st === 'bat:hi' ? b >= 50 : F.st === 'bat:mid' ? (b > 20 && b < 50) : b <= 20; }
+    if (F.st === 'lowext') return r.kind === 'g' && r.v && r.v.ext_bat != null && +r.v.ext_bat < 11.5;
+    if (F.st === 'offlate') return r.st === 'off' || r.st === 'late';
+    return F.st === 'all' || (F.st === 'bad' ? iotDashHtml.bad(r.st) : r.st === F.st); });
   var rank = { off:0, late:1, nof:2, nor:3, ok:4, nos:5 };
   rows.sort(F.sort === 'name' ? function(a, b){ return a.pn < b.pn ? -1 : a.pn > b.pn ? 1 : (a.did < b.did ? -1 : 1); } : function(a, b){ return (rank[a.st] - rank[b.st]) || ((a.at || 0) - (b.at || 0)); });
   var tr = rows.slice(0, F.n).map(function(r){
@@ -430,8 +440,13 @@ iotDashHtml.age = function(ms){ var m = Math.max(1, Math.round(ms / 60000)); ret
 iotDashHtml.act = function(a){
   var F = iotDashHtml.F || (iotDashHtml.F = { tab:'camps', st:'all', zone:'all', q:'', n:100, sort:'old', pop:null }), k = a.split(':')[0], v = a.slice(k.length + 1);
   if (k === 'keep') return;
-  if (k === 'tab'){ F.tab = v; F.st = 'all'; F.n = 100; F.q = ''; } else if (k === 'st'){ F.st = v; F.n = 100; } else if (k === 'zone'){ F.zone = v; F.n = 100; } else if (k === 'sort') F.sort = v;
+  if (k === 'view'){ F.view = v; }   /* (V43.2) board / list */
+  else if (k === 'sig'){ F.view = 'list'; F.tab = 's'; F.st = 'sig:' + v; F.n = 100; }   /* (V43.2) a board tile opens its list */
+  else if (k === 'bat'){ F.view = 'list'; F.tab = 's'; F.st = 'bat:' + v; F.n = 100; }
+  else if (k === 'g'){ F.view = 'list'; F.tab = 'g'; F.st = v === 'off' ? 'offlate' : v; F.n = 100; }
+  else if (k === 'tab'){ F.tab = v; F.st = 'all'; F.n = 100; F.q = ''; } else if (k === 'st'){ F.st = v; F.n = 100; if (F.view === 'dash') F.view = 'list'; } else if (k === 'zone'){ F.zone = v; F.n = 100; } else if (k === 'sort') F.sort = v;
   else if (k === 'q'){ F.q = v; F.n = 100; } else if (k === 'more') F.n += 100;
+  if (k === 'st' && F.tab === 'camps' && v !== 'all' && !/^(bad|part|ok|nos)$/.test(v)) F.tab = 's';   /* (V43.2) a device state from the board lands on the devices list */
   else if (k === 'close') F.pop = null;
   else if (k === 'pop'){ var p = v.split(':'); F.pop = p[0] === 'camp' ? { t:'camp', camp:p.slice(1).join(':') } : { t:'dev', camp:p.slice(1, p.length - 2).join(':'), k:p[p.length - 2], i:+p[p.length - 1] }; }
   else if (k === 'save'){ iotDashHtml.save(v); return; }
@@ -595,4 +610,53 @@ iotDashHtml.accept = function(m){
   if (Date.now() - x.t > 1800000) return { ok:false, why:t('آخر قراءة من الحساس ده أقدم من نص ساعة — اتأكد إنه شغّال') };
   var G = iotDashHtml.sig({ kind:'s', v:x.v || {} }); if (G.rs === 'r') return { ok:false, why:t('إشارة الحساس حمرا — قرّبه من الجيت واي أو شيل العائق قبل ما تعلّمه مُركّب') };
   return { ok:true };
+};
+
+/* (V43.2) the board: the same rows the list uses, drawn as counts, bars and tiles — every tile opens its list with the matching
+   filter. Health (as the map colours it), by zone, sensor signal, sensor battery, gateway batteries, the camps that need action
+   most, and what the alerts say. Pure HTML/CSS: no chart library, so it draws in a few milliseconds for 8,000 devices too. */
+iotDashHtml.board = function(rows, camps, F){
+  var T0 = Date.now(), S = rows.filter(function(r){ return r.kind === 's'; }), G = rows.filter(function(r){ return r.kind === 'g'; });
+  var cnt = function(L, f){ return L.filter(f).length; };
+  var st = { ok:0, late:0, off:0, nor:0, nof:0, nos:0 }; rows.forEach(function(r){ st[r.st] = (st[r.st] || 0) + 1; });
+  var COL = { ok:'#22C55E', late:'#EAB308', off:'#EF4444', nor:'#94A3B8', nof:'#64748B', nos:'rgba(148,163,184,.35)' };
+  var tile = function(n, lab, sub, col, go, big){ return '<div role="button" tabindex="0" data-iotd="' + esc(go) + '" style="flex:1 1 ' + (big ? '200px' : '150px') + ';min-width:' + (big ? 200 : 150) + 'px;background:var(--surface-2);border-radius:14px;padding:12px;cursor:pointer;border-inline-start:4px solid ' + col + '">'
+    + '<div class="num" style="font-size:' + (big ? 30 : 24) + 'px;font-weight:800;line-height:1.1">' + nm(n) + '</div><div style="font-size:13px">' + esc(t(lab)) + '</div>' + (sub ? '<div class="hint" style="margin:2px 0 0;font-size:12px">' + sub + '</div>' : '') + '</div>'; };
+  var bar = function(parts, h){ var tot = parts.reduce(function(a, p){ return a + p.n; }, 0) || 1;
+    return '<div style="display:flex;height:' + (h || 14) + 'px;border-radius:8px;overflow:hidden;background:rgba(148,163,184,.15)">' + parts.filter(function(p){ return p.n; }).map(function(p){ return '<i title="' + esc(t(p.l)) + ' ' + nm(p.n) + '" style="display:block;width:' + (p.n / tot * 100).toFixed(2) + '%;background:' + p.c + '"></i>'; }).join('') + '</div>'; };
+  var sec = function(title, inner){ return '<div class="hint" style="margin:14px 0 6px;font-size:14px;font-weight:700">' + esc(t(title)) + '</div>' + inner; };
+  var L = iotDashHtml.LAB;
+  /* ١ · الصحة */
+  var health = '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:stretch">'
+    + tile(rows.length, 'كل الأجهزة', nm(S.length) + ' ' + esc(t('حساس')) + ' \u00b7 ' + nm(G.length) + ' ' + esc(t('جيت واي')), 'var(--acc,#2E86DE)', 'st:all', true)
+    + ['ok', 'late', 'off', 'nor', 'nof', 'nos'].map(function(k){ return tile(st[k] || 0, L[k][1], L[k][0], COL[k], 'st:' + k); }).join('') + '</div>'
+    + '<div style="margin:8px 0 0">' + bar(['ok', 'late', 'off', 'nor', 'nof', 'nos'].map(function(k){ return { n:st[k] || 0, l:L[k][1], c:COL[k] }; }), 16) + '</div>';
+  /* ٢ · بالمنطقة */
+  var Z = {}; rows.forEach(function(r){ var z = r.zone || '\u2014', o = Z[z] = Z[z] || { n:0, ok:0, late:0, off:0, nor:0, nof:0, nos:0, camps:{} }; o.n++; o[r.st] = (o[r.st] || 0) + 1; o.camps[r.camp] = 1; });
+  var zones = Object.keys(Z).sort(function(a, b){ return Z[b].n - Z[a].n; });
+  var byZone = zones.length ? '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px">' + zones.map(function(z){ var o = Z[z];
+      return '<div role="button" tabindex="0" data-iotd="zone:' + esc(z === '\u2014' ? '' : z) + '" style="background:var(--surface-2);border-radius:14px;padding:12px;cursor:pointer"><div style="display:flex;justify-content:space-between;align-items:baseline"><b>' + esc(t(z)) + '</b><span class="hint num" style="margin:0">' + nm(Object.keys(o.camps).length) + ' ' + esc(t('مخيم')) + ' \u00b7 ' + nm(o.n) + ' ' + esc(t('جهاز')) + '</span></div>'
+        + '<div style="margin:6px 0 4px">' + bar(['ok', 'late', 'off', 'nor', 'nof', 'nos'].map(function(k){ return { n:o[k] || 0, l:L[k][1], c:COL[k] }; }), 10) + '</div>'
+        + '<div class="hint" style="margin:0;font-size:12px">\u{1F7E2} ' + nm(o.ok || 0) + ' \u00b7 \u{1F7E1} ' + nm(o.late || 0) + ' \u00b7 \u{1F534} ' + nm(o.off || 0) + ' \u00b7 \u25FB ' + nm(o.nos || 0) + '</div></div>'; }).join('') + '</div>' : '';
+  /* ٣ · إشارة الحساسات وبطاريتها */
+  var sg = { g:0, y:0, r:0 }, withSig = 0; S.forEach(function(r){ if (r.v && r.v.rssi != null){ withSig++; var q = iotDashHtml.sig(r); if (q.rs) sg[q.rs]++; } });
+  var bt = { hi:0, mid:0, low:0 }, withBat = 0; S.forEach(function(r){ var b = r.v && r.v.bat; if (b != null){ withBat++; if (b >= 50) bt.hi++; else if (b > 20) bt.mid++; else bt.low++; } });
+  var signal = withSig ? '<div style="display:flex;flex-wrap:wrap;gap:8px">' + tile(sg.g, 'إشارة كويسة', '\u{1F7E2} ' + esc(t('أخضر')), '#22C55E', 'sig:g') + tile(sg.y, 'على الحافة', '\u{1F7E1} ' + esc(t('أصفر')), '#EAB308', 'sig:y') + tile(sg.r, 'إشارة ضعيفة', '\u{1F534} ' + esc(t('أحمر')), '#EF4444', 'sig:r') + '</div>'
+      + '<div style="margin:8px 0 0">' + bar([{ n:sg.g, l:'كويسة', c:'#22C55E' }, { n:sg.y, l:'على الحافة', c:'#EAB308' }, { n:sg.r, l:'ضعيفة', c:'#EF4444' }]) + '</div><p class="hint" style="margin:6px 0 0">' + esc(t('من')) + ' ' + nm(withSig) + ' ' + esc(t('حساس ليه قراءة إشارة — ألوان لورا SF12')) + '</p>'
+    : '<p class="hint">' + esc(t('لسه مفيش قراءات إشارة — بتظهر أول ما الحساسات تبعت')) + '</p>';
+  var battery = withBat ? '<div style="display:flex;flex-wrap:wrap;gap:8px">' + tile(bt.hi, 'بطارية ٥٠٪ فأكثر', '', '#22C55E', 'bat:hi') + tile(bt.mid, 'بطارية ٢٠–٥٠٪', '', '#EAB308', 'bat:mid') + tile(bt.low, 'بطارية ٢٠٪ أو أقل', '\u{1FAAB} ' + esc(t('تنبيه')), '#EF4444', 'bat:low') + '</div>'
+      + '<div style="margin:8px 0 0">' + bar([{ n:bt.hi, l:'٥٠٪+', c:'#22C55E' }, { n:bt.mid, l:'٢٠–٥٠٪', c:'#EAB308' }, { n:bt.low, l:'≤٢٠٪', c:'#EF4444' }]) + '</div>'
+    : '<p class="hint">' + esc(t('لسه مفيش قراءات بطارية')) + '</p>';
+  /* ٤ · الجيت واي */
+  var gOff = cnt(G, function(r){ return r.st === 'off' || r.st === 'late'; }), gOk = cnt(G, function(r){ return r.st === 'ok'; }), gNos = cnt(G, function(r){ return r.st === 'nos'; });
+  var gExt = G.filter(function(r){ return r.v && r.v.ext_bat != null; }), gLowExt = cnt(gExt, function(r){ return +r.v.ext_bat < 11.5; });
+  var gw = '<div style="display:flex;flex-wrap:wrap;gap:8px">' + tile(gOk, 'جيت واي محدّث', '', '#22C55E', 'g:ok') + tile(gOff, 'جيت واي متأخر أو منقطع', esc(t('كل حساسات مخيمه هتقف معاه')), '#EF4444', 'g:off') + tile(gNos, 'جيت واي بلا سيريال', '', 'rgba(148,163,184,.6)', 'g:nos')
+    + (gExt.length ? tile(gLowExt, 'بطارية خارجية ضعيفة', esc(t('أقل من ١١٫٥ فولت')) + ' \u00b7 ' + esc(t('من')) + ' ' + nm(gExt.length), '#F59E0B', 'g:lowext') : '') + '</div>';
+  /* ٥ · أسوأ المخيمات */
+  var worst = camps.filter(function(c){ return c.bad; }).sort(function(a, b){ return b.bad - a.bad; }).slice(0, 8);
+  var worstHtml = worst.length ? '<div style="display:flex;flex-wrap:wrap;gap:6px">' + worst.map(function(c){ return btn('\u26A0\uFE0F ' + c.pn + ' \u00b7 ' + nm(c.bad), 'btn-quiet btn-sm', ' data-iotd="pop:camp:' + esc(c.id) + '"'); }).join('') + '</div>'
+    : '<p class="hint" style="margin:0">' + esc(t('مفيش مخيم محتاج تدخّل دلوقتي')) + '</p>';
+  var ms = Date.now() - T0;
+  return health + sec('حسب المنطقة', byZone) + sec('إشارة الحساسات', signal) + sec('بطارية الحساسات', battery) + sec('الجيت واي', gw) + sec('أكتر المخيمات المحتاجة تدخّل', worstHtml)
+    + '<p class="hint" style="margin:10px 0 0;font-size:11px">' + esc(t('اضغط أي مربع يفتح قايمته')) + ' \u00b7 ' + nm(ms) + ' ' + esc(t('مللي ثانية')) + '</p>';
 };

@@ -2536,6 +2536,21 @@ console.log('\n══ ١١١ · عرفات في متابعة الوزارة: ت�
   w.STATE.sites.length = 0; S0.forEach(x => w.STATE.sites.push(x)); w.STATE.recs = R0; w.STATE.users = U0;
 }
 
+/* ── ١١٢ · (V43.2) لوحةُ الحساسات والجيت واي ── */
+console.log('\n══ ١١٢ · لوحةُ الحساسات: مربعاتٌ تفتح قوائمَها ══');
+{
+  const now = Date.now(), mk = (kind, st, v, zone, camp) => ({ kind, st, v:v || {}, zone:zone || 'منى', camp:camp || 'C-1', pn:camp || 'C-1', did:camp + '-' + kind, i:0, at:st === 'ok' ? now - 60000 : (st === 'off' ? now - 9000000 : 0), ser:st === 'nos' ? '' : 'x' });
+  const rows = [mk('s', 'ok', { rssi:-80, bat:90 }, 'منى', 'C-1'), mk('s', 'ok', { rssi:-120, bat:35 }, 'منى', 'C-1'), mk('s', 'off', { rssi:-130, bat:10 }, 'عرفات', 'C-2'), mk('s', 'nos', {}, 'عرفات', 'C-2'), mk('g', 'ok', { ext_bat:12.4 }, 'منى', 'C-1'), mk('g', 'off', { ext_bat:11.1 }, 'عرفات', 'C-2')];
+  const camps = [{ id:'C-2', pn:'C-2', zone:'عرفات', bad:2, st:'bad' }];
+  const h = String(w.iotDashHtml.board(rows, camps, { zone:'all' }));
+  T(/data-iotd="st:off"/.test(h) && /data-iotd="sig:r"/.test(h) && /data-iotd="bat:low"/.test(h) && /data-iotd="g:off"/.test(h) && /data-iotd="g:lowext"/.test(h) && /data-iotd="zone:عرفات"/.test(h) && /pop:camp:C-2/.test(h), 'اللوحة: الصحةُ والمناطقُ والإشارةُ والبطاريةُ والجيت واي وأسوأُ المخيمات — كلُّ مربعٍ يفتح قائمتَه');
+  const F = { tab:'camps', st:'all', zone:'all', q:'', n:100, sort:'old', pop:null, view:'dash' }; w.iotDashHtml.F = F;
+  const r0 = w.render; w.render = () => {}; w.iotDashHtml.act('sig:r'); const a1 = F.view === 'list' && F.tab === 's' && F.st === 'sig:r'; w.iotDashHtml.act('view:dash'); w.iotDashHtml.act('g:off'); const a2 = F.tab === 'g' && F.st === 'offlate'; w.render = r0;
+  const L = w.iotDashHtml.devHtml(rows.filter(r => r.kind === 's'), Object.assign({}, F, { tab:'s', st:'sig:r', n:100 })), B = w.iotDashHtml.devHtml(rows.filter(r => r.kind === 's'), Object.assign({}, F, { tab:'s', st:'bat:low', n:100 }));
+  T(a1 && a2 && (L.match(/pop:dev:/g) || []).length === 1 && (B.match(/pop:dev:/g) || []).length === 1, 'ومربعُ الإشارة الحمراء يفتح الحساسَ الوحيدَ الأحمر، ومربعُ البطارية الضعيفة يفتح الوحيدَ دون ٢٠');
+  w.iotDashHtml.F = null;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);
