@@ -2573,6 +2573,24 @@ console.log('\n══ ١١٤ · المواقعُ الجديدة والشركات
   T(typeof w.FB.pullFeeds === 'function', 'والدالةُ موجودةٌ في النواة');
 }
 
+/* ── ١١٥ · (V43.5) كلُّ قراءةٍ ساكنةٍ صارت تغذيةً تُعاد عند النبضة ── */
+console.log('\n══ ١١٥ · تعديلاتُ شخصٍ تصل الباقين: التغذياتُ المسجَّلة ══');
+{
+  const core = readFileSync(new URL('../src/01-core/01-core-registry-05-sync-scale.js', import.meta.url), 'utf8');
+  const feeds = (core.match(/FB\.feed\('([a-zA-Z]+)'/g) || []).map(x => x.slice(9, -1)), sdocs = (core.match(/FB\.sdoc\('([A-Za-z]+)'/g) || []).length;
+  const want = ['users', 'pending', 'inventory', 'workreqs', 'purchases', 'fixreqs', 'bugs', 'steps', 'vehicles', 'vehAsn', 'ships', 'changes', 'ncr', 'ipc', 'hse', 'baseline', 'bonus'];
+  T(want.every(c => feeds.indexOf(c) > -1) && sdocs >= 20, 'سبعَ عشرةَ مجموعةً وعشرون وثيقةَ ثوابتَ مسجَّلةٌ تغذياتٍ (كانت تُقرأ عند الفتح فقط) — ' + feeds.length + ' / ' + sdocs);
+  T(['inventory', 'workreqs', 'purchases'].every(c => { const i = core.indexOf("FB.feed('" + c + "'"), j = core.indexOf('FB.feed(', i + 10); return i > 0 && /\{ since:true \}\);/.test(core.slice(i, j > 0 ? j : i + 3000)); }), 'والدفاترُ الكبيرةُ الثلاثة تقرأ ما تغيّر فقط');
+  const pw = readFileSync(new URL('../src/03z-shared/03z-shared-14-from-tasks-office-14-pull-scope-listen-map.js', import.meta.url), 'utf8');
+  T(/FB\.FEEDS && FB\.FEEDS\[c\]/.test(pw) && /FB\.refeed\(more\)/.test(pw), 'والنبضةُ تعيد قراءةَ ما سمّته على كلِّ جهاز');
+  T(typeof w.FB.feed === 'function' && typeof w.FB.refeed === 'function' && typeof w.FB.sdoc === 'function', 'والدوالُّ في النواة');
+  /* a feed re-read: a fake query whose get() returns two docs, applied by the registered function */
+  const got = []; w.FB.FEEDS['t-feed'] = { gate:() => true, q:() => ({ get:() => Promise.resolve({ size:2, forEach:f => [{ id:'a', data:() => ({ v:1 }) }, { id:'b', data:() => ({ v:2 }) }].forEach(f) }) }), apply:(sn, full) => { sn.forEach(d => got.push(d.id + ':' + full)); }, err:() => {}, opt:{} };
+  const R0 = w.FB.ready, D0 = w.FB.db; w.FB.ready = true; w.FB.db = w.FB.db || {}; const r0 = w.render; w.render = () => {};
+  await w.FB.refeed(['t-feed']); w.render = r0; w.FB.ready = R0; w.FB.db = D0; delete w.FB.FEEDS['t-feed'];
+  T(got.join(',') === 'a:true,b:true', 'وإعادةُ التغذية تطبّق ما يعود بالدالة المسجَّلة');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

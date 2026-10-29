@@ -231,6 +231,9 @@ function pulseWatch(){
       var stale = mine.filter(function(col){ return (+p[col] || 0) > (+at[col] || 0); });
       /* (V43.4) the side feeds the pulse names (site overrides, new sites, added companies) are pulled too — on every device */
       var feeds = ['sites', 'newsites', 'coreqs'].filter(function(col){ return (+p[col] || 0) > (+at[col] || 0); });
+      /* (V43.5) and every registered feed (ledgers, requests, accounts, constants…) the pulse names: re-read on this device */
+      var FT = PV.FEED_AT || {}, more = Object.keys(p).filter(function(c){ return c !== 'at' && c !== 'by' && c !== '_by' && c !== '_at' && (c === 'settings' || (FB.FEEDS && FB.FEEDS[c])) && (+p[c] || 0) > (+FT[c] || 0); });
+      if (more.length && typeof FB.refeed === 'function'){ clearTimeout(PV.REFEED_T); PV.REFEED_T = setTimeout(function(){ FB.refeed(more).catch(function(e){ softErr('سحب ما تغيّر', e, ''); }); }, 3000); }
       if (feeds.length && typeof FB.pullFeeds === 'function'){ clearTimeout(PV.FEED_T); PV.FEED_T = setTimeout(function(){ FB.pullFeeds({ only:feeds }).then(function(){ if (CUR === 'map' && typeof mapPaint === 'function') mapPaint(); else render(1); }).catch(function(e){ softErr('سحب الإضافات', e, ''); }); }, 2500); }
       if (!stale.length) return;
       PV.PULSE_LAST = Date.now();
