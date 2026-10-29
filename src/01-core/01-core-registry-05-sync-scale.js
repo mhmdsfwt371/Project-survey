@@ -747,6 +747,86 @@ var FB = {
     }).catch(function(e){ softErr('قراءة العهد', e, ''); }).then(function(){ EPOCH_PENDING = false; });
     return epochRead.then(function(){ return FB.pullStatic2(); });
   },
+  /* (V43.4) the owner: «أي حاجة بتتضاف جديدة من السيستم لازم تسمع في الأماكن بتاعتها». Three feeds used to be read once at
+     start-up — and two of them (new sites, added companies) only on office devices: a camp added by the office or another
+     supervisor never reached a technician's map until he reopened the app, and a company approved elsewhere not even then.
+     Now one function reads all three with a since-cursor, for every role, at start-up, on every pulse that names them, and
+     as a safety net every ten minutes; an unchanged feed costs one read. */
+  pullFeeds: function(opt){
+    if (!FB.ready || !FB.db) return Promise.resolve(0);
+    var cold = !!(opt && opt.boot), P = [];
+    var sAt = (STATE.meta.pullAt || (STATE.meta.pullAt = {})), sSince = (sAt.sites || 0) - 120000, sStart = Date.now();
+    var nSince = (sAt.newsites || 0) - 120000, nStart = Date.now(), cSince = (sAt.coreqs || 0) - 120000, cStart = Date.now();
+    if (opt && Array.isArray(opt.only) && opt.only.length){ if (opt.only.indexOf('sites') < 0) sSince = Infinity; if (opt.only.indexOf('newsites') < 0) nSince = Infinity; if (opt.only.indexOf('coreqs') < 0) cSince = Infinity; }
+      if (sSince !== Infinity){
+      var sq = DB.col('sites'); if (sSince > 0) sq = sq.where('_at', '>', sSince);
+      P.push(sq.limit(3000).get().then(function(sn){
+        if (!sn.size && !cold) return;
+        FB.readCount = (FB.readCount || 0) + sn.size;
+        sAt.sites = sStart;
+        STATE.siteOv = STATE.siteOv || {};
+        sn.forEach(function(d){ STATE.siteOv[d.id] = Object.assign({}, STATE.siteOv[d.id] || {}, siteOvDec(d.data())); });   /* (V39.53) */
+        /* المخفيُّ يُزال من القائمة هنا — وقبل وصول القاعدة من الحفظ المحليّ */
+        var all = STATE.sites.concat(STATE.hiddenSites || []);
+        STATE.sites = all; siteOvApply();
+        CORE.saveSoon(); statBump();
+      }).catch(function(e){ softErr('سحب تعديلات المواقع', e, 'تعذّر سحبُ تعديلات المواقع (العناوين والتصحيحات)'); }));
+      }
+      if (nSince !== Infinity){
+      var nq = DB.col('newsites'); if (nSince > 0) nq = nq.where('_at', '>', nSince);
+      P.push(nq.limit(1000).get().then(function(sn){   /* (V37.69) والوزارةُ ترى مقترحاتِها · (V43.4) والفنيُّ يراها أيضًا */
+        sAt.newsites = nStart; if (!sn.size && !cold) return;
+        FB.readCount = (FB.readCount || 0) + sn.size;
+        if (!STATE.newsites) STATE.newsites = {};
+        sn.forEach(function(d){ STATE.newsites[d.id] = d.data(); });
+        /* ═══ الجديدُ يعود إلى السجل لا إلى رفٍّ جانبيّ (V17.46) ═══
+           كانت النقطةُ تُدفَع إلى STATE.sites في الجلسة التي أُنشئت فيها ثم
+           تُكتَب في newsites؛ فإذا أُعيد تحميلُ التطبيق عادت المجموعةُ إلى
+           STATE.newsites وحدَها — فتختفي النقطةُ من الخريطة والقوائم وهي في
+           القاعدة سليمة، ويُظنُّ أنها ضاعت. صارت تُدمَج في السجل عند كلِّ
+           إقلاع: ما لم يكن فيه، ولا يُكرَّر ما هو فيه. */
+        /* (V36.7) بلاغُ المالك: «المسح للنقاط لو مسح من عند مهندس بترجع تاني» — النقطةُ المضافةُ المحذوفة تُنقَل إلى «المخفية» فلا تكون
+           في STATE.sites، فكان هذا الدمجُ يراها جديدةً ويعيدها إلى القائمة (والإخفاءُ في تجاوزها لا في وثيقتها). صار المخفيُّ معروفًا هنا،
+           وتجاوزُ hidden يُبقيها مخفية. */
+        var have = {}; (STATE.sites || []).forEach(function(x){ have[x.id] = 1; }); (STATE.hiddenSites || []).forEach(function(x){ have[x.id] = 1; });
+        var add = 0;
+        Object.keys(STATE.newsites).forEach(function(k){
+          var v = STATE.newsites[k];
+          if (typeof propIs === 'function' && propIs(v)){ propKeep(v); return; }   /* (V37.69) مقترحةُ الوزارة لا تدخل السجلَّ قبل الاعتماد */
+          var ovh = v && v.id && (STATE.siteOv || {})[v.id]; if (ovh && (ovh.hidden || ovh.deleted)) return;   /* محذوفةٌ (إخفاءً أو نهائيًّا) — لا تعود */
+          if (v && v.id && have[v.id]){   /* (V22.9) ما دُمج من قبل يأخذ تعديلَ السحابة: الموقعُ والاسمُ والإخفاء — وإلا بقيت النقطةُ حيث كانت */
+            var ex = siteFind(v.id);
+            if (ex){
+              if (v.hidden || v.deleted){ STATE.sites = STATE.sites.filter(function(x){ return x.id !== v.id; }); add++; return; }   /* (V25.5) والمحذوفُ نهائيًّا */
+              var ovm = (STATE.siteOv || {})[v.id];   /* (V32.2) موضعٌ حرّكه أحدٌ (تجاوز) يغلب إحداثيةَ الوثيقة */
+              if (!(ovm && +ovm.lat && +ovm.lng) && +v.lat && +v.lng && (+ex.lat !== +v.lat || +ex.lng !== +v.lng)){ ex.lat = +v.lat; ex.lng = +v.lng; add++; }
+              if (v.name && ex.name !== v.name){ ex.name = v.name; add++; }
+            }
+            return;
+          }
+          if (!v || !v.id || v.hidden || v.deleted || have[v.id] || !(+v.lat) || !(+v.lng)) return;   /* المخفيُّ والمحذوفُ لا يُدمَجان (V22.2، V25.5) */
+          var ovn = (STATE.siteOv || {})[v.id]; if (ovn) v = Object.assign({}, v, ovn);   /* تجاوزُ المكتب (التصنيف…) فوق الوثيقة (V23.0) */
+          STATE.sites.push(v); have[v.id] = 1; add++;
+        });
+        if (add){ SITE_IX = null; SITE_TOK = null; statBump(); render(1); if (typeof mapPaint === 'function') mapPaint(); }
+      }).catch(function(e){ softErr('سحب المواقع الجديدة', e, 'تعذّر سحبُ طلبات تسجيل مواقع جديدة'); }));
+      }
+      if (cSince !== Infinity){
+      /* (V42.6) the owner: «شكري ضاف شركة … وأنا بضيف مخيم جديد مش موجودة في الليست». The company list is filled at start-up
+         (coFill), before this read returns — so a company added on another device never reached the list after a reload. It
+         is refilled the moment the added companies arrive, and they are read by every role (the rules allow it): a supervisor
+         adding a camp in the field needs them as much as the office does. */
+      var cq = DB.col('coreqs'); if (cSince > 0) cq = cq.where('_at', '>', cSince);
+      P.push(cq.limit(1000).get().then(function(sn){
+        sAt.coreqs = cStart; if (!sn.size && !cold) return;
+        FB.readCount = (FB.readCount || 0) + sn.size;
+        if (!STATE.coreqs) STATE.coreqs = {};
+        sn.forEach(function(d){ STATE.coreqs[d.id] = d.data(); });
+        try { if (typeof coFill === 'function'){ coFill(); if (CUR === 'newsite' || CUR === 'cos' || CUR === 'co' || (typeof NS_CO_OPEN !== 'undefined' && NS_CO_OPEN)) render(1); } } catch (eC){ LS_ERR = eC; }
+      }).catch(function(e){ softErr('سحب طلبات الشركات', e, 'تعذّر سحبُ طلبات إضافة الشركات'); }));
+      }
+    return Promise.all(P).then(function(){ return P.length; });
+  },
   pullStatic2: function(){
     if (!FB.ready || !FB.db) return Promise.resolve(false);
     /* الميدانُ لا يقرأ ما لا يراه: المخزونُ والمشترياتُ والشحناتُ وطلباتُ الشركات
@@ -990,18 +1070,7 @@ var FB = {
          موضعًا آخر، اكتُشفت في مراجعةٍ شاملة بعد V14.79/V14.82.
          كلٌّ منها وثيقةٌ واحدةٌ لكلِّ سجلٍّ (لا مصفوفةٌ مجمَّعة) فتُقرأ
          مباشرةً بمعرِّفها. */
-      var sAt = (STATE.meta.pullAt || (STATE.meta.pullAt = {})), sSince = (sAt.sites || 0) - 120000, sStart = Date.now();
-      var sq = DB.col('sites'); if (sSince > 0) sq = sq.where('_at', '>', sSince);
-      sq.limit(3000).get().then(function(sn){
-        FB.readCount = (FB.readCount || 0) + sn.size;
-        sAt.sites = sStart;
-        STATE.siteOv = STATE.siteOv || {};
-        sn.forEach(function(d){ STATE.siteOv[d.id] = Object.assign({}, STATE.siteOv[d.id] || {}, siteOvDec(d.data())); });   /* (V39.53) */
-        /* المخفيُّ يُزال من القائمة هنا — وقبل وصول القاعدة من الحفظ المحليّ */
-        var all = STATE.sites.concat(STATE.hiddenSites || []);
-        STATE.sites = all; siteOvApply();
-        CORE.saveSoon(); statBump();
-      }).catch(function(e){ softErr('سحب تعديلات المواقع', e, 'تعذّر سحبُ تعديلات المواقع (العناوين والتصحيحات)'); });
+      FB.pullFeeds({ boot:true });   /* (V43.4) site overrides, new sites and added companies — at boot and on every change, for every role */
 
       office && DB.col('purchases').limit(3000).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;
@@ -1027,16 +1096,6 @@ var FB = {
         sn.forEach(function(d){ STATE.ships[d.id] = d.data(); });
       }).catch(function(e){ softErr('سحب الشحنات', e, 'تعذّر سحبُ سجل الشحنات'); });
 
-      /* (V42.6) the owner: «شكري ضاف شركة … وأنا بضيف مخيم جديد مش موجودة في الليست». The company list is filled at start-up
-         (coFill), before this read returns — so a company added on another device never reached the list after a reload. It
-         is refilled the moment the added companies arrive, and they are read by every role (the rules allow it): a supervisor
-         adding a camp in the field needs them as much as the office does. */
-      DB.col('coreqs').limit(1000).get().then(function(sn){
-        FB.readCount = (FB.readCount || 0) + sn.size;
-        if (!STATE.coreqs) STATE.coreqs = {};
-        sn.forEach(function(d){ STATE.coreqs[d.id] = d.data(); });
-        try { if (typeof coFill === 'function'){ coFill(); if (CUR === 'newsite' || CUR === 'cos' || CUR === 'co' || (typeof NS_CO_OPEN !== 'undefined' && NS_CO_OPEN)) render(1); } } catch (eC){ LS_ERR = eC; }
-      }).catch(function(e){ softErr('سحب طلبات الشركات', e, 'تعذّر سحبُ طلبات إضافة الشركات'); });
 
       office && DB.col('fixreqs').limit(1000).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;
@@ -1044,41 +1103,6 @@ var FB = {
         sn.forEach(function(d){ STATE.fixreqs[d.id] = d.data(); });
       }).catch(function(e){ softErr('سحب طلبات التصويب', e, 'تعذّر سحبُ طلبات تصويب البيانات'); });
 
-      (office || ROLE === 'viewer') && DB.col('newsites').limit(1000).get().then(function(sn){   /* (V37.69) والوزارةُ ترى مقترحاتِها */
-        FB.readCount = (FB.readCount || 0) + sn.size;
-        if (!STATE.newsites) STATE.newsites = {};
-        sn.forEach(function(d){ STATE.newsites[d.id] = d.data(); });
-        /* ═══ الجديدُ يعود إلى السجل لا إلى رفٍّ جانبيّ (V17.46) ═══
-           كانت النقطةُ تُدفَع إلى STATE.sites في الجلسة التي أُنشئت فيها ثم
-           تُكتَب في newsites؛ فإذا أُعيد تحميلُ التطبيق عادت المجموعةُ إلى
-           STATE.newsites وحدَها — فتختفي النقطةُ من الخريطة والقوائم وهي في
-           القاعدة سليمة، ويُظنُّ أنها ضاعت. صارت تُدمَج في السجل عند كلِّ
-           إقلاع: ما لم يكن فيه، ولا يُكرَّر ما هو فيه. */
-        /* (V36.7) بلاغُ المالك: «المسح للنقاط لو مسح من عند مهندس بترجع تاني» — النقطةُ المضافةُ المحذوفة تُنقَل إلى «المخفية» فلا تكون
-           في STATE.sites، فكان هذا الدمجُ يراها جديدةً ويعيدها إلى القائمة (والإخفاءُ في تجاوزها لا في وثيقتها). صار المخفيُّ معروفًا هنا،
-           وتجاوزُ hidden يُبقيها مخفية. */
-        var have = {}; (STATE.sites || []).forEach(function(x){ have[x.id] = 1; }); (STATE.hiddenSites || []).forEach(function(x){ have[x.id] = 1; });
-        var add = 0;
-        Object.keys(STATE.newsites).forEach(function(k){
-          var v = STATE.newsites[k];
-          if (typeof propIs === 'function' && propIs(v)){ propKeep(v); return; }   /* (V37.69) مقترحةُ الوزارة لا تدخل السجلَّ قبل الاعتماد */
-          var ovh = v && v.id && (STATE.siteOv || {})[v.id]; if (ovh && (ovh.hidden || ovh.deleted)) return;   /* محذوفةٌ (إخفاءً أو نهائيًّا) — لا تعود */
-          if (v && v.id && have[v.id]){   /* (V22.9) ما دُمج من قبل يأخذ تعديلَ السحابة: الموقعُ والاسمُ والإخفاء — وإلا بقيت النقطةُ حيث كانت */
-            var ex = siteFind(v.id);
-            if (ex){
-              if (v.hidden || v.deleted){ STATE.sites = STATE.sites.filter(function(x){ return x.id !== v.id; }); add++; return; }   /* (V25.5) والمحذوفُ نهائيًّا */
-              var ovm = (STATE.siteOv || {})[v.id];   /* (V32.2) موضعٌ حرّكه أحدٌ (تجاوز) يغلب إحداثيةَ الوثيقة */
-              if (!(ovm && +ovm.lat && +ovm.lng) && +v.lat && +v.lng && (+ex.lat !== +v.lat || +ex.lng !== +v.lng)){ ex.lat = +v.lat; ex.lng = +v.lng; add++; }
-              if (v.name && ex.name !== v.name){ ex.name = v.name; add++; }
-            }
-            return;
-          }
-          if (!v || !v.id || v.hidden || v.deleted || have[v.id] || !(+v.lat) || !(+v.lng)) return;   /* المخفيُّ والمحذوفُ لا يُدمَجان (V22.2، V25.5) */
-          var ovn = (STATE.siteOv || {})[v.id]; if (ovn) v = Object.assign({}, v, ovn);   /* تجاوزُ المكتب (التصنيف…) فوق الوثيقة (V23.0) */
-          STATE.sites.push(v); have[v.id] = 1; add++;
-        });
-        if (add){ SITE_IX = null; SITE_TOK = null; statBump(); render(1); if (typeof mapPaint === 'function') mapPaint(); }
-      }).catch(function(e){ softErr('سحب المواقع الجديدة', e, 'تعذّر سحبُ طلبات تسجيل مواقع جديدة'); });
 
       office && DB.col('changes').limit(1000).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;

@@ -2560,6 +2560,19 @@ console.log('\n══ ١١٣ · تصديرُ الصفحة لا يسقط على �
   T(/Failed to update a ServiceWorker\|sw\\\.js load failed\/i\.test\(String\(msg \|\| ''\)\) && typeof logEventQuiet === 'function'/.test(err), 'وفشلُ تحديث عامل الخدمة لغياب الشبكة يبقى على الجهاز ولا يملأ سجلَّ الأحداث المشترك');
 }
 
+/* ── ١١٤ · (V43.4) ما يُضاف يصل كلَّ جهازٍ وكلَّ دور ── */
+console.log('\n══ ١١٤ · المواقعُ الجديدة والشركاتُ المضافة تصل كلَّ الأدوار حيًّا ══');
+{
+  const core = readFileSync(new URL('../src/01-core/01-core-registry-05-sync-scale.js', import.meta.url), 'utf8');
+  T(/pullFeeds: function\(opt\)/.test(core) && !/\(office \|\| ROLE === 'viewer'\) && DB\.col\('newsites'\)/.test(core) && /FB\.pullFeeds\(\{ boot:true \}\)/.test(core), 'القراءاتُ الثلاث (تجاوزات المواقع، المواقع الجديدة، الشركات المضافة) في دالةٍ واحدةٍ تُقرأ لكل الأدوار — والفنيُّ يرى المخيمَ المضاف');
+  T(/var nq = DB\.col\('newsites'\); if \(nSince > 0\) nq = nq\.where\('_at', '>', nSince\)/.test(core) && /var cq = DB\.col\('coreqs'\); if \(cSince > 0\) cq = cq\.where\('_at', '>', cSince\)/.test(core), 'وبمؤشِّرِ «منذ» فلا تُعاد قراءةُ ما لم يتغيّر');
+  const pw = readFileSync(new URL('../src/03z-shared/03z-shared-14-from-tasks-office-14-pull-scope-listen-map.js', import.meta.url), 'utf8');
+  T(/var feeds = \['sites', 'newsites', 'coreqs'\]\.filter/.test(pw) && /FB\.pullFeeds\(\{ only:feeds \}\)/.test(pw), 'والنبضةُ التي تسمّيها تسحبها على كلِّ جهازٍ خلال ثوانٍ');
+  const bt = readFileSync(new URL('../src/08-events/08-data-events-boot-06-long-lists-storage-clicks.js', import.meta.url), 'utf8');
+  T(/FB\.pullFeeds\(\); \} catch \(e\)\{ LS_ERR = e; \} \}, 600000\)/.test(bt), 'وشبكةُ أمانٍ كلَّ عشر دقائق');
+  T(typeof w.FB.pullFeeds === 'function', 'والدالةُ موجودةٌ في النواة');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

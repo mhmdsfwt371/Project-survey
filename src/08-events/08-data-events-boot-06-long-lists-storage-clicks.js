@@ -361,7 +361,8 @@ function enterShell(){
   }
   try { if (fieldDayStart()){ CUR = 'mywork'; PTAB.mywork = 'mine'; } } catch (e){ LS_ERR = e; }   /* (V39.85) */
   setTimeout(function(){ try { if (typeof mayIntegEdit === 'function' && mayIntegEdit()) integStatusLoad(true); } catch (e){ LS_ERR = e; } }, 9000);
-  setInterval(function(){ try { if (typeof mayIot === 'function' && mayIot() && !document.hidden) liveIotLoad(true); } catch (e){ LS_ERR = e; } }, 300000);   /* (V41.5) the sensors snapshot every 5 minutes for the office — the alerts follow it */   /* (V40.6) the AFAQY PRO session's days left, for the admin and engineer notification */
+  setInterval(function(){ try { if (typeof mayIot === 'function' && mayIot() && !document.hidden) liveIotLoad(true); } catch (e){ LS_ERR = e; } }, 300000);   /* (V41.5) the sensors snapshot every 5 minutes for the office — the alerts follow it */
+  setInterval(function(){ try { if (!document.hidden && navigator.onLine !== false && FB.ready && typeof FB.pullFeeds === 'function') FB.pullFeeds(); } catch (e){ LS_ERR = e; } }, 600000);   /* (V43.4) safety net: the side feeds every ten minutes (one read each when nothing changed) */   /* (V40.6) the AFAQY PRO session's days left, for the admin and engineer notification */
   bootStage('shell');
   render();
   bootStage('render:' + CUR);   /* (V34.2) والصفحةُ في المرحلة نفسِها */
