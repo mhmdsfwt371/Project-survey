@@ -16,13 +16,14 @@ recent.slice(0, 25).forEach(p => console.log('  ' + (p.name || '?') + ' · ' + (
 const bugs = (await db.collection('bugs').get()).docs.map(d => Object.assign({ id:d.id }, d.data()));
 const open = bugs.filter(b => !b.deleted && !/مغلق|تم|closed|done/i.test(String(b.status || '')));
 console.log('البلاغات: ' + bugs.length + ' · المفتوحة ' + open.length);
-open.sort((a, b) => (+b.at || 0) - (+a.at || 0)).slice(0, 15).forEach(b => console.log('  ' + iso(+b.at) + ' · ' + (b.by || '') + ' · ' + String(b.title || b.text || b.t || '').slice(0, 90) + ' · ' + (b.status || '')));
+open.sort((a, b) => (+b.at || 0) - (+a.at || 0)).slice(0, 15).forEach(b => console.log('  ' + iso(+b.at) + ' · ' + (b.by || b.name || '') + ' · ' + String(b.title || b.text || b.desc || b.msg || b.t || JSON.stringify(Object.keys(b))).slice(0, 110) + ' · ' + (b.status || '')));
 /* ٣ · أحداث الأسبوع: أخطاء وتعذّر */
 let ev = [];
-try { ev = (await db.collection('events').where('at', '>', now - 7 * DAY).get()).docs.map(d => d.data()); } catch (e){ ev = (await db.collection('events').orderBy('at', 'desc').limit(2000).get()).docs.map(d => d.data()).filter(x => now - (+x.at || 0) < 7 * DAY); }
-const bad = ev.filter(x => /خطأ|تعذّر|تعذر|فشل|error/i.test(String(x.text || x.t || '')));
+try { ev = (await db.collection('events').where('ts', '>', now - 7 * DAY).get()).docs.map(d => d.data()); } catch (e){ ev = (await db.collection('events').orderBy('ts', 'desc').limit(3000).get()).docs.map(d => d.data()).filter(x => now - (+x.ts || 0) < 7 * DAY); }
+const bad = ev.filter(x => /خطأ|تعذّر|تعذر|فشل|error/i.test(String(x.what || '')));
 console.log('أحداث آخر ٧ أيام: ' + ev.length + ' · فيها كلمة خطأ/تعذّر/فشل: ' + bad.length);
-const grp = {}; bad.forEach(x => { const k = String(x.text || x.t || '').replace(/[0-9٠-٩]+/g, '#').slice(0, 60); grp[k] = (grp[k] || 0) + 1; });
+const grp = {}; bad.forEach(x => { const k = String(x.what || '').replace(/[0-9٠-٩]+/g, '#').slice(0, 70); grp[k] = (grp[k] || 0) + 1; });
+const byWhat = {}; ev.forEach(x => { const k = String(x.what || '').split(' — ')[0].replace(/[0-9٠-٩]+/g, '#').slice(0, 40); byWhat[k] = (byWhat[k] || 0) + 1; }); console.log('أكثر الأحداث: ' + JSON.stringify(Object.keys(byWhat).sort((a, b) => byWhat[b] - byWhat[a]).slice(0, 12).map(k => [k, byWhat[k]])));
 Object.keys(grp).sort((a, b) => grp[b] - grp[a]).slice(0, 12).forEach(k => console.log('  ' + grp[k] + ' × ' + k));
 /* ٤ · أحجام المجموعات وطابور المزامنة */
 for (const c of ['sites', 'recs', 'inss', 'photos', 'tasks', 'newsites', 'coreqs', 'pending', 'events']){
