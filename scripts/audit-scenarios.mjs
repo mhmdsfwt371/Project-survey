@@ -2445,7 +2445,7 @@ console.log('\n══ ١٠٥ · مصطلحات الأردو ══');
   const camp = bad(/مخيم/, v => /خیم/.test(v)).filter(k => !/خيم[ةه]|خيام/.test(k));
   const tfw = bad(/تفويج/, v => /روانگی/.test(v));
   const task = bad(/مهام|مهمة/, v => /امور/.test(v));
-  const chal = bad(/تحد/, v => /رکاوٹ/.test(v));
+  const chal = bad(/تحد/, v => /رکاوٹ/.test(v)).filter(k => !/عائق|معوق|عوائق/.test(k));   /* a text naming both challenges and obstacles keeps «رکاوٹ» for the obstacle */
   const ar = K.filter(k => /[\u064A\u0643\u0649]/.test(String(UR[k] || '').replace(/«[^»]*»/g, '')));   /* a word quoted «…» from the Arabic is discussed, not translated */
   T(K.length > 1000, 'قاموسُ الأردو محمَّل في الفحص (' + K.length + ')');
   T(!camp.length, 'المخيم «کیمپ» لا «خیمہ» (الخيمةُ جزءٌ من المخيم)' + (camp.length ? ' — ' + camp.slice(0, 2).join(' | ') : ''));
