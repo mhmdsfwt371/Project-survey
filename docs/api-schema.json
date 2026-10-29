@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V41.6",
+  "app_version": "V41.7",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2378,7 +2378,8 @@
   "V41.3": "iotDashHtml.bars(v, dist) · iotValHtml: الحرارة والرطوبة والبطارية والشَرط (title = الجودة · dBm · المسافة) · sigCell بالشَرط · سيناريو ١٠٤",
   "V41.4": "iotValHtml: المسافة بجوار الشَرط حين (hover: none)",
   "V41.5": "iotDashHtml.health/healthMap/alertsOf/alertsCheck/alertsHtml/accept · PV.IOT_HEALTH (data-iothealth) · iotPaint بألوان الصحة ونقطةٌ للمخيم دون IOT.Z · iotFieldLive: قبولُ التركيب · liveIotLoad كل ٥ د للمكتب · سيناريو ١٠٦",
-  "V41.6": "ur: ٥٥ تصحيحًا (أظهر ٧١٣ نصًّا) + ٣٣ جسر→پل · سيناريو ١٠٥ يقبل «رکاوٹ» حين يذكر العربيُّ العائق"
+  "V41.6": "ur: ٥٥ تصحيحًا (أظهر ٧١٣ نصًّا) + ٣٣ جسر→پل · سيناريو ١٠٥ يقبل «رکاوٹ» حين يذكر العربيُّ العائق",
+  "V41.7": "ur: ٣٧ تصحيحًا (٣١ رسالة ناقصة + ٦ وزٹ→دورہ)"
   },
   "map_and_geolocation": {
     "tile_layers": {
