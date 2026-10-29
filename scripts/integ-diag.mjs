@@ -46,15 +46,15 @@ const one = mine.find(x => /^24e12413605ed65a$/i.test(x.s)) || mine[0];
 if (one){ const g = await call('units/lists', { offset:0, limit:5, projection:['basic'], filters:{ imei:{ value:one.s, op:'like' } } });
   const a2 = Array.isArray(g.j.data) ? g.j.data : ((g.j.data && g.j.data.data) || []);
   console.log('بحثُ «like» عن ' + one.s + ':', g.s, JSON.stringify({ status_code:g.j.status_code, message:g.j.message, n:a2.length, first:a2[0] && { name:a2[0].name, imei:a2[0].imei } })); }
-process.exit(0);
 /* (V42.3) api.afaqy.pro now answers cloud addresses with a Cloudflare challenge (403 «Just a moment…», cf-mitigated) —
    so try the same session on the other AFAQY address, api.afaqy.sa, which answers normally. Token never printed. */
-for (const b of ['https://api.afaqy.pro', 'https://api.afaqy.sa']){
+for (const [b, web2] of [['https://api.afaqy.pro', 0], ['https://api.afaqy.sa', 0], ['https://api.afaqy.sa', 1]]){
   try {
     const r = await fetch(b + '/units/lists?token=' + encodeURIComponent(T.tok || ''), { method:'POST', headers:{ 'content-type':'application/json', accept:'application/json' },
-      body: JSON.stringify({ data:{ offset:0, limit:5, projection:['basic', 'last_update'], filters:{ imei:{ value:mine.map(x => x.s), op:'in' } } } }) });
+      body: (o => JSON.stringify(web2 ? { data:JSON.stringify(o) } : { data:o }))({ offset:0, limit:5, projection:['basic', 'last_update'], filters:{ imei:{ value:mine.map(x => x.s), op:'in' } } }) });
     const txt = await r.text(); let j = {}; try { j = JSON.parse(txt); } catch (e){ j = { html:/Just a moment/i.test(txt) ? 'cloudflare-challenge' : txt.slice(0, 60) }; }
     const arr = Array.isArray(j.data) ? j.data : (j.data && Array.isArray(j.data.data) ? j.data.data : []);
-    console.log('بنفس الجلسة على ' + b + ':', r.status, 'cf=' + (r.headers.get('cf-mitigated') || ''), JSON.stringify({ message:j.message || j.error || j.html, n:arr.length, names:arr.slice(0, 5).map(u => u.name) }));
+    console.log('بنفس الجلسة على ' + b + (web2 ? ' (صيغة الويب)' : '') + ':', r.status, 'cf=' + (r.headers.get('cf-mitigated') || ''), JSON.stringify({ message:j.message || j.error || j.html, n:arr.length, names:arr.slice(0, 5).map(u => u.name) }));
   } catch (e){ console.log('بنفس الجلسة على ' + b + ': خطأ', String(e && e.message || e).slice(0, 120)); }
 }
+process.exit(0);
