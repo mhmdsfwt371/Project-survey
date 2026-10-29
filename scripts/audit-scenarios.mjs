@@ -2407,7 +2407,7 @@ console.log('\n══ ١٠٤ · الحساسات والجيت واي ══');
   T(c1 && c1.st === 'bad' && c1.bad === 3 && c1.s === 5 && c1.g === 1 && c2 && c2.st === 'nos', 'المخيم: «محتاج تدخّل» بمشاكله (٣)، ومخيمٌ لسه بلا سيريالات مش محسوب مشكلة');
   w.iotDashHtml.F = { tab:'camps', st:'all', zone:'all', q:'', n:100, sort:'old', pop:null };
   const h = w.iotDashHtml(); T(/data-iotd="tab:s"/.test(h) && /data-iotd="tab:g"/.test(h) && /data-iotd="pop:camp:TST-1"/.test(h), 'تلات تبويبات: المخيمات · الحساسات · الجيت واي — والمخيم يتفتح بضغطة');
-  w.iotDashHtml.F.q = 'tst-2'; const h2 = w.iotDashHtml(); T(/pop:camp:TST-2/.test(h2) && !/pop:camp:TST-1/.test(h2), 'والبحثُ برقم المخيم يجيب المخيم ده بس');
+  w.iotDashHtml.F.q = 'tst-2'; const h2 = w.iotDashHtml(); { const tb = h2.split('<tbody>')[1] || ''; T(/pop:camp:TST-2/.test(tb) && !/pop:camp:TST-1/.test(tb), 'والبحثُ برقم المخيم يجيب المخيم ده بس (في الجدول — والتنبيهاتُ فوقه للكل)'); }
   w.iotDashHtml.act('pop:camp:TST-1'); const h3 = w.iotDashHtml();
   T(/svq-back/.test(h3) && /pop:dev:TST-1:g:0/.test(h3) && /pop:dev:TST-1:s:4/.test(h3), 'بوبُ المخيم: جيت واي وحساساته — وكلُّ جهاز يتفتح');
   w.iotDashHtml.act('pop:dev:TST-1:s:0'); const h4 = w.iotDashHtml();
@@ -2451,6 +2451,21 @@ console.log('\n══ ١٠٥ · مصطلحات الأردو ══');
   T(!camp.length, 'المخيم «کیمپ» لا «خیمہ» (الخيمةُ جزءٌ من المخيم)' + (camp.length ? ' — ' + camp.slice(0, 2).join(' | ') : ''));
   T(!tfw.length && !task.length && !chal.length, 'التفويج «تفویج» · المهام «کام» · التحديات «چیلنج»' + ([...tfw, ...task, ...chal].length ? ' — ' + [...tfw, ...task, ...chal].slice(0, 2).join(' | ') : ''));
   T(!ar.length, 'لا ي ولا ك ولا ى عربيةً في نصوص الأردو (الأردو: ی ک)' + (ar.length ? ' — ' + ar.slice(0, 2).join(' | ') : ''));
+}
+
+/* ── ١٠٦ · (V41.5) صحة الحساسات والتنبيهات وقبول التركيب ── */
+console.log('\n══ ١٠٦ · صحة الحساسات والتنبيهات وقبول التركيب ══');
+{
+  const now = Date.now(), H = w.iotDashHtml.health;
+  T(H({ kind:'s', st:'ok', v:{ rssi:-80 } }) === 'g' && H({ kind:'s', st:'ok', v:{ rssi:-122 } }) === 'y' && H({ kind:'s', st:'late', v:{} }) === 'y' && H({ kind:'s', st:'off', v:{} }) === 'r' && H({ kind:'s', st:'nos' }) === 'w' && H({ kind:'s', st:'nof' }) === 'n', 'لونُ الصحة: أخضر · أصفر (متأخر أو إشارة ضعيفة) · أحمر (منقطع) · رمادي · أبيض (مخطط)');
+  const mk = (camp, i, at, st, v) => ({ kind:'s', camp, pn:camp, did:camp + '-S' + i, i, at, st, v:v || {} });
+  const rows = [mk('A', 0, now - 5000000, 'off'), mk('A', 1, now - 5200000, 'off'), mk('B', 0, now - 9000000, 'off'), mk('B', 1, now - 60000, 'ok'), mk('C', 0, now - 60000, 'ok', { bat:15 })];
+  const A = w.iotDashHtml.alertsOf(rows), k = A.map(a => a.k + ':' + a.camp).sort().join(',');
+  T(k === 'bat:C,gw:A,off:B', 'التنبيهات: جيت واي واقف غالبًا (كل حساسات المخيم وقفت سوا) · حساس منقطع · بطارية ضعيفة — ' + k);
+  const L0 = w.IOT.live; w.IOT.live = { at:now, busy:false, v:{ at:now, units:{ 'ok1':{ t:now - 60000, v:{ rssi:-80 } }, 'red1':{ t:now - 60000, v:{ rssi:-130 } }, 'old1':{ t:now - 7200000, v:{ rssi:-80 } } } } };
+  const acc = s => w.iotDashHtml.accept({ serial:s }).ok;
+  T(acc('ok1') && !acc('red1') && !acc('old1') && !acc('none') && !acc(''), 'قبولُ التركيب: قراءةٌ حديثة وإشارةٌ مش حمرا — غير كده يرفض ويقول السبب');
+  w.IOT.live = L0;
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

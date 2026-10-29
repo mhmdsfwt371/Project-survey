@@ -122,7 +122,7 @@
 | `03z-shared-b-26-from-approvals-reports-10-point-actions-export-pdf.js` | 52 | 2 | Definitions moved verbatim from src/07-reports/07-approvals-reports-10-point-actions-export-pdf.js (V38.38–V38.39, stage A of core + chunks, pass b): the core ( |
 | `03z-shared-b-27-from-approvals-reports-11-import-roles-perms.js` | 29 | 0 | Definitions moved verbatim from src/07-reports/07-approvals-reports-11-import-roles-perms.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, |
 
-## `03zz-late/` —   (65 ملفات · 6871 سطر · 445 دالة)
+## `03zz-late/` —   (65 ملفات · 6880 سطر · 445 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -176,7 +176,7 @@
 | `05-map--05-lifecycle-map-03-export-import-docx.js` | 16 | 1 | Moved verbatim from src/05-map/05-lifecycle-map-03-export-import-docx.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chu |
 | `05-map--05-lifecycle-map-04-excel-templates-kmz.js` | 360 | 12 | Moved verbatim from src/05-map/05-lifecycle-map-04-excel-templates-kmz.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office ch |
 | `05-map--05-lifecycle-map-05-geojson-basemap-layers.js` | 59 | 4 | Moved verbatim from src/05-map/05-lifecycle-map-05-geojson-basemap-layers.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office |
-| `05-map--05-lifecycle-map-06-sensors-gateways-split.js` | 203 | 25 | Moved verbatim from src/05-map/05-lifecycle-map-06-sensors-gateways-split.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office |
+| `05-map--05-lifecycle-map-06-sensors-gateways-split.js` | 212 | 25 | Moved verbatim from src/05-map/05-lifecycle-map-06-sensors-gateways-split.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office |
 | `05-map--05-lifecycle-map-07-report-lines-hybrid-google.js` | 78 | 6 | Moved verbatim from src/05-map/05-lifecycle-map-07-report-lines-hybrid-google.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the of |
 | `05-map--05-lifecycle-map-08-cameras-report-sw-update.js` | 91 | 2 | Moved verbatim from src/05-map/05-lifecycle-map-08-cameras-report-sw-update.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the offi |
 | `05-map--05-lifecycle-map-09-role-switch-login-install.js` | 76 | 5 | Moved verbatim from src/05-map/05-lifecycle-map-09-role-switch-login-install.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the off |
@@ -217,7 +217,7 @@
 | `04-tasks-office-19-twin-engine.js` | 250 | 17 | (V39.24) owner: «الديجيتال توين حاجة دايناميك: أدخل بالماوس جوّه المكان، أشوف الأجهزة المتركّبة بمواقعها |
 | `04-tasks-office-20-map3d-overview.js` | 83 | 6 | (V39.29) the second step of the GIS review. From afar a monitoring map shows groups, not dust: below zoom |
 
-## `05-map/` — الخريطة ودورةُ الحياة — الطبقات والتصدير والاستيراد والدخول وشاشةُ الوزارة  (21 ملفات · 4769 سطر · 246 دالة)
+## `05-map/` — الخريطة ودورةُ الحياة — الطبقات والتصدير والاستيراد والدخول وشاشةُ الوزارة  (21 ملفات · 4779 سطر · 246 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -226,12 +226,12 @@
 | `05-lifecycle-map-03-export-import-docx.js` | 711 | 4 | Export/import with real data, ExcelJS for self-updating files, and Word export that stays inside the app. |
 | `05-lifecycle-map-04-excel-templates-kmz.js` | 197 | 10 | Current page to Excel, the tasks file from a template, and KMZ/KML import. |
 | `05-lifecycle-map-05-geojson-basemap-layers.js` | 111 | 8 | GeoJSON export, offline Makkah basemap, device map for outages, ministry buildings and tafweej places layers, Mina sensor planning and camp-boundary editing. |
-| `05-lifecycle-map-06-sensors-gateways-split.js` | 345 | 35 | Sensors and gateways as first-class points, and splitting a camp. |
+| `05-lifecycle-map-06-sensors-gateways-split.js` | 354 | 35 | Sensors and gateways as first-class points, and splitting a camp. |
 | `05-lifecycle-map-07-report-lines-hybrid-google.js` | 332 | 21 | Report lines (Abar Mid), hybrid map with street names over satellite, and Google Maps inside our map. |
 | `05-lifecycle-map-08-cameras-report-sw-update.js` | 316 | 21 | Ministry camera report, service worker registration, auto-update, version announcement, the epoch (no uploads from a pre-epoch device) and 'sync everyone now'. |
 | `05-lifecycle-map-09-role-switch-login-install.js` | 533 | 20 | Role switching, logout, add-to-home-screen prompts (incl. iPhone) and the login page. |
 | `05-lifecycle-map-10-field-companies.js` | 260 | 8 | Field map-first home, composite-name parsing, companies board and company camps classified. |
-| `05-lifecycle-map-11-drawing-board-modules.js` | 377 | 10 | Drawing board and its modules: survey details, single challenge key, rooms with sensors. |
+| `05-lifecycle-map-11-drawing-board-modules.js` | 378 | 10 | Drawing board and its modules: survey details, single challenge key, rooms with sensors. |
 | `05-lifecycle-map-12-ministry-screen-progress.js` | 119 | 5 | Ministry hall screen, completion forecast, progress map, far points, satellite in the ministry screen, week sentence and the hall view. |
 | `05-lifecycle-map-13-ministry-followup.js` | 184 | 15 | Ministry follow-up page: dynamic follow-up, season brief header, 'whose turn' groups, two modes, and the no-challenge camps card. |
 | `05-lifecycle-map-15-coverage.js` | 79 | 8 | (V39.14) owner: coverage on the map — what each installed device covers, so a gap or an overlap is seen, |
@@ -243,7 +243,7 @@
 | `05-lifecycle-map-21-move-devices.js` | 127 | 11 | (V39.31) owner: «عاوز أي نقطة، من أقل نقطة، أقدر أحرّكها: كاميرا وأنتنات وريدر وحساسات وجيت واي وخلافه». A point |
 | `05-lifecycle-map-30-kmz-detailed.js` | 100 | 5 | A detailed KMZ for Google Earth: every planned point, once per app filter as folders, with a full balloon. |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4541 سطر · 159 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4543 سطر · 159 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -257,7 +257,7 @@
 | `06-ministry-alerts-08-pptx-template.js` | 1061 | 24 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 284 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 1343 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 1345 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
 
@@ -277,7 +277,7 @@
 | `07-approvals-reports-10-point-actions-export-pdf.js` | 69 | 0 | Point window actions, click identity, export centre by section, export by role, PDF cover page. |
 | `07-approvals-reports-11-import-roles-perms.js` | 322 | 10 | Import via downloaded template, roles (who sees and does what), the owner is never locked out, database permissions matrix, custom roles, ranks, org tree and me |
 
-## `08-events/` — البياناتُ والأحداث — الإعدادات والمستخدمون والنقرات والإقلاع  (14 ملفات · 5290 سطر · 139 دالة)
+## `08-events/` — البياناتُ والأحداث — الإعدادات والمستخدمون والنقرات والإقلاع  (14 ملفات · 5292 سطر · 139 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -286,21 +286,21 @@
 | `08-data-events-boot-03-settings-types-users.js` | 563 | 28 | Settings: point types, moving points between categories, users from the database, user log, delete/duplicate accounts, passwords, login-name change and on-devic |
 | `08-data-events-boot-04-weights-zones.js` | 576 | 8 | Weight rows, zones from one source, display-name fixes and the constants card (incl. pending-upload limit). |
 | `08-data-events-boot-05-menu-shell-perf.js` | 332 | 28 | Menu and shell, scroll position kept across renders, measured performance and browser vitals, focus kept in fields. |
-| `08-data-events-boot-06-long-lists-storage-clicks.js` | 415 | 13 | Long lists (100 first then 'show more'), persistent storage request, table and window clicks. |
+| `08-data-events-boot-06-long-lists-storage-clicks.js` | 416 | 13 | Long lists (100 first then 'show more'), persistent storage request, table and window clicks. |
 | `08-data-events-boot-07-clicks-a-1.js` | 273 | 3 | Delegated click handlers, group A part 1 (return true when the event is consumed). |
 | `08-data-events-boot-08-clicks-a-2.js` | 380 | 3 | Delegated click handlers, group A part 2. |
-| `08-data-events-boot-09-clicks-a-3.js` | 322 | 4 | Delegated click handlers, group A part 3. |
+| `08-data-events-boot-09-clicks-a-3.js` | 323 | 4 | Delegated click handlers, group A part 3. |
 | `08-data-events-boot-10-clicks-doc-1.js` | 363 | 5 | Document-level click handlers part 1 (onDocClick and parts 1–3): settings, constants, survey edit, pending file, E-GATE verification. |
 | `08-data-events-boot-11-clicks-doc-2.js` | 539 | 7 | Document-level click handlers part 2 (parts 4–7). |
 | `08-data-events-boot-12-clicks-doc-3.js` | 262 | 3 | Document-level click handlers part 3 (parts 8–9). |
 | `08-data-events-boot-13-toast-wheel-ios-boot.js` | 818 | 9 | Toast, label cells, mouse wheel never types numbers, iOS viewport stability, assistant scroll fix, file-input change handlers and the boot sequence. |
 | `08-data-events-boot-14-view-as.js` | 97 | 8 | «View as user» for the admin: see the app with another person's role and name — nothing is saved meanwhile. |
 
-## `09-integ/` —   (1 ملفات · 521 سطر · 22 دالة)
+## `09-integ/` —   (1 ملفات · 592 سطر · 22 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
-| `09-integ-01-connections-tab.js` | 521 | 22 | The office «Connections» tab: AFAQY PRO account (stored write-only), bridge status, «Refresh now». |
+| `09-integ-01-connections-tab.js` | 592 | 22 | The office «Connections» tab: AFAQY PRO account (stored write-only), bridge status, «Refresh now». |
 
 ## `99-shell/` — الهيكل — ذيلُ الصفحة  (1 ملفات · 4 سطر · 0 دالة)
 
@@ -308,4 +308,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 241 ملفًّا · 49190 سطر · 2269 دالة.
+**الإجمالي:** 241 ملفًّا · 49284 سطر · 2269 دالة.

@@ -317,7 +317,7 @@ function iotDashHtml(){
     + (F.q ? btn('\u2715 ' + t('امسح البحث'), 'btn-quiet btn-sm', ' data-iotd="q:"') : '') + btn('\u2B07 ' + t('إكسل'), 'btn-quiet btn-sm', ' data-iotd="xlsx"') + btn('\u21BB ' + t('حدّث الآن'), 'btn-quiet btn-sm', ' data-iotd="refresh"') + '</div>';
   var body = F.tab === 'camps' ? iotDashHtml.campsHtml(camps.filter(function(c){ return (F.zone === 'all' || c.zone === F.zone) && (!q || c.key.indexOf(q) > -1); }), F)
     : iotDashHtml.devHtml(all.filter(function(r){ return r.kind === F.tab && inZone(r) && (!q || (r.pn + ' ' + r.camp + ' ' + r.did + ' ' + r.ser + ' ' + r.pnm + ' ' + r.room).toLowerCase().indexOf(q) > -1); }), F);
-  return card('\u{1F4E1} ' + t('تحديث الأجهزة والحساسات') + ' \u00b7 ' + nm(all.length) + ' ' + t('جهاز'), head + body) + iotDashHtml.popHtml(F, all);
+  return card('\u{1F4E1} ' + t('تحديث الأجهزة والحساسات') + ' \u00b7 ' + nm(all.length) + ' ' + t('جهاز'), iotDashHtml.alertsHtml(all) + head + body) + iotDashHtml.popHtml(F, all);   /* (V41.5) alerts first */
 }
 iotDashHtml.LAB = { ok:['\u{1F7E2}', 'محدّث'], late:['\u{1F7E1}', 'متأخر'], off:['\u{1F534}', 'منقطع'], nor:['\u26AA', 'على المنصة بلا قراءة'], nof:['\u26AB', 'السيريال مش على المنصة'], nos:['\u25FB', 'بلا سيريال'] };
 /* (V41.1) owner: «فيه parameter اسمه rssi … عاوز أعرف أستخدمه إزاي في منى، مش مجرد الـvalue». RSSI is how strongly the gateway
@@ -517,4 +517,75 @@ iotDashHtml.bars = function(v, dist){
   var bar = function(k, h){ return '<span style="display:inline-block;width:4px;height:' + h + 'px;margin-inline-end:2px;border-radius:1px;background:' + (k <= n ? col : 'rgba(148,163,184,.35)') + '"></span>'; };
   return '<span dir="ltr" title="' + esc(tip) + '" aria-label="' + esc(tip) + '" style="display:inline-flex;align-items:flex-end;height:14px;vertical-align:middle;cursor:help">'
     + (n ? bar(1, 6) + bar(2, 10) + bar(3, 14) : '<span class="hint" style="margin:0">\u2014</span>') + '</span>';
+};
+
+/* (V41.5) the owner chose ideas 1, 2 and 4.
+   1 · health colours: a device is green (reading under 20 minutes, signal not weak), yellow (late, or a weak signal), red
+       (offline beyond two hours), grey (a serial the platform lacks, or no reading yet), white (planned, no serial). A camp
+       takes its worst device. Used by the map's «صحة الحساسات» layer.
+   2 · alerts, computed in the app from the snapshot every pull (no server cost): «gateway likely down» — every reporting
+       sensor of a camp silent over an hour, all stopped within half an hour of each other; a sensor offline over two hours
+       (outside such a camp); a sensor battery at 20 or less. Admins and engineers are notified once per alert; the list
+       heads the «Sensors & gateways» page for everyone who opens it.
+   4 · installation acceptance: a sensor is set «installed» only once its first reading has arrived within the last 30
+       minutes with a signal that is not red; an engineer or admin may confirm it anyway by choosing it again within ten
+       seconds, and that override is logged. */
+iotDashHtml.hcol = { g:'#22C55E', y:'#EAB308', r:'#EF4444', n:'#64748B', w:'' };
+iotDashHtml.health = function(r){
+  if (r.st === 'off') return 'r';
+  if (r.st === 'late') return 'y';
+  if (r.st === 'ok'){ var S = iotDashHtml.sig(r); return r.kind === 's' && (S.rs === 'y' || S.rs === 'r') ? 'y' : 'g'; }
+  return r.st === 'nos' ? 'w' : 'n';
+};
+iotDashHtml.healthMap = function(){
+  var rows = iotDashHtml.rows(), M = {}, rank = { r:4, y:3, g:2, n:1, w:0 };
+  rows.forEach(function(r){ var h = iotDashHtml.health(r), C = M[r.camp] || (M[r.camp] = { h:'w', d:{}, n:{ g:0, y:0, r:0, n:0, w:0 } });
+    C.d[r.kind + ':' + r.i] = h; C.n[h]++; if (rank[h] > rank[C.h]) C.h = h; });
+  return M;
+};
+iotDashHtml.alertsOf = function(rows){
+  var now = Date.now(), byC = {}, out = [];
+  rows.forEach(function(r){ if (r.kind === 's' && r.at) (byC[r.camp] = byC[r.camp] || []).push(r); });
+  var gwDown = {};
+  Object.keys(byC).forEach(function(k){ var L2 = byC[k]; if (L2.length < 2) return;
+    var ats = L2.map(function(r){ return r.at; }), mx = Math.max.apply(null, ats), mn = Math.min.apply(null, ats);
+    if (now - mx > 3600000 && mx - mn <= 1800000){ gwDown[k] = 1; out.push({ k:'gw', camp:k, pn:L2[0].pn, at:mx, key:'gw:' + k + ':' + Math.round(mx / 60000) }); } });
+  rows.forEach(function(r){
+    if (r.kind === 's' && r.st === 'off' && !gwDown[r.camp]) out.push({ k:'off', camp:r.camp, pn:r.pn, did:r.did, i:r.i, at:r.at, key:'off:' + r.camp + ':' + r.i + ':' + Math.round(r.at / 3600000) });
+    var b = r.v && r.v.bat; if (r.kind === 's' && b != null && b <= 20) out.push({ k:'bat', camp:r.camp, pn:r.pn, did:r.did, i:r.i, b:b, key:'bat:' + r.camp + ':' + r.i + ':' + new Date().toISOString().slice(0, 10) });
+  });
+  return out;
+};
+iotDashHtml.alertLine = function(a){
+  return a.k === 'gw' ? '\u{1F534} ' + t('الجيت واي واقف غالبًا') + ' \u2014 ' + a.pn + ' \u00b7 ' + t('كل الحساسات وقفت') + ' ' + iotDashHtml.age(Date.now() - a.at)
+    : a.k === 'off' ? '\u{1F534} ' + t('حساس منقطع') + ' \u2014 ' + a.pn + ' \u00b7 ' + a.did + ' \u00b7 ' + iotDashHtml.age(Date.now() - a.at)
+    : '\u{1FAAB} ' + t('بطارية ضعيفة') + ' \u2014 ' + a.pn + ' \u00b7 ' + a.did + ' \u00b7 ' + nm(a.b);
+};
+iotDashHtml.alertsCheck = function(){
+  if (typeof mayIot !== 'function' || !mayIot() || typeof notifPush !== 'function') return;
+  var eff = typeof effRole === 'function' ? effRole(ROLE) : ROLE; if (eff !== 'admin' && eff !== 'engineer') return;
+  var A = iotDashHtml.alertsOf(iotDashHtml.rows()), seen = {}, now = Date.now();
+  try { seen = JSON.parse(localStorage.getItem('nsk14.iotAl') || '{}') || {}; } catch (e){ seen = {}; }
+  Object.keys(seen).forEach(function(k){ if (now - seen[k] > 3 * 86400000) delete seen[k]; });
+  var fresh = A.filter(function(a){ return !seen[a.key]; });
+  fresh.forEach(function(a){ seen[a.key] = now; });
+  try { localStorage.setItem('nsk14.iotAl', JSON.stringify(seen)); } catch (e2){ LS_ERR = e2; }
+  if (!fresh.length) return;
+  if (fresh.length <= 3) fresh.forEach(function(a){ notifPush(t('الحساسات'), iotDashHtml.alertLine(a), { lv:'مهم' }); });
+  else notifPush(t('الحساسات'), nm(fresh.length) + ' ' + t('تنبيه جديد في الحساسات — افتح «الحساسات والجيت واي»'), { lv:'مهم' });
+};
+iotDashHtml.alertsHtml = function(all){
+  var A = iotDashHtml.alertsOf(all); if (!A.length) return '';
+  var n = { gw:0, off:0, bat:0 }; A.forEach(function(a){ n[a.k]++; });
+  return '<details style="margin:0 0 10px;border:1px solid rgba(239,68,68,.45);border-radius:10px;padding:6px 10px"><summary style="cursor:pointer"><b>\u{1F514} ' + esc(t('التنبيهات')) + '</b> \u00b7 '
+    + (n.gw ? '\u{1F534} ' + nm(n.gw) + ' ' + esc(t('جيت واي')) + ' ' : '') + (n.off ? '\u{1F534} ' + nm(n.off) + ' ' + esc(t('منقطع')) + ' ' : '') + (n.bat ? '\u{1FAAB} ' + nm(n.bat) + ' ' + esc(t('بطارية')) : '') + '</summary>'
+    + A.slice(0, 60).map(function(a){ return '<div style="margin:4px 0;cursor:pointer" data-iotd="pop:camp:' + esc(a.camp) + '">' + esc(iotDashHtml.alertLine(a)) + '</div>'; }).join('') + (A.length > 60 ? '<div class="hint">\u2026 ' + nm(A.length - 60) + '</div>' : '') + '</details>';
+};
+iotDashHtml.accept = function(m){
+  var ser = String((m && m.serial) || '').trim(); if (!ser) return { ok:false, why:t('اكتب سيريال الحساس الأول — من غيره ما نقدرش نشوف قراءته') };
+  var x = typeof liveIotOf === 'function' ? liveIotOf(ser) : null;
+  if (!x || !x.t) return { ok:false, why:t('لسه ما وصلتش ولا قراءة من الحساس ده — استنى أول قراءة (حوالي ٥ دقايق) وبعدين علّمه مُركّب') };
+  if (Date.now() - x.t > 1800000) return { ok:false, why:t('آخر قراءة من الحساس ده أقدم من نص ساعة — اتأكد إنه شغّال') };
+  var G = iotDashHtml.sig({ kind:'s', v:x.v || {} }); if (G.rs === 'r') return { ok:false, why:t('إشارة الحساس حمرا — قرّبه من الجيت واي أو شيل العائق قبل ما تعلّمه مُركّب') };
+  return { ok:true };
 };

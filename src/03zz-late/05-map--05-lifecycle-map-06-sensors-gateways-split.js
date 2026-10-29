@@ -72,7 +72,16 @@ function iotDel(){
    between wiped what was typed. Now every keystroke goes into the selected device, «حفظ البيانات» writes the plan at once
    (the edit stays open), and «احفظ» takes what is in the fields before it writes and closes. */
 function iotSelMeta(){ var E = IOT.edit; if (!E || !E.sel) return null; var A = E.sel.k === 's' ? E.sm : E.gm; if (!A) return null; if (!A[E.sel.i]) A[E.sel.i] = { status:'مخطط' }; return A[E.sel.i]; }
-function iotFieldLive(id, val){ var m = iotSelMeta(), k = iotFieldLive.F[id]; if (!m || !k) return; if (k === 'room' && IOT.edit.sel.k !== 's') return; m[k] = k === 'status' ? (String(val || '').trim() || 'مخطط') : String(val == null ? '' : val).trim(); }
+function iotFieldLive(id, val){ var m = iotSelMeta(), k = iotFieldLive.F[id]; if (!m || !k) return; if (k === 'room' && IOT.edit.sel.k !== 's') return;
+  /* (V41.5) installation acceptance — a sensor becomes «مُركّب» only with a fresh reading and a signal that is not red */
+  if (k === 'status' && val === 'مُركّب' && m.status !== 'مُركّب' && IOT.edit.sel.k === 's' && typeof iotDashHtml === 'function' && iotDashHtml.accept){
+    var A = iotDashHtml.accept(m), eff = typeof effRole === 'function' ? effRole(ROLE) : ROLE, key = (m.id || '') + '|' + (m.serial || '');
+    if (!A.ok){
+      if ((eff === 'engineer' || eff === 'admin') && PV.ACC_ARM === key && Date.now() - (PV.ACC_AT || 0) < 10000){ PV.ACC_ARM = ''; logEvent('تجاوزُ قبول تركيب حساس — ' + (m.id || '') + ' \u00b7 ' + A.why, IOT.edit.id); }
+      else { PV.ACC_ARM = key; PV.ACC_AT = Date.now(); var el = document.getElementById('iotStatus'); if (el) el.value = m.status || 'مخطط';
+        toast(A.why + ((eff === 'engineer' || eff === 'admin') ? ' \u2014 ' + t('ولو متأكد: اختار «مُركّب» تاني خلال ١٠ ثواني (هيتسجّل تجاوز)') : '')); return; }
+    }
+  } m[k] = k === 'status' ? (String(val || '').trim() || 'مخطط') : String(val == null ? '' : val).trim(); }
 iotFieldLive.F = { iotRoom:'room', iotSerial:'serial', iotModel:'model', iotTag:'tag', iotNote:'note', iotStatus:'status' };
 /* a fallback for a field whose typing never reached the session (autofill): only an empty value is filled from the screen —
    every keystroke, clearing included, already arrived through iotFieldLive */
