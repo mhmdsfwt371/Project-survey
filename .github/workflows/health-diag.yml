@@ -1,0 +1,31 @@
+# (V43.3) one-time read-only health read of production data (presence, bugs, events, counts) — writes nothing
+name: Health diagnosis
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [staging]
+    paths: ['.github/workflows/health-diag.yml', 'scripts/health-diag.mjs']
+permissions:
+  contents: read
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: أدواتُ الخادم
+        # التثبيتُ يُعاد ثلاثًا: تعثّرُ سِجلِّ الحزم لحظةً لا يُسقِط سيرًا.
+        run: |
+          for i in 1 2 3; do
+            npm i firebase-admin@12 --no-save --no-audit --no-fund && exit 0
+            echo "::warning::محاولةُ التثبيت $i تعثّرت — إعادةٌ بعد $((i*15))ث"
+            sleep $((i*15))
+          done
+          echo "::error::تعذّر التثبيتُ بعد ثلاث محاولات"; exit 1
+      - name: قراءةُ الصحة
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/health-diag.mjs
