@@ -34,4 +34,13 @@ try { const pend = (await db.collection('pending').limit(50).get()).docs.map(d =
 /* (V43.6) a focused look: events of the last three hours matching Q (a regex), with who, when and the device */
 const Q = String(process.env.Q || '');
 if (Q){ const re = new RegExp(Q, 'i'); ev.filter(x => now - (+x.ts || 0) < 3 * 3600000 && re.test(String(x.what || ''))).sort((a, b) => (+a.ts || 0) - (+b.ts || 0)).slice(-40).forEach(x => console.log('Q · ' + iso(+x.ts) + ' · ' + (x.by || '') + ' · ' + String(x.what || '').slice(0, 220))); }
+/* (V43.6) points outside the Makkah area (a stray coordinate makes «fit to points» zoom out to half the region) */
+if (process.env.OUT){
+  const box = (la, ln) => la > 20.8 && la < 22.2 && ln > 39.4 && ln < 40.5;
+  for (const c of ['newsites', 'sites']){
+    const D = (await db.collection(c).get()).docs; let n = 0;
+    D.forEach(d => { const v = d.data() || {}, la = +v.lat, ln = +v.lng; if ((la || ln) && !box(la, ln)){ n++; if (n <= 15) console.log('OUT · ' + c + ' · ' + d.id + ' · ' + (v.name || '') + ' · ' + la + ',' + ln + ' · ' + (v.by || v._by || '') + ' · ' + (v.hidden ? 'مخفي' : '') + (v.deleted ? 'محذوف' : '')); } });
+    console.log('OUT · ' + c + ': ' + n + ' خارج مكة من ' + D.length);
+  }
+}
 process.exit(0);
