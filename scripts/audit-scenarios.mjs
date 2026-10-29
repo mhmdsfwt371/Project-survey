@@ -2480,6 +2480,16 @@ console.log('\n══ ١٠٧ · جدارُ الحماية على أفاقي بر
   T(/Cloudflare/.test(h1) && (h2.match(/403|٤٠٣/g) || []).length === 1, 'الكارت: الجدار باسمه، ورقمُ الرفض مرةً واحدة لا «(403) (٤٠٣)»');
 }
 
+/* ── ١٠٨ · (V42.6) الشركةُ المضافة تظهر في قائمة المخيم الجديد ── */
+console.log('\n══ ١٠٨ · الشركةُ المضافة في قائمة الشركات ══');
+{
+  const core = readFileSync(new URL('../src/01-core/01-core-registry-05-sync-scale.js', import.meta.url), 'utf8');
+  T(!/office && DB\.col\('coreqs'\)/.test(core) && /coreqs[\s\S]{0,400}coFill\(\)/.test(core), 'الشركاتُ المضافة تُقرأ لكل الأدوار، وتُعاد تعبئةُ القائمة لحظةَ وصولها — لا قبلها فتضيع');
+  const prev = w.STATE.coreqs; w.STATE.coreqs = Object.assign({}, prev || {}, { 'شركة اختبار مضافة':{ name:'شركة اختبار مضافة', status:'معتمد' } });
+  w.coFill(); T(w.CO_LIST.indexOf('شركة اختبار مضافة') > -1, 'وبعد التعبئة: الشركةُ المعتمدةُ في القائمة التي يختار منها نموذجُ المخيم');
+  w.STATE.coreqs = prev; w.coFill();
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

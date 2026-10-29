@@ -1027,10 +1027,15 @@ var FB = {
         sn.forEach(function(d){ STATE.ships[d.id] = d.data(); });
       }).catch(function(e){ softErr('سحب الشحنات', e, 'تعذّر سحبُ سجل الشحنات'); });
 
-      office && DB.col('coreqs').limit(1000).get().then(function(sn){
+      /* (V42.6) the owner: «شكري ضاف شركة … وأنا بضيف مخيم جديد مش موجودة في الليست». The company list is filled at start-up
+         (coFill), before this read returns — so a company added on another device never reached the list after a reload. It
+         is refilled the moment the added companies arrive, and they are read by every role (the rules allow it): a supervisor
+         adding a camp in the field needs them as much as the office does. */
+      DB.col('coreqs').limit(1000).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;
         if (!STATE.coreqs) STATE.coreqs = {};
         sn.forEach(function(d){ STATE.coreqs[d.id] = d.data(); });
+        try { if (typeof coFill === 'function'){ coFill(); if (CUR === 'newsite' || CUR === 'cos' || CUR === 'co' || (typeof NS_CO_OPEN !== 'undefined' && NS_CO_OPEN)) render(1); } } catch (eC){ LS_ERR = eC; }
       }).catch(function(e){ softErr('سحب طلبات الشركات', e, 'تعذّر سحبُ طلبات إضافة الشركات'); });
 
       office && DB.col('fixreqs').limit(1000).get().then(function(sn){
