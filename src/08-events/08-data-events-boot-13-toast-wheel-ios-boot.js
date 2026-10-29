@@ -291,8 +291,8 @@ document.addEventListener('input', function(e){
     renderKeepGrab.iqT = setTimeout(function(){ var F = iotDashHtml.F || {}; if (F.q === iv) return; F.q = iv; F.n = 100; if (iv) F.st = 'all'; iotDashHtml.F = F; render(); }, 280);
     return;
   }
-  if (e.target && (e.target.id === 'tgQ' || e.target.id === 'adQ')){   /* (V42.8) the gates and added-sites searches */
-    clearTimeout(renderKeepGrab.ovT); var ov = e.target.value, key = e.target.id === 'tgQ' ? 'TGQ' : 'ADQ';
+  if (e.target && e.target.id === 'adQ'){   /* (V42.8) the added-sites search */
+    clearTimeout(renderKeepGrab.ovT); var ov = e.target.value, key = 'ADQ';
     renderKeepGrab.ovT = setTimeout(function(){ if (PV[key] === ov) return; PV[key] = ov; render(); }, 280);
     return;
   }

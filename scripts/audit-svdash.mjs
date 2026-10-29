@@ -80,7 +80,7 @@ console.log('\n══ ٢ · الشاشةُ تعرض البطاقات وتفتح 
   tab().dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
   await wait(250);
   let h = d.getElementById('content').innerHTML;
-  T((h.match(/data-svd="/g) || []).length === 12 && /data-svd="tard"/.test(h) && /data-svd="tbar"/.test(h), 'اثنتا عشرةَ بطاقة لكلِّ سؤالٍ رقمُه — ومنها أربعُ عرفات: الترددي والحاجز التنظيمي (V42.9)');
+  T((h.match(/data-svd="/g) || []).length === 8, 'ثماني بطاقاتٍ لكلِّ سؤالٍ رقمُه');
   T(h.indexOf('data-fly="') < 0, 'ولا قائمةَ قبل أن تُفتَح بطاقة');
   d.querySelector('[data-svd="metal"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
   await wait(250);

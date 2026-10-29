@@ -243,7 +243,6 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
   body:function(){
     var head = tabHead('over'), cur = tabCur('over');
     if (cur === 'svdash') return head + svdashBody();
-    if (cur === 'tgates') return head + tgatesBody();   /* (V42.8) */
     if (cur === 'added') return head + addedBody();     /* (V42.8) */
     if (cur === 'now') return head + overDailyBody() + (function(){   /* (V27.1) المعدلُ اليومي صار قسمًا هنا */
     /* الوزارةُ تسأل ثلاثةَ أسئلةٍ لا تجيبها لوحةٌ واحدة: ماذا انتهى؟ ماذا يجري
@@ -331,7 +330,7 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
       rows.map(function(r){
         return [esc(t(r[0])), esc(t(r[1])), N(r[2]),
                 nm(Math.round(r[2] / (S.total || 1) * 100)) + '٪'];
-      }), ['الإجمالي','', N(S.total), '١٠٠٪'])) + arfTypeHtml();   /* (V42.9) Arafat: ترددي / عادي, and the gates inside */
+      }), ['الإجمالي','', N(S.total), '١٠٠٪']));
   })();
     if (cur === 'pace') return head + (function(){
     /* كانت تنبيهًا دائمًا «لم تُضبط المواعيد» وأصفارًا مكتوبةً بيد، لأن صفحةَ
@@ -1061,42 +1060,6 @@ function svaSelGo(){
   render(1);
 }
 
-/* (V42.8) the owner: «فين الداشبورد اللي بتبين أبواب تنظيم التفويج؟ … عشان نشوف عددها وموجودة فين» — the gate count lived only
-   in «متابعة الوزارة» ← «المسح», as totals with no places. Here, under «نظرة عامة», the same field-chosen count (siteTard /
-   siteTbar — only what a technician or supervisor picked) with every camp, its holy site, its gates, who recorded them, and a
-   jump to the camp on the map; filters and an Excel copy. */
-function tgatesRows(){
-  return (STATE.sites || []).filter(function(x){ return x && x.type === 'مخيم' && !x.hidden && !x.deleted && siteTard(x); }).map(function(x){
-    var ts = ctSrc((STATE.recs || {})[x.id], 'tbar'), n = siteTbar(x);
-    return { x:x, n:n, by:(ts && ts.field && ts.by) || ((ctypeSrc(x) || {}).by) || '', at:(ts && ts.at) || ((ctypeSrc(x) || {}).at) || 0 };
-  }).sort(function(a, b){ return String(a.x.zone || '').localeCompare(String(b.x.zone || ''), 'ar') || (b.n - a.n) || String(a.x.id).localeCompare(String(b.x.id)); });
-}
-function tgatesBody(){
-  var all = tgatesRows(), F = PV.TGF || 'all', q = String(PV.TGQ || '').trim().toLowerCase();
-  var rows = all.filter(function(r){ return (F === 'all' || (F === 'with' ? r.n > 0 : r.n === 0)) && (!q || (String(r.x.id) + ' ' + (r.x.name || '') + ' ' + (r.x.co || '')).toLowerCase().indexOf(q) > -1); });
-  var byZ = {}; all.forEach(function(r){ var z = r.x.zone || '\u2014'; var g = byZ[z] = byZ[z] || { c:0, n:0 }; g.c++; g.n += r.n; });
-  var chip = function(k, l, n){ return F === k ? '<span class="chip on">' + esc(t(l)) + ' <b class="num">' + nm(n) + '</b></span>'   /* the chosen one is a label: pressing it would change nothing */
-    : '<button type="button" class="chip" data-tgf="' + k + '">' + esc(t(l)) + ' <b class="num">' + nm(n) + '</b></button>'; };
-  var withN = all.filter(function(r){ return r.n > 0; }).length;
-  return (typeof tardBarHtml === 'function' ? tardBarHtml() : '')
-    + card('\u{1F5FA} ' + t('حسب المشعر'), '<div class="chips" style="margin:0">' + Object.keys(byZ).map(function(z){ return '<span class="pill">' + esc(t(z)) + ' \u00b7 <b class="num">' + nm(byZ[z].n) + '</b> ' + esc(t('بوابة')) + ' ' + esc(t('في')) + ' ' + nm(byZ[z].c) + ' ' + esc(t('مخيم')) + '</span>'; }).join('') + '</div>')
-    + card('\u{1F6A7} ' + t('أين البوابات') + ' \u2014 ' + nm(rows.length),
-      '<div class="chips" style="margin:0 0 8px">' + chip('all', 'الكل', all.length) + chip('with', 'بعدد بوابات', withN) + chip('none', 'ترددي بلا عدد بعد', all.length - withN) + '</div>'
-      + '<input type="search" id="tgQ" placeholder="' + esc(t('ابحث برقم المخيم أو اسمه أو شركته')) + '" value="' + esc(PV.TGQ || '') + '" style="margin:0 0 8px">'
-      + (rows.length ? table(['المخيم', 'المشعر', 'الشركة', 'عدد البوابات', 'سجّلها', ''], rows.slice(0, 300).map(function(r){
-          return ['<b>' + esc(r.x.id) + '</b>' + (r.x.name && r.x.name !== r.x.id ? '<div class="hint" style="margin:0">' + esc(r.x.name) + '</div>' : ''), esc(t(r.x.zone || '\u2014')), esc(dispName(r.x.co || '\u2014')),
-            r.n > 0 ? '<b class="num">' + nm(r.n) + '</b>' : '<span class="hint" style="margin:0;color:#EF4444">' + esc(t('بلا عدد بعد')) + '</span>',
-            esc(dispName(r.by || '\u2014')) + (r.at ? '<div class="hint" style="margin:0">' + esc(fmtDate(r.at, { day:'numeric', month:'short' })) + '</div>' : ''),
-            btn('\u{1F4CD} ' + t('على الخريطة'), 'btn-quiet btn-sm', ' data-fly="' + esc(r.x.id) + '"')]; }))
-        : '<p class="hint">' + esc(t('لا مخيمات ترددي من المسح بعد — تظهر هنا أول ما يختارها الفني أو المشرف في نموذج المسح.')) + '</p>')
-      + (rows.length > 300 ? '<p class="hint">' + nm(rows.length - 300) + ' ' + esc(t('أخرى — ضيّق البحث')) + '</p>' : '')
-      + (all.length ? '<div style="margin:8px 0 0">' + btn('\u2B07 ' + t('Excel'), 'btn-secondary btn-sm', ' data-tgx="1"') + '</div>' : ''));
-}
-function tgatesXlsx(){
-  var rows = tgatesRows().map(function(r){ return [r.x.id, r.x.name || '', r.x.zone || '', r.x.co || '', r.n || '', r.by || '', r.at ? new Date(r.at).toISOString().slice(0, 10) : '', +r.x.lat || '', +r.x.lng || '']; });
-  if (typeof mtXlsx === 'function') return mtXlsx('بوابات التفويج', ['رقم المخيم', 'الاسم', 'المشعر', 'الشركة', 'عدد البوابات', 'سجّلها', 'التاريخ', 'خط العرض', 'خط الطول'], rows);
-  toast(t('التصدير غير متاح على هذا الجهاز')); return false;
-}
 /* (V42.8) the owner: «ويبقى فيه في الداشبورد في المتابعة حاجة تبين لي أسماء المخيمات اللي أنا ضفتها بإيدي، اللي ما كانتش موجودة
    في الملف اللي اتبعت السنة اللي فاتت، أو اللي اتضافت من الشباب في الميدان». Every site added after the original file (isNew),
    by where it came from (the office, the field, the Ministry, a KMZ file), who, when, its holy site and company, and whether
@@ -1130,61 +1093,5 @@ function addedBody(){
 function addedXlsx(){
   var rows = addedRows().map(function(x){ return [x.id, x.name || '', x.type || '', x.zone || '', x.co || '', x.by || '', x.at ? new Date(x.at).toISOString().slice(0, 10) : '', addedSrc(x), x.approved ? 'معتمد' : 'بانتظار الاعتماد', +x.lat || '', +x.lng || '']; });
   if (typeof mtXlsx === 'function') return mtXlsx('المضاف يدويًا', ['الرقم', 'الاسم', 'النوع', 'المشعر', 'الشركة', 'أضافها', 'التاريخ', 'المصدر', 'الحالة', 'خط العرض', 'خط الطول'], rows);
-  toast(t('التصدير غير متاح على هذا الجهاز')); return false;
-}
-
-/* (V42.9) the owner: «في المتابعة في عرفات لما أدخل ألاقي من ضمن الداشبورد حاجة بتبين إن دي مخيمات ترددي ودي مخيمات عادية؛ أدخل
-   على المخيمات الترددي يقول لي في كام باب تفويج جواها». Under «حسب المشعر والنوع»: Arafat's camps split by the type the field
-   chose (ترددي / عادي / not chosen yet — the same rule as everywhere: only what a technician or supervisor picked), each a button
-   opening its list; the ترددي list gives every camp's tafweej gates, the total, who recorded them, a map jump and Excel. */
-function arfTypeRows(){
-  var out = { tard:[], norm:[], none:[] };
-  (STATE.sites || []).forEach(function(x){
-    if (!x || x.type !== 'مخيم' || x.zone !== 'عرفات' || x.hidden || x.deleted) return;
-    if (siteTard(x)){ var ts = ctSrc((STATE.recs || {})[x.id], 'tbar'); out.tard.push({ x:x, n:siteTbar(x), by:(ts && ts.field && ts.by) || ((ctypeSrc(x) || {}).by) || '' }); return; }
-    var cs = ctypeSrc(x);
-    if (cs && cs.field && cs.v === 'عادي') out.norm.push({ x:x, n:0, by:cs.by || '' }); else out.none.push({ x:x, n:0, by:'' });
-  });
-  out.tard.sort(function(a, b){ return (b.n - a.n) || String(a.x.id).localeCompare(String(b.x.id)); });
-  return out;
-}
-function arfTypeHtml(){
-  var G = arfTypeRows(), P = PV.ARFT || '', gates = G.tard.reduce(function(a, r){ return a + r.n; }, 0), withN = G.tard.filter(function(r){ return r.n > 0; }).length;
-  var all = G.tard.length + G.norm.length + G.none.length;
-  if (!all) return '';
-  var box = function(k, n, l, sub, col){ var on = P === k;
-    return '<button type="button" class="btn ' + (on ? 'btn-primary' : 'btn-quiet') + '" data-arft="' + k + '" style="flex:1 1 170px;min-width:170px;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;text-align:start;border-inline-start:4px solid ' + col + '">'
-      + '<span class="num" style="font-size:22px;line-height:1.1">' + nm(n) + '</span><span>' + esc(t(l)) + '</span>' + (sub ? '<span class="hint" style="margin:0">' + sub + '</span>' : '') + '</button>'; };
-  var list = '';
-  if (P && G[P]){
-    var L = G[P];
-    list = '<div style="margin:10px 0 0">'
-      + (P === 'tard' ? '<div style="font-weight:800;margin:0 0 6px">\u{1F6A7} ' + esc(t('مجموع بوابات التفويج')) + ': <span class="num">' + nm(gates) + '</span> ' + esc(t('في')) + ' ' + nm(withN) + ' ' + esc(t('مخيم')) + (G.tard.length - withN ? ' \u00b7 <span style="color:#EF4444">' + nm(G.tard.length - withN) + ' ' + esc(t('بلا عدد بعد')) + '</span>' : '') + '</div>' : '')
-      + (L.length ? table(P === 'tard' ? ['المخيم', 'الشركة', 'عدد بوابات التفويج', 'سجّلها', ''] : ['المخيم', 'الشركة', P === 'norm' ? 'اختارها' : 'الحالة', ''],
-          L.slice(0, 400).map(function(r){
-            var id = '<b>' + esc(r.x.id) + '</b>' + (r.x.name && r.x.name !== r.x.id ? '<div class="hint" style="margin:0">' + esc(r.x.name) + '</div>' : '');
-            var fly = btn('\u{1F4CD} ' + t('على الخريطة'), 'btn-quiet btn-sm', ' data-fly="' + esc(r.x.id) + '"');
-            if (P === 'tard') return [id, esc(dispName(r.x.co || '\u2014')), r.n > 0 ? '<b class="num" style="font-size:16px">' + nm(r.n) + '</b>' : '<span class="hint" style="margin:0;color:#EF4444">' + esc(t('بلا عدد بعد')) + '</span>', esc(dispName(r.by || '\u2014')), fly];
-            if (P === 'norm') return [id, esc(dispName(r.x.co || '\u2014')), esc(dispName(r.by || '\u2014')), fly];
-            var rec = (STATE.recs || {})[r.x.id];
-            return [id, esc(dispName(r.x.co || '\u2014')), esc(t(rec && !rec.deleted ? 'زير — النوع لم يُختر' : 'لم يُزر بعد')), fly];
-          })) : '<p class="hint">' + esc(t('لا مخيمات هنا بعد.')) + '</p>')
-      + (L.length > 400 ? '<p class="hint">' + nm(L.length - 400) + ' ' + esc(t('أخرى — والتصدير يشمل الكل')) + '</p>' : '')
-      + (L.length ? '<div style="margin:8px 0 0">' + btn('\u2B07 ' + t('Excel'), 'btn-secondary btn-sm', ' data-arfx="' + P + '"') + '</div>' : '')
-      + '</div>';
-  }
-  return card('\u26FA ' + t('عرفات — نوع المخيم') + ' \u00b7 ' + nm(all) + ' ' + t('مخيم'),
-    '<p class="hint" style="margin:0 0 8px">' + esc(t('من اختيار الفني أو المشرف في نموذج المسح. اضغط أي رقم يفتح قائمته — والترددي بيقولك كل مخيم فيه كام بوابة تفويج.')) + '</p>'
-    + '<div class="wt-row" style="flex-wrap:wrap;gap:8px;align-items:stretch">'
-    + box('tard', G.tard.length, 'مخيمات ترددي', '\u{1F6A7} ' + esc(t('بوابات التفويج')) + ' <b class="num">' + nm(gates) + '</b>', '#F59E0B')
-    + box('norm', G.norm.length, 'مخيمات عادي', '', '#22C55E')
-    + box('none', G.none.length, 'لم يُحدَّد نوعها بعد', esc(t('تُحدَّد في زيارة المسح')), '#94A3B8')
-    + '</div>' + list);
-}
-function arfTypeXlsx(k){
-  var G = arfTypeRows(), L = G[k] || [];
-  var head = k === 'tard' ? ['رقم المخيم', 'الاسم', 'الشركة', 'عدد بوابات التفويج', 'سجّلها', 'خط العرض', 'خط الطول'] : ['رقم المخيم', 'الاسم', 'الشركة', 'اختارها', 'خط العرض', 'خط الطول'];
-  var rows = L.map(function(r){ return k === 'tard' ? [r.x.id, r.x.name || '', r.x.co || '', r.n || '', r.by || '', +r.x.lat || '', +r.x.lng || ''] : [r.x.id, r.x.name || '', r.x.co || '', r.by || '', +r.x.lat || '', +r.x.lng || '']; });
-  if (typeof mtXlsx === 'function') return mtXlsx({ tard:'عرفات - ترددي', norm:'عرفات - عادي', none:'عرفات - لم يحدد' }[k] || 'عرفات', head, rows);
   toast(t('التصدير غير متاح على هذا الجهاز')); return false;
 }

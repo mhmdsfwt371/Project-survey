@@ -155,7 +155,45 @@ function svSubPass(id){
   if (p[0] === 'cob'){ if (!x || x.type !== 'مخيم' || !x.co) return false; var cb = mtCoStats().filter(function(o){ return o.co === x.co; })[0]; return !!cb && cb.b === p[1]; }
   if (p[0] === 'grp') return p[1] === 'all' ? /^(prep|coord)$/.test(svStOf(id)) : mtGrpOf(id) === p[1];
   if (p[0] === 'day'){ var dk = p[1], kd = p[2] || ''; return (STATE.steps || []).some(function(st){ return mtStepSite(st) === id && dayKey(+st.at || 0) === dk && (!kd || st.kind === kd); }); }
+  if (p[0] === 'ct') return svCtOf(x) === p[1];   /* (V43.0) Arafat camp type */
   return true;
+}
+/* (V43.0) the owner, in «متابعة الوزارة» ← «المسح» ← عرفات: «يقول لي مخيمات قد إيه ترددية ومخيمات عادية، أدخل على الترددية يقول
+   لي في كام باب تفويج فيها — وطبعًا اللي لسه في الآخر». A camp's type as the field chose it (siteTard / ctypeSrc — only what a
+   technician or supervisor picked): «tard», «norm», or «none» (not chosen yet). Non-camps and other holy sites have none. */
+function svCtOf(x){
+  if (!x || x.type !== 'مخيم' || x.zone !== 'عرفات') return '';
+  if (siteTard(x)) return 'tard';
+  var cs = ctypeSrc(x); return cs && cs.field && cs.v === 'عادي' ? 'norm' : 'none';
+}
+PV.SV_CT = [{ k:'tard', n:'مخيمات ترددي', e:'\u{1F6A7}', c:'#F59E0B' }, { k:'norm', n:'مخيمات عادي', e:'\u26FA', c:'#22C55E' }, { k:'none', n:'لم يُحدَّد نوعها بعد', e:'\u2754', c:'#94A3B8' }];
+function svCtSec(rows){
+  var cc = { tard:0, norm:0, none:0 }, gates = 0;
+  rows.forEach(function(r){ var x = siteFind(r[0]), k = svCtOf(x); if (!k) return; cc[k]++; if (k === 'tard') gates += siteTbar(x); });
+  if (!(cc.tard + cc.norm + cc.none)) return '';
+  var tile = 'background:var(--surface-2);border-radius:14px;padding:12px';
+  return '<div class="hint" style="margin:4px 0 6px;font-size:14px">' + esc(t('نوع المخيم — عرفات')) + '</div>'
+    + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">'
+    + PV.SV_CT.map(function(o){
+        return '<div role="button" tabindex="0" data-svsub="ct:' + o.k + '" title="' + esc(t('اضغط للتفاصيل والإكسل')) + '" style="' + tile + ';text-align:center;padding:10px 6px;cursor:pointer;border-top:4px solid ' + o.c + '">'
+          + '<div style="font-size:24px">' + o.e + '</div><div class="num" style="font-size:22px;font-weight:800">' + nm(cc[o.k]) + '</div><div style="font-size:13px">' + esc(t(o.n)) + ' \u203A</div>'
+          + (o.k === 'tard' ? '<div class="hint" style="margin:2px 0 0;font-size:12px">' + esc(t('بوابات التفويج')) + ' <b class="num">' + nm(gates) + '</b></div>' : '')
+          + (o.k === 'none' ? '<div class="hint" style="margin:2px 0 0;font-size:12px">' + esc(t('تُحدَّد في زيارة المسح')) + '</div>' : '') + '</div>';
+      }).join('') + '</div>';
+}
+function svCtGates(rows){
+  var L = rows.map(function(r){ var x = siteFind(r[0]); return x && svCtOf(x) === 'tard' ? { x:x, n:siteTbar(x), ts:ctSrc((STATE.recs || {})[x.id], 'tbar') } : null; }).filter(Boolean)
+    .sort(function(a, b){ return (b.n - a.n) || String(a.x.id).localeCompare(String(b.x.id)); });
+  if (!L.length) return '';
+  var tot = L.reduce(function(a, o){ return a + o.n; }, 0), withN = L.filter(function(o){ return o.n > 0; }).length;
+  return '<div style="background:var(--surface-2);border-radius:14px;padding:12px;margin:0 0 12px">'
+    + '<div style="font-weight:800;font-size:16px;margin:0 0 8px">\u{1F6A7} ' + esc(t('مجموع بوابات التفويج')) + ': <span class="num">' + nm(tot) + '</span> ' + esc(t('في')) + ' ' + nm(withN) + ' ' + esc(t('مخيم'))
+    + (L.length - withN ? ' \u00b7 <span style="color:#EF4444">' + nm(L.length - withN) + ' ' + esc(t('بلا عدد بعد')) + '</span>' : '') + '</div>'
+    + table(['المخيم', 'الشركة', 'عدد بوابات التفويج', 'سجّلها'], L.slice(0, 400).map(function(o){
+        return [siteIdHtml(o.x) + (o.x.name && o.x.name !== o.x.id ? '<div class="hint" style="margin:0">' + esc(o.x.name) + '</div>' : ''), esc(dispName(o.x.co || '\u2014')),
+          o.n > 0 ? '<b class="num" style="font-size:16px">' + nm(o.n) + '</b>' : '<span class="hint" style="margin:0;color:#EF4444">' + esc(t('بلا عدد بعد')) + '</span>',
+          esc(dispName((o.ts && o.ts.field && o.ts.by) || '\u2014'))]; }))
+    + '</div>';
 }
 
 function svSubLabel(){ if (!SV_SUB) return ''; var p = SV_SUB.split(':');
@@ -163,12 +201,13 @@ function svSubLabel(){ if (!SV_SUB) return ''; var p = SV_SUB.split(':');
   if (p[0] === 'neww') return 'تحتاج تنسيق مع الجهة المالكة — جديدة هذا الأسبوع';
   if (p[0] === 'life') return p[1] === 'minwait' ? 'جاهزة لاعتماد الوزارة' : ((LIFE[p[1]] || {}).n || p[1]);
   if (p[0] === 'type') return (PV.TAX_DEF[p[1]] || { l:p[1] }).l; if (p[0] === 'co') return SV_SUB.slice(3);
+  if (p[0] === 'ct'){ var ct = PV.SV_CT.filter(function(o){ return o.k === p[1]; })[0]; return ct ? ct.n : ''; }   /* (V43.0) */
   if (p[0] === 'cob'){ var b = PV.MT_COB.filter(function(x){ return x.k === p[1]; })[0]; return b ? t('شركات') + ' — ' + t(b.n) : ''; }
   if (p[0] === 'grp'){ if (p[1] === 'all') return t('عليها تحدي'); var g = PV.MT_GRP.filter(function(x){ return x.k === p[1]; })[0]; return g ? g.n : ''; }
   if (p[0] === 'day'){ var dd = new Date(p[1] + 'T12:00:00'), WDN = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']; return t(WDN[dd.getDay()]) + ' ' + nm(dd.getDate()) + '/' + nm(dd.getMonth() + 1) + (p[2] ? ' \u00b7 ' + t(({ visit:'زيارة', ins:'تركيب', dis:'فك' })[p[2]] || p[2]) : ''); }   /* (V37.62) اليومُ باسمه وتاريخه بالعربية */
   var w = PV.SV_WHY[+p[1]]; return w ? w.n : ''; }
 
-function svSubUnit(){ return /^(co|cob):/.test(SV_SUB) ? 'مخيم' : 'نقطة'; }
+function svSubUnit(){ return /^(co|cob|ct):/.test(SV_SUB) ? 'مخيم' : 'نقطة'; }
 
 function svSubTitle(rows){
   var p = SV_SUB.split(':'), n = rows.length, lab = svSubLabel(), extra = '';
@@ -193,7 +232,7 @@ function svDashHtml0(key, rows, head){
   var prog = /^(sv|srv|insd|hand|disd)$/.test(key), pct = Math.round(n / Math.max(1, base.n) * 100);
   var ringC = prog ? (pct >= 90 ? '#22C55E' : pct >= 50 ? '#F59E0B' : '#EF4444') : 'var(--acc,#2E86DE)';
   var hero = sub
-    ? '<div style="' + tile + ';margin:10px 0;display:flex;align-items:center;gap:12px"><span style="font-size:30px">' + ((PV.SV_ST.filter(function(o){ return 'st:' + o.k === SV_SUB; })[0] || {}).e || (PV.SV_WHY[+String(SV_SUB).split(':')[1]] || {}).e || '\u25CF') + '</span><div><div class="num" style="font-size:30px;font-weight:800;line-height:1.1">' + nm(n) + '</div><div style="font-size:15px">' + esc(t(svSubUnit())) + ' \u2014 ' + esc(t(/^cob:/.test(SV_SUB) ? (PV.SV_COB_T[SV_SUB.slice(4)] || svSubLabel()) : /^co:/.test(SV_SUB) ? t('مخيمات') + ' ' + SV_SUB.slice(3) : svSubLabel())) + '</div></div></div>'
+    ? '<div style="' + tile + ';margin:10px 0;display:flex;align-items:center;gap:12px"><span style="font-size:30px">' + ((PV.SV_ST.filter(function(o){ return 'st:' + o.k === SV_SUB; })[0] || {}).e || (PV.SV_CT.filter(function(o){ return 'ct:' + o.k === SV_SUB; })[0] || {}).e || (PV.SV_WHY[+String(SV_SUB).split(':')[1]] || {}).e || '\u25CF') + '</span><div><div class="num" style="font-size:30px;font-weight:800;line-height:1.1">' + nm(n) + '</div><div style="font-size:15px">' + esc(t(svSubUnit())) + ' \u2014 ' + esc(t(/^cob:/.test(SV_SUB) ? (PV.SV_COB_T[SV_SUB.slice(4)] || svSubLabel()) : /^co:/.test(SV_SUB) ? t('مخيمات') + ' ' + SV_SUB.slice(3) : svSubLabel())) + '</div></div></div>'
     : '<div style="display:flex;align-items:center;gap:16px;' + tile + ';margin:10px 0">' + svRing(pct, 108, ringC, nm(pct) + '\u066A') + '<div><div class="num" style="font-size:34px;font-weight:800;line-height:1.1">' + nm(n) + '</div><div class="hint" style="margin:2px 0 0;font-size:14px">' + esc(t('نقطة')) + ' \u00b7 ' + esc(t('من')) + ' ' + nm(base.n) + '</div></div></div>';
   /* ٢ · حالُها الآن: كلُّ نقطةٍ مرةً واحدة — يختفي إن كانت كلُّها لونًا واحدًا */
   var sts = PV.SV_ST.filter(function(o){ return stc[o.k]; });
@@ -214,7 +253,9 @@ function svDashHtml0(key, rows, head){
       return '<div role="button" tabindex="0" data-svzf="' + esc(z) + '" style="' + tile + ';text-align:center;cursor:pointer" title="' + esc(t('اضغط لعرض هذا المشعر وحده')) + '">'
         + (sub ? '<div class="num" style="font-size:20px;font-weight:800">' + nm(zc[z]) + '</div>' : '<div style="display:flex;justify-content:center;margin-bottom:6px">' + svRing(zp, 56, prog ? (zp >= 90 ? '#22C55E' : zp >= 50 ? '#F59E0B' : '#EF4444') : 'var(--acc,#2E86DE)', nm(zp) + '\u066A') + '</div>')
         + '<div style="font-size:13px">' + esc(t(z)) + ' \u203A</div>' + (sub ? '' : '<div class="hint num" style="margin:0;font-size:12px">' + nm(zc[z]) + '</div>') + '</div>'; }).join('') + '</div>' : '';
-  return hero + stSec + whySec + zoneSec
+  /* (V43.0) in Arafat: the camp types last, after the numbers; inside «ترددي»: every camp's tafweej gates and the total */
+  var ctSec = SV_ZF === 'عرفات' && !sub ? svCtSec(rows) : '', gtSec = SV_SUB === 'ct:tard' ? svCtGates(rows) : '';
+  return hero + gtSec + stSec + whySec + zoneSec + ctSec
     + '<button type="button" class="btn btn-primary" data-svpopxls="1" style="display:block;width:100%;margin-top:12px">\u2B07 ' + esc(t('نزّل التفاصيل (إكسل)')) + '</button>';
 }
 

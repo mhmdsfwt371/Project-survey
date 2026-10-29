@@ -2502,7 +2502,7 @@ console.log('\n══ ١٠٩ · الحدودُ والصورُ للمشرف ═�
 }
 
 /* ── ١١٠ · (V42.8) لوحتا «بوابات التفويج» و«المضاف يدويًا» في نظرة عامة ── */
-console.log('\n══ ١١٠ · بوابات التفويج والمضاف يدويًا ══');
+console.log('\n══ ١١٠ · المضاف يدويًا ══');
 {
   const S0 = w.STATE.sites.slice(), R0 = Object.assign({}, w.STATE.recs || {}), U0 = w.STATE.users;
   w.STATE.users = Object.assign({}, U0 || {}, { 'u-f':{ name:'مشرف بوابات', role:'supervisor' } });
@@ -2512,10 +2512,6 @@ console.log('\n══ ١١٠ · بوابات التفويج والمضاف يد�
   w.STATE.sites.push(a, b, n1, n2);
   w.STATE.recs['TG-A1'] = { id:'TG-A1', access:'تم الوصول', ctype:'ترددي', ctypeBy:'مشرف بوابات', ctypeAt:Date.now(), tbar:3, tbarBy:'مشرف بوابات', tbarAt:Date.now(), at:Date.now() };
   w.STATE.recs['TG-A2'] = { id:'TG-A2', access:'تم الوصول', ctype:'ترددي', ctypeBy:'مشرف بوابات', ctypeAt:Date.now(), at:Date.now() };
-  const rows = w.tgatesRows(), h = String(w.tgatesBody());
-  T(rows.length >= 2 && rows.find(r => r.x.id === 'TG-A1').n === 3 && rows.find(r => r.x.id === 'TG-A2').n === 0 && /data-fly="TG-A1"/.test(h) && /data-tgx/.test(h), 'بوابات التفويج: كلُّ مخيمٍ ترددي بعدد بواباته ومن سجّلها، والذي بلا عدد يظهر، وكلُّ سطرٍ يطير للخريطة ويُصدَّر');
-  w.PV.TGF = 'none'; const h2 = String(w.tgatesBody()); w.PV.TGF = 'all';
-  T(/data-fly="TG-A2"/.test(h2) && !/data-fly="TG-A1"/.test(h2), 'وفلتر «ترددي بلا عدد بعد» يعرض ما يحتاج التكملة');
   const ah = String(w.addedBody());
   T(/data-fly="AD-1"/.test(ah) && /data-fly="AD-2"/.test(ah) && /المكتب/.test(ah) && /الميدان/.test(ah) && /بانتظار الاعتماد/.test(ah) && !/data-fly="TG-A1"/.test(ah), 'المضاف يدويًا: ما ليس في ملف العام الماضي وحده — بمصدره (المكتب/الميدان) وحالته');
   w.PV.ADF = 'الميدان'; const ah2 = String(w.addedBody()); w.PV.ADF = 'all';
@@ -2523,24 +2519,21 @@ console.log('\n══ ١١٠ · بوابات التفويج والمضاف يد�
   w.STATE.sites.length = 0; S0.forEach(x => w.STATE.sites.push(x)); w.STATE.recs = R0; w.STATE.users = U0;
 }
 
-/* ── ١١١ · (V42.9) لوحةُ عرفات في تفاصيل المسح ── */
-console.log('\n══ ١١١ · عرفات: الترددي والحاجز التنظيمي بالمجموع ══');
+/* ── ١١١ · (V43.0) متابعة الوزارة ← المسح ← عرفات: نوع المخيم وبوابات التفويج ── */
+console.log('\n══ ١١١ · عرفات في متابعة الوزارة: ترددي/عادي وبوابات التفويج ══');
 {
   const S0 = w.STATE.sites.slice(), R0 = Object.assign({}, w.STATE.recs || {}), U0 = w.STATE.users;
   w.STATE.users = Object.assign({}, U0 || {}, { 'u-g':{ name:'مشرف عرفات', role:'supervisor' } });
-  const mk = (id, ct, tb) => { w.STATE.sites.push({ id, name:id, type:'مخيم', zone:'عرفات', lat:21.35, lng:39.98 });
+  const mk = (id, ct, tb) => { w.STATE.sites.push({ id, name:id, type:'مخيم', zone:'عرفات', co:'شركة', lat:21.35, lng:39.98 });
     w.STATE.recs[id] = Object.assign({ id, access:'تم الوصول', at:Date.now(), by:'مشرف عرفات' }, ct ? { ctype:ct, ctypeBy:'مشرف عرفات', ctypeAt:Date.now() } : {}, tb ? { tbar:tb, tbarBy:'مشرف عرفات', tbarAt:Date.now() } : {}); };
-  mk('ARF-T1', 'ترددي', 4); mk('ARF-T2', 'ترددي', 3); mk('ARF-T3', 'ترددي', 0); mk('ARF-N1', 'عادي', 0);
-  w.SVD_MEMO = null;
-  const val = k => { const c = w.SVD_CARDS.find(x => x.k === k); const R = w.svdPool(c).filter(c.f); return c.sumf ? R.reduce((a, o) => a + c.sumf(o), 0) : R.length; };
-  const tard = val('tard'), tbar = val('tbar'), tbar0 = val('tbar0'), tnorm = val('tnorm');
-  T(tard >= 3 && tbar >= 7 && tbar0 >= 1 && tnorm >= 1, 'عرفات: ترددي ' + tard + ' · مجموع الحاجز ' + tbar + ' · بلا عدد ' + tbar0 + ' · عادي ' + tnorm);
-  { const G = w.arfTypeRows(); w.PV.ARFT = 'tard'; const hh = String(w.arfTypeHtml()); w.PV.ARFT = '';
-    T(G.tard.length >= 3 && G.norm.length >= 1 && /data-arft="tard"/.test(hh) && /data-arft="norm"/.test(hh) && /data-fly="ARF-T1"/.test(hh) && /data-arfx="tard"/.test(hh) && hh.indexOf(w.nm(7)) > -1,
-      'المتابعة ← حسب المشعر: عرفات ترددي/عادي/لم يُحدَّد، والترددي يفتح كلَّ مخيمٍ بعدد بواباته ومجموعها'); }
-  const h = String(w.svdashBody());
-  T(/data-svd="tbar"/.test(h) && /data-svd="tard"/.test(h) && /data-svd="tbar0"/.test(h), 'وبطاقاتُها في «تفاصيل المسح» تفتح قوائمَها');
-  w.STATE.sites.length = 0; S0.forEach(x => w.STATE.sites.push(x)); w.STATE.recs = R0; w.STATE.users = U0; w.SVD_MEMO = null;
+  mk('ARF-T1', 'ترددي', 4); mk('ARF-T2', 'ترددي', 3); mk('ARF-T3', 'ترددي', 0); mk('ARF-N1', 'عادي', 0); mk('ARF-U1', '', 0);
+  const rows = ['ARF-T1', 'ARF-T2', 'ARF-T3', 'ARF-N1', 'ARF-U1'].map(id => [id]);
+  T(w.svCtOf(w.siteFind('ARF-T1')) === 'tard' && w.svCtOf(w.siteFind('ARF-N1')) === 'norm' && w.svCtOf(w.siteFind('ARF-U1')) === 'none', 'نوعُ المخيم من اختيار الميدان: ترددي · عادي · لم يُحدَّد');
+  const sec = String(w.svCtSec(rows));
+  T(/data-svsub="ct:tard"/.test(sec) && /data-svsub="ct:norm"/.test(sec) && /data-svsub="ct:none"/.test(sec) && sec.indexOf(w.nm(7)) > -1, 'في عرفات: ترددي (ومجموع بواباته ٧) · عادي · لم يُحدَّد — كلٌّ يُضغَط');
+  const SS = w.SV_SUB; w.SV_SUB = 'ct:tard'; const pass = rows.filter(r => w.svSubPass(r[0])).map(r => r[0]); const g = String(w.svCtGates(rows)); const lab = w.svSubLabel(); w.SV_SUB = SS;
+  T(pass.join(',') === 'ARF-T1,ARF-T2,ARF-T3' && g.indexOf(w.nm(4)) > -1 && g.indexOf(w.nm(7)) > -1 && /بلا عدد بعد/.test(g) && /ترددي/.test(lab), 'وداخل «ترددي»: كلُّ مخيمٍ بعدد بوابات التفويج، والمجموع، والذي بلا عدد');
+  w.STATE.sites.length = 0; S0.forEach(x => w.STATE.sites.push(x)); w.STATE.recs = R0; w.STATE.users = U0;
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

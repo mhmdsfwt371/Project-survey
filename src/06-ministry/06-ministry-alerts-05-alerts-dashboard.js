@@ -75,6 +75,9 @@ function svListXlsx(key){
     var body = svListRows(key); if (key === SV_POP && (SV_ZF || SV_SUB) && document.querySelector('.svpop')) body = svPopFilter(body, svListHead(key));   /* (V37.58) الإكسلُ بما تراه في النافذة — المشعرُ والمربعُ المضغوط */
     var pts = body.length && siteFind(body[0][0]);   /* (V35.0) قوائمُ النقاط: عمودٌ أوّلُ بالمعرّف الأوّل */
     var rows = [(pts ? [t('رقم الشاخص / الاسم')] : []).concat(svListHead(key).map(function(h){ return t(h); }))].concat(body.map(function(r){ var sx = pts && siteFind(r[0]); return pts ? [sx ? siteKey(sx) : r[0]].concat(r) : r; })), iss = [];
+    /* (V43.0) Arafat's camp types: the Excel carries the type and the tafweej gates */
+    if (/^ct:/.test(typeof SV_SUB !== 'undefined' ? SV_SUB : '') && typeof svCtOf === 'function'){ rows[0] = rows[0].concat([t('نوع المخيم'), t('عدد بوابات التفويج')]);
+      body.forEach(function(r, i){ var sx = siteFind(r[0]), k = svCtOf(sx); rows[i + 1] = rows[i + 1].concat([t(k === 'tard' ? 'ترددي' : k === 'norm' ? 'عادي' : 'لم يُحدَّد'), k === 'tard' ? (siteTbar(sx) || '') : '']); }); }
     rows.forEach(function(r, i){ r.forEach(function(c){ var b = expBadText(c); if (b) iss.push(t('الصفّ') + ' ' + (i + 1) + ': ' + b); }); });   /* فحصُ الملف قبل نزوله */
     if (!expGate('إكسل', iss)) return false;
     var wb = XLSX.utils.book_new(), ws = XLSX.utils.aoa_to_sheet(rows);
