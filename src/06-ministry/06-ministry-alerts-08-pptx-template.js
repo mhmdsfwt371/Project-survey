@@ -1075,7 +1075,8 @@ function tgatesBody(){
   var all = tgatesRows(), F = PV.TGF || 'all', q = String(PV.TGQ || '').trim().toLowerCase();
   var rows = all.filter(function(r){ return (F === 'all' || (F === 'with' ? r.n > 0 : r.n === 0)) && (!q || (String(r.x.id) + ' ' + (r.x.name || '') + ' ' + (r.x.co || '')).toLowerCase().indexOf(q) > -1); });
   var byZ = {}; all.forEach(function(r){ var z = r.x.zone || '\u2014'; var g = byZ[z] = byZ[z] || { c:0, n:0 }; g.c++; g.n += r.n; });
-  var chip = function(k, l, n){ return '<button type="button" class="chip' + (F === k ? ' on' : '') + '" data-tgf="' + k + '">' + esc(t(l)) + ' <b class="num">' + nm(n) + '</b></button>'; };
+  var chip = function(k, l, n){ return F === k ? '<span class="chip on">' + esc(t(l)) + ' <b class="num">' + nm(n) + '</b></span>'   /* the chosen one is a label: pressing it would change nothing */
+    : '<button type="button" class="chip" data-tgf="' + k + '">' + esc(t(l)) + ' <b class="num">' + nm(n) + '</b></button>'; };
   var withN = all.filter(function(r){ return r.n > 0; }).length;
   return (typeof tardBarHtml === 'function' ? tardBarHtml() : '')
     + card('\u{1F5FA} ' + t('حسب المشعر'), '<div class="chips" style="margin:0">' + Object.keys(byZ).map(function(z){ return '<span class="pill">' + esc(t(z)) + ' \u00b7 <b class="num">' + nm(byZ[z].n) + '</b> ' + esc(t('بوابة')) + ' ' + esc(t('في')) + ' ' + nm(byZ[z].c) + ' ' + esc(t('مخيم')) + '</span>'; }).join('') + '</div>')
@@ -1108,7 +1109,8 @@ function addedBody(){
   var all = addedRows(), F = PV.ADF || 'all', q = String(PV.ADQ || '').trim().toLowerCase();
   var cnt = {}; all.forEach(function(x){ var s = addedSrc(x); cnt[s] = (cnt[s] || 0) + 1; });
   var rows = all.filter(function(x){ return (F === 'all' || (F === 'pend' ? !x.approved : addedSrc(x) === F)) && (!q || (String(x.id) + ' ' + (x.name || '') + ' ' + (x.co || '') + ' ' + (x.by || '')).toLowerCase().indexOf(q) > -1); });
-  var chip = function(k, l, n){ return '<button type="button" class="chip' + (F === k ? ' on' : '') + '" data-adf="' + esc(k) + '">' + esc(t(l)) + ' <b class="num">' + nm(n) + '</b></button>'; };
+  var chip = function(k, l, n){ return F === k ? '<span class="chip on">' + esc(t(l)) + ' <b class="num">' + nm(n) + '</b></span>'
+    : '<button type="button" class="chip" data-adf="' + esc(k) + '">' + esc(t(l)) + ' <b class="num">' + nm(n) + '</b></button>'; };
   var byZ = {}; all.forEach(function(x){ var z = x.zone || '\u2014'; byZ[z] = (byZ[z] || 0) + 1; });
   var pend = all.filter(function(x){ return !x.approved; }).length;
   return card('\u{1F195} ' + t('المضاف يدويًا') + ' \u2014 ' + nm(all.length) + ' ' + t('نقطة'),

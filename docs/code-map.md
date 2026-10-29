@@ -243,7 +243,7 @@
 | `05-lifecycle-map-21-move-devices.js` | 127 | 11 | (V39.31) owner: «عاوز أي نقطة، من أقل نقطة، أقدر أحرّكها: كاميرا وأنتنات وريدر وحساسات وجيت واي وخلافه». A point |
 | `05-lifecycle-map-30-kmz-detailed.js` | 100 | 5 | A detailed KMZ for Google Earth: every planned point, once per app filter as folders, with a full balloon. |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4641 سطر · 166 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4643 سطر · 166 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -254,7 +254,7 @@
 | `06-ministry-alerts-05-alerts-dashboard.js` | 178 | 11 | Alert rules configured from Settings, card popups from the ministry page, and the readable dashboard. |
 | `06-ministry-alerts-06-followup-sources-daily.js` | 195 | 16 | Challenges from three sources, everything linked and heard in the report, weekly tasks in follow-up, follow-up maturity and the daily work summary. |
 | `06-ministry-alerts-07-weekly-export-scope.js` | 217 | 16 | Weekly update export, scope selection of points for the file, and the pre-download file check. |
-| `06-ministry-alerts-08-pptx-template.js` | 1133 | 31 | PowerPoint built from the original ministry template. |
+| `06-ministry-alerts-08-pptx-template.js` | 1135 | 31 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 284 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
 | `06-ministry-alerts-11-whats-new.js` | 1371 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
@@ -308,4 +308,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 241 ملفًّا · 49414 سطر · 2278 دالة.
+**الإجمالي:** 241 ملفًّا · 49416 سطر · 2278 دالة.
