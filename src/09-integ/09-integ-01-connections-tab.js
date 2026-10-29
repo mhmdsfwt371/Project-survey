@@ -273,6 +273,10 @@ function integSessionHtml(p){
   var when = fmtDate(p.tokExp, { day:'numeric', month:'long' }) + ' ' + fmtTime(p.tokExp);
   var line = left <= 0 ? '\u{1F534} ' + t('الجلسة انتهت') + ' \u2014 ' + t('اضغط «حدّث الآن»: الكود هيوصل إيميلك، تكتبه وتضغط «تحقق»، وتبدأ جلسة جديدة لمدة ٣٠ يوم')
     : '\u{1F511} ' + t('الجلسة صالحة لحد') + ' ' + when + ' \u00b7 ' + t('فاضل') + ' ' + nm(d) + ' ' + t('يوم') + (d < 2 ? ' ' + nm(h) + ' ' + t('ساعة') : '');
+  /* (V42.5) the owner: «فيه bug هنا» — «غير متصل — لا حساب محفوظ» beside a green «الجلسة صالحة لحد ٢٧ نوفمبر». Both were true
+     (the account was disconnected; the platform session it had opened is still valid) but read as a contradiction. With no
+     account saved, the session is shown greyed as what it is: kept, unused, and taken up again on saving the account. */
+  if (p.state === 'off' && left > 0) return '<div class="hint" style="margin:0 0 10px;color:#94A3B8">\u{1F511} ' + esc(t('فيه جلسة محفوظة من قبل صالحة لحد') + ' ' + when + ' \u2014 ' + t('مش مستخدمة دلوقتي؛ أول ما تحفظ الحساب هتتستخدم من غير كود')) + '</div>';
   var pct = Math.max(0, Math.min(100, Math.round(left / (30 * 86400000) * 100)));
   return '<div style="margin:0 0 10px"><div class="hint" style="margin:0 0 4px;color:' + col + '">' + esc(line) + '</div>'
     + (left > 0 ? '<div style="height:6px;border-radius:4px;background:rgba(148,163,184,.25);overflow:hidden"><div style="height:100%;width:' + pct + '%;background:' + col + '"></div></div>' : '')

@@ -2474,6 +2474,8 @@ console.log('\n══ ١٠٧ · جدارُ الحماية على أفاقي بر
   const fn = readFileSync(new URL('../functions/index.js', import.meta.url), 'utf8');
   T(/cf-mitigated/.test(fn) && /async function cfFetch/.test(fn) && /PRO_URL \+ url\.slice\(WEB_URL\.length\)/.test(fn) && /err:CF_BLOCK \? 'cf'/.test(fn), 'الجسر: طلبٌ يصدّه جدارُ api.afaqy.pro يُعاد على api.afaqy.sa، وما بقي محجوبًا يُسمّى «cf» لا «كلمة سر»');
   T(/\(V42\.4\) re-saving the same account/.test(fn) && /keep = !!P\.ok && a0\.length > 0/.test(fn), 'إعادةُ حفظ الحساب نفسِه تُبقي جلستَه إن كانت ترى أجهزتنا — بلا كودٍ جديد');
+  { const off = w.integSessionHtml({ state:'off', tokExp:Date.now() + 20 * 86400000 }), on = w.integSessionHtml({ state:'ok', tokExp:Date.now() + 20 * 86400000 });
+    T(!/#22C55E/.test(off) && /94A3B8/.test(off) && /#22C55E/.test(on), '(V42.5) بلا حسابٍ محفوظ: الجلسةُ رماديةٌ «محفوظة ومش مستخدمة» لا شريطٌ أخضر يناقض «غير متصل»'); }
   const h1 = w.integStateLine({ state:'err', err:'cf', at:Date.now() }), h2 = w.integStateLine({ state:'err', err:'login', httpStatus:403, msg:'403', at:Date.now() });
   T(/Cloudflare/.test(h1) && (h2.match(/403|٤٠٣/g) || []).length === 1, 'الكارت: الجدار باسمه، ورقمُ الرفض مرةً واحدة لا «(403) (٤٠٣)»');
 }
