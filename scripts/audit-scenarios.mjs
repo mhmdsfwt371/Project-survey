@@ -2600,6 +2600,18 @@ console.log('\n══ ١١٦ · مفتاحُ الخرائط يُقرأ على ك
   T(w.CFG.gmaps && w.CFG.gmaps.key === 'AIzaTESTKEY0000000000000000000000000000', 'ووصولُ الوثيقة يضع المفتاحَ في الإعدادات'); w.CFG.gmaps = g0;
 }
 
+/* ── ١١٧ · (V43.7) رفضُ جوجل للمفتاح يعيد الخريطةَ المفتوحة ويقول السبب ── */
+console.log('\n══ ١١٧ · رفضُ جوجل: الخريطةُ المفتوحة تعود والسببُ يُقال ══');
+{
+  T(typeof w.gm_authFailure === 'function' && typeof w.gmapsRefused === 'function', 'gm_authFailure مُعرَّفةٌ — جوجل تبلغ الصفحةَ بها وحدَها');
+  const G0 = Object.assign({}, w.PV.GMAP), c0 = w.CFG.gmaps; w.CFG.gmaps = { key:'AIzaTESTKEY0000000000000000000000000000' };
+  w.PV.GMAP.fail = false; w.PV.GMAP.err = ''; w.PV.GMAP.logged = 0;
+  w.console.error('Google Maps JavaScript API error: ApiNotActivatedMapError\nhttps://developers.google.com/maps/documentation/javascript/error-messages#api-not-activated-map-error');
+  const h = String(w.gmapsCard());
+  T(w.PV.GMAP.fail === true && w.PV.GMAP.err === 'ApiNotActivatedMapError' && /Maps JavaScript API/.test(h) && /ApiNotActivatedMapError/.test(h), 'رسالةُ جوجل «الخدمة غير مفعّلة» تُطفئ طبقتَها وتظهر في بطاقة الثوابت بكلامٍ واضح');
+  w.PV.GMAP = Object.assign(w.PV.GMAP, G0); w.CFG.gmaps = c0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

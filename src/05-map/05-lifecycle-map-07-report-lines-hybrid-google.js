@@ -39,7 +39,8 @@ function gmapsCard(){
       '<p class="hint" style="margin:0 0 8px">' + esc(t('بمفتاحٍ من منصة خرائط جوجل تُعرَض خرائطُ جوجل (شوارعُ وقمرٌ هجين بأسمائه) تحت نقاطنا على كلِّ الأجهزة على اتصال؛ وبلا شبكةٍ خريطةُ الجهاز كما هي. قيِّد المفتاحَ بنطاق التطبيق فقط.')) + '</p>'
     + (ed ? '<div class="wt-row" style="gap:8px;align-items:center;flex-wrap:wrap"><input id="gmKey" dir="ltr" placeholder="AIza…" value="' + esc(k) + '" style="min-width:260px;max-width:420px">' + btn(t('احفظ المفتاح'), 'btn-primary btn-sm', ' data-gmsave="1"') + (k ? btn('\u2715 ' + t('أزل المفتاح'), 'btn-quiet btn-sm', ' data-gmclear="1"') : '') + '</div>'
          : '<p class="hint">' + esc(k ? t('مفتاحٌ مضبوط') : t('لا مفتاح — تُستعمل الخريطةُ المفتوحة')) + '</p>')
-    + '<p class="hint" style="margin:8px 0 0">' + esc(t(k ? (PV.GMAP.fail ? 'تعذّر تحميلُ خرائط جوجل بهذا المفتاح — تُستعمل الخريطةُ المفتوحة حتى يُصحَّح' : 'الحالة: مضبوط') : 'الحالة: الخريطةُ المفتوحة (شوارعُ المصدر المفتوح وقمرُ إسري)')) + '</p>');
+    + '<p class="hint" style="margin:8px 0 0">' + esc(t(k ? (PV.GMAP.fail ? 'تعذّر تحميلُ خرائط جوجل بهذا المفتاح — تُستعمل الخريطةُ المفتوحة حتى يُصحَّح' : 'الحالة: مضبوط') : 'الحالة: الخريطةُ المفتوحة (شوارعُ المصدر المفتوح وقمرُ إسري)')) + '</p>'
+    + (k && PV.GMAP.fail && PV.GMAP.err ? '<p class="hint" style="margin:4px 0 0;color:#EF4444">' + esc(t('سبب جوجل')) + ': ' + esc(t(PV.GMAP_WHY[PV.GMAP.err] || PV.GMAP.err)) + ' <span dir="ltr">(' + esc(PV.GMAP.err) + ')</span></p>' : ''));   /* (V43.7) the reason, inside the card */
 }
 function basemapSatCls(){
   var el = document.getElementById('mapBox');
@@ -229,7 +230,27 @@ function basemapLabelsSync(){
    وحدودنا ومساراتنا كما هي — عبر واجهة جوجل الرسمية وإضافة ليفلت الرسمية لها (GoogleMutant)، بمفتاحٍ يضعه المدير في
    ثوابت النظام فيصل الأجهزةَ كلَّها. على اتصالٍ فقط؛ وبلا شبكةٍ خريطةُ الجهاز كما كانت، وإن فشل المفتاحُ أو التحميلُ عاد
    الأساسُ المفتوح (شوارع/قمر) بلا أثر. التكلفةُ ضمن الحصة المجانية الشهرية لحجم استعمالنا. */
-PV.GMAP = { lib:null, api:null, fail:false, layer:null, kind:'' };
+PV.GMAP = { lib:null, api:null, fail:false, layer:null, kind:'', err:'' };
+/* (V43.7) the owner, after the key was saved: «قفلت وفتحته ولقيتها كده». Reproduced in a real browser with his key: the script
+   loads, then Google refuses — «ApiNotActivatedMapError», the Maps JavaScript API is not switched on for that key's project.
+   Google tells a page only through window.gm_authFailure (no code) and a console line (the code). The layer stayed on, drawing
+   nothing, with the open map already removed. Now a refusal drops the Google layer, puts the open map back at once, keeps the
+   reason for the constants card in plain words, and logs it once. */
+PV.GMAP_WHY = { ApiNotActivatedMapError:'خدمة «Maps JavaScript API» مش مفعّلة في مشروع جوجل — فعّلها من «المكتبة»',
+  RefererNotAllowedMapError:'المفتاح مقفول على عنوان تاني — ضيف عنوان التطبيق في «قيود المواقع»', InvalidKeyMapError:'المفتاح غلط — انسخه تاني',
+  BillingNotEnabledMapError:'حساب الفوترة مش مربوط بمشروع جوجل', ApiTargetBlockedMapError:'المفتاح مقيّد بخدمات مش منها خرائط جوجل — ضيف «Maps JavaScript API» في قيود الـAPI',
+  ExpiredKeyMapError:'المفتاح منتهي', OverQuotaMapError:'الحصة اليومية خلصت' };
+function gmapsRefused(code){
+  if (PV.GMAP.fail && PV.GMAP.err === (code || PV.GMAP.err)) return;
+  PV.GMAP.fail = true; if (code) PV.GMAP.err = code; else if (!PV.GMAP.err) PV.GMAP.err = 'auth';
+  try { if (typeof MAP !== 'undefined' && MAP){ if (PV.GMAP.layer && MAP.hasLayer(PV.GMAP.layer)) MAP.removeLayer(PV.GMAP.layer); PV.GMAP.layer = null; PV.GMAP.kind = ''; if (MAP_BASE && !MAP.hasLayer(MAP_BASE) && !(typeof basemapWant === 'function' && basemapWant())) MAP_BASE.addTo(MAP); if (typeof basemapLabelsSync === 'function') basemapLabelsSync(); if (typeof basemapSatCls === 'function') basemapSatCls(); } } catch (e){ LS_ERR = e; }
+  if (!PV.GMAP.logged){ PV.GMAP.logged = 1; logEvent('خرائطُ جوجل رفضت المفتاح — ' + (PV.GMAP.err || 'auth') + ' — رجعنا للخريطة المفتوحة', ''); }
+  if (CUR === 'consts') render(1);
+}
+if (typeof window === 'object'){
+  window.gm_authFailure = function(){ gmapsRefused(''); };
+  try { var ce0 = console.error; console.error = function(){ try { var m = String(arguments[0] || ''); var mm = m.match(/Google Maps JavaScript API error: (\w+)/); if (mm) gmapsRefused(mm[1]); } catch (e1){ LS_ERR = e1; } return ce0.apply(console, arguments); }; } catch (e2){ LS_ERR = e2; }
+}
 function gmapsKey(){ return (CFG.gmaps && typeof CFG.gmaps.key === 'string') ? CFG.gmaps.key.trim() : ''; }
 function gmapsWant(){ return !!gmapsKey() && !PV.GMAP.fail && !basemapWant(); }
 function gmapsScript(src, test, ms){
