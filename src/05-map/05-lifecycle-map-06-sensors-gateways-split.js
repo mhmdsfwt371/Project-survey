@@ -138,13 +138,13 @@ function iotPaint(){
   }
   if (!IOT.on) return;
   var HM = PV.IOT_HEALTH && typeof iotDashHtml === 'function' && iotDashHtml.healthMap ? iotDashHtml.healthMap() : null, HC = HM ? iotDashHtml.hcol : null;
-  if (MAP.getZoom() < IOT.Z){   /* (V41.5) zoomed out with «صحة الحساسات»: one dot per camp in its worst device's colour */
-    if (!HM) return;
+  if (HM && MAP.getZoom() < IOT.Z){   /* (V41.5) zoomed out with «صحة الحساسات»: one dot per camp in its worst device's colour */
     iotCampIds().forEach(function(id){ var c = iotOf(id), H = HM[id]; if (!c || !c.gw || !H || H.h === 'w') return; var x = siteFind(id);
       shapeMk(c.gw, { renderer:MAP_CV, radius:6, color:'#fff', weight:1, fillColor:HC[H.h] || '#94A3B8', fillOpacity:.95, bubblingMouseEvents:false }, 'dot')
         .bindPopup('<b>' + esc((x && x.name) || id) + '</b><br>\u{1F7E2} ' + nm(H.n.g) + ' \u00b7 \u{1F7E1} ' + nm(H.n.y) + ' \u00b7 \u{1F534} ' + nm(H.n.r) + ' \u00b7 \u26AA ' + nm(H.n.n) + ' \u00b7 \u25FB ' + nm(H.n.w)).addTo(IOT.layer); });
     return;
   }
+  if (MAP.getZoom() < IOT.Z) return;   /* the devices themselves from zoom 16 */
   var b = MAP.getBounds().pad(0.1);
   iotCampIds().forEach(function(id){
     var c = iotOf(id); if (!c || !c.gw || !c.sensors) return; var G = iotAllGw(c);
