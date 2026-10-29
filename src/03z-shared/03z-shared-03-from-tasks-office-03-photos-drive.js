@@ -267,7 +267,7 @@ function photoStrip(siteId){
           + ' href="' + esc(p.link || '#') + '" data-pview="' + esc(id) + '">'
           + esc(t('افتح الصورة')) + '</a>'
           + '<p class="hint">' + esc(t('رفعها')) + ': ' + esc(p._by || p.by || '—') + '</p>'
-          + (may('delete')
+          + (mayPhotoEdit()   /* (V42.7) */
               ? btn('احذف','btn-quiet btn-sm',' data-pdel="' + esc(id) + '"') : '')
           + '</div>';
       }).join('')

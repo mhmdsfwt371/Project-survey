@@ -123,7 +123,7 @@ function iotXlsx(){   /* إكسلُ الحساسات — للمشتريات وا
 }
 
 function bedStart(id){
-  if (!maySiteEdit()){ toast(t('تعديلُ الحدود للمهندس فما فوق')); return false; }
+  if (!mayBoundsEdit()){ toast(t('تعديلُ الحدود للمشرف فما فوق')); return false; }
   var x = siteFind(id); if (!x || x.type !== 'مخيم'){ toast(t('لا مخيمَ بهذا المعرِّف')); return false; }
   if (!polyOf(x).length && !POLY && typeof polyLoad === 'function'){ polyLoad().then(function(){ if (POLY) bedStart(id); }); return false; }
   var F = campFoot(x);
@@ -153,7 +153,7 @@ function bedCommit(x, flat, what){
 
 function bedSave(){
   if (!BED) return false;
-  if (!maySiteEdit()){ toast(t('تعديلُ الحدود للمهندس فما فوق')); return false; }
+  if (!mayBoundsEdit()){ toast(t('تعديلُ الحدود للمشرف فما فوق')); return false; }
   var x = siteFind(BED.id); if (!x) return false;
   if (BED.pts.length < 3){ toast(t('الحدودُ ثلاثُ زوايا على الأقل')); return false; }
   var flat = []; BED.pts.forEach(function(q){ flat.push(+(+q[0]).toFixed(6), +(+q[1]).toFixed(6)); });
@@ -164,7 +164,7 @@ function bedSave(){
 
 function bedReset(){
   if (!BED || !BED.orig) return false;
-  if (!maySiteEdit()){ toast(t('تعديلُ الحدود للمهندس فما فوق')); return false; }
+  if (!mayBoundsEdit()){ toast(t('تعديلُ الحدود للمشرف فما فوق')); return false; }
   var x = siteFind(BED.id); if (!x) return false;
   bedCommit(x, [], 'رجوعٌ لحدود المخيم الأصلية — ' + x.id);
   toast(t('عادت حدودُ المخيم الأصلية')); return true;

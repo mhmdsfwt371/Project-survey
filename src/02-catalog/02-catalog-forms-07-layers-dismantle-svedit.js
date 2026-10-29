@@ -192,7 +192,7 @@ function svqKindLabel(k){ if (k === 'extra') return 'صورة إضافية'; var
 function svqCanDel(p, rec){
   /* (V38.74) an approved visit's photos are evidence — the project's management deletes them, not the field or the engineer */
   if ((rec || {}).review === 'approved') return rankOf(effRole(ROLE)) >= rankOf('admin');
-  if (may('delete')) return true; return !!p && p.by === (STATE.meta.name || '');
+  if (mayPhotoEdit()) return true; return !!p && p.by === (STATE.meta.name || '');   /* (V42.7) the supervisor too */
 }
 /* (V22.8) «مش عارف أمسح صور وأزوّد صور جديدة»: صورُ الزيارة نفسُها بمصغّراتها — كلُّ صورةٍ تُحذَف
    (المهندسُ أيَّ صورة، والرافعُ صورتَه ما لم تُعتمَد الزيارة) بتأكيدٍ ثانٍ، وما في طابور الجهاز يُلغى،

@@ -9,7 +9,7 @@
    فيبقى مكتوبًا أن صورةً كانت هنا ومن أزالها ولماذا. وملفُّ درايف يُحذَف
    فعلًا — فالصورةُ الخاطئةُ لا تُترَك تُرى. */
 function photoDelete(id, why){
-  if (!may('delete')){ toast(t('الحذفُ للمهندس وحده')); return; }
+  if (!mayPhotoEdit()){ toast(t('حذفُ الصور للمشرف فما فوق')); return; }
   var p = (STATE.photos || {})[id];
   if (!p){ toast(t('لا صورةَ بهذا المعرّف')); return; }
   if (p.del){ toast(t('محذوفةٌ سلفًا')); return; }
@@ -22,7 +22,9 @@ function photoDelete(id, why){
     toast(t('حُذفت الصورة'));
     render(1);
   };
-  if (!p.driveId){ done(); return; }
+  /* (V42.7) a supervisor's deletion marks the photo deleted — the record and its reason stay — while removing the file from
+     Drive stays with the engineer's Drive access (a supervisor's device holds none, and the call would only fail) */
+  if (!p.driveId || !may('delete')){ done(); return; }
   drvAuth()
     .then(function(tok){
       return fetch('https://www.googleapis.com/drive/v3/files/' + p.driveId,

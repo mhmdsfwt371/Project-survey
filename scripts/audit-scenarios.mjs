@@ -2490,6 +2490,17 @@ console.log('\n══ ١٠٨ · الشركةُ المضافة في قائمة ا
   w.STATE.coreqs = prev; w.coFill();
 }
 
+/* ── ١٠٩ · (V42.7) الحدودُ والصورُ للمشرف أيضًا ── */
+console.log('\n══ ١٠٩ · الحدودُ والصورُ للمشرف ══');
+{
+  const R0 = w.ROLE, as = r => { w.ROLE = r; return { b:w.mayBoundsEdit(), p:w.mayPhotoEdit(), s:w.maySiteEdit() }; };
+  const sup = as('supervisor'), eng = as('engineer'), tech = as('tech'), store = as('store'); w.ROLE = R0;
+  T(sup.b && sup.p && !sup.s, 'المشرف: يعدّل الحدودَ ويحذف/يستبدل الصور — والتقسيمُ والتصنيفُ يبقيان للمهندس');
+  T(eng.b && eng.p && eng.s && !tech.b && !tech.p && !store.b && !store.p, 'المهندسُ كما كان، والفنيُّ والمخزنُ لا');
+  const app = readFileSync(new URL('../src/03z-shared/03z-shared-11-from-tasks-office-11-site-popup.js', import.meta.url), 'utf8');
+  T(/mayBoundsEdit\(\) \? kv\('حدود المخيم'/.test(app) && /campFoot\(s\) && maySiteEdit\(\) \? btn\(/.test(app), 'زرُّ الحدود للمشرف، وزرُّ «قسّم المخيم» للمهندس');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

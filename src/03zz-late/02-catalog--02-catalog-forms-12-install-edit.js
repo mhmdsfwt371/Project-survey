@@ -8,9 +8,9 @@
 function insqPhotoDel(photoId){
   var p = (STATE.photos || {})[photoId], rec = p ? STATE.inss[p.site] : null;
   if (!p || !rec || p.del) return false;
-  if (!insqCanDel(p, rec)){ toast(t('حذفُ هذه الصورة للمهندس')); return false; }
+  if (!insqCanDel(p, rec)){ toast(t('حذفُ هذه الصورة للمشرف فما فوق')); return false; }
   var now = Date.now(), who = STATE.meta.name || '';
-  if (may('delete') && typeof photoDelete === 'function') photoDelete(photoId, 'من تعديل التركيب');
+  if (mayPhotoEdit() && typeof photoDelete === 'function') photoDelete(photoId, 'من تعديل التركيب');
   else {
     var dr = { site:p.site, kind:p.kind, at:p.at, by:p.by || p._by || '', del:{ by:who, at:now, why:'حذفها رافعُها من تعديل التركيب' } };
     STATE.photos[photoId] = dr; CORE.set('photos', photoId, dr); phTouch();

@@ -100,9 +100,9 @@ function maintDel(id, at){
 function svqPhotoDel(photoId){
   var p = (STATE.photos || {})[photoId], rec = p ? STATE.recs[p.site] : null;
   if (!p || !rec || p.del) return false;
-  if (!svqCanDel(p, rec)){ toast(t('حذفُ هذه الصورة للمهندس')); return false; }
+  if (!svqCanDel(p, rec)){ toast(t('حذفُ هذه الصورة للمشرف فما فوق')); return false; }
   var boss = rankOf(ROLE) >= rankOf('engineer'), now = Date.now(), who = STATE.meta.name || '';
-  if (may('delete') && typeof photoDelete === 'function') photoDelete(photoId, 'من تعديل المسح');
+  if (mayPhotoEdit() && typeof photoDelete === 'function') photoDelete(photoId, 'من تعديل المسح');
   else {
     var dr = { site:p.site, kind:p.kind, at:p.at, by:p.by || p._by || '', del:{ by:who, at:now, why:'حذفها رافعُها من تعديل المسح' } };
     STATE.photos[photoId] = dr; CORE.set('photos', photoId, dr);  phTouch();   /* (V37.22) */

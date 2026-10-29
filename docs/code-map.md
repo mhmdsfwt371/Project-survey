@@ -21,11 +21,11 @@
 | `01-core-registry-07-blackbox-registry.js` | 190 | 12 | Black box (crash forensics) and the embedded site registry SITES_RAW with its publish/cache cycle to the database. |
 | `01-core-registry-08-egates-seed.js` | 72 | 7 | Al Mashaaer train: the nine stations and their 62 E-GATE points (registry points at the station reference, owner decision Q-023), the station card listing its g |
 
-## `02-catalog/` — الكتالوج والنقطة — التعريفات والتصنيف والصلاحيات وتعديل المسح  (12 ملفات · 4238 سطر · 255 دالة)
+## `02-catalog/` — الكتالوج والنقطة — التعريفات والتصنيف والصلاحيات وتعديل المسح  (12 ملفات · 4244 سطر · 257 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
-| `02-catalog-forms-01-site-edit-twins.js` | 266 | 23 | Site rows from the registry (siteRow/loadSites), zone-of-type rules, editing site data without a visit (override layer), bulk data corrections, twin points on o |
+| `02-catalog-forms-01-site-edit-twins.js` | 272 | 25 | Site rows from the registry (siteRow/loadSites), zone-of-type rules, editing site data without a visit (override layer), bulk data corrections, twin points on o |
 | `02-catalog-forms-02-types-shapes-filters.js` | 534 | 36 | Point classification and map shapes per type, owner taxonomy (five zones, nine types), path filters, ministry camera details, tafweej layer, camp path and the f |
 | `02-catalog-forms-03-site-details-points.js` | 351 | 9 | Full site details page (PAGE.site) and technician points computed from work. |
 | `02-catalog-forms-04-mywork-diary.js` | 560 | 11 | 'My work' screens, project diary, weight/target simulator and how dues are computed. |
@@ -122,7 +122,7 @@
 | `03z-shared-b-26-from-approvals-reports-10-point-actions-export-pdf.js` | 52 | 2 | Definitions moved verbatim from src/07-reports/07-approvals-reports-10-point-actions-export-pdf.js (V38.38–V38.39, stage A of core + chunks, pass b): the core ( |
 | `03z-shared-b-27-from-approvals-reports-11-import-roles-perms.js` | 29 | 0 | Definitions moved verbatim from src/07-reports/07-approvals-reports-11-import-roles-perms.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, |
 
-## `03zz-late/` —   (65 ملفات · 6880 سطر · 445 دالة)
+## `03zz-late/` —   (65 ملفات · 6882 سطر · 445 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -154,7 +154,7 @@
 | `03-survey--03-survey-records-10-wbs-plan-trials.js` | 238 | 15 | Moved verbatim from src/03-survey/03-survey-records-10-wbs-plan-trials.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office ch |
 | `03-survey--03-survey-records-11-weekly-tasks-paths.js` | 59 | 6 | Moved verbatim from src/03-survey/03-survey-records-11-weekly-tasks-paths.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office |
 | `03z-shared--03z-shared-02-from-tasks-office-02-newsite-schedule.js` | 13 | 1 | Moved verbatim from src/03z-shared/03z-shared-02-from-tasks-office-02-newsite-schedule.js by scripts/split-late.mjs (V38.90): only the delegated click handlers  |
-| `03z-shared--03z-shared-03-from-tasks-office-03-photos-drive.js` | 108 | 4 | Moved verbatim from src/03z-shared/03z-shared-03-from-tasks-office-03-photos-drive.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or t |
+| `03z-shared--03z-shared-03-from-tasks-office-03-photos-drive.js` | 110 | 4 | Moved verbatim from src/03z-shared/03z-shared-03-from-tasks-office-03-photos-drive.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or t |
 | `03z-shared--03z-shared-07-from-tasks-office-07-incidents-milestones.js` | 12 | 1 | Moved verbatim from src/03z-shared/03z-shared-07-from-tasks-office-07-incidents-milestones.js by scripts/split-late.mjs (V38.90): only the delegated click handl |
 | `03z-shared--03z-shared-17-from-ext-camps-03-nusuk-card-system.js` | 28 | 2 | Moved verbatim from src/03z-shared/03z-shared-17-from-ext-camps-03-nusuk-card-system.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or |
 | `03z-shared--03z-shared-18-from-mfu-tabs-04-followup-tabs.js` | 73 | 15 | Moved verbatim from src/03z-shared/03z-shared-18-from-mfu-tabs-04-followup-tabs.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the  |
@@ -243,7 +243,7 @@
 | `05-lifecycle-map-21-move-devices.js` | 127 | 11 | (V39.31) owner: «عاوز أي نقطة، من أقل نقطة، أقدر أحرّكها: كاميرا وأنتنات وريدر وحساسات وجيت واي وخلافه». A point |
 | `05-lifecycle-map-30-kmz-detailed.js` | 100 | 5 | A detailed KMZ for Google Earth: every planned point, once per app filter as folders, with a full balloon. |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4565 سطر · 159 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4567 سطر · 159 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -257,7 +257,7 @@
 | `06-ministry-alerts-08-pptx-template.js` | 1061 | 24 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 284 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 1367 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 1369 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
 
@@ -308,4 +308,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 241 ملفًّا · 49318 سطر · 2269 دالة.
+**الإجمالي:** 241 ملفًّا · 49328 سطر · 2271 دالة.

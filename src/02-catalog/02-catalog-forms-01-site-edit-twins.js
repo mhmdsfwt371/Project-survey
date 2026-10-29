@@ -60,6 +60,12 @@ function maySiteEdit(){ return typeof ROLE !== 'undefined' && rankOf(ROLE) >= ra
    والشاخص ووجهُ العمل والشركة والداخل/الخارج والبوابة والدور والإحداثيات) يعدّلها المشرف؛ والتصنيفُ (المشعرُ والنوعُ والمنطقة)
    والإخفاءُ يبقيان للمهندس. القاعدةُ تقبل (sites: كتابةٌ لمن يعمل). */
 function maySiteEditBasic(){ return typeof ROLE !== 'undefined' && rankOf(ROLE) >= rankOf('supervisor'); }
+/* (V42.7) the owner: «تعديل الحدود ومسح الصور وتعديلها وإضافتها — كل ده خليه كمان للمشرف، مش المهندس فقط». A camp's boundary
+   (draw, edit, return to the original) and any photo of a visit or an installation (delete, replace) are now the supervisor's
+   too. Splitting a camp stays with the engineer (it creates camps), and an approved visit's photos stay with the project's
+   management (V38.74). The rules already allow it: sites and photos are written by whoever works (canW). */
+function mayBoundsEdit(){ return typeof ROLE !== 'undefined' && rankOf(typeof effRole === 'function' ? effRole(ROLE) : ROLE) >= rankOf('supervisor'); }
+function mayPhotoEdit(){ return typeof ROLE !== 'undefined' && rankOf(typeof effRole === 'function' ? effRole(ROLE) : ROLE) >= rankOf('supervisor'); }
 function siteOvApply(){
   var ov = STATE.siteOv || {};
   var keep = [], hid = [];

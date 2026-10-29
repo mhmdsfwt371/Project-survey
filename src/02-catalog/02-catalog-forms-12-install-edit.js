@@ -10,7 +10,7 @@
    ============================================================================ */
 function insqState(){ return insqState.s || (insqState.s = { id:'', delAsk:'', st:'' }); }
 function insqMay(id){ var r = STATE.inss[id]; return !!r && !r.deleted && !!r.status && insStatusIs(r.status, 'مسودّة') === false && may('edit'); }
-function insqCanDel(p, rec){ if (may('delete')) return true; return !!p && p.by === (STATE.meta.name || '') && !(rec || {}).approved; }
+function insqCanDel(p, rec){ if (mayPhotoEdit()) return true;   /* (V42.7) the supervisor too */ return !!p && p.by === (STATE.meta.name || '') && !(rec || {}).approved; }
 function insqKindLabel(k){ k = String(k || ''); if (/before/.test(k)) return 'قبل التركيب'; if (/after/.test(k)) return 'بعد التركيب'; if (/extra/.test(k)) return 'صورة إضافية'; return 'صورة تركيب'; }
 function insqPhotos(rec){
   var id = rec.id, isIns = function(p){ return /^ins/.test(String((p[1] || {}).kind || '')); };
