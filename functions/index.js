@@ -29,11 +29,22 @@ const PRO_URL = 'https://api.afaqy.sa';
    Refusals by message: otp_expired, otp_blocked, Invalid_OTP, validation_error; 405 = wrong code. «expire» is the session
    length in hours (the web client asks 24). The one-time session lives in integ/afaqypro_otp — server-only like integ/*. */
 const WEB_URL = 'https://api.afaqy.pro';
+/* (V42.3) on 29 Oct api.afaqy.pro started answering cloud addresses with a Cloudflare challenge (HTTP 403, «Just a moment…»,
+   cf-mitigated: challenge) — before any login, so the card blamed the username and password. Measured from the cloud: the
+   same session, in either request format, works on api.afaqy.sa (200, our units). A challenged call is now repeated there. */
+let CF_SEEN = false, CF_BLOCK = false;
+const isCf = r => r.status === 403 && (!!r.headers.get('cf-mitigated') || !/json/i.test(r.headers.get('content-type') || ''));
+async function cfFetch(url, init){
+  let r = await fetch(url, init);
+  if (isCf(r) && url.indexOf(WEB_URL) === 0){ CF_SEEN = true; r = await fetch(PRO_URL + url.slice(WEB_URL.length), init); if (isCf(r)){ r.cfBlocked = true; CF_BLOCK = true; } }
+  else if (isCf(r)){ r.cfBlocked = true; CF_BLOCK = true; }
+  return r;
+}
 async function webCall(path, obj, token){
-  const r = await fetch(WEB_URL + '/' + path + (token ? '?token=' + encodeURIComponent(token) : ''), {
+  const r = await cfFetch(WEB_URL + '/' + path + (token ? '?token=' + encodeURIComponent(token) : ''), {
     method:'POST', headers:{ 'content-type':'application/json', accept:'application/json' }, body:JSON.stringify({ data:JSON.stringify(obj) }) });
   const j = await r.json().catch(() => ({}));
-  return { ok:r.ok, status:r.status, j };
+  return { ok:r.ok, status:r.status, j, cf:!!r.cfBlocked };
 }
 const SESSION_HOURS = 720;   /* asked for; the platform keeps what it allows */
 /* (V40.5) the owner: «حطيت اليوزر والباسورد وما جاليش أي كود على الإيميل». The diagnosis: the login did reach the code step
@@ -69,10 +80,10 @@ const num = x => (x == null || x === '' || !Number.isFinite(+x)) ? null : Math.r
 const ms = t => { if (!t) return 0; const n = +t; if (Number.isFinite(n)) return n < 1e12 ? n * 1000 : n; const d = Date.parse(t); return Number.isFinite(d) ? d : 0; };
 
 async function proCall(url, path, data, token){
-  const r = await fetch(url + path + (token ? (path.includes('?') ? '&' : '?') + 'token=' + encodeURIComponent(token) : ''), {
+  const r = await cfFetch(url + path + (token ? (path.includes('?') ? '&' : '?') + 'token=' + encodeURIComponent(token) : ''), {
     method:'POST', headers:{ 'content-type':'application/json', accept:'application/json' }, body:JSON.stringify({ data }) });
   const j = await r.json().catch(() => ({}));
-  return { ok:r.ok, status:r.status, j };
+  return { ok:r.ok, status:r.status, j, cf:!!r.cfBlocked };
 }
 const tokOf = j => (j && j.data && (j.data.token || j.data.access_token || j.data.accessToken)) || (j && (j.token || j.access_token)) || '';
 
@@ -112,7 +123,8 @@ function valuesOf(u){
 
 async function proPull(why){
   const now = Date.now(), cfgDoc = await db.collection('integ').doc('afaqypro').get(), cfg = cfgDoc.exists ? cfgDoc.data() : null;
-  const status = async st => db.collection('settings').doc('integStatus').set({ pro:Object.assign({ at:Date.now(), why }, st) }, { merge:true });
+  CF_SEEN = false; CF_BLOCK = false;   /* (V42.3) a call went round the Cloudflare challenge / was still stopped by it */
+  const status = async st => db.collection('settings').doc('integStatus').set({ pro:Object.assign({ at:Date.now(), why, cf:CF_SEEN }, st) }, { merge:true });
   const pasted = cfg ? String(cfg.token || '').trim() : '';   /* (V40.0) a session token pasted in the app — used first; the account renews it */
   if (!cfg || cfg.on === false || ((!cfg.user || !cfg.pass) && !pasted)){ await status({ state:'off' }); return { state:'off' }; }
   const url = String(cfg.url || PRO_URL).replace(/\/+$/, '');
@@ -230,7 +242,7 @@ async function proPull(why){
     return { state:'ok', matched, found:units.length };
   } catch (e) {
     if (e.message === 'code'){ await status({ state:'code', methods:e.methods || [], sent:!!e.sent, method:e.method || '', expiresIn:e.expiresIn || 0, err:e.err || '', msg:'' }); return { state:'code', sent:!!e.sent, method:e.method || '' }; }   /* (V39.99 · V40.2 keeps a pending step as it is) */
-    await status({ state:'err', err:String(e.message || e).slice(0, 120), httpStatus:e.st || 0, shape:e.shape || '', msg:e.msg || '' });
+    await status({ state:'err', err:CF_BLOCK ? 'cf' : String(e.message || e).slice(0, 120), httpStatus:e.st || 0, shape:e.shape || '', msg:CF_BLOCK ? '' : (e.msg || '') });   /* (V42.3) a firewall stop is not a password problem */
     return { state:'err', err:String(e.message || e).slice(0, 120) };
   }
 }

@@ -2468,6 +2468,15 @@ console.log('\n══ ١٠٦ · صحة الحساسات والتنبيهات و�
   w.IOT.live = L0;
 }
 
+/* ── ١٠٧ · (V42.3) جدارُ Cloudflare على أفاقي برو ── */
+console.log('\n══ ١٠٧ · جدارُ الحماية على أفاقي برو ══');
+{
+  const fn = readFileSync(new URL('../functions/index.js', import.meta.url), 'utf8');
+  T(/cf-mitigated/.test(fn) && /async function cfFetch/.test(fn) && /PRO_URL \+ url\.slice\(WEB_URL\.length\)/.test(fn) && /err:CF_BLOCK \? 'cf'/.test(fn), 'الجسر: طلبٌ يصدّه جدارُ api.afaqy.pro يُعاد على api.afaqy.sa، وما بقي محجوبًا يُسمّى «cf» لا «كلمة سر»');
+  const h1 = w.integStateLine({ state:'err', err:'cf', at:Date.now() }), h2 = w.integStateLine({ state:'err', err:'login', httpStatus:403, msg:'403', at:Date.now() });
+  T(/Cloudflare/.test(h1) && (h2.match(/403|٤٠٣/g) || []).length === 1, 'الكارت: الجدار باسمه، ورقمُ الرفض مرةً واحدة لا «(403) (٤٠٣)»');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);
