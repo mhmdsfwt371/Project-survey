@@ -1,7 +1,12 @@
 # (V43.3) one-time read-only health read of production data (presence, bugs, events, counts) — writes nothing
 name: Health diagnosis
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      q:
+        description: تعبيرٌ للأحداث (اختياري)
+        required: false
+        type: string
   push:
     branches: [staging]
     paths: ['.github/workflows/health-diag.yml', 'scripts/health-diag.mjs']
@@ -28,4 +33,5 @@ jobs:
       - name: قراءةُ الصحة
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          Q: ${{ inputs.q }}
         run: node scripts/health-diag.mjs

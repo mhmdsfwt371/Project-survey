@@ -31,4 +31,7 @@ for (const c of ['sites', 'recs', 'inss', 'photos', 'tasks', 'newsites', 'coreqs
   try { const n = (await db.collection(c).count().get()).data().count; console.log('  ' + c + ': ' + n); } catch (e){ console.log('  ' + c + ': ? ' + String(e.message || e).slice(0, 60)); }
 }
 try { const pend = (await db.collection('pending').limit(50).get()).docs.map(d => d.data()); if (pend.length) console.log('pending (أول ٥٠): ' + JSON.stringify(pend.slice(0, 5).map(p => ({ k:p.kind || p.k, at:iso(+p.at) })))); } catch (e){ console.log('pending: ?'); }
+/* (V43.6) a focused look: events of the last three hours matching Q (a regex), with who, when and the device */
+const Q = String(process.env.Q || '');
+if (Q){ const re = new RegExp(Q, 'i'); ev.filter(x => now - (+x.ts || 0) < 3 * 3600000 && re.test(String(x.what || ''))).sort((a, b) => (+a.ts || 0) - (+b.ts || 0)).slice(-40).forEach(x => console.log('Q · ' + iso(+x.ts) + ' · ' + (x.by || '') + ' · ' + String(x.what || '').slice(0, 220))); }
 process.exit(0);
