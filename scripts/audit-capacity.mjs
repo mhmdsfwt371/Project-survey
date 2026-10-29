@@ -120,13 +120,15 @@ check(/if \(!force && FB\._staticAt && now - FB\._staticAt < 900000\) return Pro
   'ولا تُعاد قبل ربع ساعةٍ إلا بأمرٍ صريح — حدٌّ زمنيٌّ على الثوابت');
 check(!/visibilitychange[\s\S]{0,200}SYNC\.pullAsk = true/.test(src) && /Date\.now\(\) - \(VIS_LAST \|\| 0\) < 60000/.test(src),
   'والعودةُ إلى التطبيق تسحب فارقيًّا مرةً في الدقيقة — لا الثوابتَ كلَّها');
-check(/office && DB\.col\('inventory'\)/.test(src) && /office && DB\.col\('purchases'\)/.test(src),
+check(/FB\.feed\('inventory', function\(\)\{ return office; \}/.test(src) && /FB\.feed\('purchases', function\(\)\{ return office; \}/.test(src),
   'والمخزونُ والمشترياتُ للمكتب وحده');
+check(/refeed: function\(cols\)/.test(src) && /now - \(FT\[c\] \|\| 0\) < 90000/.test(src) && /q = q\.where\('_at', '>', at\['feed:' \+ c\] - 120000\)/.test(src),
+  'وإعادةُ التغذية بالنبضة مخنوقةٌ (٩٠ ث لكل تغذية) والدفاترُ الكبيرةُ بمؤشِّرٍ — الكلفةُ بقدر التغيير (V43.5)');
 check(/if \(sSince > 0\) sq = sq\.where\('_at', '>', sSince\)/.test(src), 'وطبقةُ النقاط بمؤشِّرٍ — ما تغيّر لا ألفٌ وسبعمئة');
 const LOGINS = 2;                                    /* دخولان في اليوم لكلِّ جهاز */
 const staticField  = FIELD * LOGINS * 40;            /* إعداداتٌ وسياراتٌ وطبقةٌ فارقية */
 const staticOffice = (ADMINS + CHAIN * 5 + VIEW) * LOGINS * 450;   /* + المخزونُ والمشترياتُ واللقطات — الحساباتُ والفرقُ بالإنصات */
-check(/if \(false && rankOf\(ROLE\) > 30\)\{/.test(src) && /false && DB\.col\('teams'\)/.test(src), 'والحساباتُ والفرقُ لا تُقرأ مرتين — الإنصاتُ يكفي');
+check(/if \(false && rankOf\(ROLE\) > 30\)\{/.test(src) && /FB\.feed\('teams', function\(\)\{ return false; \}/.test(src), 'والحساباتُ والفرقُ لا تُقرأ مرتين — الإنصاتُ يكفي');
 const reads = rawReads + safety + viewReads + fieldCold + fieldDelta + liveTasks + staticField + staticOffice;
 const overReads = Math.max(0, reads - CAP.reads), overWrites = Math.max(0, writes - CAP.writes);
 const usd = overReads * PRICE.read + overWrites * PRICE.write;
