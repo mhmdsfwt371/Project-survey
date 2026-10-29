@@ -2501,6 +2501,28 @@ console.log('\n══ ١٠٩ · الحدودُ والصورُ للمشرف ═�
   T(/mayBoundsEdit\(\) \? kv\('حدود المخيم'/.test(app) && /campFoot\(s\) && maySiteEdit\(\) \? btn\(/.test(app), 'زرُّ الحدود للمشرف، وزرُّ «قسّم المخيم» للمهندس');
 }
 
+/* ── ١١٠ · (V42.8) لوحتا «بوابات التفويج» و«المضاف يدويًا» في نظرة عامة ── */
+console.log('\n══ ١١٠ · بوابات التفويج والمضاف يدويًا ══');
+{
+  const S0 = w.STATE.sites.slice(), R0 = Object.assign({}, w.STATE.recs || {}), U0 = w.STATE.users;
+  w.STATE.users = Object.assign({}, U0 || {}, { 'u-f':{ name:'مشرف بوابات', role:'supervisor' } });
+  const a = { id:'TG-A1', name:'TG-A1', type:'مخيم', zone:'عرفات', co:'شركة أ', lat:21.35, lng:39.98 }, b = { id:'TG-A2', name:'TG-A2', type:'مخيم', zone:'عرفات', co:'شركة ب', lat:21.36, lng:39.97 };
+  const n1 = { id:'AD-1', name:'مخيم جديد', type:'مخيم', zone:'منى', co:'شركة ج', isNew:true, origin:'office', by:'محمد صفوت', at:Date.now(), approved:true, lat:21.41, lng:39.89 };
+  const n2 = { id:'AD-2', name:'نقطة ميدان', type:'مخيم', zone:'عرفات', co:'شركة د', isNew:true, origin:'field', by:'مشرف بوابات', at:Date.now() - 5000, approved:false, lat:21.35, lng:39.96 };
+  w.STATE.sites.push(a, b, n1, n2);
+  w.STATE.recs['TG-A1'] = { id:'TG-A1', access:'تم الوصول', ctype:'ترددي', ctypeBy:'مشرف بوابات', ctypeAt:Date.now(), tbar:3, tbarBy:'مشرف بوابات', tbarAt:Date.now(), at:Date.now() };
+  w.STATE.recs['TG-A2'] = { id:'TG-A2', access:'تم الوصول', ctype:'ترددي', ctypeBy:'مشرف بوابات', ctypeAt:Date.now(), at:Date.now() };
+  const rows = w.tgatesRows(), h = String(w.tgatesBody());
+  T(rows.length >= 2 && rows.find(r => r.x.id === 'TG-A1').n === 3 && rows.find(r => r.x.id === 'TG-A2').n === 0 && /data-fly="TG-A1"/.test(h) && /data-tgx/.test(h), 'بوابات التفويج: كلُّ مخيمٍ ترددي بعدد بواباته ومن سجّلها، والذي بلا عدد يظهر، وكلُّ سطرٍ يطير للخريطة ويُصدَّر');
+  w.PV.TGF = 'none'; const h2 = String(w.tgatesBody()); w.PV.TGF = 'all';
+  T(/data-fly="TG-A2"/.test(h2) && !/data-fly="TG-A1"/.test(h2), 'وفلتر «ترددي بلا عدد بعد» يعرض ما يحتاج التكملة');
+  const ah = String(w.addedBody());
+  T(/data-fly="AD-1"/.test(ah) && /data-fly="AD-2"/.test(ah) && /المكتب/.test(ah) && /الميدان/.test(ah) && /بانتظار الاعتماد/.test(ah) && !/data-fly="TG-A1"/.test(ah), 'المضاف يدويًا: ما ليس في ملف العام الماضي وحده — بمصدره (المكتب/الميدان) وحالته');
+  w.PV.ADF = 'الميدان'; const ah2 = String(w.addedBody()); w.PV.ADF = 'all';
+  T(/data-fly="AD-2"/.test(ah2) && !/data-fly="AD-1"/.test(ah2), 'وفلتر المصدر يفصل ما أضافه الميدان عما أضافه المكتب');
+  w.STATE.sites.length = 0; S0.forEach(x => w.STATE.sites.push(x)); w.STATE.recs = R0; w.STATE.users = U0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

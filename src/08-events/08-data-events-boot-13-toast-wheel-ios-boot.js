@@ -291,6 +291,11 @@ document.addEventListener('input', function(e){
     renderKeepGrab.iqT = setTimeout(function(){ var F = iotDashHtml.F || {}; if (F.q === iv) return; F.q = iv; F.n = 100; if (iv) F.st = 'all'; iotDashHtml.F = F; render(); }, 280);
     return;
   }
+  if (e.target && (e.target.id === 'tgQ' || e.target.id === 'adQ')){   /* (V42.8) the gates and added-sites searches */
+    clearTimeout(renderKeepGrab.ovT); var ov = e.target.value, key = e.target.id === 'tgQ' ? 'TGQ' : 'ADQ';
+    renderKeepGrab.ovT = setTimeout(function(){ if (PV[key] === ov) return; PV[key] = ov; render(); }, 280);
+    return;
+  }
   if (e.target && e.target.id === 'siteQ'){
     clearTimeout(renderKeepGrab.sqT); var qv = e.target.value;
     renderKeepGrab.sqT = setTimeout(function(){ if (SITE_Q === qv) return; SITE_Q = qv; PV.LIST_SHOWN = PV.LIST_PAGE; render(); }, 280);

@@ -157,6 +157,11 @@ function clickAPart7(e){
   if (e.target.closest('[data-vastop]')){ viewAsStop(); return true; }
   var sqj = e.target.closest('[data-svqjump]'); if (sqj){ var sqe = document.getElementById('svqSec' + sqj.getAttribute('data-svqjump')); if (sqe) sqe.scrollIntoView({ behavior:'smooth', block:'start' }); return true; }   /* (V39.86) */
   var mtp = e.target.closest('[data-mtop]'); if (mtp){ PV.MTOP = mtp.getAttribute('data-mtop') || ''; render(1); return; }   /* (V41.1) the top groups of the map fold */
+  /* (V42.8) the two new overview tabs: filters, Excel */
+  var tgf = e.target.closest('[data-tgf]'); if (tgf){ PV.TGF = tgf.getAttribute('data-tgf'); render(1); return; }
+  var adf = e.target.closest('[data-adf]'); if (adf){ PV.ADF = adf.getAttribute('data-adf'); render(1); return; }
+  if (e.target.closest('[data-tgx]')){ if (typeof tgatesXlsx === 'function') tgatesXlsx(); return; }
+  if (e.target.closest('[data-adx]')){ if (typeof addedXlsx === 'function') addedXlsx(); return; }
   var ihl = e.target.closest('[data-iothealth]'); if (ihl){ PV.IOT_HEALTH = !PV.IOT_HEALTH; if (PV.IOT_HEALTH) liveIotLoad(true); iotPaint(); render(1); return; }   /* (V41.5) the sensors health layer */
   var nst = e.target.closest('[data-nsktest]'); if (nst){ integNusukHtml.test(); return; }   /* (V41.0) */
   var fab = e.target.closest('[data-fab]'); if (fab){ PV.FAB_ON = fab.getAttribute('data-fab') === '1'; lsSet('nsk14.fab', PV.FAB_ON ? '1' : '0'); render(1); return; }   /* (V41.0) the map's tool buttons fold */

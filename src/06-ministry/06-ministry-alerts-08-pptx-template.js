@@ -243,6 +243,8 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
   body:function(){
     var head = tabHead('over'), cur = tabCur('over');
     if (cur === 'svdash') return head + svdashBody();
+    if (cur === 'tgates') return head + tgatesBody();   /* (V42.8) */
+    if (cur === 'added') return head + addedBody();     /* (V42.8) */
     if (cur === 'now') return head + overDailyBody() + (function(){   /* (V27.1) المعدلُ اليومي صار قسمًا هنا */
     /* الوزارةُ تسأل ثلاثةَ أسئلةٍ لا تجيبها لوحةٌ واحدة: ماذا انتهى؟ ماذا يجري
        الآن ومن يفعله وأين؟ وماذا سيحدث غدًا؟ فصارت شاشةً واحدةً بثلاثة
@@ -1057,4 +1059,74 @@ function svaSelGo(){
     + (res.fail.length ? ' \u00b7 ' + t('لم تُعتمَد') + ' ' + nm(res.fail.length) + ' \u2014 ' + res.fail[0][0] + ': ' + res.fail[0][1] : '')
     + (rest ? ' \u00b7 ' + t('وتبقى') + ' ' + nm(rest) + ' ' + t('محدَّدةً للدفعة التالية.') : ''));
   render(1);
+}
+
+/* (V42.8) the owner: «فين الداشبورد اللي بتبين أبواب تنظيم التفويج؟ … عشان نشوف عددها وموجودة فين» — the gate count lived only
+   in «متابعة الوزارة» ← «المسح», as totals with no places. Here, under «نظرة عامة», the same field-chosen count (siteTard /
+   siteTbar — only what a technician or supervisor picked) with every camp, its holy site, its gates, who recorded them, and a
+   jump to the camp on the map; filters and an Excel copy. */
+function tgatesRows(){
+  return (STATE.sites || []).filter(function(x){ return x && x.type === 'مخيم' && !x.hidden && !x.deleted && siteTard(x); }).map(function(x){
+    var ts = ctSrc((STATE.recs || {})[x.id], 'tbar'), n = siteTbar(x);
+    return { x:x, n:n, by:(ts && ts.field && ts.by) || ((ctypeSrc(x) || {}).by) || '', at:(ts && ts.at) || ((ctypeSrc(x) || {}).at) || 0 };
+  }).sort(function(a, b){ return String(a.x.zone || '').localeCompare(String(b.x.zone || ''), 'ar') || (b.n - a.n) || String(a.x.id).localeCompare(String(b.x.id)); });
+}
+function tgatesBody(){
+  var all = tgatesRows(), F = PV.TGF || 'all', q = String(PV.TGQ || '').trim().toLowerCase();
+  var rows = all.filter(function(r){ return (F === 'all' || (F === 'with' ? r.n > 0 : r.n === 0)) && (!q || (String(r.x.id) + ' ' + (r.x.name || '') + ' ' + (r.x.co || '')).toLowerCase().indexOf(q) > -1); });
+  var byZ = {}; all.forEach(function(r){ var z = r.x.zone || '\u2014'; var g = byZ[z] = byZ[z] || { c:0, n:0 }; g.c++; g.n += r.n; });
+  var chip = function(k, l, n){ return '<button type="button" class="chip' + (F === k ? ' on' : '') + '" data-tgf="' + k + '">' + esc(t(l)) + ' <b class="num">' + nm(n) + '</b></button>'; };
+  var withN = all.filter(function(r){ return r.n > 0; }).length;
+  return (typeof tardBarHtml === 'function' ? tardBarHtml() : '')
+    + card('\u{1F5FA} ' + t('حسب المشعر'), '<div class="chips" style="margin:0">' + Object.keys(byZ).map(function(z){ return '<span class="pill">' + esc(t(z)) + ' \u00b7 <b class="num">' + nm(byZ[z].n) + '</b> ' + esc(t('بوابة')) + ' ' + esc(t('في')) + ' ' + nm(byZ[z].c) + ' ' + esc(t('مخيم')) + '</span>'; }).join('') + '</div>')
+    + card('\u{1F6A7} ' + t('أين البوابات') + ' \u2014 ' + nm(rows.length),
+      '<div class="chips" style="margin:0 0 8px">' + chip('all', 'الكل', all.length) + chip('with', 'بعدد بوابات', withN) + chip('none', 'ترددي بلا عدد بعد', all.length - withN) + '</div>'
+      + '<input type="search" id="tgQ" placeholder="' + esc(t('ابحث برقم المخيم أو اسمه أو شركته')) + '" value="' + esc(PV.TGQ || '') + '" style="margin:0 0 8px">'
+      + (rows.length ? table(['المخيم', 'المشعر', 'الشركة', 'عدد البوابات', 'سجّلها', ''], rows.slice(0, 300).map(function(r){
+          return ['<b>' + esc(r.x.id) + '</b>' + (r.x.name && r.x.name !== r.x.id ? '<div class="hint" style="margin:0">' + esc(r.x.name) + '</div>' : ''), esc(t(r.x.zone || '\u2014')), esc(dispName(r.x.co || '\u2014')),
+            r.n > 0 ? '<b class="num">' + nm(r.n) + '</b>' : '<span class="hint" style="margin:0;color:#EF4444">' + esc(t('بلا عدد بعد')) + '</span>',
+            esc(dispName(r.by || '\u2014')) + (r.at ? '<div class="hint" style="margin:0">' + esc(fmtDate(r.at, { day:'numeric', month:'short' })) + '</div>' : ''),
+            btn('\u{1F4CD} ' + t('على الخريطة'), 'btn-quiet btn-sm', ' data-fly="' + esc(r.x.id) + '"')]; }))
+        : '<p class="hint">' + esc(t('لا مخيمات ترددي من المسح بعد — تظهر هنا أول ما يختارها الفني أو المشرف في نموذج المسح.')) + '</p>')
+      + (rows.length > 300 ? '<p class="hint">' + nm(rows.length - 300) + ' ' + esc(t('أخرى — ضيّق البحث')) + '</p>' : '')
+      + (all.length ? '<div style="margin:8px 0 0">' + btn('\u2B07 ' + t('Excel'), 'btn-secondary btn-sm', ' data-tgx="1"') + '</div>' : ''));
+}
+function tgatesXlsx(){
+  var rows = tgatesRows().map(function(r){ return [r.x.id, r.x.name || '', r.x.zone || '', r.x.co || '', r.n || '', r.by || '', r.at ? new Date(r.at).toISOString().slice(0, 10) : '', +r.x.lat || '', +r.x.lng || '']; });
+  if (typeof mtXlsx === 'function') return mtXlsx('بوابات التفويج', ['رقم المخيم', 'الاسم', 'المشعر', 'الشركة', 'عدد البوابات', 'سجّلها', 'التاريخ', 'خط العرض', 'خط الطول'], rows);
+  toast(t('التصدير غير متاح على هذا الجهاز')); return false;
+}
+/* (V42.8) the owner: «ويبقى فيه في الداشبورد في المتابعة حاجة تبين لي أسماء المخيمات اللي أنا ضفتها بإيدي، اللي ما كانتش موجودة
+   في الملف اللي اتبعت السنة اللي فاتت، أو اللي اتضافت من الشباب في الميدان». Every site added after the original file (isNew),
+   by where it came from (the office, the field, the Ministry, a KMZ file), who, when, its holy site and company, and whether
+   it is approved yet — with filters, a search, a jump to the map and an Excel copy. */
+function addedSrc(x){ return x.origin === 'office' ? 'المكتب' : x.origin === 'ministry' ? 'الوزارة' : x.src === 'kmz' ? 'ملف KMZ' : 'الميدان'; }
+function addedRows(){
+  return (STATE.sites || []).filter(function(x){ return x && x.isNew && !x.deleted; }).sort(function(a, b){ return (b.at || 0) - (a.at || 0); });
+}
+function addedBody(){
+  var all = addedRows(), F = PV.ADF || 'all', q = String(PV.ADQ || '').trim().toLowerCase();
+  var cnt = {}; all.forEach(function(x){ var s = addedSrc(x); cnt[s] = (cnt[s] || 0) + 1; });
+  var rows = all.filter(function(x){ return (F === 'all' || (F === 'pend' ? !x.approved : addedSrc(x) === F)) && (!q || (String(x.id) + ' ' + (x.name || '') + ' ' + (x.co || '') + ' ' + (x.by || '')).toLowerCase().indexOf(q) > -1); });
+  var chip = function(k, l, n){ return '<button type="button" class="chip' + (F === k ? ' on' : '') + '" data-adf="' + esc(k) + '">' + esc(t(l)) + ' <b class="num">' + nm(n) + '</b></button>'; };
+  var byZ = {}; all.forEach(function(x){ var z = x.zone || '\u2014'; byZ[z] = (byZ[z] || 0) + 1; });
+  var pend = all.filter(function(x){ return !x.approved; }).length;
+  return card('\u{1F195} ' + t('المضاف يدويًا') + ' \u2014 ' + nm(all.length) + ' ' + t('نقطة'),
+      '<p class="hint" style="margin:0 0 8px">' + esc(t('كل نقطة ما كانتش في ملف العام الماضي — أضافها المكتب أو الشباب في الميدان أو الوزارة.')) + '</p>'
+      + '<div class="chips" style="margin:0 0 8px">' + chip('all', 'الكل', all.length) + ['المكتب', 'الميدان', 'الوزارة', 'ملف KMZ'].filter(function(s){ return cnt[s]; }).map(function(s){ return chip(s, s, cnt[s]); }).join('') + (pend ? chip('pend', 'بانتظار الاعتماد', pend) : '') + '</div>'
+      + '<div class="chips" style="margin:0 0 8px">' + Object.keys(byZ).map(function(z){ return '<span class="pill">' + esc(t(z)) + ' <b class="num">' + nm(byZ[z]) + '</b></span>'; }).join('') + '</div>'
+      + '<input type="search" id="adQ" placeholder="' + esc(t('ابحث بالرقم أو الاسم أو الشركة أو اللي أضافها')) + '" value="' + esc(PV.ADQ || '') + '" style="margin:0 0 8px">'
+      + (rows.length ? table(['النقطة', 'النوع', 'المشعر', 'الشركة', 'أضافها', 'المصدر', 'الحالة', ''], rows.slice(0, 300).map(function(x){
+          return ['<b>' + esc(x.id) + '</b>' + (x.name && x.name !== x.id ? '<div class="hint" style="margin:0">' + esc(x.name) + '</div>' : ''), esc(t(x.type || '\u2014')), esc(t(x.zone || '\u2014')), esc(dispName(x.co || '\u2014')),
+            esc(dispName(x.by || '\u2014')) + (x.at ? '<div class="hint" style="margin:0">' + esc(fmtDate(x.at, { day:'numeric', month:'short' })) + '</div>' : ''), esc(t(addedSrc(x))),
+            x.approved ? '<span class="pill" style="border-color:#22C55E;color:#22C55E">' + esc(t('معتمد')) + '</span>' : '<span class="pill" style="border-color:#F59E0B;color:#F59E0B">' + esc(t('بانتظار الاعتماد')) + '</span>',
+            btn('\u{1F4CD} ' + t('على الخريطة'), 'btn-quiet btn-sm', ' data-fly="' + esc(x.id) + '"')]; }))
+        : '<p class="hint">' + esc(t('لا نقاط مضافة بهذا الفلتر.')) + '</p>')
+      + (rows.length > 300 ? '<p class="hint">' + nm(rows.length - 300) + ' ' + esc(t('أخرى — ضيّق البحث')) + '</p>' : '')
+      + (all.length ? '<div style="margin:8px 0 0">' + btn('\u2B07 ' + t('Excel'), 'btn-secondary btn-sm', ' data-adx="1"') + '</div>' : ''));
+}
+function addedXlsx(){
+  var rows = addedRows().map(function(x){ return [x.id, x.name || '', x.type || '', x.zone || '', x.co || '', x.by || '', x.at ? new Date(x.at).toISOString().slice(0, 10) : '', addedSrc(x), x.approved ? 'معتمد' : 'بانتظار الاعتماد', +x.lat || '', +x.lng || '']; });
+  if (typeof mtXlsx === 'function') return mtXlsx('المضاف يدويًا', ['الرقم', 'الاسم', 'النوع', 'المشعر', 'الشركة', 'أضافها', 'التاريخ', 'المصدر', 'الحالة', 'خط العرض', 'خط الطول'], rows);
+  toast(t('التصدير غير متاح على هذا الجهاز')); return false;
 }
