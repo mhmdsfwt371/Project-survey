@@ -138,7 +138,15 @@ async function proPull(why){
   if (pasted && pasted !== T0.pasted){ tok = pasted; base = ''; await tokRef.set({ tok, at:Date.now(), base:'', pasted }); }
   /* (V40.2) the owner changed the account to m.safwat and still saw nothing: the bridge kept the previous account's session
      (taken 13:59 by «safwat», which sees 2 units). A session older than the saved account is dropped — a new login follows */
-  else if (!pasted && tok && cfg.at && (!T0.at || cfg.at > T0.at)){ tok = ''; base = ''; }
+  else if (!pasted && tok && cfg.at && (!T0.at || cfg.at > T0.at)){
+    /* (V42.4) re-saving the same account (after «disconnect», say) no longer forces a new e-mailed code: the kept session is
+       tried first, and kept if it still returns our own devices; another account's session (V40.2: it saw none of ours)
+       is dropped as before and a fresh login follows */
+    let keep = false;
+    try { const P = await call('/units/lists', { offset:0, limit:5, projection:['basic'], filters:{ imei:{ value:imeis.slice(0, 100), op:'in' } } }, tok);
+      const a0 = (P.j && P.j.data && (Array.isArray(P.j.data) ? P.j.data : P.j.data.data)) || []; keep = !!P.ok && a0.length > 0; } catch (eK){ keep = false; }
+    if (keep) await tokRef.set(Object.assign({}, T0, { at:Date.now() })); else { tok = ''; base = ''; }
+  }
   const login = async () => {
     /* (V40.2) a code step in progress is not restarted by the 5-minute tick — a new one-time session would void the code
        the owner is about to type */

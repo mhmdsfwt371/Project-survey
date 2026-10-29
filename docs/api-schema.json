@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V42.3",
+  "app_version": "V42.4",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2385,7 +2385,8 @@
   "V42.0": "ur: نحو ٢٠٠ تصحيح على باقي كلمات المكتب (٣٢٠٠) · كنسُ الفك والعهدة وأفاقي والتركيبة",
   "V42.1": "ur: نحو ٨٠ تصحيحًا (٥٥١ نصًّا متوسطًا + كنسُ ٢١ نمطًا على كل الطويل)",
   "V42.2": "ur: ٣٥ تصحيحًا (آخر ٤٤٨ نصًّا طويلًا) — اكتملت مراجعةُ كل نصوص الشاشات",
-  "V42.3": "functions: cfFetch — تحدّي Cloudflare على api.afaqy.pro يُعاد على api.afaqy.sa · CF_SEEN/CF_BLOCK · err 'cf' · integStateLine: الجدار باسمه، والرقم مرة · سيناريو ١٠٧ · integ-diag يجرّب الجلسة على العنوانين"
+  "V42.3": "functions: cfFetch — تحدّي Cloudflare على api.afaqy.pro يُعاد على api.afaqy.sa · CF_SEEN/CF_BLOCK · err 'cf' · integStateLine: الجدار باسمه، والرقم مرة · سيناريو ١٠٧ · integ-diag يجرّب الجلسة على العنوانين",
+  "V42.4": "functions: إعادةُ حفظ الحساب تجرّب الجلسةَ المحفوظة أولًا وتُبقيها إن رأت أجهزتنا"
   },
   "map_and_geolocation": {
     "tile_layers": {
