@@ -2591,6 +2591,15 @@ console.log('\n══ ١١٥ · تعديلاتُ شخصٍ تصل الباقين:
   T(got.join(',') === 'a:true,b:true', 'وإعادةُ التغذية تطبّق ما يعود بالدالة المسجَّلة');
 }
 
+/* ── ١١٦ · (V43.6) مفتاحُ خرائط جوجل يصل كلَّ جهاز ── */
+console.log('\n══ ١١٦ · مفتاحُ الخرائط يُقرأ على كلِّ جهاز ══');
+{
+  const core = readFileSync(new URL('../src/01-core/01-core-registry-05-sync-scale.js', import.meta.url), 'utf8');
+  T(/FB\.sdoc\('gmaps', FB\.gmapsApply/.test(core) && /CFG\.gmaps = \{ key:k \}/.test(core) && /basemapSwap\(\)/.test(core), 'settings/gmaps يُقرأ عند الفتح وبالنبضة، ويبدّل خلفيةَ الخريطة — لا على جهاز من كتبه وحدَه');
+  const g0 = w.CFG.gmaps; w.FB.gmapsApply({ exists:true, data:() => ({ key:'AIzaTESTKEY0000000000000000000000000000' }) });
+  T(w.CFG.gmaps && w.CFG.gmaps.key === 'AIzaTESTKEY0000000000000000000000000000', 'ووصولُ الوثيقة يضع المفتاحَ في الإعدادات'); w.CFG.gmaps = g0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

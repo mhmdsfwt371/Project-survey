@@ -7,9 +7,6 @@ on:
         description: مفتاح خرائط جوجل
         required: true
         type: string
-  push:
-    branches: [staging]
-    paths: ['.github/workflows/set-gmaps.yml', 'scripts/set-gmaps.mjs']
 permissions:
   contents: read
 jobs:

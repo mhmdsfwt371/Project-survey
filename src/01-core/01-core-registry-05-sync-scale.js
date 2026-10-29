@@ -861,6 +861,12 @@ var FB = {
       }
     return Promise.all(P).then(function(){ return P.length; });
   },
+  gmapsApply: function(doc){
+    var v = doc && doc.exists ? doc.data() : null, k = v && typeof v.key === 'string' ? v.key.trim() : '';
+    if (k === ((CFG.gmaps && CFG.gmaps.key) || '')) return;
+    CFG.gmaps = { key:k }; PV.GMAP = PV.GMAP || {}; PV.GMAP.fail = false; PV.GMAP.api = null; CORE.saveSoon();
+    if (typeof MAP !== 'undefined' && MAP && typeof basemapSwap === 'function') basemapSwap();
+  },
   pullStatic2: function(){
     if (!FB.ready || !FB.db) return Promise.resolve(false);
     /* الميدانُ لا يقرأ ما لا يراه: المخزونُ والمشترياتُ والشحناتُ وطلباتُ الشركات
@@ -908,12 +914,7 @@ var FB = {
       /* (V43.6) the Google Maps key: saved as settings/gmaps since V27.6 with a toast promising «على الأجهزة كلِّها» — but no device
          ever read it back, so only the device that typed it showed Google's map. Read at start-up and, as a feed, within seconds of
          being saved anywhere; the basemap swaps on the map page. */
-      FB.sdoc('gmaps', function(doc){
-        var v = doc && doc.exists ? doc.data() : null, k = v && typeof v.key === 'string' ? v.key.trim() : '';
-        if (k === ((CFG.gmaps && CFG.gmaps.key) || '')) return;
-        CFG.gmaps = { key:k }; PV.GMAP = PV.GMAP || {}; PV.GMAP.fail = false; PV.GMAP.api = null; CORE.saveSoon();
-        if (typeof MAP !== 'undefined' && MAP && typeof basemapSwap === 'function') basemapSwap();
-      }, function(e){ softErr('سحب مفتاح الخرائط', e, ''); });
+      FB.sdoc('gmaps', FB.gmapsApply, function(e){ softErr('سحب مفتاح الخرائط', e, ''); });
       FB.sdoc('reqSeq', function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists){
