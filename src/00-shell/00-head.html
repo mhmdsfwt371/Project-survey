@@ -786,6 +786,10 @@ body.nav-open .mapwrap{pointer-events:none}
   font-size:12.5px;padding:7px 12px;min-height:36px}
 .map-sheet .cat.zone.on{background:var(--brand);border-color:var(--brand);color:#fff}
 #mapBox.sat .nskBase{filter:none}
+/* (V43.8) the app is right-to-left, and Google's layer (GoogleMutant) copies Google's tiles into Leaflet's tile divs assuming left-to-right: in a
+   right-to-left page the right-hand column of tiles came out empty — a black half-map (seen in a real phone-sized Chromium, with and without the
+   satellite toggle). The tile pane is left-to-right; Leaflet positions tiles by transform, so nothing else is affected. */
+#mapBox .leaflet-tile-pane{direction:ltr}
 
 .map-selbar{position:absolute;inset-inline:11px;z-index:calc(var(--z-map-ui) + 2);
   inset-block-end:calc(190px + env(safe-area-inset-bottom,0px));
@@ -1335,7 +1339,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V43.7</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V43.8</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>

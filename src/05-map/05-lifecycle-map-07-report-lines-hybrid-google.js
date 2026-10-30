@@ -230,7 +230,7 @@ function basemapLabelsSync(){
    وحدودنا ومساراتنا كما هي — عبر واجهة جوجل الرسمية وإضافة ليفلت الرسمية لها (GoogleMutant)، بمفتاحٍ يضعه المدير في
    ثوابت النظام فيصل الأجهزةَ كلَّها. على اتصالٍ فقط؛ وبلا شبكةٍ خريطةُ الجهاز كما كانت، وإن فشل المفتاحُ أو التحميلُ عاد
    الأساسُ المفتوح (شوارع/قمر) بلا أثر. التكلفةُ ضمن الحصة المجانية الشهرية لحجم استعمالنا. */
-PV.GMAP = { lib:null, api:null, fail:false, layer:null, kind:'', err:'' };
+PV.GMAP = { lib:null, api:null, fail:false, layer:null, kind:'', err:'', ready:false, kick:null, retry:null };
 /* (V43.7) the owner, after the key was saved: «قفلت وفتحته ولقيتها كده». Reproduced in a real browser with his key: the script
    loads, then Google refuses — «ApiNotActivatedMapError», the Maps JavaScript API is not switched on for that key's project.
    Google tells a page only through window.gm_authFailure (no code) and a console line (the code). The layer stayed on, drawing
@@ -266,17 +266,39 @@ function gmapsScript(src, test, ms){
 function gmapsLoad(){
   if (PV.GMAP.api) return PV.GMAP.api;
   var key = gmapsKey(); if (!key) return Promise.resolve(false);
-  PV.GMAP.api = gmapsScript('https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(key) + '&language=ar&region=SA&v=weekly&loading=async', function(){ return !!(window.google && window.google.maps); }, 15000)
-    .then(function(ok){ if (!ok) return false; return gmapsScript('vendor/google/leaflet-googlemutant-0.16.0.js', function(){ return !!(window.L && L.gridLayer && L.gridLayer.googleMutant); }, 12000); })
-    .then(function(ok){ if (!ok){ PV.GMAP.fail = true; PV.GMAP.api = null; } return ok; });
+  PV.GMAP.api = gmapsScript('https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(key) + '&language=ar&region=SA&v=weekly&loading=async', function(){ return !!(window.google && window.google.maps); }, 30000)
+    .then(function(ok){ if (!ok) return false; return gmapsScript('vendor/google/leaflet-googlemutant-0.16.0.js', function(){ return !!(window.L && L.gridLayer && L.gridLayer.googleMutant); }, 20000); })
+    .then(function(ok){
+      if (!ok){ PV.GMAP.fail = true; PV.GMAP.api = null;
+        /* (V43.8) slowness is not refusal: on a thin network the scripts can miss their time — try again in a minute instead of giving up for the session */
+        if (!PV.GMAP.err){ clearTimeout(PV.GMAP.retry); PV.GMAP.retry = setTimeout(function(){ if (!PV.GMAP.err){ PV.GMAP.fail = false; gmapsKick(); } }, 60000); } }
+      return ok; });
   return PV.GMAP.api;
+}
+/* (V43.8) the owner: «الخريطة بتحمل ببطء ومش بتفتح على القمر الصناعي أول ما أدخل — لازم أطفي القمر وأشغّله تاني». Measured in a real
+   phone-sized Chromium with the key set: opening the map NEVER started Google — nothing called the Google sync except the
+   satellite button, a key save or an online/offline event. So a device whose key was already known (every launch after the
+   first) stayed on the open satellite until someone toggled it, and the key arriving before the map existed was lost the same
+   way. Now the map starts Google itself, after the page is idle (the boot-first rule of V24.9 stands), and the scripts are warmed
+   a few seconds after sign-in so they are already there when the map is shown. */
+function gmapsKick(){
+  if (!gmapsKey() || PV.GMAP.fail || PV.GMAP.kick || document.getElementById('login')) return;
+  var c = (typeof navigator === 'object' && navigator.connection) || {};
+  if (navigator.onLine === false || c.saveData || /(^|-)2g$/.test(String(c.effectiveType || ''))) return;
+  var kind = MAP_SAT ? 'hybrid' : 'roadmap';
+  if (MAP && PV.GMAP.layer && PV.GMAP.kind === kind && MAP.hasLayer(PV.GMAP.layer)) return;
+  PV.GMAP.kick = setTimeout(function(){
+    PV.GMAP.kick = null;
+    if (document.getElementById('login') || navigator.onLine === false) return;
+    try { if (MAP && gmapsWant()) gmapsSync(); else gmapsLoad(); } catch (e){ LS_ERR = e; }
+  }, MAP ? 400 : 3500);
 }
 function gmapsSync(){
   if (!MAP || !MAP_BASE) return;
   var want = gmapsWant();
   if (!want){ if (PV.GMAP.layer){ try { if (MAP.hasLayer(PV.GMAP.layer)) MAP.removeLayer(PV.GMAP.layer); } catch (e){ LS_ERR = e; } PV.GMAP.layer = null; PV.GMAP.kind = ''; if (!basemapWant() && !MAP.hasLayer(MAP_BASE)) MAP_BASE.addTo(MAP); } return; }
   var kind = MAP_SAT ? 'hybrid' : 'roadmap';
-  if (PV.GMAP.layer && PV.GMAP.kind === kind){ if (!MAP.hasLayer(PV.GMAP.layer)) PV.GMAP.layer.addTo(MAP); if (MAP.hasLayer(MAP_BASE)) MAP.removeLayer(MAP_BASE); return; }
+  if (PV.GMAP.layer && PV.GMAP.kind === kind){ if (!MAP.hasLayer(PV.GMAP.layer)) PV.GMAP.layer.addTo(MAP); if (PV.GMAP.ready && MAP.hasLayer(MAP_BASE)) MAP.removeLayer(MAP_BASE); return; }
   gmapsLoad().then(function(ok){
     if (!ok || !MAP){ basemapSatCls(); return; }
     if (!gmapsWant()) return;
@@ -284,8 +306,12 @@ function gmapsSync(){
       if (PV.GMAP.layer && MAP.hasLayer(PV.GMAP.layer)) MAP.removeLayer(PV.GMAP.layer);
       PV.GMAP.kind = MAP_SAT ? 'hybrid' : 'roadmap';
       PV.GMAP.layer = L.gridLayer.googleMutant({ type:PV.GMAP.kind, maxZoom:21, className: PV.GMAP.kind === 'roadmap' ? 'nskBase' : 'nskGsat' });
-      PV.GMAP.layer.addTo(MAP); if (MAP.hasLayer(MAP_BASE)) MAP.removeLayer(MAP_BASE);
-      if (NAMES.layer && MAP.hasLayer(NAMES.layer)) MAP.removeLayer(NAMES.layer);   /* لجوجل أسماؤها */
+      /* (V43.8) the satellite base stays under Google's layer until Google has drawn its tiles: removing it at once left a blank map
+         for as long as Google's own scripts and tiles took (seconds on Mina's network). The swap happens on Google's «tilesloaded». */
+      var lyr = PV.GMAP.layer; PV.GMAP.ready = false;
+      var swapIn = function(){ if (PV.GMAP.layer !== lyr || !MAP || !MAP.hasLayer(lyr)) return; PV.GMAP.ready = true; if (MAP.hasLayer(MAP_BASE)) MAP.removeLayer(MAP_BASE); if (NAMES.layer && MAP.hasLayer(NAMES.layer)) MAP.removeLayer(NAMES.layer); basemapSatCls(); };
+      lyr.once('spawned', function(ev){ try { google.maps.event.addListenerOnce(ev.mapObject, 'tilesloaded', function(){ setTimeout(swapIn, 200); }); } catch (e3){ swapIn(); } });
+      lyr.addTo(MAP);
       logEvent('خرائطُ جوجل — ' + PV.GMAP.kind, '');
     } catch (e){ PV.GMAP.fail = true; PV.GMAP.layer = null; if (!MAP.hasLayer(MAP_BASE)) MAP_BASE.addTo(MAP); softErr('gmaps', e, ''); }
     basemapSatCls();

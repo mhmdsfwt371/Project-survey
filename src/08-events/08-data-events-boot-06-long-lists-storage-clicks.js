@@ -324,6 +324,7 @@ function enterApp(user, pass){
     enterShell();
     var first = FB.legacyDone() ? Promise.resolve(0) : FB.pullLegacy();
     setTimeout(function(){ liveWatch(); liveSmall(); pulseWatch(); presenceBeat(true); }, 1200);
+    setTimeout(function(){ try { if (typeof gmapsKick === 'function') gmapsKick(); } catch (e){ LS_ERR = e; } }, 4000);   /* (V43.8) Google's scripts warm up a few seconds after sign-in, so they are there when the map is shown */
     first.then(function(n){
       if (n) toast(nm(n) + ' ' + t('سجلًّا من النسخة السابقة'));
       return pullDelta();

@@ -182,10 +182,11 @@ function mapInit(){
     /* (V30.9) رسمُ الصفحة لا يعني تغيّرَ النقاط: إن لم يتغيّر الإحصاءُ ولا المرشِّحُ ولا الطبقةُ ولا التحديدُ ولا الشركاتُ ولا الوضعُ
        فرسمةٌ خفيفة — وما يغيّر هذه يستدعي mapPaint() بنفسه (المزامنةُ والفلاترُ والطبقاتُ والتحديدُ والوضع) */
     var sig = STAT_VER + '|' + JSON.stringify(FILT) + '|' + (typeof MAP_LAYER === 'undefined' ? '' : MAP_LAYER) + '|' + SEL_N + '|' + PV.CO_SEL.join(',') + '|' + FIELD_MODE + '|' + ((typeof SUN_ON !== 'undefined' && SUN_ON) ? 1 : 0) + '|' + ((typeof KIOSK_ON !== 'undefined' && KIOSK_ON) ? 1 : 0) + '|' + '|' + dayKey(Date.now());   /* (V32.4) يومُ مكة في البصمة: «غدًا» تصير «اليوم» بعد منتصف الليل */   /* (V31.1) */
-    if (sig === MK.sig && MK.list && !MAP_3D){ mapPaint(true); basemapKick(); return true; }
+    if (sig === MK.sig && MK.list && !MAP_3D){ mapPaint(true); basemapKick(); gmapsKick(); return true; }
     MK.sig = sig;
     mapPaint();
     basemapKick();   /* (V24.9) خريطةُ الجهاز بعد الدخول وحين تخمل الصفحة */
+    gmapsKick();   /* (V43.8) وجوجل كذلك — كانت لا تبدأ إلا بزرّ القمر */
     return true;
   }
 
@@ -225,6 +226,7 @@ function mapInit(){
   MAP_TMP   = L.layerGroup().addTo(MAP);   /* (V24.1) المؤقّتاتُ: موضعُك ومسارُ الرسم — تُمسَح وحدَها */
   MK.by = {};
   basemapKick();   /* (V24.9) خريطةُ مكة: تُلحَق — وتُنزَّل أوّلَ مرة — بعد الدخول وحين تخمل الصفحة، لا في الإقلاع */
+  gmapsKick();   /* (V43.8) */
   if (POIL.on.ministry || POIL.on.tafweej) poiPaint();   /* (V25.2) */
   if (IOT.on) iotPaint();
   if (covPaint.on) covPaint();   /* (V39.14) */

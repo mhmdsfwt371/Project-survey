@@ -2612,6 +2612,21 @@ console.log('\n══ ١١٧ · رفضُ جوجل: الخريطةُ المفتو
   w.PV.GMAP = Object.assign(w.PV.GMAP, G0); w.CFG.gmaps = c0;
 }
 
+/* ── ١١٨ · (V43.8) الخريطةُ تبدأ جوجل بنفسها، وتُرسَم كاملةً في صفحةٍ يمينُها يسار ── */
+console.log('\n══ ١١٨ · فتحُ الخريطة: جوجل يبدأ وحدَه والقمرُ يبقى حتى يُرسَم بلاطُه ══');
+{
+  const mapi = readFileSync(new URL('../src/05-map/05-lifecycle-map-01-lifecycle-task-index.js', import.meta.url), 'utf8');
+  const g = readFileSync(new URL('../src/05-map/05-lifecycle-map-07-report-lines-hybrid-google.js', import.meta.url), 'utf8');
+  const head = readFileSync(new URL('../src/00-shell/00-head.html', import.meta.url), 'utf8');
+  const boot = readFileSync(new URL('../src/08-events/08-data-events-boot-06-long-lists-storage-clicks.js', import.meta.url), 'utf8');
+  T((mapi.match(/gmapsKick\(\)/g) || []).length >= 3, 'كلُّ فتحٍ للخريطة (جديدةً أو قائمة) يستدعي gmapsKick — كان جوجل لا يبدأ إلا بزرّ القمر');
+  T(/function gmapsKick\(\)/.test(g) && /navigator\.onLine === false/.test(g) && /saveData/.test(g), 'والبدءُ يحترم الشبكةَ الضعيفة وبلا اتصال');
+  T(/addListenerOnce\(ev\.mapObject, 'tilesloaded'/.test(g) && /if \(PV\.GMAP\.ready && MAP\.hasLayer\(MAP_BASE\)\)/.test(g), 'والقمرُ الأساسُ لا يُرفَع حتى يرسم جوجلُ بلاطَه — فلا فراغَ ولا خريطةَ سوداء');
+  T(/gmapsKick === 'function'\) gmapsKick\(\)/.test(boot) || /typeof gmapsKick === 'function'/.test(boot), 'وتُسخَّن سكريبتاتُ جوجل بعد الدخول بثوانٍ لتكون جاهزةً عند فتح الخريطة');
+  T(/#mapBox \.leaflet-tile-pane\{direction:ltr\}/.test(head), 'وبلاطُ الخريطة يسارٌ-يمينٌ داخل صفحةٍ يمينُها يسار — كان العمودُ الأيمنُ من بلاط جوجل يخرج فارغًا');
+  T(/PV\.GMAP\.retry = setTimeout/.test(g) && /, 30000\)/.test(g), 'وبطءُ الشبكة لا يُسقِط جوجلَ للجلسة: صبرٌ أطول وإعادةُ محاولةٍ بعد دقيقة');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);
