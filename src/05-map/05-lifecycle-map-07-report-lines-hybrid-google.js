@@ -298,18 +298,23 @@ function gmapsSync(){
   var want = gmapsWant();
   if (!want){ if (PV.GMAP.layer){ try { if (MAP.hasLayer(PV.GMAP.layer)) MAP.removeLayer(PV.GMAP.layer); } catch (e){ LS_ERR = e; } PV.GMAP.layer = null; PV.GMAP.kind = ''; if (!basemapWant() && !MAP.hasLayer(MAP_BASE)) MAP_BASE.addTo(MAP); } return; }
   var kind = MAP_SAT ? 'hybrid' : 'roadmap';
-  if (PV.GMAP.layer && PV.GMAP.kind === kind){ if (!MAP.hasLayer(PV.GMAP.layer)) PV.GMAP.layer.addTo(MAP); if (PV.GMAP.ready && MAP.hasLayer(MAP_BASE)) MAP.removeLayer(MAP_BASE); return; }
+  if (PV.GMAP.layer && PV.GMAP.kind === kind){ if (!MAP.hasLayer(PV.GMAP.layer)) PV.GMAP.layer.addTo(MAP); if (PV.GMAP.ready && kind !== 'hybrid' && MAP.hasLayer(MAP_BASE)) MAP.removeLayer(MAP_BASE); return; }
   gmapsLoad().then(function(ok){
     if (!ok || !MAP){ basemapSatCls(); return; }
     if (!gmapsWant()) return;
     try {
       if (PV.GMAP.layer && MAP.hasLayer(PV.GMAP.layer)) MAP.removeLayer(PV.GMAP.layer);
       PV.GMAP.kind = MAP_SAT ? 'hybrid' : 'roadmap';
-      PV.GMAP.layer = L.gridLayer.googleMutant({ type:PV.GMAP.kind, maxZoom:21, className: PV.GMAP.kind === 'roadmap' ? 'nskBase' : 'nskGsat' });
+      PV.GMAP.layer = L.gridLayer.googleMutant({ type:PV.GMAP.kind, maxZoom:21, zIndex:2, className: PV.GMAP.kind === 'roadmap' ? 'nskBase' : 'nskGsat' });   /* (V43.9) always above the base, even when the base is put back */
       /* (V43.8) the satellite base stays under Google's layer until Google has drawn its tiles: removing it at once left a blank map
          for as long as Google's own scripts and tiles took (seconds on Mina's network). The swap happens on Google's «tilesloaded». */
       var lyr = PV.GMAP.layer; PV.GMAP.ready = false;
-      var swapIn = function(){ if (PV.GMAP.layer !== lyr || !MAP || !MAP.hasLayer(lyr)) return; PV.GMAP.ready = true; if (MAP.hasLayer(MAP_BASE)) MAP.removeLayer(MAP_BASE); if (NAMES.layer && MAP.hasLayer(NAMES.layer)) MAP.removeLayer(NAMES.layer); basemapSatCls(); };
+      /* (V43.9) the owner's phone, 43.8: black blocks with only Google's street names — Google sends its labels first and its
+         imagery later (seconds per block on Mina's network, and while panning), and the satellite base had been removed on the
+         first «tilesloaded». In satellite mode the open satellite now stays under Google for good: where Google has not drawn its
+         imagery yet, imagery shows at once instead of black. (Esri tiles are small and cached by the browser for a day.) In the
+         street mode Google's tiles are opaque, so the base is still dropped once they are drawn. */
+      var swapIn = function(){ if (PV.GMAP.layer !== lyr || !MAP || !MAP.hasLayer(lyr)) return; PV.GMAP.ready = true; if (lyr.options.type !== 'hybrid' && MAP.hasLayer(MAP_BASE)) MAP.removeLayer(MAP_BASE); if (NAMES.layer && MAP.hasLayer(NAMES.layer)) MAP.removeLayer(NAMES.layer); basemapSatCls(); };
       lyr.once('spawned', function(ev){ try { google.maps.event.addListenerOnce(ev.mapObject, 'tilesloaded', function(){ setTimeout(swapIn, 200); }); } catch (e3){ swapIn(); } });
       lyr.addTo(MAP);
       logEvent('خرائطُ جوجل — ' + PV.GMAP.kind, '');

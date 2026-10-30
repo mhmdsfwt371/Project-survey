@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V43.8",
+  "app_version": "V43.9",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2400,7 +2400,8 @@
   "V43.5": "FB.feed/FB.sdoc/FB.refeed (FEEDS/SDOCS، خنقٌ ٩٠ ث) · pulseWatch: more · inventory/workreqs/purchases بـ since (movesIx) · سيناريو ١١٥",
   "V43.6": "FB.gmapsApply + FB.sdoc('gmaps') · set-gmaps.yml (بكلمة المالك) · سيناريو ١١٦",
   "V43.7": "gm_authFailure + console.error hook → gmapsRefused(code) · PV.GMAP_WHY · gmapsCard: سبب جوجل · سيناريو ١١٧",
-  "V43.8": "gmapsKick() عند كل فتحٍ للخريطة + تسخينٌ بعد الدخول · swapIn على tilesloaded (PV.GMAP.ready) · #mapBox .leaflet-tile-pane{direction:ltr} · مهلة ٣٠/٢٠ ث + إعادةُ محاولة ٦٠ ث · سيناريو ١١٨"
+  "V43.8": "gmapsKick() عند كل فتحٍ للخريطة + تسخينٌ بعد الدخول · swapIn على tilesloaded (PV.GMAP.ready) · #mapBox .leaflet-tile-pane{direction:ltr} · مهلة ٣٠/٢٠ ث + إعادةُ محاولة ٦٠ ث · سيناريو ١١٨",
+  "V43.9": "swapIn: الأساسُ يبقى في hybrid · googleMutant zIndex:2 · MAP_BASE keepBuffer:2 zIndex:1 · سيناريو ١١٨"
   },
   "map_and_geolocation": {
     "tile_layers": {

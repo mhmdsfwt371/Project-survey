@@ -2621,7 +2621,8 @@ console.log('\n══ ١١٨ · فتحُ الخريطة: جوجل يبدأ وح�
   const boot = readFileSync(new URL('../src/08-events/08-data-events-boot-06-long-lists-storage-clicks.js', import.meta.url), 'utf8');
   T((mapi.match(/gmapsKick\(\)/g) || []).length >= 3, 'كلُّ فتحٍ للخريطة (جديدةً أو قائمة) يستدعي gmapsKick — كان جوجل لا يبدأ إلا بزرّ القمر');
   T(/function gmapsKick\(\)/.test(g) && /navigator\.onLine === false/.test(g) && /saveData/.test(g), 'والبدءُ يحترم الشبكةَ الضعيفة وبلا اتصال');
-  T(/addListenerOnce\(ev\.mapObject, 'tilesloaded'/.test(g) && /if \(PV\.GMAP\.ready && MAP\.hasLayer\(MAP_BASE\)\)/.test(g), 'والقمرُ الأساسُ لا يُرفَع حتى يرسم جوجلُ بلاطَه — فلا فراغَ ولا خريطةَ سوداء');
+  T(/addListenerOnce\(ev\.mapObject, 'tilesloaded'/.test(g) && /if \(PV\.GMAP\.ready && kind !== 'hybrid' && MAP\.hasLayer\(MAP_BASE\)\)/.test(g) && /lyr\.options\.type !== 'hybrid' && MAP\.hasLayer\(MAP_BASE\)/.test(g), 'والقمرُ الأساسُ يبقى تحت جوجل في وضع القمر دائمًا (V43.9) — ما لم يرسمه جوجلُ بعدُ يظهر صورةً لا أسود');
+  T(/googleMutant\(\{ type:PV\.GMAP\.kind, maxZoom:21, zIndex:2/.test(g) && /keepBuffer:2, updateWhenIdle:true, updateWhenZooming:false, zIndex:1/.test(mapi), 'وجوجل فوق الأساس بترتيبٍ ثابت حتى لو أُعيد الأساس');
   T(/gmapsKick === 'function'\) gmapsKick\(\)/.test(boot) || /typeof gmapsKick === 'function'/.test(boot), 'وتُسخَّن سكريبتاتُ جوجل بعد الدخول بثوانٍ لتكون جاهزةً عند فتح الخريطة');
   T(/#mapBox \.leaflet-tile-pane\{direction:ltr\}/.test(head), 'وبلاطُ الخريطة يسارٌ-يمينٌ داخل صفحةٍ يمينُها يسار — كان العمودُ الأيمنُ من بلاط جوجل يخرج فارغًا');
   T(/PV\.GMAP\.retry = setTimeout/.test(g) && /, 30000\)/.test(g), 'وبطءُ الشبكة لا يُسقِط جوجلَ للجلسة: صبرٌ أطول وإعادةُ محاولةٍ بعد دقيقة');

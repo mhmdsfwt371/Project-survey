@@ -198,7 +198,7 @@ function mapInit(){
   L.control.zoom({ position:'topleft' }).addTo(MAP);
 
   MAP_BASE = L.tileLayer(MAP_SAT ? TILES.esri : TILES.osm, {
-    maxZoom:19, maxNativeZoom:18, className:'nskBase', crossOrigin:true, keepBuffer:1, updateWhenIdle:true, updateWhenZooming:false,   /* (V39.17) maxNativeZoom: the 19th zoom stretches the 18th — the imagery has no 19th here, it sent grey «no data» tiles */   /* (V34.2) ذاكرةٌ أقلّ على الآيفون */
+    maxZoom:19, maxNativeZoom:18, className:'nskBase', crossOrigin:true, keepBuffer:2, updateWhenIdle:true, updateWhenZooming:false, zIndex:1,   /* (V43.9) keepBuffer 2: a small pan back does not refetch */   /* (V39.17) maxNativeZoom: the 19th zoom stretches the 18th — the imagery has no 19th here, it sent grey «no data» tiles */   /* (V34.2) ذاكرةٌ أقلّ على الآيفون */
     attribution: MAP_SAT ? '&copy; Esri' : '&copy; OpenStreetMap'
   }).addTo(MAP);
 
