@@ -236,6 +236,8 @@ jobs:
         run: node scripts/audit-tour.mjs
       - name: جرد القراءات — لا مجموعةَ تُقرأ بلا سقف
         run: node scripts/audit-reads.mjs
+      - name: جرد الوصول — كلُّ نوعِ سجلٍّ له مسارُ قراءةٍ إلى الأجهزة الأخرى، وسجلٌّ من كلِّ نوعٍ يظهر في شاشةٍ على الأقلّ
+        run: node scripts/audit-propagation.mjs
       - name: جرد ملفِّ البند — من يدفع وما يُشترى وما يُركَّب وما العائد
         run: node scripts/audit-dossier.mjs
       - name: جرد تسرُّبِ النقاط — كلُّ نقطةٍ تُفتَح على نفسها

@@ -37,7 +37,7 @@ Node 22 وأمرُ تثبيتٍ واحد (في `START-HERE.md` §«في عشر �
 `docs/dev-guide.md` §6 خطوةً خطوة (التعريفُ في `src/02-catalog/02-definitions-08-definitions.js`، النموذجُ، التعديلُ، التصديرُ، السيناريو).
 
 **١١. كيف أضيف مجموعةَ بياناتٍ جديدة؟**
-١) `FB.colOf` في `src/01-core/01-core-registry-05-sync-scale.js` ليعرفها الطابور. ٢) قاعدةٌ في `firestore.rules` **ومصفوفةُ الصلاحيات** في `03z-shared-36-from-approvals-reports-11-import-roles-perms.js` (الاثنان متطابقان ويُفحَصان). ٣) **قراءتُها تغذيةً** `FB.feed('col', gate, query, apply)` — لا قراءةً عابرة، وإلا لم تصل الأجهزةَ الأخرى إلا بإعادة الفتح (سيناريو ١١٥). ٤) سيناريو في `audit-scenarios.mjs`.
+١) `FB.colOf` في `src/01-core/01-core-registry-05-sync-scale.js` ليعرفها الطابور. ٢) قاعدةٌ في `firestore.rules` **ومصفوفةُ الصلاحيات** في `03z-shared-36-from-approvals-reports-11-import-roles-perms.js` (الاثنان متطابقان ويُفحَصان). ٣) **قراءتُها تغذيةً** `FB.feed('col', gate, query, apply)` — لا قراءةً عابرة، وإلا لم تصل الأجهزةَ الأخرى إلا بإعادة الفتح (سيناريو ١١٥). ٤) سيناريو في `audit-scenarios.mjs`. ٥) **جردُ الوصول** `scripts/audit-propagation.mjs` (V43.11) يسقط وحدَه إن كتب التطبيقُ نوعًا بلا مسار قراءة، أو إن أُدخل سجلٌّ منه ولم تتغيّر أيُّ شاشة — أضف عيّنةً له في `SAMPLES` داخل الجرد.
 
 **١٢. كيف أضيف صلاحية؟**
 علَمٌ في `ROLES.<دور>.can` و`may('اسم')` (في `03z-shared-36-from-approvals-reports-11-import-roles-perms.js`)، ومرآتُها في `firestore.rules`. الصلاحياتُ المركّبة دوالٌّ مسمّاة (`maySiteEdit`, `mayBoundsEdit`, `mayPhotoEdit` في `02-catalog-forms-01-site-edit-twins.js`). الرتبُ: `ROLE_RANK` (إداري ١٠٠ … مشرف ٧٠ … فني ٤٠).
