@@ -43,4 +43,14 @@ if (process.env.OUT){
     console.log('OUT · ' + c + ': ' + n + ' خارج مكة من ' + D.length);
   }
 }
+/* (V43.13) recent manual additions: new sites and site overrides of the last 48 hours, with who wrote them */
+if (process.env.NEW){
+  const since = now - 2 * DAY;
+  for (const c of ['newsites', 'sites']){
+    let D = [];
+    try { D = (await db.collection(c).where('_at', '>', since).get()).docs; } catch (e){ console.log('NEW · ' + c + ': ? ' + String(e.message || e).slice(0, 80)); continue; }
+    console.log('NEW · ' + c + ': ' + D.length + ' في ٤٨ ساعة');
+    D.slice(0, 25).forEach(d => { const v = d.data() || {}; console.log('NEW · ' + c + ' · ' + d.id + ' · ' + String(v.name || '').slice(0, 30) + ' · ' + (v.type || '') + ' · ' + (v.zone || '') + ' · by=' + (v.by || '') + ' · _by=' + String(v._by || '').slice(0, 8) + ' · ' + iso(+v._at || +v.at) + ' · approved=' + v.approved + ' · origin=' + (v.origin || '') + (v.deleted ? ' · محذوف' : '') + (v.hidden ? ' · مخفي' : '')); });
+  }
+}
 process.exit(0);
