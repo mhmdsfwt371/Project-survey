@@ -56,7 +56,10 @@ d.querySelector('#content [data-mydocfix]').dispatchEvent(new w.MouseEvent('clic
 await wait(500);
 T(!toasts.some(x=>/لا شبكة/.test(x)), 'لا يقول «لا شبكة» والشبكةُ متصلة', toasts.join(' | '));
 T(toasts.some(x=>/الوثيقةُ موجودةٌ/.test(x) && /رُفع ١/.test(x)), 'ويقول النتيجةَ بعددها الصادق', toasts.join(' | '));
-T(!!store['stats/'+TODAY] && w.STATE.queue.length===0, 'ويدفع الطابورَ فعلًا فيفرغ');
+/* (V43.15) a write to the same document made while the batch was in flight (here the day's rollup) is no longer thrown away
+   as «uploaded» — it stays and leaves in the chained push 1.5 s later. So the queue empties after the chain, not at 500 ms. */
+for (let i = 0; i < 12 && w.STATE.queue.length; i++) await wait(500);
+T(!!store['stats/'+TODAY] && w.STATE.queue.length===0, 'ويدفع الطابورَ فعلًا فيفرغ — وما كُتب أثناء الرفع يُرفَع بعده لا يُرمى', 'بقي ' + w.STATE.queue.length);
 /* ٣ · زرُّ الدفع اليدويّ يعمل ويقول ما بقي */
 w.CORE.dirty('recs','R1',{a:1}); w.CORE.dirty('recs','R2',{b:2}); w.CORE._busy=false;
 w.render(1); toasts.length=0;
