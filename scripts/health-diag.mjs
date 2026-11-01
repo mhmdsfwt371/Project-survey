@@ -53,4 +53,13 @@ if (process.env.NEW){
     D.slice(0, 25).forEach(d => { const v = d.data() || {}; console.log('NEW · ' + c + ' · ' + d.id + ' · ' + String(v.name || '').slice(0, 30) + ' · ' + (v.type || '') + ' · ' + (v.zone || '') + ' · by=' + (v.by || '') + ' · _by=' + String(v._by || '').slice(0, 8) + ' · ' + iso(+v._at || +v.at) + ' · approved=' + v.approved + ' · origin=' + (v.origin || '') + ' · lat=' + v.lat + ' lng=' + v.lng + ' · keys=' + Object.keys(v).filter(k => !/^_/.test(k)).slice(0, 14).join(',') + (v.deleted ? ' · محذوف' : '') + (v.hidden ? ' · مخفي' : '')); });
   }
 }
+/* (V43.16) the AFAQY PRO bridge — always printed: the bridge's own status line and the age of the live sensor feed it writes.
+   No credential is read (integ/* stays untouched); only settings/integStatus and iotlive/_all's header fields. */
+try {
+  const st = ((await db.collection('settings').doc('integStatus').get()).data() || {}).pro || {};
+  const lv = (await db.collection('iotlive').doc('_all').get()).data() || {};
+  const ago = t => t ? Math.round((now - t) / 60000) + ' د' : '—';
+  console.log('PRO · الحالة: ' + (st.state || '—') + ' · آخر تشغيل ' + ago(st.at) + ' (' + (st.why || '') + ') · مخطّط ' + (st.planned ?? '—') + ' · بسيريال ' + (st.withImei ?? '—') + ' · وُجد ' + (st.found ?? '—') + ' · طابق ' + (st.matched ?? '—') + (st.err ? ' · خطأ: ' + st.err + (st.httpStatus ? ' (' + st.httpStatus + ')' : '') : '') + (st.tokExp ? ' · الجلسة حتى ' + iso(st.tokExp) : ''));
+  console.log('PRO · التغذية الحيّة: آخر كتابة ' + ago(lv.at) + ' · وحدات مطابقة ' + (lv.n ?? '—') + ' من ' + (lv.total ?? '—') + ' · المصدر ' + (lv.src || '—'));
+} catch (e){ console.log('PRO · ? ' + String(e.message || e).slice(0, 100)); }
 process.exit(0);
