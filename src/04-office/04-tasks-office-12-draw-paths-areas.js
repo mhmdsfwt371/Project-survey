@@ -129,7 +129,7 @@ function areaCampSave(){
   SITE_IX = null; SITE_TOK = null;
   statBump();
   stepDone('newsite', id, 'مخيمٌ بحدوده — أضافه المكتب', 0);
-  notifPush('موقع مقترح', 'موقعٌ جديدٌ بانتظار اعتمادك — ' + zone, { site:id, lv:'مهم' });
+  notifPush('موقع جديد', typeof nsAddedText === 'function' ? nsAddedText({ id:id, type:'مخيم', zone:zone, sq:sq, sign:sign, by:who }) : t('تمت إضافة') + ' ' + t('مخيم') + ' ' + t('جديد') + ' \u2014 ' + zone, { site:id, lv:'عادي' });   /* (V43.17) */
   logEvent('مخيمٌ جديدٌ بحدوده — ' + id + ' \u00b7 ' + zone, id);
   routeCancel();
   /* المكتبُ رسمه ولم يزره — تُجدوَل زيارتُه الآن (V17.57) */

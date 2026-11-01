@@ -2513,7 +2513,7 @@ console.log('\n══ ١١٠ · المضاف يدويًا ══');
   w.STATE.recs['TG-A1'] = { id:'TG-A1', access:'تم الوصول', ctype:'ترددي', ctypeBy:'مشرف بوابات', ctypeAt:Date.now(), tbar:3, tbarBy:'مشرف بوابات', tbarAt:Date.now(), at:Date.now() };
   w.STATE.recs['TG-A2'] = { id:'TG-A2', access:'تم الوصول', ctype:'ترددي', ctypeBy:'مشرف بوابات', ctypeAt:Date.now(), at:Date.now() };
   const ah = String(w.addedBody());
-  T(/data-fly="AD-1"/.test(ah) && /data-fly="AD-2"/.test(ah) && /المكتب/.test(ah) && /الميدان/.test(ah) && /بانتظار الاعتماد/.test(ah) && !/data-fly="TG-A1"/.test(ah), 'المضاف يدويًا: ما ليس في ملف العام الماضي وحده — بمصدره (المكتب/الميدان) وحالته');
+  T(/data-fly="AD-1"/.test(ah) && /data-fly="AD-2"/.test(ah) && /المكتب/.test(ah) && /الميدان/.test(ah) && !/بانتظار الاعتماد/.test(ah) && /لم تُزَر/.test(ah) && !/data-fly="TG-A1"/.test(ah), 'المضاف يدويًا: ما ليس في ملف العام الماضي وحده — بمصدره (المكتب/الميدان) وحالته');
   w.PV.ADF = 'الميدان'; const ah2 = String(w.addedBody()); w.PV.ADF = 'all';
   T(/data-fly="AD-2"/.test(ah2) && !/data-fly="AD-1"/.test(ah2), 'وفلتر المصدر يفصل ما أضافه الميدان عما أضافه المكتب');
   w.STATE.sites.length = 0; S0.forEach(x => w.STATE.sites.push(x)); w.STATE.recs = R0; w.STATE.users = U0;
@@ -2714,6 +2714,28 @@ console.log('\n══ ١٢٢ · المساعد: «حد ضاف مخيم مكرر 
   ['NSK-MIN-CMP-N801UY', 'NSK-MIN-CMP-N802UY'].forEach(id => { w.siteDropLocal(id); delete w.STATE.newsites[id]; });
   w.STATE.queue = w.STATE.queue.filter(q => !/N80[123]UY/.test(q.id));
   w.ROLE = role0; w.STATE.meta.role = mr0; w.confirm = conf0;
+}
+
+/* ── ١٢٣ · (V43.17) الإضافةُ تلقائيةٌ بلا اعتماد: الإشعارُ يقول ما أُضيف بنوعه، ومكانُ التصحيح واضح ── */
+console.log('\n══ ١٢٣ · «تمت إضافة مخيم جديد» لا «بانتظار اعتمادك»، والمكرَّرُ ظاهرٌ في «المضاف يدويًا» بزرِّ تصحيح ══');
+{
+  T(w.nsAddedText({ id:'X', type:'مخيم', zone:'منى', sq:'7', sign:'57/2', by:'خالد' }) === 'تمت إضافة مخيم جديد — منى · مربع 7 · شاخص 57/2 — خالد', 'نصُّ الإشعار: النوعُ والمشعرُ والمربعُ والشاخصُ ومن أضاف');
+  T(/تمت إضافة كاميرا جديدة — عرفات · بوابة 3/.test(w.nsAddedText({ id:'Y', type:'كاميرا', zone:'عرفات', name:'بوابة 3' })), 'وغيرُ المخيم باسمه، و«جديدة» للمؤنث');
+  const src = ['../src/04-office/04-tasks-office-02-newsite-schedule.js', '../src/04-office/04-tasks-office-12-draw-paths-areas.js'].map(f => readFileSync(new URL(f, import.meta.url), 'utf8')).join('\n');
+  T(!/موقعٌ جديدٌ بانتظار اعتمادك/.test(src) && (src.match(/notifPush\('موقع جديد'/g) || []).length === 2, 'لا إشعارَ «بانتظار اعتمادك» لموقعٍ جديد — من الميدان ولا من الرسم');
+  const role0 = w.ROLE, mr0 = w.STATE.meta.role, now = Date.now();
+  const mk = (id, d, at) => ({ id, name:'منى - مربع 9-9 - شاخص 9/9', zone:'منى', type:'مخيم', sq:'9-9', sign:'9/9', lat:21.4189 + d, lng:39.8731, isNew:true, origin:'field', by:'خالد', at, work:'موقع جديد' });
+  const A = [mk('NSK-MIN-CMP-N901UY', 0, now - 2e6), mk('NSK-MIN-CMP-N902UY', 0.00004, now - 1e6)];
+  w.STATE.newsites = w.STATE.newsites || {}; A.forEach(x => { w.STATE.sites.push(x); w.STATE.newsites[x.id] = Object.assign({}, x); }); w.SITE_IX = null;
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
+  const h = String(w.addedBody());
+  T(/نقاط مكرَّرة محتملة/.test(h) && /data-aqact="dups"/.test(h), '«المضاف يدويًا» يبدأ ببطاقة «نقاط مكرَّرة محتملة» وزرِّ «صحّح المكرَّر»');
+  T(/مكرَّرة محتملة/.test(h) && /data-aqact="edit\|NSK-MIN-CMP-N901UY"/.test(h) && !/بانتظار الاعتماد/.test(h), 'وكلُّ صفٍّ بحالة زيارته وعلامة «مكرَّرة محتملة» وزرِّ «صحّح» — بلا «بانتظار الاعتماد»');
+  w.ASSIST_OPEN = false; w.aqActClick('dups');
+  T(w.ASSIST_OPEN === true && /مكرر/.test(w.ASSIST_Q), 'وزرُّ «صحّح المكرَّر» يفتح المساعدَ على مجموعات المكرَّر');
+  w.ASSIST_OPEN = false; w.ASSIST_Q = '';
+  A.forEach(x => { w.siteDropLocal(x.id); delete w.STATE.newsites[x.id]; });
+  w.ROLE = role0; w.STATE.meta.role = mr0;
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

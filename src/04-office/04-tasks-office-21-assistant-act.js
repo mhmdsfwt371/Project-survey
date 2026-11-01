@@ -4,7 +4,7 @@
    PURPOSE : The assistant that acts (V43.16): «what do I do» questions — duplicate points, a point that does not show, who
              added what, who moved what — answered from this device's data with cards whose buttons run the real action
              (open and correct, show the group on the map, delete, restore, clear the map filter) under the user's own role.
-   DEFINES : aqAct, aqActDups, aqActMissing, aqActRecent, aqActMoves, aqActClick, aqActMap, aqActWho, aqActAgo
+   DEFINES : aqAct, aqActDupGroups, aqActDups, aqActMissing, aqActRecent, aqActMoves, aqActClick, aqActMap, aqActWho, aqActAgo
    NOTE    : Build order is the full path (see scripts/build.mjs). Owner decision (V43.16): grow the on-device assistant —
              no outside model, nothing leaves the phone. Every button calls the same function the screen's own button calls,
              so a permission the role lacks is refused here exactly as it is there.
@@ -49,7 +49,7 @@ function aqActRow(x, keep){
 }
 
 /* ── ١ · النقاطُ المكرَّرة: ما أُضيف يدويًّا فوق بعضه (نفسُ المربع والشاخص، أو أقلُّ من ٤٠ م ونفسُ النوع) ── */
-function aqActDups(who){
+function aqActDupGroups(who){   /* (V43.17) shared by the assistant and the «added by hand» tab */
   var near = function(a, b){ var r = Math.PI / 180, x = (b.lng - a.lng) * r * Math.cos(a.lat * r), y = (b.lat - a.lat) * r; return 6371000 * Math.sqrt(x * x + y * y); };
   var key = function(x){ return String(x.sq || '').replace(/\s+/g, '') + '|' + String(x.sign || '').replace(/\s+/g, ''); };
   var adds = (STATE.sites || []).filter(function(x){ return x && x.isNew && +x.lat && +x.lng && (!who.length || who.indexOf(x.by) > -1); });
@@ -71,6 +71,10 @@ function aqActDups(who){
     var done = g.filter(function(x){ return STATE.inss[x.id] || svVisited(STATE.recs[x.id]); })[0]; if (done) return done.id;
     return g.slice().sort(function(a, b){ return (a.at || 0) - (b.at || 0); })[0].id;
   };
+  return { groups:groups, pick:pick };
+}
+function aqActDups(who){
+  var G = aqActDupGroups(who), groups = G.groups, pick = G.pick;
   if (!groups.length) return aqCard(t('النقاط المكرَّرة'), '<p style="margin:0">' + esc(t('لا نقاطَ مضافةً فوق بعضها') + (who.length ? ' ' + t('لـ') + ' ' + who.join('، ') : '')) + ' \u2713</p>'
     + '<p class="hint" style="margin:6px 0 0">' + esc(t('أبحث في ما أُضيف يدويًّا: نفسُ المربع والشاخص، أو أقلُّ من ٤٠ مترًا ونفسُ النوع.')) + '</p>');
   return groups.slice(0, 6).map(function(g, gi){
@@ -201,6 +205,7 @@ function aqActClick(spec){
     Promise.resolve(P1).then(function(){ return typeof pullDelta === 'function' ? pullDelta({ why:'assist' }) : 0; }).then(done, done);
     return true;
   }
+  if (act === 'dups'){ ASSIST_Q = t('في نقط مكررة؟'); ASSIST_OPEN = true; render(); return true; }   /* (V43.17) from the «added by hand» tab */
   if (act === 'ask'){ ASSIST_Q = arg; var q = document.getElementById('assistQ'); if (q) q.value = arg; var rs4 = document.getElementById('assistRes'); if (rs4) rs4.innerHTML = assistResHtml(); return true; }
   return false;
 }

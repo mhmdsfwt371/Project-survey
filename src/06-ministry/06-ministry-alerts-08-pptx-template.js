@@ -1071,27 +1071,34 @@ function addedRows(){
 function addedBody(){
   var all = addedRows(), F = PV.ADF || 'all', q = String(PV.ADQ || '').trim().toLowerCase();
   var cnt = {}; all.forEach(function(x){ var s = addedSrc(x); cnt[s] = (cnt[s] || 0) + 1; });
-  var rows = all.filter(function(x){ return (F === 'all' || (F === 'pend' ? !x.approved : addedSrc(x) === F)) && (!q || (String(x.id) + ' ' + (x.name || '') + ' ' + (x.co || '') + ' ' + (x.by || '')).toLowerCase().indexOf(q) > -1); });
+  var rows = all.filter(function(x){ return (F === 'all' || addedSrc(x) === F) && (!q || (String(x.id) + ' ' + (x.name || '') + ' ' + (x.co || '') + ' ' + (x.by || '')).toLowerCase().indexOf(q) > -1); });
   var chip = function(k, l, n){ return F === k ? '<span class="chip on">' + esc(t(l)) + ' <b class="num">' + nm(n) + '</b></span>'
     : '<button type="button" class="chip" data-adf="' + esc(k) + '">' + esc(t(l)) + ' <b class="num">' + nm(n) + '</b></button>'; };
   var byZ = {}; all.forEach(function(x){ var z = x.zone || '\u2014'; byZ[z] = (byZ[z] || 0) + 1; });
-  var pend = all.filter(function(x){ return !x.approved; }).length;
+  /* (V43.17) owner: «the place I correct from must be clear» — duplicates first, with one button into the assistant's groups */
+  var DG = typeof aqActDupGroups === 'function' ? aqActDupGroups([]).groups : [], dupIds = {}; DG.forEach(function(g){ g.forEach(function(x){ dupIds[x.id] = 1; }); });
+  var dupCard = DG.length
+    ? '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid #F59E0B"><h4 style="margin:0 0 4px">\u{1F9E9} ' + esc(t('نقاط مكرَّرة محتملة')) + ': ' + nm(DG.length) + ' ' + esc(t('مجموعة')) + ' \u00b7 ' + nm(Object.keys(dupIds).length) + ' ' + esc(t('نقطة')) + '</h4>'
+      + '<p class="hint" style="margin:0 0 8px">' + esc(t('نقاطٌ أُضيفت فوق بعضها (نفسُ المربع والشاخص، أو أقلُّ من ٤٠ م ونفسُ النوع). افتحها: سيب واحدةً وصحّح بياناتها، وامسح الباقي.')) + '</p>'
+      + '<button type="button" class="btn btn-primary btn-sm" data-aqact="dups">\u{1F9E9} ' + esc(t('صحّح المكرَّر')) + '</button></div>'
+    : '<p class="hint" style="margin:0 0 8px">\u2713 ' + esc(t('لا نقاطَ مكرَّرةً في المضاف يدويًا')) + '</p>';
   return card('\u{1F195} ' + t('المضاف يدويًا') + ' \u2014 ' + nm(all.length) + ' ' + t('نقطة'),
       '<p class="hint" style="margin:0 0 8px">' + esc(t('كل نقطة ما كانتش في ملف العام الماضي — أضافها المكتب أو الشباب في الميدان أو الوزارة.')) + '</p>'
-      + '<div class="chips" style="margin:0 0 8px">' + chip('all', 'الكل', all.length) + ['المكتب', 'الميدان', 'الوزارة', 'ملف KMZ'].filter(function(s){ return cnt[s]; }).map(function(s){ return chip(s, s, cnt[s]); }).join('') + (pend ? chip('pend', 'بانتظار الاعتماد', pend) : '') + '</div>'
+      + dupCard
+      + '<div class="chips" style="margin:0 0 8px">' + chip('all', 'الكل', all.length) + ['المكتب', 'الميدان', 'الوزارة', 'ملف KMZ'].filter(function(s){ return cnt[s]; }).map(function(s){ return chip(s, s, cnt[s]); }).join('') + '</div>'
       + '<div class="chips" style="margin:0 0 8px">' + Object.keys(byZ).map(function(z){ return '<span class="pill">' + esc(t(z)) + ' <b class="num">' + nm(byZ[z]) + '</b></span>'; }).join('') + '</div>'
       + '<input type="search" id="adQ" placeholder="' + esc(t('ابحث بالرقم أو الاسم أو الشركة أو اللي أضافها')) + '" value="' + esc(PV.ADQ || '') + '" style="margin:0 0 8px">'
       + (rows.length ? table(['النقطة', 'النوع', 'المشعر', 'الشركة', 'أضافها', 'المصدر', 'الحالة', ''], rows.slice(0, 300).map(function(x){
           return ['<b>' + esc(x.id) + '</b>' + (x.name && x.name !== x.id ? '<div class="hint" style="margin:0">' + esc(x.name) + '</div>' : ''), esc(t(x.type || '\u2014')), esc(t(x.zone || '\u2014')), esc(dispName(x.co || '\u2014')),
             esc(dispName(x.by || '\u2014')) + (x.at ? '<div class="hint" style="margin:0">' + esc(fmtDate(x.at, { day:'numeric', month:'short' })) + '</div>' : ''), esc(t(addedSrc(x))),
-            x.approved ? '<span class="pill" style="border-color:#22C55E;color:#22C55E">' + esc(t('معتمد')) + '</span>' : '<span class="pill" style="border-color:#F59E0B;color:#F59E0B">' + esc(t('بانتظار الاعتماد')) + '</span>',
-            btn('\u{1F4CD} ' + t('على الخريطة'), 'btn-quiet btn-sm', ' data-fly="' + esc(x.id) + '"')]; }))
+            esc(typeof aqActState === 'function' ? aqActState(x) : '') + (dupIds[x.id] ? ' <span class="pill" style="border-color:#F59E0B;color:#F59E0B">' + esc(t('مكرَّرة محتملة')) + '</span>' : ''),
+            (maySiteEditBasic() ? '<button type="button" class="btn btn-secondary btn-sm" data-aqact="edit|' + esc(x.id) + '">\u270E ' + esc(t('صحّح')) + '</button> ' : '') + btn('\u{1F4CD} ' + t('على الخريطة'), 'btn-quiet btn-sm', ' data-fly="' + esc(x.id) + '"')]; }))
         : '<p class="hint">' + esc(t('لا نقاط مضافة بهذا الفلتر.')) + '</p>')
       + (rows.length > 300 ? '<p class="hint">' + nm(rows.length - 300) + ' ' + esc(t('أخرى — ضيّق البحث')) + '</p>' : '')
       + (all.length ? '<div style="margin:8px 0 0">' + btn('\u2B07 ' + t('Excel'), 'btn-secondary btn-sm', ' data-adx="1"') + '</div>' : ''));
 }
 function addedXlsx(){
-  var rows = addedRows().map(function(x){ return [x.id, x.name || '', x.type || '', x.zone || '', x.co || '', x.by || '', x.at ? new Date(x.at).toISOString().slice(0, 10) : '', addedSrc(x), x.approved ? 'معتمد' : 'بانتظار الاعتماد', +x.lat || '', +x.lng || '']; });
+  var rows = addedRows().map(function(x){ return [x.id, x.name || '', x.type || '', x.zone || '', x.co || '', x.by || '', x.at ? new Date(x.at).toISOString().slice(0, 10) : '', addedSrc(x), (typeof aqActState === 'function' ? aqActState(x) : ''), +x.lat || '', +x.lng || '']; });
   if (typeof mtXlsx === 'function') return mtXlsx('المضاف يدويًا', ['الرقم', 'الاسم', 'النوع', 'المشعر', 'الشركة', 'أضافها', 'التاريخ', 'المصدر', 'الحالة', 'خط العرض', 'خط الطول'], rows);
   toast(t('التصدير غير متاح على هذا الجهاز')); return false;
 }

@@ -114,6 +114,12 @@ function nsDupNear(lat, lng, type){
   });
   return best;
 }
+/* (V43.17) «تمت إضافة مخيم جديد — منى · مربع 7 · شاخص 57/2 — خالد»: the type in words, the holy site, the camp's square and
+   sign (or the point's name), and who added it — the notice is the record, not a request for approval */
+function nsAddedText(x){
+  var tp = x.type || 'موقع', where = [x.zone || ''].concat(x.type === 'مخيم' ? [x.sq ? t('مربع') + ' ' + x.sq : '', x.sign ? t('شاخص') + ' ' + x.sign : ''] : [x.name && x.name !== x.id ? x.name : '']).filter(Boolean).join(' \u00b7 ');
+  return t('تمت إضافة') + ' ' + t(tp) + ' ' + t(/[\u0629\u0627]$/.test(tp) ? 'جديدة' : 'جديد') + (where ? ' \u2014 ' + where : '') + (x.by ? ' \u2014 ' + x.by : '');
+}
 function nsSave(){
   var minProp = ROLE === 'viewer', office = nsOffice() || minProp;   /* (V37.68) قرارُ المالك: نقطةُ الوزارة «مقترحة» يعتمدها المهندس — بلا صورٍ إلزاميةٍ ولا زيارة */
   var lat = NEWSITE.lat || (PV.MYPOS && PV.MYPOS.lat), lng = NEWSITE.lng || (PV.MYPOS && PV.MYPOS.lng);
@@ -192,8 +198,8 @@ function nsSave(){
 
   if (!office) nsVisitRec(id);
   if (!minProp) stepDone('newsite', id, office ? 'أضافها المكتب — تُجدوَل زيارتُها' : 'أُضيفت في الموقع — تُحتسَب زيارة', 0);
-  if (!minProp) notifPush('موقع مقترح', 'موقعٌ جديدٌ بانتظار اعتمادك — ' + NEWSITE.zone,
-            { site:id, lv:'مهم' });
+  /* (V43.17) owner: a field addition is added automatically — no approval. The notice says what was added, by type, and where */
+  if (!minProp) notifPush('موقع جديد', nsAddedText(site), { site:id, lv:'عادي' });
   if (!minProp) logEvent('موقع جديد — ' + id + ' · ' + NEWSITE.zone
     + (NEWSITE.coReq ? ' · طلب شركة: ' + NEWSITE.coReq : ''), id);
   statBump();
