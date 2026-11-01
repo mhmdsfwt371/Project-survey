@@ -2645,6 +2645,21 @@ console.log('\n══ ١١٩ · استيرادُ خطة المهام بأسما�
   T(w.wtPlanRows([['المهمة', 'المسؤول'], ['x', 'y']], 0).length === 0, 'والملفُّ القديم (عمود «المهمة») لا يمرّ من هذا القارئ — طريقُه كما كان');
 }
 
+/* ── ١٢٠ · (V43.14) عدّادُ الحساسات لا يقول رقمًا ناقصًا قبل وصول خطّة المخيمات ── */
+console.log('\n══ ١٢٠ · عدّادُ الحساسات: «…» حتى تصل الخطّة، ثم الرقمُ كاملًا ══');
+{
+  const d0 = w.IOT.data, on0 = w.IOT.on, b0 = w.IOT.busy, L0 = w.iotLoad; let asked = 0;
+  w.IOT.data = null; w.IOT.on = true; w.IOT.busy = false; w.iotLoad = () => { asked++; };
+  const k = w.iotCount();
+  T(k.loading === true && asked === 1, 'بلا خطّةٍ بعد: العدّادُ «يُحمِّل» ويطلبها — لا ٤٠ بدل ٨٬١٥٢');
+  w.IOT.data = { camps:{ 'X-1':{ gw:[21.4, 39.9], gws:[], sensors:[[21.4, 39.9], [21.4, 39.91]] } } };
+  const k2 = w.iotCount();
+  T(!k2.loading && k2.s >= 2, 'وحين تصل يُعَدُّ كلُّ ما فيها');
+  const src = readFileSync(new URL('../src/03zz-late/05-map--05-lifecycle-map-05-geojson-basemap-layers.js', import.meta.url), 'utf8');
+  T(/IOT\.tries < 4\) setTimeout\(iotLoad, 8000\)/.test(src), 'والتحميلُ الفاشلُ يُعاد ٤ مرات — كان لا يُعاد');
+  w.IOT.data = d0; w.IOT.on = on0; w.IOT.busy = b0; w.iotLoad = L0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

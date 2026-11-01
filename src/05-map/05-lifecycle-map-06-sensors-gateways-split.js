@@ -263,7 +263,8 @@ function iotPanelHtml(){
     + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-iotcancel="1"')
     + '</div></div>';
 }
-function iotCount(){ var g = 0, s = 0; iotCampIds().forEach(function(id){ var c = iotOf(id); if (c){ g += 1 + (c.gws || []).length; s += c.sensors.length; } }); return { g:g, s:s }; }
+function iotCount(){ if (IOT.on && !IOT.data){ if (!IOT.busy && typeof iotLoad === 'function') iotLoad(); return { g:0, s:0, loading:true }; }   /* (V43.14) no number until the plan is here */
+  var g = 0, s = 0; iotCampIds().forEach(function(id){ var c = iotOf(id); if (c){ g += 1 + (c.gws || []).length; s += c.sensors.length; } }); return { g:g, s:s }; }
 
 
 var BED = null; PV.BED_L = null;

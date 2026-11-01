@@ -54,5 +54,10 @@ function poiLoad(){
 function iotLoad(){
   if (IOT.data || IOT.busy || typeof fetch !== 'function') return;
   IOT.busy = true;
-  fetch('layers/mina-sensors.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(d){ IOT.busy = false; if (!d) return; IOT.data = d; iotPaint(); if (CUR === 'iotdash' && !((iotDashHtml.F || {}).pop)) render(1); }).catch(function(e){ IOT.busy = false; LS_ERR = e; });
+  /* (V43.14) the owner: «الحساسات المنظر بتاعها مختلف عندي مش زي شكري أو خالد» — his map said «الحساسات · ٤٠», the same device half an
+     hour later (viewing as Khaled) «٨٬١٥٢». Not a role and not sync: the camps' plan file had not arrived on that render (a failed or
+     slow fetch was never retried), so only the edited camps were counted. A failed fetch now retries (4 times, 8 s apart), the map
+     redraws when it lands, and the button says «…» rather than a wrong number while it loads. */
+  var retry = function(){ IOT.busy = false; IOT.tries = (IOT.tries || 0) + 1; if (IOT.tries < 4) setTimeout(iotLoad, 8000); };
+  fetch('layers/mina-sensors.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(d){ if (!d){ retry(); return; } IOT.busy = false; IOT.tries = 0; IOT.data = d; iotPaint(); if (CUR === 'map' || (CUR === 'iotdash' && !((iotDashHtml.F || {}).pop))) render(1); }).catch(function(e){ LS_ERR = e; retry(); });
 }
