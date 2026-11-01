@@ -91,8 +91,16 @@ var CORE = {
     /* المفتاحُ الواحدُ لا يدخل الطابورَ مرتين: الإعدادُ يُكتَب مرارًا وهو
        يُقرَأ — فيتضخّم الطابورُ بكتاباتٍ لقيمةٍ واحدة، ويُرفَع القديمُ ثم
        الجديدُ بلا فائدة. تُطوى: آخرُ كتابةٍ هي الصحيحة. */
+    /* (V43.15) owner's three-device test: the server merges every write (merge:true), and some kinds are written as PATCHES
+       — a site override is only the fields that changed (a move is {lat,lng}, an edit is {name,sq…}). Replacing the earlier
+       queued write with the later one dropped the earlier patch entirely: a move then an edit before the upload left only
+       the edit on the server, and the other devices never saw the move. The later write now carries the earlier one's
+       fields under it (field by field, the later wins) — exactly what two uploads would have left on the server. A delete
+       (null) still replaces. */
     for (var qi = STATE.queue.length - 1; qi >= 0; qi--){
       if (STATE.queue[qi].kind === kind && STATE.queue[qi].id === id){
+        var prevV = STATE.queue[qi].v;
+        if (v && prevV && typeof v === 'object' && typeof prevV === 'object' && !Array.isArray(v) && !Array.isArray(prevV)) v = Object.assign({}, prevV, v);
         STATE.queue.splice(qi, 1);
         break;
       }
@@ -334,9 +342,10 @@ var CORE = {
           return FB.pushEach(batch);
         });
     }).then(function(r){
-      var okIds = {};
-      r.ok.forEach(function(it){ okIds[it.kind + '|' + it.id] = 1; });
-      STATE.queue = STATE.queue.filter(function(it){ return !okIds[it.kind + '|' + it.id]; });
+      /* (V43.15) what left is removed by identity, not by name: a write to the same document made WHILE this batch was in
+         flight is a different item in the queue — removing by kind|id threw it away as «uploaded» and it never reached the
+         server (owner's three-device test: a point moved then renamed within the same second arrived moved, never renamed). */
+      STATE.queue = STATE.queue.filter(function(it){ return r.ok.indexOf(it) < 0; });
       CORE.qbakSave();   /* (V21.4) ما رُفع يخرج من الاحتياطيّ في اللحظة — لا بعد مهلة الحفظ */
       /* نبضةٌ واحدةٌ لكلِّ دفعةٍ ناجحة: أيُّ مجموعاتٍ تغيّرت — فتسحب الأجهزةُ
          الأخرى فارقَها في ثوانٍ لا بعد عشر دقائق (V17.26). النبضةُ نفسُها

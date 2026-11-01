@@ -526,7 +526,7 @@ jobs:
           merge-multiple: true
       - name: البوابة — ستُّ علاماتٍ خضراء أو لا ترقية
         run: |
-          need="fast browser rules shard-1 shard-2 shard-3 shard-4 shard-5 shard-6"; bad=""   # (V39.42) and the four shards: the whole list before any promotion   # (خطةُ التسليم) الطبقةُ السريعةُ والمتصفّحُ والمحاكي على الدفعة — والشرائحُ الأربعُ ليلًا
+          need="fast browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6"; bad=""   # (V39.42) and the four shards: the whole list before any promotion   # (خطةُ التسليم) الطبقةُ السريعةُ والمتصفّحُ والمحاكي على الدفعة — والشرائحُ الأربعُ ليلًا
           for n in $need; do
             f="gates/$n.txt"
             if [ ! -f "$f" ] || [ "$(head -1 "$f")" != "PASS" ]; then bad="$bad $n"; fi

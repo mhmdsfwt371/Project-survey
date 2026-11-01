@@ -124,3 +124,54 @@ jobs:
           name: gate-rules
           path: gate/
           retention-days: 7
+
+  multi:
+    name: أربعةُ أجهزة — أربعةُ أدوار (محاكي + كروميوم)
+    # (V43.15) طلبُ المالك: «أيُّ حدٍّ بيحرّك أيَّ حاجة تظهر لي كأدمن، وأنا لما بعمل أيَّ حاجة تظهر لهم على الخريطة».
+    # أربعةُ متصفّحاتٍ حقيقية (مالكٌ ومهندسٌ ومشرفٌ وفني) على محاكيَي Firestore وAuth بقواعد القاعدة نفسِها:
+    # كلُّ دورٍ يكتب ما يكتبه في الميدان، والآخرون يجب أن يروه — ثم يُعاد الفتح فيبقى. انظر scripts/multi-device-test.mjs
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: الأدوات
+        run: |
+          for i in 1 2 3; do
+            npm i --no-save --no-audit --no-fund firebase-tools@13 playwright@^1.56 && npx playwright install chromium && exit 0
+            echo "::warning::محاولةُ التثبيت $i تعثّرت — إعادةٌ بعد $((i*15))ث"
+            sleep $((i*15))
+          done
+          echo "::error::تعذّر التثبيتُ بعد ثلاث محاولات"; exit 1
+      - name: كلُّ دورٍ يكتب والآخرون يرون
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -o pipefail
+          RC=0
+          npx firebase emulators:exec --only firestore,auth --project demo-nusuk \
+            "node scripts/multi-device-test.mjs" 2>&1 | tee /tmp/multi.txt || RC=$?
+          { echo '### أربعةُ أجهزة — أربعةُ أدوار'; echo '```'; grep -aE '══|✓|✗' /tmp/multi.txt | tail -90; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          mkdir -p gate
+          if [ "$RC" = "0" ]; then echo PASS > gate/multi.txt; else
+            { echo FAIL; grep -aE '✗|Error|استثناء' /tmp/multi.txt | tail -40; } > gate/multi.txt
+            gh api "repos/${{ github.repository }}/commits/${{ github.sha }}/comments" -f body="$(printf '### 🔴 أربعةُ الأجهزة سقطت — لا ترقية\n```\n%s\n```' "$(grep -aE '✗|فحصًا|استثناء' /tmp/multi.txt | tail -40)")" > /dev/null || true
+            echo "::warning::أربعةُ الأجهزة سقطت — التفصيلُ تعليقًا على الالتزام، ولا ترقية"
+          fi
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: gate-multi
+          path: gate/
+          retention-days: 7
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: multi-screens
+          path: test-artifacts/
+          retention-days: 14

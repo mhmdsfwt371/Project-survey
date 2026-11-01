@@ -5,7 +5,7 @@
    ١ التركيب · ٢ تجهيزةُ الديمو · ٣ المسح والاعتماد · ٤ بياناتُ ١٤٤٧ ← نموذجُ التركيب · ٥ جسرُ نظام البطاقات والتحقق ·
    (V37.99) ٦ المخزن · ٧ أرقامُ المسح للوزارة · ٨ الفكّ · (V38.16) ٩ مساعدُ البيانات: كلُّ رقمٍ يجيب به = عدٌّ مستقلٌّ من الحالة. */
 import './lib/jsdom-dict.cjs';   /* (V39.11) the dictionary in the test page — scenario ٤٦ reads the sheet in English */
-import { readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { createRequire } from 'module';
 const { JSDOM, VirtualConsole } = createRequire(import.meta.url)('jsdom');   /* through require, so the dictionary patch applies */
@@ -2658,6 +2658,25 @@ console.log('\n══ ١٢٠ · عدّادُ الحساسات: «…» حتى ت
   const src = readFileSync(new URL('../src/03zz-late/05-map--05-lifecycle-map-05-geojson-basemap-layers.js', import.meta.url), 'utf8');
   T(/IOT\.tries < 4\) setTimeout\(iotLoad, 8000\)/.test(src), 'والتحميلُ الفاشلُ يُعاد ٤ مرات — كان لا يُعاد');
   w.IOT.data = d0; w.IOT.on = on0; w.IOT.busy = b0; w.iotLoad = L0;
+}
+
+/* ── ١٢١ · (V43.15) كتابتان على نقطةٍ واحدة لا تضيع إحداهما ── */
+console.log('\n══ ١٢١ · طابورُ الرفع: الكتابةُ الثانيةُ على الوثيقة نفسِها لا تمحو الأولى ولا تُرمى ══');
+{
+  const q0 = w.STATE.queue.slice(), va = w.PV.VIEW_AS; w.PV.VIEW_AS = 0; w.STATE.queue.length = 0;
+  w.CORE.set('sites', 'TST-Q-1', { lat:21.41, lng:39.89 });
+  w.CORE.set('sites', 'TST-Q-1', { name:'اسمٌ جديد' });
+  const it = w.STATE.queue.filter(q => q.kind === 'sites' && q.id === 'TST-Q-1');
+  T(it.length === 1 && it[0].v.lat === 21.41 && it[0].v.name === 'اسمٌ جديد', 'تحريكٌ ثم تعديلُ اسمٍ قبل الرفع = كتابةٌ واحدةٌ تحمل الاثنين — كان التحريكُ يُمحى');
+  w.CORE.set('sites', 'TST-Q-1', null);
+  T(w.STATE.queue.filter(q => q.id === 'TST-Q-1').length === 1 && w.STATE.queue.filter(q => q.id === 'TST-Q-1')[0].v === null, 'والحذفُ يحلّ محلَّ ما قبله كما كان');
+  const core = readFileSync(new URL('../src/01-core/01-core-registry-05-sync-scale.js', import.meta.url), 'utf8');
+  T(/STATE\.queue = STATE\.queue\.filter\(function\(it\)\{ return r\.ok\.indexOf\(it\) < 0; \}\)/.test(core) && !/okIds\[it\.kind \+ '\|' \+ it\.id\]/.test(core),
+    'ما رُفع يُرفَع من الطابور بهويته — ما كُتب على الوثيقة نفسِها أثناء الرفع يبقى ويُرفَع بعده');
+  T(existsSync(new URL('./multi-device-test.mjs', import.meta.url)) && /gate\/multi\.txt/.test(readFileSync(new URL('../.github/workflows/real-tests.yml', import.meta.url), 'utf8'))
+    && /need="fast browser rules multi /.test(readFileSync(new URL('../.github/workflows/docs-check.yml', import.meta.url), 'utf8')),
+    'وأربعةُ أجهزةٍ حقيقية (مالكٌ ومهندسٌ ومشرفٌ وفني) على المحاكي علامةٌ لازمةٌ في البوابة');
+  w.STATE.queue.length = 0; q0.forEach(x => w.STATE.queue.push(x)); w.PV.VIEW_AS = va;
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
