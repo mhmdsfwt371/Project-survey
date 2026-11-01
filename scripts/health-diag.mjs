@@ -50,7 +50,7 @@ if (process.env.NEW){
     let D = [];
     try { D = (await db.collection(c).where('_at', '>', since).get()).docs; } catch (e){ console.log('NEW · ' + c + ': ? ' + String(e.message || e).slice(0, 80)); continue; }
     console.log('NEW · ' + c + ': ' + D.length + ' في ٤٨ ساعة');
-    D.slice(0, 25).forEach(d => { const v = d.data() || {}; console.log('NEW · ' + c + ' · ' + d.id + ' · ' + String(v.name || '').slice(0, 30) + ' · ' + (v.type || '') + ' · ' + (v.zone || '') + ' · by=' + (v.by || '') + ' · _by=' + String(v._by || '').slice(0, 8) + ' · ' + iso(+v._at || +v.at) + ' · approved=' + v.approved + ' · origin=' + (v.origin || '') + (v.deleted ? ' · محذوف' : '') + (v.hidden ? ' · مخفي' : '')); });
+    D.slice(0, 25).forEach(d => { const v = d.data() || {}; console.log('NEW · ' + c + ' · ' + d.id + ' · ' + String(v.name || '').slice(0, 30) + ' · ' + (v.type || '') + ' · ' + (v.zone || '') + ' · by=' + (v.by || '') + ' · _by=' + String(v._by || '').slice(0, 8) + ' · ' + iso(+v._at || +v.at) + ' · approved=' + v.approved + ' · origin=' + (v.origin || '') + ' · lat=' + v.lat + ' lng=' + v.lng + ' · keys=' + Object.keys(v).filter(k => !/^_/.test(k)).slice(0, 14).join(',') + (v.deleted ? ' · محذوف' : '') + (v.hidden ? ' · مخفي' : '')); });
   }
 }
 process.exit(0);
