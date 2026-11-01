@@ -2679,6 +2679,43 @@ console.log('\n══ ١٢١ · طابورُ الرفع: الكتابةُ الث
   w.STATE.queue.length = 0; q0.forEach(x => w.STATE.queue.push(x)); w.PV.VIEW_AS = va;
 }
 
+/* ── ١٢٢ · (V43.16) المساعدُ ينفّذ: المكرَّرُ والنقطةُ التي لا تظهر ومن أضاف ومن حرّك — بأزرارٍ تعمل ── */
+console.log('\n══ ١٢٢ · المساعد: «حد ضاف مخيم مكرر — أعمل إيه؟» يُجاب بالنقاط نفسِها وأزرارٍ تمسح وتصحّح ══');
+{
+  const role0 = w.ROLE, mr0 = w.STATE.meta.role, conf0 = w.confirm, now = Date.now();
+  const mk = (id, by, dLat, at, extra) => Object.assign({ id, name:'منى - مربع 111-111 - شاخص 11', zone:'منى', type:'مخيم', sq:'111-111', sign:'11/1', lat:21.4209 + dLat, lng:39.8721, isNew:true, approved:false, origin:'field', by, at, work:'موقع جديد' }, extra || {});
+  const A = [mk('NSK-MIN-CMP-N801UY', 'خالد', 0, now - 3 * 3600000), mk('NSK-MIN-CMP-N802UY', 'خالد', 0.00005, now - 2 * 3600000), mk('NSK-MIN-CMP-N803UY', 'خالد', 0.0001, now - 3600000)];
+  w.STATE.newsites = w.STATE.newsites || {};
+  A.forEach(x => { w.STATE.sites.push(x); w.STATE.newsites[x.id] = Object.assign({}, x); });
+  w.SITE_IX = null; w.SITE_TOK = null;
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
+  const h = String(w.aqAct('في نقط مكررة اللي ضافها خالد؟'));
+  T(/مجموعة مكرَّرة/.test(h) && A.every(x => h.indexOf(x.id) > -1), 'يعرض المجموعةَ بنقاطها الثلاث (نفسُ المربع والشاخص، وأقلُّ من ٤٠ م)');
+  T((h.match(/المقترح تسيبها/g) || []).length === 1 && h.indexOf('N801UY') < h.indexOf('المقترح تسيبها') + 400, 'ويقترح واحدةً تُترَك — الأقدم إن لم تُزَر أيٌّ منها');
+  T((h.match(/data-aqact="del\|/g) || []).length === 3 && (h.match(/data-aqact="edit\|/g) || []).length === 3 && /data-aqact="map\|(NSK-MIN-CMP-N80\dUY,?){3}"/.test(h), 'لكلِّ نقطةٍ «صحّح» و«امسح» و«على الخريطة»، وللمجموعة «اعرض المجموعة على الخريطة»');
+  w.confirm = () => true;
+  w.aqActClick('del|NSK-MIN-CMP-N803UY');
+  T(!w.siteFind('NSK-MIN-CMP-N803UY') && w.STATE.queue.some(q => q.kind === 'newsites' && q.id === 'NSK-MIN-CMP-N803UY' && q.v.deleted === true), 'زرُّ «امسحها» يمسحها نهائيًّا بمسار الشاشة نفسِه (شاهدٌ يصل كلَّ الأجهزة)');
+  w.ROLE = 'supervisor'; w.STATE.meta.role = 'supervisor';
+  const hs = String(w.aqAct('في نقط مكررة؟'));
+  T(!/data-aqact="del\|/.test(hs) && /data-aqact="edit\|/.test(hs) && /الحذفُ للمهندس فما فوق/.test(hs), 'المشرفُ يرى «صحّح» ولا يرى «امسح» — ويُقال له إن الحذفَ للمهندس');
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
+  const hm = String(w.aqAct('النقطة N803UY مش ظاهرة ليه'));
+  T(/مُسحت نهائيًّا/.test(hm), '«مش ظاهرة» لنقطةٍ مُسحت: يقول إنها مُسحت ومن مسحها');
+  const hv = String(w.aqAct('N801UY مش باينة على الخريطة'));
+  T(/موجودةٌ في السجلّ وعلى الخريطة/.test(hv) && /data-aqact="map\|NSK-MIN-CMP-N801UY"/.test(hv), 'ولنقطةٍ موجودة: يقول إنها موجودة وزرٌّ يعرضها على الخريطة');
+  const hr = String(w.aqAct('مين ضاف نقط النهارده'));
+  T(/الإضافاتُ اليدوية/.test(hr) && /خالد/.test(hr) && /data-aqact="ask\|في نقط مكررة"/.test(hr), '«مين ضاف»: الإضافاتُ بعدد كلِّ شخص، وزرٌّ يسأل «فيها مكرَّر؟»');
+  const hh = String(w.aqAct('ازاي احرك الحساس'));
+  T(/تحريك الأجهزة/.test(hh) && !/آخر التحريكات/.test(hh), '«ازاي أحرّك» يُجاب بالخطوات لا بسجلِّ التحريكات');
+  T(w.aqAct('كام نقطة اتركبت في منى') === '', 'وما ليس من اختصاصه يمرّ إلى المساعد القديم كما كان');
+  const ev = readFileSync(new URL('../src/08-events/08-data-events-boot-08-clicks-a-2.js', import.meta.url), 'utf8');
+  T(/closest\('\[data-aqact\]'\)/.test(ev), 'وأزرارُ المساعد موصولةٌ بمعالج الضغط');
+  ['NSK-MIN-CMP-N801UY', 'NSK-MIN-CMP-N802UY'].forEach(id => { w.siteDropLocal(id); delete w.STATE.newsites[id]; });
+  w.STATE.queue = w.STATE.queue.filter(q => !/N80[123]UY/.test(q.id));
+  w.ROLE = role0; w.STATE.meta.role = mr0; w.confirm = conf0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

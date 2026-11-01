@@ -319,6 +319,7 @@ function clickAPart5(e){
   var nkc = e.target.closest('[data-nkclear]'); if (nkc){ extNkSave(nkc.getAttribute('data-nkclear'), ''); return true; }
   if (e.target.closest('[data-nkbulk]')){ extBulkApply(); return true; }   /* (V37.87) */
   if (e.target.closest('[data-ex47ok]')){ ex47Apply(); return true; }   /* (V37.88) */
+  var aqa = e.target.closest('[data-aqact]'); if (aqa){ if (typeof aqActClick === 'function') aqActClick(aqa.getAttribute('data-aqact')); return true; }   /* (V43.16) the assistant's action buttons */
   var aqg = e.target.closest('[data-aqgo]'); if (aqg){ aqGoTo(aqg.getAttribute('data-aqgo')); return true; }   /* (V38.14) مساعدُ البيانات */
   if (e.target.closest('[data-aqxls]')){ assistQXls(); return true; }   /* (V38.16) */
   var aqr = e.target.closest('[data-aqrep]'); if (aqr){ aqRepExport(aqr.getAttribute('data-aqrep')); return true; }   /* (V38.17) */

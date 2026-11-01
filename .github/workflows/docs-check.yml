@@ -74,6 +74,8 @@ jobs:
         run: node scripts/audit-lang.mjs
       - name: جرد الترجمة بالرندر — كل صفحة تُفتح بالإنجليزية
         run: node scripts/audit-i18n.mjs
+      - name: حارس الترجمة — لا نصَّ عربيٍّ في t() بلا ترجمة، والقاموسان متطابقان (V43.16)
+        run: node scripts/audit-i18n-gap.mjs
       - name: جرد الاستقرار — ما يسوء يُرى ولا يُبتلَع
         run: node scripts/audit-stability.mjs
       - name: رحلة المسح — من الإسناد إلى نقاط التركيب

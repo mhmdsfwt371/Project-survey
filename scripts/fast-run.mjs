@@ -23,6 +23,7 @@ const STEPS = [
   ['الحالةُ الصفرية', 'node scripts/audit-zero.mjs'],
   ['الصلاحيات', 'node scripts/audit-perms.mjs'],
   ['الترجمةُ بالرندر', 'node scripts/audit-i18n.mjs'],
+  ['حارسُ الترجمة — لا نصَّ بلا ترجمة', 'node scripts/audit-i18n-gap.mjs'],   /* (V43.16) the rule check-version applies on main, now before release */
   ['سلامةُ البيانات', 'node scripts/audit-data.mjs'],
   ['ختمُ الهوية في كلِّ كتابة', 'node scripts/audit-uid.mjs'],   /* (V32.4) سقط ستَّ نسخٍ في الكامل وحدَه بعد بوابة البيانات — صار حاسمًا */
   ['الصور', 'node scripts/audit-photos.mjs'],

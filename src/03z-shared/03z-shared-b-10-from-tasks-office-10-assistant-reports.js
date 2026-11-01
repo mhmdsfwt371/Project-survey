@@ -7,7 +7,7 @@
    ============================================================================ */
 function aqExamples(){
   if (ROLE === 'viewer') return ['كام نقطة اتركبت في منى؟', 'القرّاء اللي مش بترسل', 'المخيم 38/56'];
-  return ['كام نقطة اتركبت في منى؟', 'إكسل للممرات في منى اللي تحت كوبري', 'تقرير المخيمات حسب المشعر', 'إكسل للمخيمات في منى اللي اتركبت ومش بترسل', 'ملف للطباعة للنقاط اللي ليها بيانات ١٤٤٧ ومش مربوطة', 'القرّاء اللي مش بترسل', 'المخيم 38/56', 'رصيد الراوتر', 'مين متأخر في المهام؟', 'التحديات في منى', 'أعلى إشغال', 'إيه الناقص علشان نجهز؟'];
+  return ['في نقط مكررة؟', 'مين ضاف نقط النهارده؟', 'النقطة N005 مش ظاهرة', 'مين حرك الحساسات؟', 'كام نقطة اتركبت في منى؟', 'إكسل للممرات في منى اللي تحت كوبري', 'تقرير المخيمات حسب المشعر', 'إكسل للمخيمات في منى اللي اتركبت ومش بترسل', 'ملف للطباعة للنقاط اللي ليها بيانات ١٤٤٧ ومش مربوطة', 'القرّاء اللي مش بترسل', 'المخيم 38/56', 'رصيد الراوتر', 'مين متأخر في المهام؟', 'التحديات في منى', 'أعلى إشغال', 'إيه الناقص علشان نجهز؟'];
 }
 
 function assistHomeHtml(){
@@ -25,7 +25,7 @@ function assistHomeHtml(){
 
 function assistResHtml(){
   if (ASSIST_Q && String(ASSIST_Q).trim().length < 3){ var q0 = ASSIST_Q; ASSIST_Q = ''; var h0 = assistResHtml(); ASSIST_Q = q0; return h0; }   /* (V37.40) حرفٌ أو حرفان: الصفحةُ الرئيسيةُ لا نتائجُ عشوائية */
-  var dq = ASSIST_Q ? aqAnswer(ASSIST_Q) : '';   /* (V38.14) مساعدُ البيانات أوّلًا */
+  var dq = ASSIST_Q ? ((typeof aqAct === 'function' && aqAct(ASSIST_Q)) || aqAnswer(ASSIST_Q)) : '';   /* (V43.16) the assistant that acts first — duplicates, missing points, additions, moves */   /* (V38.14) مساعدُ البيانات أوّلًا */
   var answered = !!(ASSIST_Q && (dq || assistIntent(ASSIST_Q) || knownHits(ASSIST_Q).length));   /* (V37.37) بلاغُ المالك: «الحاجات اللي تحت بتشوّش على اللي بدوّر عليه» */
   var results = ASSIST_Q && !answered ? helpSearch(ASSIST_Q, 12) : [], gl = ASSIST_Q && !answered ? glossaryHits(ASSIST_Q) : [];
   if (ASSIST_Q){ assistLog(ASSIST_Q, !!(answered || results.length || gl.length)); }   /* (V37.30) */
