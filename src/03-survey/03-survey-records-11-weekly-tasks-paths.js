@@ -239,6 +239,39 @@ function wtSet(id, patch){
 }
 
 
+/* (V43.12) the owner: «لم يُعثَر على عمود المهمة — ظبّطلي السيستم إنه يقبل الملف الإكسل ده». The «خطة المهام» workbook exported from
+   Excel Online names its columns «المهمة الرئيسية» and «المهمة الفرعية» instead of «المهمة», carries track rows («١. مسار تقني»), empty
+   rows left for additions, and status sheets that copy the first sheet. Columns are read by name, track and empty rows skipped, only the
+   first matching sheet read (no duplicates), and «قيد التنفيذ» is our «جاري العمل». The file the app exports itself is unchanged. */
+PV.WT_PLAN_COL = { main:['المهمة الرئيسية'], sub:['المهمة الفرعية'], num:['الرقم'], track:['مسار إدارة المشروع', 'المسار'],
+                   code:['كود المسار', 'الكود'], out:['المخرج المطلوب'], st:['الحالة'], upd:['الوصف / آخر تحديث', 'الوصف'],
+                   who:['المسؤول'], seen:['تاريخ الرصد'], due:['تاريخ الاستحقاق'], appr:['جهة الاعتماد'], note:['ملاحظات'], kind:['النوع'] };
+function wtPlanRows(A, id0){
+  var hdr = -1, C = {}, out = [], id = id0 || 0;
+  for (var i = 0; i < Math.min(A.length, 30) && hdr < 0; i++){
+    var H = (A[i] || []).map(function(x){ return String(x == null ? '' : x).trim(); });
+    if (H.indexOf('المهمة الرئيسية') >= 0){ hdr = i; Object.keys(PV.WT_PLAN_COL).forEach(function(k){
+      PV.WT_PLAN_COL[k].some(function(n){ var j = H.indexOf(n); if (j >= 0){ C[k] = j; return true; } return false; }); }); }
+  }
+  if (hdr < 0) return out;
+  var v = function(row, k){ return C[k] == null ? '' : String(row[C[k]] == null ? '' : row[C[k]]).trim(); };
+  for (var r = hdr + 1; r < A.length; r++){
+    var row = A[r]; if (!row) continue;
+    var kind = v(row, 'kind'), main = v(row, 'main'), sub = v(row, 'sub');
+    if (kind === 'مسار' || (!main && !sub)) continue;
+    var isSub = kind ? kind === 'فرعية' : !!sub, n = isSub ? sub : main;
+    if (!n) continue;
+    var st = v(row, 'st') || 'قيد الانتظار'; if (st === 'قيد التنفيذ') st = 'جاري العمل';
+    var upd = v(row, 'upd'), note = v(row, 'note');
+    out.push({ id:++id, n:n, track:v(row, 'track'), code:v(row, 'code'),
+               d:v(row, 'out') || (isSub && main ? t('ضمن') + ': ' + main : ''), who:v(row, 'who'), st:st,
+               seen:wbsDate(C.seen == null ? '' : row[C.seen]), due:wbsDate(C.due == null ? '' : row[C.due]),
+               src:(v(row, 'num') ? v(row, 'num') : '') + (v(row, 'appr') ? (v(row, 'num') ? ' \u00b7 ' : '') + t('الاعتماد') + ': ' + v(row, 'appr') : ''),
+               upd:upd + (note ? (upd ? ' \u2014 ' : '') + note : ''), stop:'', mSun:'', mWed:'' });
+  }
+  return out;
+}
+
 function wtImport(file){
   if (!may('settings')){ toast(t('المهامُّ الأسبوعية للمهندس فما فوق')); return; }
   xlsxLoad().then(function(ok){
@@ -249,8 +282,9 @@ function wtImport(file){
         var wb = XLSX.read(new Uint8Array(fr.result), { type:'array', cellDates:true }), rows = [], id = 0;
         wb.SheetNames.forEach(function(nm){
           var A = XLSX.utils.sheet_to_json(wb.Sheets[nm], { header:1, raw:true }), hdr = -1;
+          if (rows.length && rows.plan) return;   /* (V43.12) ملفُّ الخطة: أوّلُ ورقةٍ فقط — أوراقُ الحالات نسخٌ منها */
           for (var i = 0; i < A.length; i++){ if (String(A[i][1] || '').trim() === 'المهمة'){ hdr = i; break; } }
-          if (hdr < 0) return;
+          if (hdr < 0){ var P = wtPlanRows(A, id); if (P.length){ id += P.length; rows = rows.concat(P); rows.plan = 1; } return; }
           for (var r = hdr + 1; r < A.length; r++){
             var row = A[r]; if (!row || !row[1]) continue;
             /* الأعمدةُ الثلاثةُ الأخيرةُ من ورقة المكتب تُحفَظ كما هي (V17.19):
@@ -263,6 +297,7 @@ function wtImport(file){
           }
         });
         if (!rows.length){ toast(t('لم يُعثَر على عمود «المهمة» في الملف')); return; }
+        rows = rows.slice();
         STATE.wtask = { rows:rows };
         if (wtSave()){ logEvent('استيرادُ المهام الأسبوعية — ' + rows.length); toast(nm(rows.length) + ' ' + t('مهمةً استُوردت')); render(1); }
       } catch (e){ softErr('استيراد المهام', e, 'تعذّرت قراءةُ الملف'); }
