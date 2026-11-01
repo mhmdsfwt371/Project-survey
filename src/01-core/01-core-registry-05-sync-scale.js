@@ -792,6 +792,13 @@ var FB = {
     var sAt = (STATE.meta.pullAt || (STATE.meta.pullAt = {})), sSince = (sAt.sites || 0) - 120000, sStart = Date.now();
     var nSince = (sAt.newsites || 0) - 120000, nStart = Date.now(), cSince = (sAt.coreqs || 0) - 120000, cStart = Date.now();
     if (opt && Array.isArray(opt.only) && opt.only.length){ if (opt.only.indexOf('sites') < 0) sSince = Infinity; if (opt.only.indexOf('newsites') < 0) nSince = Infinity; if (opt.only.indexOf('coreqs') < 0) cSince = Infinity; }
+    /* (V43.13) the owner: «إضافة النقاط كمخيم من المشرف مش بيتعمل save ومش بتظهر عندي». Production showed Khaled's seven camps of
+       today all saved on the server (newsites + their moves in sites) — yet invisible after a restart, on his device and on the
+       office's. The cause, from V43.4: new sites and added companies were read with a «since» cursor even at start-up, but unlike
+       site overrides they are not kept on the device, so after a restart the cursor said «already read» and everything older than
+       it was never merged again (Khaled re-added the same camp three times). At start-up both are read whole again (as before
+       V43.4 — a few hundred reads); only the pulse and the ten-minute net read changes. */
+    if (cold){ nSince = 0; cSince = 0; }
       if (sSince !== Infinity){
       var sq = DB.col('sites'); if (sSince > 0) sq = sq.where('_at', '>', sSince);
       P.push(sq.limit(3000).get().then(function(sn){

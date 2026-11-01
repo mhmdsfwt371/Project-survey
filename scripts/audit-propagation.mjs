@@ -82,6 +82,21 @@ for (const k of Object.keys(SAMPLES)){
   Object.assign(before, after);
   T(changed.length > 0, k + ' — يظهر في ' + changed.length + ' شاشة: ' + changed.slice(0, 4).join(' · ') + (changed.length > 4 ? ' …' : ''));
 }
+/* ── ٣ · بعد إعادة الفتح: ما يُقرأ بمؤشِّر «منذ» ولا يُحفَظ على الجهاز يُقرأ كاملًا عند الإقلاع (V43.13) ── */
+console.log('\n══ ٣ · بعد إعادة الفتح لا يختفي ما أُضيف قبلها ══');
+{
+  const calls = {}; const docs = {
+    newsites:[{ id:'PP-OLD-1', data:() => ({ id:'PP-OLD-1', name:'مخيمٌ أُضيف قبل إعادة الفتح', type:'مخيم', zone:'عرفات', lat:21.357, lng:39.978, origin:'field', approved:false, _at:1000 }) }],
+    coreqs:[{ id:'شركة قبل إعادة الفتح', data:() => ({ name:'شركة قبل إعادة الفتح', status:'معتمد', _at:1000 }) }], sites:[] };
+  const col0 = w.DB.col, R0 = w.FB.ready, D0 = w.FB.db;
+  w.DB.col = name => { const q = { w:[], where(f){ this.w.push(f); return this; }, limit(){ return this; }, orderBy(){ return this; }, get(){ calls[name] = this.w.slice(); const L = docs[name] || []; return Promise.resolve({ size:L.length, forEach:f => L.forEach(f), docs:L }); } }; return q; };
+  w.FB.ready = true; w.FB.db = w.FB.db || {}; w.STATE.meta.pullAt = Object.assign({}, w.STATE.meta.pullAt || {}, { newsites:Date.now(), coreqs:Date.now(), sites:Date.now() });
+  w.STATE.newsites = {}; w.STATE.sites = w.STATE.sites.filter(x => x.id !== 'PP-OLD-1');
+  await w.FB.pullFeeds({ boot:true });
+  w.DB.col = col0; w.FB.ready = R0; w.FB.db = D0;
+  T(calls.newsites && calls.newsites.indexOf('_at') < 0 && calls.coreqs && calls.coreqs.indexOf('_at') < 0, 'عند الإقلاع تُقرأ المواقعُ الجديدةُ والشركاتُ المضافة كاملةً — مؤشِّرُ «منذ» كان يُخفي كلَّ ما قبله بعد إعادة الفتح');
+  T(!!w.STATE.sites.find(x => x.id === 'PP-OLD-1') && (w.CO_LIST || []).indexOf('شركة قبل إعادة الفتح') > -1, 'ومخيمٌ أضافه مشرفٌ قبل إعادة الفتح يعود إلى الخريطة، والشركةُ إلى القائمة');
+}
 const errs = Object.keys(before).filter(p => /^ERR/.test(before[p]));
 T(errs.length === 0, 'كلُّ الشاشات تُرسَم للمدير بلا خطأ' + (errs.length ? ' — ' + errs.join(' · ') : ''));
 console.log(`\nنجح ${pass} · فشل ${fails.length}`); console.log(fails.length ? 'جردُ الوصول فشل ✗' : 'جردُ الوصول نجح ✓');
