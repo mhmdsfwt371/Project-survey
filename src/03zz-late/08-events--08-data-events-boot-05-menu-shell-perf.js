@@ -13,6 +13,6 @@ function navPush(from){
 }
 
 function navBack(){
-  CUR = PV.NAV_HIST.length ? PV.NAV_HIST.pop() : 'over';
+  CUR = PV.NAV_HIST.length ? PV.NAV_HIST.pop() : (typeof navHome === 'function' ? navHome() : 'mfu');   /* (V43.18) the overview left the menu */
   render();
 }

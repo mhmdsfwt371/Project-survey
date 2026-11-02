@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V43.17",
+  "app_version": "V43.18",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2409,7 +2409,8 @@
   "V43.14": "iotLoad: إعادةٌ ٤ مرات ٨ ث + إعادةُ رسم الخريطة · iotCount().loading → «…» في الزرّين · سيناريو ١٢٠",
   "V43.15": "CORE.dirty: a later write to the same queued doc merges the earlier one's fields under it (field-wise, later wins; null still replaces). CORE.flush removes uploaded items by identity (r.ok.indexOf(it)) instead of kind|id — writes made during an in-flight batch survive. New gate mark 'multi': scripts/multi-device-test.mjs runs four Chromium devices (admin/engineer/supervisor/tech) on the Firestore+Auth emulators. Scenario 121.",
   "V43.16": "New office module src/04-office/04-tasks-office-21-assistant-act.js: aqAct(q) answers duplicates (manual additions within 40 m or same square+sign, same zone+type; keep suggestion: registry > visited/installed > oldest), missing points (visible / filtered / hidden / deleted witness in siteOv / not yet pulled), recent additions (7 d, per author), recent moves (siteOv movedAt, iot.at). Buttons data-aqact (edit/open/map/unfilt/del/restore/pull/ask) call the screen's own functions (siteDeleteFinal, siteRestore, FB.pullFeeds) so role limits hold. assistResHtml tries aqAct before aqAnswer. Scenario 122.",
-  "V43.17": "New-site notices: notifPush('موقع جديد', nsAddedText(site)) — type in words (feminine 'جديدة'), zone, square/sign or name, author; lv 'عادي'. No 'بانتظار اعتمادك' for additions (field form and area drawing). Added tab: dup card via aqActDupGroups (shared with the assistant), per-row visit state (aqActState) + 'possible duplicate' tag + data-aqact edit; approval chip/column/Excel state removed. aqActClick 'dups' opens the assistant on the duplicates. Scenario 123; scenario 110 updated."
+  "V43.17": "New-site notices: notifPush('موقع جديد', nsAddedText(site)) — type in words (feminine 'جديدة'), zone, square/sign or name, author; lv 'عادي'. No 'بانتظار اعتمادك' for additions (field form and area drawing). Added tab: dup card via aqActDupGroups (shared with the assistant), per-row visit state (aqActState) + 'possible duplicate' tag + data-aqact edit; approval chip/column/Excel state removed. aqActClick 'dups' opens the assistant on the duplicates. Scenario 123; scenario 110 updated.",
+  "V43.18": "NAV: 'over' removed (menu and navHtml.main); TABS.over keeps over/now/reg/inst/svdash reachable by key for exports and old links. 'pace' moved to TABS.mfu (PAGE.mfu renders overPaceBody); 'added' moved to TABS.survey. Overview inline bodies became overNowBody/overNowLite (PV.NOW_LITE drops the yesterday/today counts, «what finished» and recent steps)/overRegTable/overPaceBody. mtDaily appends overNowLite (seesRaw('now')); mtInst details append overRegTable (seesRaw('reg')); mfu summary appends mtDetails(svdLite) (seesRaw('svdash'); PV.SVD_LITE keeps rooms/nocount/metal/sensors). New TAB_SEE.eng and TABS.mywork 'fix' → fixBody() (04-office assistant-act): 7 sections from aqActDupGroups, dqDupPos (registry pairs), campCircles().inside, campNameMismatch, dqFar, dqNoSign, dqNoCo, with data-aqact edit/map/del/merge/cmerge. navHome() replaces the 'over' fallbacks. Scenario 124; scenario 38 points at mfu."
   },
   "map_and_geolocation": {
     "tile_layers": {

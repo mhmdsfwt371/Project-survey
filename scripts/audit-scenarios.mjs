@@ -1078,14 +1078,14 @@ console.log('\n══ ٣٧ · سحبُ سجلّ الأحداث البارد ═�
 /* ── ٣٨ · (V38.96) الوتيرة: الموعدُ الذي مرّ يُقال، والمطلوبُ في يوم العمل ── */
 console.log('\n══ ٣٨ · الوتيرةُ والموعد ══');
 {
-  const role0 = w.ROLE, cur0 = w.CUR, tab0 = w.PTAB.over, dS0 = w.CFG.dueSurvey, dI0 = w.CFG.dueInstall, dw0 = w.CFG.daysWeek;
-  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.CUR = 'over'; w.render(1); w.PTAB.over = 'pace';   /* a page switch resets its tab: land first, then pick the tab */
+  const role0 = w.ROLE, cur0 = w.CUR, tab0 = w.PTAB.mfu, dS0 = w.CFG.dueSurvey, dI0 = w.CFG.dueInstall, dw0 = w.CFG.daysWeek;
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.CUR = 'mfu'; w.render(1); w.PTAB.mfu = 'pace';   /* (V43.18) the pace tab lives in the ministry follow-up */   /* a page switch resets its tab: land first, then pick the tab */
   w.CFG.dueSurvey = Date.now() - 2 * 864e5; w.CFG.dueInstall = Date.now() + 60 * 864e5; w.CFG.daysWeek = 6;
   w.render(1);
   const txt = w.document.body.textContent;
   T(/موعدُها مرّ/.test(txt) && /المواعيد والأزمنة/.test(txt), 'موعدُ المسح الذي مرّ يُقال صراحةً، ومعه أين يُحدَّث — كان يُقال «تتأخّر عن موعدها» كأنه أمام');
   T(/المطلوب في يوم العمل/.test(txt), 'والمطلوبُ في يوم العمل يظهر حين تُضبَط أيامُ العمل في الأسبوع');
-  w.CFG.dueSurvey = dS0; w.CFG.dueInstall = dI0; w.CFG.daysWeek = dw0; w.ROLE = role0; w.STATE.meta.role = role0; w.CUR = cur0; w.PTAB.over = tab0;
+  w.CFG.dueSurvey = dS0; w.CFG.dueInstall = dI0; w.CFG.daysWeek = dw0; w.ROLE = role0; w.STATE.meta.role = role0; w.CUR = cur0; w.PTAB.mfu = tab0;
 }
 
 /* ── ٣٨ · (V39.2) رقمُ الطلب يُحجَز في القاعدة حجزًا لا يتكرّر ── */
@@ -2736,6 +2736,69 @@ console.log('\n══ ١٢٣ · «تمت إضافة مخيم جديد» لا «�
   w.ASSIST_OPEN = false; w.ASSIST_Q = '';
   A.forEach(x => { w.siteDropLocal(x.id); delete w.STATE.newsites[x.id]; });
   w.ROLE = role0; w.STATE.meta.role = mr0;
+}
+
+/* ── ١٢٤ · (V43.18) متابعةُ الوزارة هي النظرةُ العامةُ الوحيدة، و«تصحيح البيانات» في شغل المهندس ── */
+console.log('\n══ ١٢٤ · لا «نظرة عامة» في القائمة — ما تفرّد به نُقل إلى متابعة الوزارة بلا تكرار، والتصحيحُ في «شغلي» ══');
+{
+  const role0 = w.ROLE, mr0 = w.STATE.meta.role, cur0 = w.CUR;
+  const navKeys = []; w.NAV.forEach(sec => { if (sec.solo) navKeys.push(sec.id); else (sec.items || []).forEach(it => navKeys.push(it[0])); });
+  T(navKeys.indexOf('over') < 0 && w.navHtml.main.indexOf('over') < 0, '«نظرة عامة» خرجت من القائمة ومن القائمة الرئيسية الافتراضية');
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
+  T(typeof w.navHome === 'function' && navKeys.indexOf(w.navHome()) > -1, 'والرجوعُ بلا سجلٍّ يذهب لأوّل صفحةٍ يراها صاحبُ الجهاز (' + w.navHome() + ')');
+  const tabKeys = g => (w.TABS[g] || []).map(x => x[0]);
+  T(tabKeys('mfu').indexOf('pace') > -1 && tabKeys('over').indexOf('pace') < 0, '«الوتيرة والهدف» تبويبٌ في متابعة الوزارة');
+  T(tabKeys('survey').indexOf('added') > -1 && tabKeys('over').indexOf('added') < 0, '«المضاف يدويًا» في «متابعة العمل الميداني» — الميدان');
+  const page = k => { w.goPage(k); w.render(1); return w.document.getElementById('content').innerHTML; };
+  const hp = page('pace');
+  T(/المطلوب يوميًّا/.test(hp) && /data-ptab="mfu:pace"/.test(hp), 'وتُفتح داخل متابعة الوزارة بأرقامها كاملة (المتبقّي، المطلوب يوميًّا…)');
+  const hd = page('mdaily');
+  T(/الآن · غدًا · المتأخر/.test(hd) && /غدًا — المجدول/.test(hd) && /تنتظر الاعتماد/.test(hd) && /متأخّرة عن موعدها/.test(hd), '«ملخص العمل اليومي» صار فيه: الآن · غدًا · المتأخر · ما ينتظر الاعتماد');
+  T(!/أمس — مسح/.test(hd) && !/اليوم — مسح/.test(hd) && !/ما انتهى/.test(hd), 'ولا يتكرر فيه ما كان فيه أصلًا (أمس/اليوم بالأعداد، «ما انتهى»)');
+  const lite = String(w.overNowLite()), full = String(w.overNowBody());
+  const pend = h => (/تنتظر الاعتماد[^0-9٠-٩]*([0-9٠-٩٬,]+)/.exec(h.replace(/<[^>]+>/g, ' ')) || [])[1];
+  T(pend(lite) && pend(lite) === pend(full) && /ما انتهى/.test(full), 'والرقمُ نفسُه في المكانين: «تنتظر الاعتماد» = ' + pend(lite));
+  w.mtDetails.open = Object.assign({}, w.mtDetails.open || {}, { 'ما حُصر في المسح — الغرف والهياكل والحساسات':1, 'التفاصيل الكاملة':1 });
+  const hs = page('mfu');
+  T(/غرفٌ — لكلِّ غرفةٍ حساس/.test(hs) && /تحتاج هيكلًا أو عارضة/.test(hs) && !/بلا تحدٍّ — تُسنَد كما هي/.test(hs) && !/التحدياتُ بأنواعها/.test(hs), 'الملخّص فيه ما حُصر في المسح (الغرف، الهياكل) — بلا ما كان فيه أصلًا (بلا تحدٍّ، التحديات)');
+  const hi = page('minst');
+  T(/>التوزيع</.test(hi) || /التوزيع/.test(hi), '«حالة التركيبات ← التفاصيل الكاملة» فيها جدولُ المشعر × النوع');
+  const ha = page('added');
+  T(/المضاف يدويًا/.test(ha) && /data-ptab="survey:added"/.test(ha), '«المضاف يدويًا» تُفتح من الميدان');
+  T(w.tabsOf('mywork').some(x => x[0] === 'fix'), 'المهندسُ يرى «تصحيح البيانات» في «شغلي»');
+  const now = Date.now(), mk = (id, d) => ({ id, name:'منى - مربع 5-5 - شاخص 5/5', zone:'منى', type:'مخيم', sq:'5-5', sign:'5/5', lat:21.4171 + d, lng:39.8742, isNew:true, origin:'field', by:'خالد', at:now - 1e6, work:'موقع جديد' });
+  const A = [mk('NSK-MIN-CMP-N951UY', 0), mk('NSK-MIN-CMP-N952UY', 0.00003)];
+  w.STATE.newsites = w.STATE.newsites || {}; A.forEach(x => { w.STATE.sites.push(x); w.STATE.newsites[x.id] = Object.assign({}, x); }); w.SITE_IX = null;
+  const hf = page('fix');
+  T(/نقاطٌ مضافةٌ فوق بعضها/.test(hf) && /NSK-MIN-CMP-N951UY/.test(hf) && /data-aqact="del\|NSK-MIN-CMP-N95/.test(hf), 'وفيها «نقاطٌ مضافةٌ فوق بعضها» بالنقاط نفسِها وأزرار المسح والتصحيح');
+  T(['نقطتان على الإحداثيات نفسِها', 'اسمُ المخيم لا يطابق مربعه وشاخصه', 'نقطةٌ بعيدةٌ عن مشعرها', 'مخيمٌ بلا مربعٍ أو شاخص', 'مخيمٌ بلا شركة', 'مخيمٌ بلا حدود داخل حدود مخيمٍ مسجَّل'].every(x => hf.indexOf(x) > -1), 'وأقسامُ غير المعتاد كلُّها — كلٌّ بعدده (أو «✓ لا شيء»)');
+  A.forEach(x => { w.siteDropLocal(x.id); delete w.STATE.newsites[x.id]; });
+  w.ROLE = 'supervisor'; w.STATE.meta.role = 'supervisor';
+  T(!w.tabsOf('mywork').some(x => x[0] === 'fix'), 'والمشرفُ لا يراها');
+  T(w.seesPage('mfu') && ['pace', 'mdaily'].every(k => w.tabsOf('mfu').some(x => x[0] === k)) && /الآن · غدًا · المتأخر/.test(page('mdaily')), 'والمشرفُ يرى «الوتيرة والهدف» و«الآن · غدًا · المتأخر» تحت ملخص العمل اليومي (قرار المالك)');
+  w.ROLE = 'viewer'; w.STATE.meta.role = 'viewer';
+  T(w.tabsOf('mfu').some(x => x[0] === 'pace') && /المطلوب يوميًّا/.test(page('pace')), 'والوزارةُ ترى «الوتيرة والهدف» (قرار المالك)');
+  w.ROLE = role0; w.STATE.meta.role = mr0; w.CUR = cur0;
+}
+
+/* ── ١٢٥ · (V43.18) ملفُّ الخطة بعمود «المهمة» (لا «المهمة الرئيسية») يُقرأ بأسماء أعمدته ── */
+console.log('\n══ ١٢٥ · ملفُّ المالك الأحدث: «المهمة» + «المهمة الفرعية» + رقمٌ بلا عنوان ══');
+{
+  const A = [
+    ['', 'المهمة', 'المهمة الفرعية', 'مسار إدارة المشروع', 'المخرج المطلوب من المهمة', 'كود المسار', 'الحالة', 'الوصف'],
+    ['1.6.1', 'لتكامل مع منصة نسك مسار', 'لتكامل مع منصة نسك مسار', 'مسار تقني', 'مطابقة كل قراءة مع الحاج', 'PM-01', 'قيد التنفيذ', 'ربط قراءات بطاقات نسك'],
+    ['1.6.2', 'لتكامل مع منصة إدارة التفويج', 'التكامل مع منصة إدارة التفويج', 'مسار تقني', 'ظهور بيانات الحركة', 'PM-01', 'قيد التنفيذ', 'إرسال بيانات القراءات'],
+    ['2.3', 'خطة العمل التفصيلية + خطة العمل الشهرية', '', 'مسار تشغيلي', 'خطة عمل تفصيلية معتمدة', 'PM-02', 'مكتمل', 'يتم دراسة عمل خطة'],
+    ['2.3.4', 'خطة العمل التفصيلية + خطة العمل الشهرية', 'مشاركة عناصر خطة العمل المتكاملة', 'مسار تشغيلي', '', 'PM-02', 'مكتمل', 'مشاركة عناصر الخطة'],
+    ['3.1', 'التنسيق مع الشركات', '', 'مسار علاقات شركات', '', 'PM-03', '', '']];
+  const R = w.wtPlanRows(A, 0);
+  T(R.length === 5, 'كلُّ صفٍّ مهمة: ' + R.length + ' من ٥');
+  T(R[0].n === 'لتكامل مع منصة نسك مسار' && R[1].n === 'التكامل مع منصة إدارة التفويج' && R[2].n === 'خطة العمل التفصيلية + خطة العمل الشهرية', 'اسمُ المهمة: الفرعيةُ إن وُجدت، وإلا الرئيسية — لا الرئيسيةُ دائمًا');
+  T(R.every(r => /^مسار /.test(r.track)) && new Set(R.map(r => r.track)).size === 3, 'المسارُ من «مسار إدارة المشروع» (تقني/تشغيلي/علاقات شركات) — لا اسمُ المهمة الفرعية');
+  T(R[0].code === 'PM-01' && R[0].st === 'جاري العمل' && R[2].st === 'مكتمل' && R[4].st === 'قيد الانتظار', 'الكودُ والحالة: «قيد التنفيذ» = «جاري العمل»، والفارغة «قيد الانتظار»');
+  T(/^1\.6\.1/.test(R[0].src) && R[0].d === 'مطابقة كل قراءة مع الحاج' && /ربط قراءات/.test(R[0].upd) && !R[0].due, 'الرقمُ من العمود بلا عنوان، والمخرجُ والوصفُ في مكانهما، ولا تاريخَ يُخترَع من الوصف');
+  const B = [['', 'المهمة', 'المسار', 'الكود', 'الوصف', 'المسؤول', 'الحالة'], ['1', 'مهمة المكتب', 'مسار تقني', 'PM-01', 'وصف', 'شكري', 'مكتمل']];
+  T(w.wtPlanRows(B, 0).length === 0, 'وورقةُ المكتب التي يصدّرها التطبيق (بلا «المهمة الفرعية») تبقى لقارئها بالمواضع كما كانت');
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

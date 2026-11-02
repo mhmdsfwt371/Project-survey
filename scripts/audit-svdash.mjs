@@ -74,9 +74,10 @@ console.log('\n══ ١ · ما لم يُزَر لا يُعَدّ، و«لا ت
 
 console.log('\n══ ٢ · الشاشةُ تعرض البطاقات وتفتح قائمتَها ══');
 {
-  w.goPage('over'); w.render(1); await wait(300);
-  const tab = () => d.querySelector('[data-ptab="over:svdash"]');
-  T(!!tab(), 'الشريحةُ في شريط «نظرة عامة»');
+  /* (V43.18) the overview left the menu; survey details are a hidden tab of the ministry follow-up, kept by key */
+  w.goPage('mfu'); w.render(1); await wait(300);
+  const tab = () => d.querySelector('[data-ptab="mfu:svdash"]');
+  T(!!tab(), 'الشريحةُ في شريط «متابعة الوزارة» (مخفيّةً بمفتاحها)');
   tab().dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
   await wait(250);
   let h = d.getElementById('content').innerHTML;

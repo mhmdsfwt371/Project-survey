@@ -148,7 +148,7 @@ var TOUR = { open:false, i:0, skip:null, prime:null };   /* (V32.3) جولةُ �
 /* صفحاتٌ تُفتَح من غيرها لا من القائمة — لا تصلح خطوةً في جولة */
 TOUR.skip = { site:1, sel:1, svappr:1, minappr:1 };
 /* أوّلُ ما يُفتَح في اليوم — إن كان من شاشات صاحب الحساب */
-TOUR.prime = ['map', 'mywork', 'wtask', 'over', 'perf', 'ipc', 'users', 'sys'];
+TOUR.prime = ['map', 'mywork', 'wtask', 'mfu', 'perf', 'ipc', 'users', 'sys'];
 function tourPages(){
   var r = effRole(ROLE), nav = (ROLES[r] || {}).nav;
   var vis = (nav === '*') ? Object.keys(PAGE).filter(function(k){ return seesRaw(k); })

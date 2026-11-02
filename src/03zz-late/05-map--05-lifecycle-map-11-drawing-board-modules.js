@@ -130,6 +130,8 @@ function svdXls(){
   xlsSheets([[t(c.t).slice(0, 28), out]], 'أفاقي — ' + t(c.t));
 }
 
+/* (V43.18) under the ministry summary: the survey details without what the summary already shows */
+function svdLite(){ PV.SVD_LITE = 1; try { return svdashBody(); } finally { PV.SVD_LITE = 0; } }
 function svdashBody(){
   SVD_MEMO = null;
   var R = svdPool(), c = SVD_CARDS.filter(function(x){ return x.k === SVD_PICK; })[0];
@@ -142,7 +144,7 @@ function svdashBody(){
       '<p class="hint" style="margin-top:0">'
       + esc(t('من سجلات الزيارة نفسِها — ما لم تُسجَّل زيارتُه لا يُعَدُّ هنا. اضغط أيَّ بطاقةٍ لتفتح قائمتَها.')) + '</p>'
       + '<div class="wt-row" style="flex-wrap:wrap;gap:8px;align-items:stretch">'
-      +   SVD_CARDS.map(svdCard).join('')
+      +   SVD_CARDS.filter(function(x){ return !PV.SVD_LITE || ['rooms', 'nocount', 'metal', 'sensors'].indexOf(x.k) > -1; }).map(svdCard).join('')
       + '</div>'
       + '<p class="hint" style="margin:8px 0 0">' + esc(t('نقاطٌ تمت زيارتها')) + ' <b class="num">' + nm(R.length) + '</b>'
       +   ' \u00b7 ' + esc(t('غرفةٌ وخيمةٌ محصورة')) + ' <b class="num">' + nm(rooms) + '</b></p>'
@@ -152,7 +154,7 @@ function svdashBody(){
             + cfgInput('avgRooms', 'منى', { dec:0 })
             + '<p class="hint" style="margin:4px 0 0">' + esc(t('فارغٌ يعني اثنتي عشرة غرفة')) + '</p></div>'
           : ''))
-    + (chTop.length
+    + (chTop.length && !PV.SVD_LITE
         ? card('التحدياتُ بأنواعها',
             table(['التحدي','النقاط'], chTop.map(function(x){ return [esc(t(x)), N(byCh[x])]; }))
             + '<p class="hint">' + esc(t('نقطةٌ واحدةٌ قد تحمل أكثرَ من تحدٍّ — فمجموعُ الأسطر أكبرُ من عدد النقاط.')) + '</p>')

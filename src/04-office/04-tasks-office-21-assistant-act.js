@@ -1,10 +1,10 @@
 /* ============================================================================
    FILE    : src/04-office/04-tasks-office-21-assistant-act.js
    DOMAIN  : Office — photos, governance, assistant, word reports, drawing
-   PURPOSE : The assistant that acts (V43.16): «what do I do» questions — duplicate points, a point that does not show, who
+   PURPOSE : The engineer's «تصحيح البيانات» page (V43.18) and the assistant that acts (V43.16): «what do I do» questions — duplicate points, a point that does not show, who
              added what, who moved what — answered from this device's data with cards whose buttons run the real action
              (open and correct, show the group on the map, delete, restore, clear the map filter) under the user's own role.
-   DEFINES : aqAct, aqActDupGroups, aqActDups, aqActMissing, aqActRecent, aqActMoves, aqActClick, aqActMap, aqActWho, aqActAgo
+   DEFINES : fixBody, fixSec, fixRowX, aqAct, aqActDupGroups, aqActDups, aqActMissing, aqActRecent, aqActMoves, aqActClick, aqActMap, aqActWho, aqActAgo
    NOTE    : Build order is the full path (see scripts/build.mjs). Owner decision (V43.16): grow the on-device assistant —
              no outside model, nothing leaves the phone. Every button calls the same function the screen's own button calls,
              so a permission the role lacks is refused here exactly as it is there.
@@ -194,7 +194,7 @@ function aqActClick(spec){
     var x = siteFind(arg); if (!x) return true;
     var links = siteDelLinks(arg);
     if (!confirm(t('مسحٌ نهائيٌّ لـ') + ' ' + arg + (x.name ? ' — ' + x.name : '') + (links.length ? '\n' + t('ويُمسح معها') + ': ' + links.join('، ') : '') + '\n' + t('متأكد؟'))) return true;
-    if (siteDeleteFinal(arg)){ var rs = document.getElementById('assistRes'); if (rs) rs.innerHTML = assistResHtml(); }
+    if (siteDeleteFinal(arg)){ var rs = document.getElementById('assistRes'); if (rs) rs.innerHTML = assistResHtml(); else render(1); }
     return true;
   }
   if (act === 'restore'){ if (siteRestore(arg) !== false){ var rs2 = document.getElementById('assistRes'); if (rs2) rs2.innerHTML = assistResHtml(); } return true; }
@@ -205,7 +205,82 @@ function aqActClick(spec){
     Promise.resolve(P1).then(function(){ return typeof pullDelta === 'function' ? pullDelta({ why:'assist' }) : 0; }).then(done, done);
     return true;
   }
+  if (act === 'merge' || act === 'cmerge'){   /* (V43.18) from «تصحيح البيانات»: the twin and circle-in-camp merges */
+    var ids = arg.split('|'); if (ids.length < 2) return true;
+    if (!confirm(t('دمجُ') + ' ' + ids[1] + ' ' + t('في') + ' ' + ids[0] + '؟')) return true;
+    var ok = act === 'merge' ? dupMerge(ids[0], ids[1]) : campMergeInto(ids[0], ids[1]);
+    if (ok){ if (act === 'cmerge') toast(ids[1] + ' \u00b7 ' + t('دُمجت في') + ' ' + ids[0]); render(1); }
+    return true;
+  }
   if (act === 'dups'){ ASSIST_Q = t('في نقط مكررة؟'); ASSIST_OPEN = true; render(); return true; }   /* (V43.17) from the «added by hand» tab */
   if (act === 'ask'){ ASSIST_Q = arg; var q = document.getElementById('assistQ'); if (q) q.value = arg; var rs4 = document.getElementById('assistRes'); if (rs4) rs4.innerHTML = assistResHtml(); return true; }
   return false;
+}
+
+/* ═══ (V43.18) «تصحيح البيانات» — the engineer's work page for anything unusual in the data ═══
+   Owner: «أيُّ حاجةٍ مش معتادة حطها في صفحة شغلي عند المهندس — بتفاصيلها واختلافاتها والكاتيجوري بتاعها — عشان يبص عليها وياخد
+   أكشن». One page under «شغلي ← تصحيح البيانات», engineers and above. Each kind is a section: how many, why it is unusual, the
+   points themselves with their details, and the action next to each — the same functions the screens use. Sections with nothing
+   in them say «✓» in one line, so an empty page reads as «nothing to fix». */
+function fixRowX(x, extra, btns){
+  return '<div style="border-top:1px solid var(--line, #e2e2e2);padding:7px 0;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center">'
+    + '<div style="min-width:0"><b><bdi>' + esc(x.id) + '</bdi></b> <span class="hint" style="margin:0">' + esc(t(x.zone || '')) + ' \u00b7 ' + esc(t(x.type || '')) + '</span>'
+    + '<div class="hint" style="margin:2px 0 0">' + esc(x.name || '') + (extra ? ' \u2014 ' + extra : '') + '</div></div>'
+    + '<div class="actions" style="margin:0;gap:6px;flex-wrap:wrap">' + (btns || '')
+    + (maySiteEditBasic() ? aqActBtn('\u270E صحّح', 'edit|' + x.id) : '') + aqActBtn('\u{1F5FA}', 'map|' + x.id) + '</div></div>';
+}
+function fixSec(icon, title, n, why, body, more){
+  return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid ' + (n ? '#F59E0B' : '#22C55E') + '">'
+    + '<h4 style="margin:0 0 4px">' + icon + ' ' + esc(t(title)) + ' <b class="num">' + nm(n) + '</b></h4>'
+    + (n ? '<p class="hint" style="margin:0 0 6px">' + esc(t(why)) + '</p>' + body + (more || '') : '<p class="hint" style="margin:0">\u2713 ' + esc(t('لا شيء')) + '</p>') + '</div>';
+}
+function fixBody(){
+  if (rankOf(effRole(ROLE)) < rankOf('engineer')) return '<p class="hint">' + esc(t('تصحيحُ البيانات للمهندس فما فوق')) + '</p>';
+  var cap = 20, moreTo = function(n){ return n > cap ? '<p class="hint" style="margin:6px 0 0">' + esc(t('والباقي')) + ' ' + nm(n - cap) + ' \u2014 ' + esc(t('التصحيحُ الجماعيُّ في «صحة النظام ← تصحيح البيانات»')) + ' ' + aqGo('افتحها', 'page|dq') + '</p>' : ''; };
+  var secs = [];
+  /* ١ · added on top of each other */
+  var G = aqActDupGroups([]), groups = G.groups;
+  secs.push({ n:groups.length, h:fixSec('\u{1F9E9}', 'نقاطٌ مضافةٌ فوق بعضها', groups.length,
+    'أُضيفت يدويًّا في المكان نفسِه (أقلُّ من ٤٠ م ونفسُ النوع) أو بنفس المربع والشاخص — غالبًا الموقعُ نفسُه مرتين أو ثلاثًا. سيب واحدةً وصحّحها، وامسح الباقي.',
+    groups.slice(0, 8).map(function(g, gi){ var keep = G.pick(g);
+      return '<div style="margin:6px 0 10px"><div class="pid">' + esc(t('مجموعة')) + ' ' + nm(gi + 1) + ' \u00b7 ' + nm(g.length) + ' ' + esc(t('نقاط')) + ' ' + aqActBtn('\u{1F5FA} اعرض المجموعة على الخريطة', 'map|' + g.map(function(x){ return x.id; }).join(',')) + '</div>'
+        + g.map(function(x){ return aqActRow(x, x.id === keep); }).join('') + '</div>'; }).join(''),
+    groups.length > 8 ? '<p class="hint">' + esc(t('والباقي')) + ' ' + nm(groups.length - 8) + ' ' + esc(t('مجموعة')) + ' ' + aqActBtn('اعرضها في المساعد', 'dups') + '</p>' : '') });
+  /* ٢ · two registry points on the very same coordinates (the new ones are in section ١) */
+  var tw = (typeof dqDupPos === 'function' ? dqDupPos() : []).filter(function(p){ return !(p[0].isNew && p[1].isNew); });
+  secs.push({ n:tw.length, h:fixSec('\u{1F46F}', 'نقطتان على الإحداثيات نفسِها', tw.length,
+    'المخيمُ أو النقطةُ مسجَّلةٌ مرتين على الإحداثية نفسِها — فيُزار أحدُهما ويبقى الآخرُ «لم يُزر» ويُعَدّ في الإجمالي. اختر الأصلَ (ما مُسح إن مُسح أحدُهما) وادمج الآخرَ فيه.',
+    tw.slice(0, cap).map(function(p){
+      var a = p[0], b = p[1], keep = svDone(STATE.recs[b.id]) && !svDone(STATE.recs[a.id]) ? b : a, dup = keep === a ? b : a;
+      return '<div style="margin:4px 0 8px">' + fixRowX(keep, '\u2B50 ' + esc(t('الأصل المقترح')), '') + fixRowX(dup, esc(t('شاخصه')) + ' ' + esc(dup.sign || '\u2014'),
+        maySiteEdit() ? aqActBtn('ادمجها في الأصل', 'merge|' + keep.id + '|' + dup.id, 'btn-primary') : '') + '</div>'; }).join(''), moreTo(tw.length)) });
+  /* ٣ · a circle-drawn camp inside a registered camp's boundary */
+  var CC = typeof campCircles === 'function' ? campCircles().inside : [];
+  secs.push({ n:CC.length, h:fixSec('\u2B55', 'مخيمٌ بلا حدود داخل حدود مخيمٍ مسجَّل', CC.length,
+    'نقطةُ مخيمٍ بلا حدودٍ مرسومة تقع داخل حدود مخيمٍ آخر — غالبًا المخيمُ نفسُه. الدمجُ ينقل زيارتَه وتركيبَه إلى المسجَّل إن لم يكن له، ثم يُخفيها.',
+    CC.slice(0, cap).map(function(o){ return fixRowX(o.dup, esc(t('داخل')) + ' ' + esc(o.keep.id) + (o.both ? ' \u00b7 ' + esc(t('كلاهما مُزار — راجع قبل الدمج')) : ''),
+      maySiteEdit() ? aqActBtn('ادمجها فيه', 'cmerge|' + o.keep.id + '|' + o.dup.id, 'btn-primary') : ''); }).join(''), moreTo(CC.length)) });
+  /* ٤ · a camp whose name says another square/sign */
+  var MM = typeof campNameMismatch === 'function' ? campNameMismatch() : [];
+  secs.push({ n:MM.length, h:fixSec('\u{1F524}', 'اسمُ المخيم لا يطابق مربعه وشاخصه', MM.length,
+    'الاسمُ يقول مربعًا أو شاخصًا غيرَ المكتوب في بيانات المخيم — أحدُهما خطأ. صحّح الحقلَ الخطأ من «✎ صحّح».',
+    MM.slice(0, cap).map(function(o){ return fixRowX(o.x, esc(t('الاسم')) + ': ' + esc(o.nSq) + ' / ' + esc(o.nSign) + ' \u00b7 ' + esc(t('البيانات')) + ': ' + esc(o.x.sq || '\u2014') + ' / ' + esc(o.x.sign || '\u2014'), ''); }).join(''), moreTo(MM.length)) });
+  /* ٥ · far from its holy site */
+  var FAR = typeof dqFar === 'function' ? dqFar() : [];
+  secs.push({ n:FAR.length, h:fixSec('\u{1F4CD}', 'نقطةٌ بعيدةٌ عن مشعرها', FAR.length,
+    'إحداثياتُها بعيدةٌ عن باقي نقاط مشعرها — غالبًا رقمٌ مكتوبٌ خطأ أو التقاطُ موقعٍ من مكانٍ آخر. افتحها على الخريطة وحرّكها لمكانها أو صحّح الإحداثيات.',
+    FAR.slice(0, cap).map(function(x){ return fixRowX(x, (+x.lat).toFixed(5) + ', ' + (+x.lng).toFixed(5), ''); }).join(''), moreTo(FAR.length)) });
+  /* ٦ · camps missing their square or sign — and camps with no company */
+  var NS = typeof dqNoSign === 'function' ? dqNoSign() : [], NC = typeof dqNoCo === 'function' ? dqNoCo() : [];
+  secs.push({ n:NS.length, h:fixSec('\u{1F3F7}', 'مخيمٌ بلا مربعٍ أو شاخص', NS.length,
+    'بلا مربعٍ أو شاخص لا يُعرَف المخيمُ في الميدان ولا يُطابَق بلوحته. صحّحه من لوحة المخيم.',
+    NS.slice(0, cap).map(function(x){ return fixRowX(x, esc(t('مربع')) + ' ' + esc(x.sq || '\u2014') + ' \u00b7 ' + esc(t('شاخص')) + ' ' + esc(x.sign || '\u2014'), ''); }).join(''), moreTo(NS.length)) });
+  secs.push({ n:NC.length, h:fixSec('\u{1F3E2}', 'مخيمٌ بلا شركة', NC.length,
+    'بلا شركة خدمةٍ لا يُعرَف من يُتواصل معه للتركيب. اختر الشركةَ من القائمة الموحّدة.',
+    NC.slice(0, cap).map(function(x){ return fixRowX(x, '', ''); }).join(''), moreTo(NC.length)) });
+  var total = secs.reduce(function(a, s){ return a + (s.n ? 1 : 0); }, 0);
+  /* what has something comes first; empty sections stay as one «✓» line at the end */
+  secs.sort(function(a, b){ return (b.n ? 1 : 0) - (a.n ? 1 : 0); });
+  return '<p class="lede" style="margin:0 0 10px">' + esc(t(total ? 'ما يبدو غيرَ معتادٍ في البيانات — كلُّ نوعٍ بعدده وسببه ونقاطه وزرِّ الحل. ما تصحّحه هنا يُسجَّل باسمك ويصل كلَّ الأجهزة.' : 'لا شيءَ غيرَ معتادٍ في البيانات الآن.')) + '</p>'
+    + secs.map(function(s){ return s.h; }).join('');
 }

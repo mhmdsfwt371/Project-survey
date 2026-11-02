@@ -146,7 +146,7 @@ T(w.SOL_LINES[it0.code] === 2 && w.SOL_LINES[it1.code] === 1, 'تطبيق الن
 w.ROLE = 'viewer'; w.STATE.meta.name = 'وزارة';
 w.CUR = 'now'; w.render(1);
 h = d.getElementById('content').textContent;
-T(w.CUR === 'over' && h.indexOf('ما انتهى') > -1 && h.indexOf('المجدول') > -1, 'الوزارة ترى «أمس · الآن · غدًا»');
+T(w.CUR === 'mfu' && h.indexOf('ما انتهى') > -1 && h.indexOf('المجدول') > -1, 'الوزارة ترى «أمس · الآن · غدًا»');
 T(w.seesPage('map'), 'الوزارة ترى الخريطة');
 w.CUR = 'map'; w.render(1);
 console.log(bad ? '\nجردُ الدورة فشل ✗ (' + bad + ')' : '\nجردُ دورة الزيارة نظيف — من الإسناد إلى طبقة التركيب بالنقر ✅', '| أخطاء المتصفح:', errs.length);

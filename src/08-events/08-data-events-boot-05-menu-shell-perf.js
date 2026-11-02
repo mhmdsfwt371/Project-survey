@@ -18,7 +18,7 @@ var NAV = [
       ['sel','الطبقات والمحدَّد'],['tfwdraw','رسم المسارات من وإلى الجمرات'],['fleet','السيارات'],
       ['forms','النماذج الميدانية'],['recs','السجلات'],['tools','الأدوات']] },
   { g:'المتابعة', icon:'\u25A6', items:[
-      ['mfu','متابعة الوزارة'],['over','نظرة عامة'],['wtask','متابعة المهام الأسبوعية'],['exec','التقارير التنفيذية'],['co','الشركات'],['dis','الفك والمراحل']] },
+      ['mfu','متابعة الوزارة'],['wtask','متابعة المهام الأسبوعية'],['exec','التقارير التنفيذية'],['co','الشركات'],['dis','الفك والمراحل']] },
   { g:'التخطيط', icon:'\u25F7', items:[
       ['trials','التجارب'],['pts','نقاط المراحل'],['wbs','متابعة الخطة التفصيلية'],['org','التنظيم والسلامة'],
       ['plan','التخطيط والمخاطر']] },
@@ -55,6 +55,11 @@ function navIco(s){
   return p ? '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false">' + p + '</svg>' : s.icon;
 }
 
+/* (V43.18) where «back» and «leave view-as» land when there is no history: the first menu page this person sees */
+function navHome(){
+  var L = []; NAV.forEach(function(sec){ if (sec.solo) L.push(sec.id); else (sec.items || []).forEach(function(it){ L.push(it[0]); }); });
+  return L.filter(function(k){ return typeof seesPage !== 'function' || seesPage(k); })[0] || 'acct';
+}
 var CUR = 'map';
 PV.OPEN = {};
 
@@ -144,7 +149,7 @@ function navHtml(){
   }).join('') + navMoreHtml(more);
 }
 navHtml.main = ['map', 'sites', 'mywork', 'chat', 'survey', 'iotdash', 'req', 'sel', 'fleet', 'forms',
-                'mfu', 'over', 'wtask', 'exec', 'co', 'pts', 'perf', 'users', 'ev', 'guide', 'acct'];
+                'mfu', 'wtask', 'exec', 'co', 'pts', 'perf', 'users', 'ev', 'guide', 'acct'];
 /* (V39.83) owner: «المفروض تبقى بناءً على الاستخدام — اللي مش بستخدمه كتير يبقى في المزيد». The list above becomes the
    default for a person without enough history; after that, this device's own page history (pageHist — 14 Makkah days,
    already kept for the morning pulse) decides: a screen opened navMain.MIN times or more in the last 14 days (the last 7

@@ -31,7 +31,7 @@ const open = async tab => { w.goPage('mfu'); w.render(1); await wait(40); const 
 console.log('\n══ ١ · الصفحةُ وعناوينُها ══');
 const tabs = w.TABS.mfu.map(x => x[0]);
 T(['mfu','mweek','minst','mcos','mobs','mreq','mdaily','kiosk'].every(x => tabs.includes(x)) && !tabs.includes('mchal') && !tabs.includes('mtasks'), 'عناوينُ العرض الأسبوعي كلُّها — والتحدياتُ والمعوقاتُ صفحةٌ واحدة (V26.5): ' + tabs.length);
-T(!w.TABS.over.some(x => x[0] === 'kiosk') && w.PARENT.kiosk === 'mfu', 'وشاشةُ القاعة انتقلت إلى متابعة الوزارة');
+T(!(w.TABS.over || []).some(x => x[0] === 'kiosk') && w.PARENT.kiosk === 'mfu', 'وشاشةُ القاعة انتقلت إلى متابعة الوزارة');
 for (const r of ['viewer', 'exec']){ w.ROLE = r; w.STATE.meta.role = r; }
 w.ROLE = 'viewer'; w.STATE.meta.role = 'viewer';
 T(w.seesPage('mfu') && ['mcos','mobs','mreq','kiosk'].every(id => w.tabsOf('mfu').some(tb => tb[0] === id)), 'والوزارةُ تراها بتبويباتها');

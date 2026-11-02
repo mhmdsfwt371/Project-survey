@@ -378,7 +378,7 @@ console.log('\n══ ٩ · شرائحُ الميدان بترتيب دورة ا
 {
   const ids = w.TABS.survey.map(x => x[0]);
   T(ids.slice(0, 7).join(',') === 'survey,svappr,solution,minappr,ready,qa,ncr', 'المسحُ فالاعتمادُ فالحلُّ فالوزارةُ فالجاهزُ فالتدقيقُ فعدمُ المطابقة: ' + ids.slice(0, 7).join(' ← '));
-  T(ids.slice(7).every(k => ['chal', 'chalm', 'stuck', 'idle'].indexOf(k) > -1), 'وما خرج عن الدورة بعدها لا بينها');
+  T(ids.slice(7).every(k => ['chal', 'chalm', 'stuck', 'idle', 'added'].indexOf(k) > -1), 'وما خرج عن الدورة بعدها لا بينها — ومعه «المضاف يدويًا» (V43.18)');
   T(w.tabCur('survey') === 'survey', 'والافتراضيُّ يبقى المسح');
 }
 

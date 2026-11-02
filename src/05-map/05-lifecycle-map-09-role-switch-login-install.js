@@ -25,7 +25,7 @@ function roleWatch(v){
   liveSmall(); presenceBeat(true); SYNC.pullAsk = true; syncCycle();
   /* شاشةٌ (أو شريحةٌ) لم تعد تُرى: نُقلَ إلى أوّلِ ما يراه دورُه الجديد */
   if (PARENT[CUR] && PARENT[CUR] !== CUR && !seesPage(CUR)) CUR = PARENT[CUR];
-  if (!seesPage(CUR)) CUR = (ROLES[nr].nav || ['over']).filter(seesPage)[0] || 'acct';
+  if (!seesPage(CUR)) CUR = (ROLES[nr].nav || ['mfu']).filter(seesPage)[0] || 'acct';
   if (TABS[CUR]) PTAB[CUR] = tabCur(CUR);
   render(1); syncBadge();
 }

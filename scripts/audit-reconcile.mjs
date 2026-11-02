@@ -68,10 +68,10 @@ T(life.installed === N_INS, 'المُركَّبُ يُعَدُّ مُركَّب�
 T(life.assigned === N_ASN && life.todo === TOTAL - N_REC - N_ASN, 'والمُسنَدُ الذي لم يُزر ليس «لم تُزر»');
 
 console.log('\n══ ٢ · الملخّصُ التنفيذي = شاشةُ المسح = سلسلةُ المراحل = تفاصيلُ المسح ══');
-const over = await open('over', 'over');
+const over = await open('mfu', 'over');
 const sv = await open('survey', 'survey');
 const chain = w.chainRows(); const ch = k => (chain.filter(r => r.k === k)[0] || {}).done;
-const svd = await open('over', 'svdash');
+const svd = await open('mfu', 'svdash');
 T(kpi(over, 'إجمالي المواقع') === TOTAL && after(sv, 'الكل') === N_REC, 'الإجماليُّ هو الإجمالي — والسجلُّ يعدُّ سجلاتِه: ' + TOTAL + ' / ' + N_REC);
 T(kpi(over, 'تمت الزيارة') === VISITED && ch('sv') === VISITED && after(svd, 'نقاطٌ تمت زيارتها') === VISITED,
   'زيرت (بأيِّ نتيجة) رقمٌ واحدٌ في الملخّص والسلسلة وتفاصيل المسح: ' + VISITED);
@@ -85,7 +85,7 @@ T(ch('ok') === N_QA, 'والاعتمادُ بعد التدقيق = ما دُقِ
 T(after(over, 'تقدّم المسح من إجمالي المواقع') === VISITED, 'وتقدّمُ المسح من الرقم نفسِه');
 
 console.log('\n══ ٣ · القرارات والراكد والتنفيذي ══');
-const nowT = await open('over', 'now');
+const nowT = await open('mfu', 'now');
 T(after(nowT, 'زياراتٌ تنتظر اعتمادك') === PENDING, 'زياراتٌ تنتظر الاعتماد = المعلَّقُ الواصل: ' + PENDING);
 T(after(nowT, 'حلولٌ مقترحةٌ تنتظر اعتمادك') === N_SOL - N_SOLOK && after(nowT, 'تركيباتٌ تنتظر التدقيق') === N_INS - N_QA, 'والحلولُ والتدقيقُ من سجلاتها');
 const idle = await open('survey', 'idle');
@@ -161,7 +161,7 @@ console.log('\n══ ٥ · المسحُ بالمشعر: النسبةُ والم
     w.SVD_MEMO = null; const pool = w.svdRows(), cardOf = k => w.SVD_CARDS.filter(c => c.k === k)[0];
     T(pool.filter(cardOf('clean').f).length === w.svListRows('clean').length && pool.filter(cardOf('chal').f).length === w.svListRows('chal').length,
       'وتفاصيلُ المسح: «تُسنَد كما هي» ' + pool.filter(cardOf('clean').f).length + ' = «بلا عوائق»، و«فيها تحدٍّ» = «بعوائق» — لا يُسنَد ما يحتاج زيارةً أخرى'); }
-  const all = await open('over', 'over');
+  const all = await open('mfu', 'over');
   T(all.indexOf('كلُّ المشاعر') > -1 && kpi(all, 'إجمالي المواقع') === TOTAL && kpi(all, 'متبقٍّ') === TOTAL - VISITED,
     'بلا اختيارٍ: الأرقامُ للكلّ والمتبقّي = الكلُّ − ما زير: ' + (TOTAL - VISITED));
   const cards = (all.match(/٪/g) || []).length;
@@ -180,7 +180,7 @@ console.log('\n══ ٥ · المسحُ بالمشعر: النسبةُ والم
 }
 
 console.log('\n══ ٤ · التوزيعُ يُجمَع إلى الكلّ ══');
-const reg = await open('over', 'reg');
+const reg = await open('mfu', 'reg');
 const rows = [...reg.matchAll(/([٠-٩0-9٬,]+)\s+([٠-٩0-9]+)٪/g)].map(m => [+ar(m[1]), +ar(m[2])]);
 const body = rows.filter(r => r[0] !== TOTAL);
 T(body.length >= 8 && body.reduce((a, r) => a + r[0], 0) === TOTAL, 'أسطرُ التوزيع تُجمَع إلى الإجمالي: ' + body.reduce((a, r) => a + r[0], 0));

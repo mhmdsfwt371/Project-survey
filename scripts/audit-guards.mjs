@@ -125,7 +125,7 @@ const MUT = [
     a:'\'<div class="pop-head">\'\n    +   \'<div style="min-width:0"><div class="pid"',
     b:'\'<div>\'\n    +   \'<div style="min-width:0"><div class="pid"' },
   { n:'صفحةٌ تُفتَح فلا ترسم شيئًا', g:'scripts/qa.mjs',
-    a:"PAGE.over = {", b:"PAGE.over = { body:function(){ return ''; }, _old:" }
+    a:"PAGE.survey = {", b:"PAGE.survey = { body:function(){ return ''; }, _old:" }   /* (V43.18) the overview page left; the field follow-up carries the anchor */
 ];
 
 /* ══ الزرعُ متوازيًا ══════════════════════════════════════════════════════

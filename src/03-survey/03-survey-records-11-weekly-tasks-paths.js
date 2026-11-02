@@ -243,17 +243,29 @@ function wtSet(id, patch){
    Excel Online names its columns «المهمة الرئيسية» and «المهمة الفرعية» instead of «المهمة», carries track rows («١. مسار تقني»), empty
    rows left for additions, and status sheets that copy the first sheet. Columns are read by name, track and empty rows skipped, only the
    first matching sheet read (no duplicates), and «قيد التنفيذ» is our «جاري العمل». The file the app exports itself is unchanged. */
-PV.WT_PLAN_COL = { main:['المهمة الرئيسية'], sub:['المهمة الفرعية'], num:['الرقم'], track:['مسار إدارة المشروع', 'المسار'],
-                   code:['كود المسار', 'الكود'], out:['المخرج المطلوب'], st:['الحالة'], upd:['الوصف / آخر تحديث', 'الوصف'],
+/* (V43.18) the owner's later file names the main column plainly «المهمة» (beside «المهمة الفرعية»), the output «المخرج المطلوب
+   من المهمة», and leaves the number column's header empty. It was read by the office sheet's fixed positions — the main task
+   became the task, the sub-task became the path, the description a date. The header is now recognised by «المهمة الفرعية» too,
+   every column by its name, and a header-less first column of numbers (1.6.1) is the number. */
+PV.WT_PLAN_COL = { main:['المهمة الرئيسية', 'المهمة'], sub:['المهمة الفرعية'], num:['الرقم', 'رقم', 'م', '#'], track:['مسار إدارة المشروع', 'المسار'],
+                   code:['كود المسار', 'الكود'], out:['المخرج المطلوب', 'المخرج المطلوب من المهمة', 'المخرج'], st:['الحالة'], upd:['الوصف / آخر تحديث', 'الوصف', 'آخر تحديث'],
                    who:['المسؤول'], seen:['تاريخ الرصد'], due:['تاريخ الاستحقاق'], appr:['جهة الاعتماد'], note:['ملاحظات'], kind:['النوع'] };
 function wtPlanRows(A, id0){
   var hdr = -1, C = {}, out = [], id = id0 || 0;
   for (var i = 0; i < Math.min(A.length, 30) && hdr < 0; i++){
     var H = (A[i] || []).map(function(x){ return String(x == null ? '' : x).trim(); });
-    if (H.indexOf('المهمة الرئيسية') >= 0){ hdr = i; Object.keys(PV.WT_PLAN_COL).forEach(function(k){
+    if (H.indexOf('المهمة الرئيسية') >= 0 || H.indexOf('المهمة الفرعية') >= 0){ hdr = i; Object.keys(PV.WT_PLAN_COL).forEach(function(k){
       PV.WT_PLAN_COL[k].some(function(n){ var j = H.indexOf(n); if (j >= 0){ C[k] = j; return true; } return false; }); }); }
   }
-  if (hdr < 0) return out;
+  if (hdr < 0 || C.main == null && C.sub == null) return out;
+  if (C.num == null){   /* a header-less column of numbers like «2.3.4» left of the tasks is the number */
+    for (var c0 = 0; c0 < (A[hdr] || []).length; c0++){
+      if (String(A[hdr][c0] == null ? '' : A[hdr][c0]).trim()) continue;
+      var nums = 0, seen0 = 0;
+      for (var r0 = hdr + 1; r0 < Math.min(A.length, hdr + 40); r0++){ var x0 = String(((A[r0] || [])[c0]) == null ? '' : A[r0][c0]).trim(); if (x0){ seen0++; if (/^\d+(\.\d+)*$/.test(x0)) nums++; } }
+      if (seen0 && nums >= seen0 * 0.8){ C.num = c0; break; }
+    }
+  }
   var v = function(row, k){ return C[k] == null ? '' : String(row[C[k]] == null ? '' : row[C[k]]).trim(); };
   for (var r = hdr + 1; r < A.length; r++){
     var row = A[r]; if (!row) continue;
@@ -283,8 +295,10 @@ function wtImport(file){
         wb.SheetNames.forEach(function(nm){
           var A = XLSX.utils.sheet_to_json(wb.Sheets[nm], { header:1, raw:true }), hdr = -1;
           if (rows.length && rows.plan) return;   /* (V43.12) ملفُّ الخطة: أوّلُ ورقةٍ فقط — أوراقُ الحالات نسخٌ منها */
+          var P = wtPlanRows(A, id);   /* (V43.18) the plan's own columns first — then the office sheet by position */
+          if (P.length){ id += P.length; rows = rows.concat(P); rows.plan = 1; return; }
           for (var i = 0; i < A.length; i++){ if (String(A[i][1] || '').trim() === 'المهمة'){ hdr = i; break; } }
-          if (hdr < 0){ var P = wtPlanRows(A, id); if (P.length){ id += P.length; rows = rows.concat(P); rows.plan = 1; } return; }
+          if (hdr < 0) return;
           for (var r = hdr + 1; r < A.length; r++){
             var row = A[r]; if (!row || !row[1]) continue;
             /* الأعمدةُ الثلاثةُ الأخيرةُ من ورقة المكتب تُحفَظ كما هي (V17.19):

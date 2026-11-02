@@ -43,6 +43,7 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
   l:'مهامُّك وجدولُك وأداؤك وفريقُك — في شاشةٍ واحدة.',
   body:function(){
     var head = tabHead('mywork'), cur = tabCur('mywork');
+    if (cur === 'fix') return head + (typeof fixBody === 'function' ? fixBody() : '<p class="hint">' + esc(t('جارٍ التحميل…')) + '</p>');   /* (V43.18) «تصحيح البيانات» */
     if (cur === 'mine') return head + (function(){
     /* كانت أصفارًا مكتوبةً وزرَّ تصديرٍ معطَّلًا بحجّة «نظامُ الإسناد غيرُ
        مبنيٍّ بعد» — وقد بُني (STATE.tasks وasnOfTech). فصارت تقرأ. */

@@ -64,7 +64,7 @@ function viewAsStop(quiet){
   viewAsBlock(false); PV.VIEW_AS = null;
   if (typeof DB === 'object' && DB.memoReset) DB.memoReset();
   var b = document.getElementById('vaBar'); if (b) b.remove();
-  if (!quiet){ CUR = V.real.cur || 'over'; var nav = document.getElementById('nav'); if (nav) nav.innerHTML = navHtml(); render(); toast(t('رجعتَ إلى حسابك')); }
+  if (!quiet){ CUR = V.real.cur || (typeof navHome === 'function' ? navHome() : 'mfu'); var nav = document.getElementById('nav'); if (nav) nav.innerHTML = navHtml(); render(); toast(t('رجعتَ إلى حسابك')); }
   return true;
 }
 function viewAsBanner(){

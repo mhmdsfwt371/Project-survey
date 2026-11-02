@@ -205,8 +205,10 @@ PAGE.mfu = { m:'المتابعة', t:'متابعة الوزارة',
     if (cur === 'mchal') return head + mfuChal();   /* (V39.68) the gates count is an inventory, not a challenge — it stays on «المسح» */
     if (cur === 'mreq') return head + mfuReq();
     if (cur === 'mdaily') return (svListPop() + supPopHtml()) + head + mtDaily();   /* (V37.62) */
+    if (cur === 'pace') return head + overPaceBody();   /* (V43.18) «الوتيرة والهدف» moved here from the overview */
+    if (['over', 'now', 'reg', 'inst', 'svdash'].indexOf(cur) > -1) return overTabBody(head, cur);   /* (V43.18) hidden, by key */
     if (cur === 'mcamps') return head + mtCamps();   /* (V37.75) المخيماتُ المركزية — إشغالٌ حيٌّ من نظام البطاقات */
-    return head + mfuSummary();
+    return head + mfuSummary() + (typeof svdLite === 'function' && seesRaw('svdash') ? mtDetails('ما حُصر في المسح — الغرف والهياكل والحساسات', svdLite) : '');   /* (V43.18) */
   }};
 /* (V27.1) كان «المعدل اليومي» شريحةً وحدَه — صار قسمًا مطويًّا في «أمس · الآن · غدًا» */
 function overDailyBody(){ return '<details class="mfu-add"><summary>' + esc(t('المعدل اليومي')) + '</summary>' + (function(){
@@ -238,13 +240,10 @@ function overDailyBody(){ return '<details class="mfu-add"><summary>' + esc(t('�
               ['الإجمالي', N(tot[0]), N(tot[1]), N(tot[2]), N(tot[0]+tot[1]+tot[2]), '']))
       + '<p class="hint">' + esc(t('اللقطةُ تُكتَب من جهاز المكتب مرةً كلَّ ربع ساعة — فما لم يُزامَن بعدُ لا يظهر هنا.')) + '</p>';
   })() + '</details>'; }
-PAGE.over = { m:'المتابعة', t:'نظرة عامة',
-  l:'تقدّمُ المشروع من كلِّ زاوية — الصورةُ والتوزيعُ والوتيرةُ والمعدلُ اليوميُّ والتركيب.',
-  body:function(){
-    var head = tabHead('over'), cur = tabCur('over');
-    if (cur === 'svdash') return head + svdashBody();
-    if (cur === 'added') return head + addedBody();     /* (V42.8) */
-    if (cur === 'now') return head + overDailyBody() + (function(){   /* (V27.1) المعدلُ اليومي صار قسمًا هنا */
+/* (V43.18) the owner: «the ministry follow-up replaces any other overview». The overview's pages became named functions so
+   the follow-up can carry what only they had: the pace tab whole, «now · tomorrow · late · awaiting approval» under the daily
+   work (lite — the yesterday/today counts are already there), and the holy-site × type table under the installs' details. */
+function overNowBody(){ return (function(){   /* (V27.1) المعدلُ اليومي صار قسمًا هنا */
     /* الوزارةُ تسأل ثلاثةَ أسئلةٍ لا تجيبها لوحةٌ واحدة: ماذا انتهى؟ ماذا يجري
        الآن ومن يفعله وأين؟ وماذا سيحدث غدًا؟ فصارت شاشةً واحدةً بثلاثة
        أعمدةٍ تُقرأ من السجلات والمهام لحظيًّا — لا من أرقامٍ تُكتَب. */
@@ -278,20 +277,20 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
               ? '<div class="actions" style="margin:0 0 10px">' + btn('\u2B07 ' + t('إكسل') + ' \u2014 ' + t('الحضور'),'btn-secondary btn-sm',' data-xls="attendance"') + btn('\u2B07 ' + t('إكسل') + ' \u2014 ' + t('التركيبات'),'btn-secondary btn-sm',' data-xls="installs"') + '</div>' : '')
       + attTeamCard()
       + (may('approve') ? inboxCard() : '')
-      + stepsCard(10)
-      + '<div class="grid cols-3" style="align-items:start">'
-      + col('\u2705 ' + t('ما انتهى'),
+      + (PV.NOW_LITE ? '' : stepsCard(10))
+      + '<div class="grid ' + (PV.NOW_LITE ? 'cols-2' : 'cols-3') + '" style="align-items:start">'
+      + (PV.NOW_LITE ? '' : col('\u2705 ' + t('ما انتهى'),
           stats([['أمس — مسح', N(Y.sv), Y.sv ? 'ok' : ''], ['أمس — تركيب', N(Y.ins), Y.ins ? 'ok' : ''],
                  ['أمس — فك', N(Y.dis)]])
           + table(['حتى الآن','العدد','من'], [
               [esc(t('زيارات معتمدة')), N(S.approved), N(S.total)],
               [esc(t('زيارات تمّت')), N(S.surveyed), N(S.total)],
               [esc(t('مُركّب')), N(S.installed), N(S.total)]])
-          + meter('نسبة الزيارة', S.surveyed, S.total) + meter('نسبة التركيب', S.installed, S.total))
+          + meter('نسبة الزيارة', S.surveyed, S.total) + meter('نسبة التركيب', S.installed, S.total)))
       + col('\u26A1 ' + t('الآن — اليوم'),
-          stats([['اليوم — مسح', N(T0.sv), T0.sv ? 'acc' : ''], ['اليوم — تركيب', N(T0.ins), T0.ins ? 'acc' : ''],
+          stats((PV.NOW_LITE ? [] : [['اليوم — مسح', N(T0.sv), T0.sv ? 'acc' : ''], ['اليوم — تركيب', N(T0.ins), T0.ins ? 'acc' : '']]).concat([
                  ['تنتظر الاعتماد', N(S.pending), S.pending ? 'wrn' : ''],
-                 ['متأخّرة عن موعدها', N(lateN), lateN ? 'bad' : '']])
+                 ['متأخّرة عن موعدها', N(lateN), lateN ? 'bad' : '']]))
           + (sups.length
             ? table(['المشرف','مُسند','تمّ اليوم','بانتظار','مردود'], sups.slice(0, 12).map(function(sp){
                 var g = bySup[sp];
@@ -316,8 +315,9 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
       + btn('\u2753 ' + t('كيف تسير الدورة؟'),'btn-quiet btn-sm',' data-p="wf"')
       + '</div>'
       + '<p class="hint">' + esc(t('الخريطةُ تلوّن الدورةَ كلَّها: لم يُزر · مُسند · مجدولٌ غدًا · تحتاج زيارةً أخرى · تمت وتنتظر الاعتماد · معتمدة.')) + '</p>';
-  })();
-    if (cur === 'reg') return head + (function(){
+  })(); }
+function overNowLite(){ PV.NOW_LITE = 1; try { return overNowBody(); } finally { PV.NOW_LITE = 0; } }
+function overRegTable(){ return (function(){
     /* كان جدولًا محفورًا صحيحًا يومَ كُتب. ويبقى صحيحًا حتى يُسجَّل موقعٌ
        جديدٌ واحد — ثم يكذب ولا يقول. يُحسَب من السجلات. */
     var S = siteStats(), rows = [];
@@ -331,8 +331,8 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
         return [esc(t(r[0])), esc(t(r[1])), N(r[2]),
                 nm(Math.round(r[2] / (S.total || 1) * 100)) + '٪'];
       }), ['الإجمالي','', N(S.total), '١٠٠٪']));
-  })();
-    if (cur === 'pace') return head + (function(){
+  })(); }
+function overPaceBody(){ return (function(){
     /* كانت تنبيهًا دائمًا «لم تُضبط المواعيد» وأصفارًا مكتوبةً بيد، لأن صفحةَ
        المواعيد لم تكن تحفظ شيئًا. صارت تقرأ الموعدين من CFG وتجيب سؤالَ
        «هنلحق؟» بالأرقام: المتبقّي، والمطلوبُ يوميًّا لبلوغ الموعد، ومعدّلُ
@@ -374,7 +374,15 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
       + stage('المسح', S.total - S.surveyed, dueS, w.sv, y.sv)
       + stage('التركيب', S.total - S.installed, dueI, w.ins, y.ins)
       + '<p class="hint">' + esc(t('المعدلُ من اللقطات اليومية المحفوظة، وما لم تُحفَظ لقطتُه يُحسَب من السجلات التي على هذا الجهاز.')) + '</p>';
-  })();
+  })(); }
+/* (V43.18) the overview left the menu; its remaining tabs (the executive picture, now, site × type, installs, survey details)
+   are hidden tabs of the ministry follow-up, kept by key for exports and old links — rendered here */
+function overTabBody(head, cur){
+    if (cur === 'svdash') return head + svdashBody();
+    if (cur === 'added') return head + addedBody();     /* (V42.8) */
+    if (cur === 'now') return head + overDailyBody() + overNowBody();
+    if (cur === 'reg') return head + overRegTable();
+    if (cur === 'pace') return head + overPaceBody();
     if (cur === 'inst') return head + (function(){
     var tot = { notStarted:0, blocked:0, scheduled:0, installed:0 };
     var byType = Object.create(null);
@@ -455,18 +463,13 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
           + btn('🖨 '+t('طباعة'),'btn-secondary btn-sm',' data-print="1"')
           + '</div>');
   })();
-  }};
-
-
-
-
-
-
+}
 
 PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني',
   l:'دورةُ النقطة كلُّها — مسحُها واعتمادُها وحلُّها وتدقيقُ تركيبها، وما أفاد به الميدان وما تعثّر.',
   body:function(){
     var head = tabHead('survey'), cur = tabCur('survey');
+    if (cur === 'added') return head + addedBody();   /* (V43.18) moved from the overview to the field */
     if (cur === 'qa') return head + (function(){
     var wait = Object.keys(STATE.inss).filter(function(k){
       return insDone(k) && !STATE.inss[k].approved;   /* (V38.58) the same test as the map colour */
