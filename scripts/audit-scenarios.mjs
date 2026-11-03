@@ -2866,7 +2866,7 @@ console.log('\n══ ١٢٧ · نشاط المستخدمين — نصوصُ أ�
   w.STATE.events = L.map(e => Object.assign({ dev:'t' }, e)); w.PV.ACT = Object.assign({}, A0, { span:'custom', from:day, to:day, who:'', ev:[], loaded:null });
   w.goPage('ev'); w.render(1); w.PTAB.ev = 'act'; w.render(1);   /* a page switch resets its tab: land first, then pick it */
   const h = w.document.getElementById('content').innerHTML;
-  T(h.indexOf(K) > -1 && h.indexOf(A) > -1 && /data-actxl="sum"/.test(h) && /data-actfetch/.test(h) && /<th>تحريك<\/th>/.test(h) && /<th>نقاطٌ مختلفة<\/th>/.test(h), 'الشاشةُ: جدولٌ فيه الاسمان وأعمدةُ الأنواع والنقاطُ المختلفة، وأزرارُ الجلب والإكسل');
+  T(h.indexOf(K) > -1 && h.indexOf(A) > -1 && /data-actxl="sum"/.test(h) && /data-actfetch/.test(h) && /<th[^>]*>تحريك<\/th>/.test(h) && /<th[^>]*>نقاطٌ مختلفة<\/th>/.test(h), 'الشاشةُ: جدولٌ فيه الاسمان وأعمدةُ الأنواع والنقاطُ المختلفة، وأزرارُ الجلب والإكسل');
   let got = null; const mx = w.mtXlsx; w.mtXlsx = (n, hd, rows) => { got = { n, hd, rows }; return true; };
   w.actXlsx();
   T(got && got.rows.length === 2 && got.hd.indexOf('نقاطٌ مختلفة') > -1 && got.rows[0][0] === K && got.rows[0][got.hd.indexOf('تعديلات')] === 3 && got.rows[0][got.hd.indexOf('تعديلات — نقاطٌ مختلفة')] === 2, 'إكسل الملخّص: صفٌّ لكلِّ شخصٍ وعمودان لكلِّ نوع (مرّات / نقاطٌ مختلفة)');
@@ -2876,6 +2876,40 @@ console.log('\n══ ١٢٧ · نشاط المستخدمين — نصوصُ أ�
   w.ROLE = 'supervisor'; w.STATE.meta.role = 'supervisor';
   T(!w.tabsOf('ev').some(x => x[0] === 'act'), 'والمشرفُ لا يراها');
   w.ROLE = role0; w.STATE.meta.role = mr0; w.STATE.events = evs0; w.PV.ACT = A0; delete w.PTAB.ev;
+}
+
+/* ── ١٢٨ · (V44.1) لوحة النشاط: تصفيةٌ بالمشعر ونوع النقطة ونوع العمل، ورسومٌ تُصفّي عند الضغط ── */
+console.log('\n══ ١٢٨ · لوحة نشاط المستخدمين — المشعر ونوع النقطة والنوع واليوم، بالضغط ══');
+{
+  const role0 = w.ROLE, mr0 = w.STATE.meta.role, evs0 = w.STATE.events, A0 = w.PV.ACT;
+  const mina = w.STATE.sites.find(x => x.type === 'مخيم' && w.taxOf(x).g === 'منى'), arf = w.STATE.sites.find(x => x.type === 'مخيم' && w.taxOf(x).g === 'عرفات'), cor = w.STATE.sites.find(x => x.type !== 'مخيم' && w.taxOf(x).g === 'منى');
+  T(!!(mina && arf && cor), 'نقاطٌ للتجربة: مخيمٌ في منى ومخيمٌ في عرفات ونقطةٌ غيرُ مخيمٍ في منى');
+  const day = '2026-11-02', ts = h => Date.parse(day + 'T' + String(h).padStart(2, '0') + ':00:00+03:00'); let n = 0;
+  const ev = (h, what, by, site) => ({ id:'t128-' + (++n), ts:ts(h), what, by, site });
+  const L = [ev(8, 'تعديلُ مسح — ' + mina.id + ' · أ', 'أ', mina.id), ev(9, 'تحريك موقع — ' + arf.id, 'أ', arf.id), ev(10, 'تعديلُ مسح — ' + arf.id + ' · ب', 'ب', arf.id), ev(11, 'رفع صورة — ' + cor.id + ' · 1', 'ب', cor.id), ev(12, 'طلب إضافة شركة — شركة', 'ب', '')];
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.STATE.events = L.map(e => Object.assign({ dev:'t' }, e));
+  w.PV.ACT = Object.assign({}, A0, { span:'custom', from:day, to:day, who:'', zone:'', ptype:'', wtype:'', ev:[], loaded:null });
+  T(w.actRows(w.actEvents()).length === 5, 'بلا تصفية: كلُّ إجراءات العمل الخمسة');
+  w.PV.ACT.zone = 'عرفات';
+  T(w.actRows(w.actEvents()).length === 2 && w.actRows(w.actEvents()).every(r => r.zone === 'عرفات'), 'المشعر «عرفات»: إجراءان على نقطة عرفات — وطلبُ الشركة بلا نقطة يخرج');
+  w.PV.ACT.zone = ''; w.PV.ACT.ptype = 'مخيم';
+  T(w.actRows(w.actEvents()).length === 3, 'نوع النقطة «مخيم»: ثلاثةُ إجراءات على المخيمين');
+  w.PV.ACT.ptype = ''; w.PV.ACT.wtype = 'edit';
+  T(w.actRows(w.actEvents()).length === 2, 'نوع العمل «تعديلات»: تعديلان');
+  w.PV.ACT.wtype = '';
+  w.goPage('ev'); w.render(1); w.PTAB.ev = 'act'; w.render(1);
+  const C = () => w.document.getElementById('content'), h = C().innerHTML;
+  T(/data-actf="zone"/.test(h) && /data-actf="ptype"/.test(h) && /data-actf="wtype"/.test(h) && /data-actday="2026-11-02"/.test(h) && /data-actz="عرفات"/.test(h) && /data-actwho="أ"/.test(h), 'اللوحة: مرشِّحاتُ المشعر ونوع النقطة ونوع العمل، وعمودُ اليوم، وأشرطةُ المشعر والأشخاص قابلةٌ للضغط');
+  C().querySelector('[data-actz="عرفات"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
+  T(w.PV.ACT.zone === 'عرفات' && /data-actclear/.test(C().innerHTML), 'الضغطُ على «عرفات» يصفّي بها ويظهر «امسح التصفية»');
+  C().querySelector('[data-actclear]').dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
+  T(w.PV.ACT.zone === '' , 'و«امسح التصفية» يعيدها');
+  C().querySelector('[data-actday="2026-11-02"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
+  T(w.PV.ACT.span === 'custom' && w.PV.ACT.from === day && w.PV.ACT.to === day, 'والضغطُ على يومٍ في الرسم يجعل الفترةَ ذلك اليوم');
+  let got = null; const mx = w.mtXlsx; w.mtXlsx = (nn, hd, rows) => { got = { hd, rows }; return true; };
+  w.PV.ACT.zone = 'عرفات'; w.actXlsxDetail();
+  T(got && got.rows.length === 2 && got.hd.indexOf('المشعر') > -1 && got.rows.every(r => r[4] === 'عرفات'), 'وإكسل التفصيل يتبع التصفية ويحمل المشعرَ ونوعَ النقطة');
+  w.mtXlsx = mx; w.ROLE = role0; w.STATE.meta.role = mr0; w.STATE.events = evs0; w.PV.ACT = A0; delete w.PTAB.ev;
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

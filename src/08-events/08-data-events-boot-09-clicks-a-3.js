@@ -269,6 +269,11 @@ function clickAPart7B(e){
   }
   var acs = e.target.closest('[data-actspan]'); if (acs){ PV.ACT.span = acs.getAttribute('data-actspan'); render(1); return true; }   /* (V44.0) */
   if (e.target.closest('[data-actfetch]')){ actFetch(); return true; }
+  var acd = e.target.closest('[data-actday]'); if (acd){ PV.ACT.span = 'custom'; PV.ACT.from = PV.ACT.to = acd.getAttribute('data-actday'); render(1); return true; }   /* (V44.1) the dashboard's clicks */
+  var act2 = e.target.closest('[data-actt],[data-actz],[data-actp],[data-actwho]'); if (act2){
+    var kk = act2.hasAttribute('data-actt') ? ['wtype', 'data-actt'] : act2.hasAttribute('data-actz') ? ['zone', 'data-actz'] : act2.hasAttribute('data-actp') ? ['ptype', 'data-actp'] : ['who', 'data-actwho'];
+    var vv = act2.getAttribute(kk[1]); PV.ACT[kk[0]] = (PV.ACT[kk[0]] === vv || vv === '\u2014') ? '' : vv; render(1); return true; }
+  if (e.target.closest('[data-actclear]')){ PV.ACT.zone = PV.ACT.ptype = PV.ACT.wtype = PV.ACT.who = ''; render(1); return true; }
   var acx = e.target.closest('[data-actxl]'); if (acx){ if (acx.getAttribute('data-actxl') === 'det') actXlsxDetail(); else actXlsx(); return true; }
   if (e.target.closest('[data-evfetch]')){ toast(t('يُجلَب السجل…')); evFetch(true); return true; }
   if (e.target.closest('[data-evrange]')){ toast(t('يُجلَب السجل…')); evFetch(true, 'range'); return true; }
