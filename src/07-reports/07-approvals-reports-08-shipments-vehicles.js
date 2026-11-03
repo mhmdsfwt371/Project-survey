@@ -44,6 +44,7 @@ PAGE.ev = { m:'النظام', t:'السجلات والإشعارات',
   l:'ما جرى ومن فعله ومتى، وما أُرسل، وما ينتظر اعتمادًا.',
   body:function(){
     var head = tabHead('ev'), cur = tabCur('ev');
+    if (cur === 'act') return head + (typeof actBody === 'function' ? actBody() : '');   /* (V44.0) «نشاط المستخدمين» */
     if (cur === 'ev') return head + (function(){
     /* ما في اليد قليلٌ؟ يُجلَب السجلُّ مرةً — فلا تُقرأ الشاشةُ فارغةً وهي مليئة */
     if (evAll().length < 50) evFetch(false);

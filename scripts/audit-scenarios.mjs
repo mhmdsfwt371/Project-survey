@@ -2801,6 +2801,83 @@ console.log('\n══ ١٢٥ · ملفُّ المالك الأحدث: «المه
   T(w.wtPlanRows(B, 0).length === 0, 'وورقةُ المكتب التي يصدّرها التطبيق (بلا «المهمة الفرعية») تبقى لقارئها بالمواضع كما كانت');
 }
 
+/* ── ١٢٦ · (V43.19) عرفات: كام مخيم ترددي وكام بوابة تفويج — بالمشعر، وعلى الملخّص، ومن سجلات المشرفين غير المختومة ── */
+console.log('\n══ ١٢٦ · حصرُ بوابات التفويج بالمشعر على ملخّص الوزارة — والسجلُّ غيرُ المختوم يُعَدُّ بدور صاحبه ══');
+{
+  const role0 = w.ROLE, mr0 = w.STATE.meta.role, cur0 = w.CUR, users0 = w.STATE.users;
+  w.STATE.users = Object.assign({}, users0 || {}, { 'u-khaled':{ name:'خالد بندر', role:'supervisor' }, 'u-off':{ name:'مدير المكتب', role:'admin' } });
+  const arf = w.STATE.sites.filter(x => x.type === 'مخيم' && w.taxOf(x).g === 'عرفات' && !w.STATE.recs[x.id]).slice(0, 3);
+  T(arf.length === 3, 'ثلاثة مخيماتٍ في عرفات بلا زيارة للتجربة');
+  const before = w.tardBarStats('عرفات');
+  w.STATE.recs[arf[0].id] = { id:arf[0].id, access:'تم الوصول', status:'تمت الزيارة', by:'خالد بندر', at:Date.now(), ctype:'ترددي', tbar:3 };            /* unstamped — before V39.70 */
+  w.STATE.recs[arf[1].id] = { id:arf[1].id, access:'تم الوصول', status:'تمت الزيارة', by:'خالد بندر', at:Date.now(), ctype:'ترددي', tbar:2, ctypeBy:'خالد بندر', ctypeAt:Date.now(), tbarBy:'خالد بندر', tbarAt:Date.now() };
+  w.STATE.recs[arf[2].id] = { id:arf[2].id, access:'تم الوصول', status:'تمت الزيارة', by:'مدير المكتب', at:Date.now(), ctype:'ترددي', tbar:9 };          /* an office author — not the field's choice (engineers are field) */
+  arf.forEach(x => { delete x._tax; });
+  const after = w.tardBarStats('عرفات');
+  T(after.conf === before.conf + 2 && after.bars === before.bars + 5, 'عرفات: المخيمُ غيرُ المختوم الذي سجّله المشرف يُعَدّ، والمختومُ يُعَدّ، وما سجّله المكتبُ لا: +٢ مخيم و+٥ بوابات');
+  T(w.tardBarStats('منى').conf === w.tardBarStats('منى').conf && w.tardBarStats().conf >= after.conf, 'والإجماليُّ يجمع المشاعر');
+  w.ROLE = 'viewer'; w.STATE.meta.role = 'viewer';
+  const page = k => { w.goPage(k); w.render(1); return w.document.getElementById('content').innerHTML; };
+  const hs = page('mfu');
+  T(/حصر بوابات التفويج/.test(hs) && /<td>عرفات<\/td>/.test(hs), 'الوزارةُ ترى «حصر بوابات التفويج» على الملخّص بصفٍّ لعرفات');
+  const hc = page('mcamps');
+  T(/حصر بوابات التفويج/.test(hc), 'وعلى تبويب «المخيمات» أيضًا');
+  arf.forEach(x => { delete w.STATE.recs[x.id]; delete x._tax; });
+  w.STATE.users = users0; w.ROLE = role0; w.STATE.meta.role = mr0; w.CUR = cur0;
+}
+
+/* ── ١٢٧ · (V44.0) نشاط المستخدمين: كم نقطةً مختلفة وبأيِّ نوع، جنبًا إلى جنب، وإكسل ── */
+console.log('\n══ ١٢٧ · نشاط المستخدمين — نصوصُ أحداثٍ حقيقية من الإنتاج تُصنَّف، والنقاطُ المختلفة لا المرّات ══');
+{
+  const real = [   /* shapes read from production on 3 Nov 2026 (14 days, 5,520 events) → the work type each must get */
+    ['إشعار — زيارة تمّت · NSK-MIN-RDR-0026 · عمار حسين احمد عميش — بانتظار اعتمادك', 'visit'], ['مسح موقع — NSK-TRN-EGT-0050', 'visit'], ['تعذّر الوصول — منع دخول · NSK-TRN-EGT-0002', 'visit'],
+    ['إشعار — تمّ · 🔧 تركيب · NSK-MIN-CMP-0449 · ٢٢ قطعة', 'inst'], ['حالةُ التركيب «مركب» — NSK-MIN-CMP-0449', 'inst'], ['ردّ تركيب — NSK-MIN-CMP-0449', 'appr'], ['اعتماد تقني — NSK-MIN-RDR-0039', 'appr'],
+    ['تعديلُ مسح — NSK-MIN-RDR-0141 · موقع النقطة:  ← بدون إطار', 'edit'], ['تعديلُ حساسات مخيم — NSK-MIN-CMP-0449 · ١٢ حساسًا', 'edit'], ['تعديلُ حدود مخيم — NSK-ARF-CMP-0059 · ١٤ زاوية', 'edit'], ['الخلاصة (المسح) — NSK-ARF-CMP-0162 · ملاحظة', 'edit'],
+    ['تعديل بيانات نقطة — NSK-MIN-CMP-0449 · tg،tt', 'edit'], ['دمجُ توأم — NSK-NEW-LPR-N029 في NSK-NEW-LPR-N020', 'edit'], ['فكُّ دمجِ توأم — NSK-TFW-LPR-N008', 'edit'],
+    ['رفع صورة — NSK-MIN-CMP-0449 · ins_r2_before', 'photo'], ['تعديلُ صورة — NSK-MIN-RDR-0104 · لقطة عامة', 'photo'], ['حذف صورة — NSK-MIN-RDR-0118-4 · من تعديل المسح', 'photo'],
+    ['تحريك موقع — NSK-ARF-COR-0045', 'move'], ['تحريك حساس — NSK-MIN-CMP-0019 · S08', 'move'], ['تحريك جيت واي — NSK-MIN-CMP-0449 · جيت واي', 'move'],
+    ['موقع جديد — NSK-ARF-STN-N001 · عرفات', 'add'], ['طلب إضافة شركة — غير معروف', 'add'], ['نوع نقطة جديد — حاجز التنظيمي للتفويج', 'add'],
+    ['حذفٌ نهائيّ — NSK-TRN-EGT-0057 · قطار المشاعر', 'del'], ['حذف نقطة (قابلٌ للاستعادة) — NSK-MIN-CMP-0019', 'del'], ['مسحُ جدول المتابعة', 'del'],
+    ['إشعار — مهام الاجتماع · ١٢ متأخرة', ''], ['دخولٌ بجلسةٍ محفوظة', ''], ['خرائطُ جوجل — hybrid', ''], ['مزامنةٌ فوريةٌ للجميع', ''], ['عطلٌ في متصفّح الجهاز — promise', ''], ['إشعار — موقع جديد · تمت إضافة مخيم جديد — عرفات', ''],
+    ['إشعار — تعديلُ مسحٍ معتمد · موقع النقطة', ''], ['تصديرُ التحديث الأسبوعي — PDF', ''], ['سؤال المساعد — كام نقطة اتركبت في منى؟', '']];
+  const bad = real.filter(r => w.actType(r[0]) !== r[1]);
+  T(bad.length === 0, 'كلُّ نصٍّ حقيقيٍّ يأخذ نوعَه (' + (real.length - bad.length) + '/' + real.length + ')' + (bad.length ? ' — خالف: ' + bad.slice(0, 3).map(r => r[0].slice(0, 30) + '→' + w.actType(r[0])).join(' | ') : ''));
+  const day = '2026-11-02', ts = h => Date.parse(day + 'T' + String(h).padStart(2, '0') + ':00:00+03:00');
+  let evN = 0; const ev = (h, what, by, site) => ({ id:'t127-' + (++evN), ts:ts(h), what, by, site });
+  const K = 'خالد بندر', A = 'عمار حميش';
+  const L = [
+    ev(8, 'مسح موقع — NSK-MIN-CMP-0001', K, 'NSK-MIN-CMP-0001'), ev(8, 'إشعار — زيارة تمّت · NSK-MIN-CMP-0001 · ' + K + ' — بانتظار اعتمادك', K, 'NSK-MIN-CMP-0001'),   /* the same visit written twice */
+    ev(9, 'إشعار — زيارة تمّت · NSK-MIN-CMP-0002 · ' + K, K, 'NSK-MIN-CMP-0002'),
+    ev(10, 'تعديلُ مسح — NSK-MIN-CMP-0001 · أ', K, 'NSK-MIN-CMP-0001'), ev(11, 'تعديلُ مسح — NSK-MIN-CMP-0001 · ب', K, 'NSK-MIN-CMP-0001'), ev(12, 'تعديلُ مسح — NSK-MIN-CMP-0002 · ج', K, 'NSK-MIN-CMP-0002'),
+    ev(13, 'تحريك موقع — NSK-MIN-CMP-0003', K, 'NSK-MIN-CMP-0003'), ev(14, 'تحريك موقع — NSK-MIN-CMP-0003', K, 'NSK-MIN-CMP-0003'),
+    ev(9, 'موقع جديد — NSK-ARF-CMP-N001HR · عرفات', A, 'NSK-ARF-CMP-N001HR'), ev(10, 'حذفٌ نهائيّ — NSK-ARF-CMP-N001HR · تجربة', A, 'NSK-ARF-CMP-N001HR'),
+    ev(11, 'رفع صورة — NSK-MIN-CMP-0004 · 1', A, 'NSK-MIN-CMP-0004'), ev(11, 'رفع صورة — NSK-MIN-CMP-0004 · 2', A, 'NSK-MIN-CMP-0004'),
+    ev(12, 'دخولٌ بجلسةٍ محفوظة', A, ''), ev(12, 'إشعار — مهام الاجتماع · ١٢ متأخرة', A, '')];
+  const R = w.actBuild(L, ''), k = R.find(p => p.name === K), a = R.find(p => p.name === A), cnt = (p, t0) => (p.t[t0] || { n:0 }).n, pts = (p, t0) => Object.keys((p.t[t0] || { s:{} }).s).length;
+  T(R.length === 2 && R[0].name === K, 'شخصان، مرتَّبان بالأكثر عملًا: ' + R.map(p => p.name + '=' + p.n).join(' · '));
+  T(cnt(k, 'visit') === 2 && pts(k, 'visit') === 2, 'الزيارةُ المكتوبةُ مرتين لنقطةٍ في اليوم تُعَدّ مرةً: ٢ زيارة في ٢ نقطة');
+  T(cnt(k, 'edit') === 3 && pts(k, 'edit') === 2, 'التعديل: ٣ مرّاتٍ في نقطتين مختلفتين — لا «٣ نقاط»');
+  T(cnt(k, 'move') === 2 && pts(k, 'move') === 1 && Object.keys(k.sites).length === 3, 'التحريك مرتان لنقطةٍ واحدة، ونقاطُه المختلفةُ كلُّها ٣');
+  T(cnt(a, 'add') === 1 && cnt(a, 'del') === 1 && cnt(a, 'photo') === 2 && pts(a, 'photo') === 1 && a.n === 4, 'عمار: إضافةٌ وحذفٌ وصورتان (نقطةٌ واحدة) — والدخولُ والإشعارُ لا يُعَدّان عملًا');
+  T(w.actBuild(L, K).length === 1 && w.actBuild(L, K)[0].name === K, 'وتصفيةٌ بشخصٍ تعطيه وحدَه');
+  const role0 = w.ROLE, mr0 = w.STATE.meta.role, evs0 = w.STATE.events, A0 = w.PV.ACT;
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
+  T(w.tabsOf('ev').some(x => x[0] === 'act') , 'المهندسُ يرى «نشاط المستخدمين» في سجلات النظام');
+  w.STATE.events = L.map(e => Object.assign({ dev:'t' }, e)); w.PV.ACT = Object.assign({}, A0, { span:'custom', from:day, to:day, who:'', ev:[], loaded:null });
+  w.goPage('ev'); w.render(1); w.PTAB.ev = 'act'; w.render(1);   /* a page switch resets its tab: land first, then pick it */
+  const h = w.document.getElementById('content').innerHTML;
+  T(h.indexOf(K) > -1 && h.indexOf(A) > -1 && /data-actxl="sum"/.test(h) && /data-actfetch/.test(h) && /<th>تحريك<\/th>/.test(h) && /<th>نقاطٌ مختلفة<\/th>/.test(h), 'الشاشةُ: جدولٌ فيه الاسمان وأعمدةُ الأنواع والنقاطُ المختلفة، وأزرارُ الجلب والإكسل');
+  let got = null; const mx = w.mtXlsx; w.mtXlsx = (n, hd, rows) => { got = { n, hd, rows }; return true; };
+  w.actXlsx();
+  T(got && got.rows.length === 2 && got.hd.indexOf('نقاطٌ مختلفة') > -1 && got.rows[0][0] === K && got.rows[0][got.hd.indexOf('تعديلات')] === 3 && got.rows[0][got.hd.indexOf('تعديلات — نقاطٌ مختلفة')] === 2, 'إكسل الملخّص: صفٌّ لكلِّ شخصٍ وعمودان لكلِّ نوع (مرّات / نقاطٌ مختلفة)');
+  w.actXlsxDetail();
+  T(got && got.n === 'تفصيل النشاط' && got.rows.length === 12 && got.rows.every(r => r[2]), 'وإكسل التفصيل: كلُّ إجراءِ عملٍ بنوعه ونقطته (١٢ — بلا الدخول والإشعار)');
+  w.mtXlsx = mx;
+  w.ROLE = 'supervisor'; w.STATE.meta.role = 'supervisor';
+  T(!w.tabsOf('ev').some(x => x[0] === 'act'), 'والمشرفُ لا يراها');
+  w.ROLE = role0; w.STATE.meta.role = mr0; w.STATE.events = evs0; w.PV.ACT = A0; delete w.PTAB.ev;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

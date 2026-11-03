@@ -267,6 +267,9 @@ function clickAPart7B(e){
     else toast(t('لا نتائج'));
     return true;
   }
+  var acs = e.target.closest('[data-actspan]'); if (acs){ PV.ACT.span = acs.getAttribute('data-actspan'); render(1); return true; }   /* (V44.0) */
+  if (e.target.closest('[data-actfetch]')){ actFetch(); return true; }
+  var acx = e.target.closest('[data-actxl]'); if (acx){ if (acx.getAttribute('data-actxl') === 'det') actXlsxDetail(); else actXlsx(); return true; }
   if (e.target.closest('[data-evfetch]')){ toast(t('يُجلَب السجل…')); evFetch(true); return true; }
   if (e.target.closest('[data-evrange]')){ toast(t('يُجلَب السجل…')); evFetch(true, 'range'); return true; }
   if (e.target.closest('[data-evolder]')){ toast(t('يُجلَب السجل…')); evFetch(true, 'older'); return true; }

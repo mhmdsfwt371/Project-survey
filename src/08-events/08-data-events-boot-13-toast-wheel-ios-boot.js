@@ -504,6 +504,7 @@ document.addEventListener('input', function(e){
     if (cq){ cq.focus(); cq.setSelectionRange(cq.value.length, cq.value.length); }
     return;
   }
+  if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-actf')){ PV.ACT[e.target.getAttribute('data-actf')] = e.target.value; render(1); return; }   /* (V44.0) */
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-evf')){
     EVF[e.target.getAttribute('data-evf')] = e.target.value; render(1); return;
   }

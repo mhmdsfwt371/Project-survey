@@ -155,10 +155,11 @@ function routesList(){
 /* (V39.63) owner: «في متابعة الوزارة والتحديات تظهر تحت المخيمات: كام واحد هيكون فيه حاجز تنظيمي للتفويج بناءً على شغل
    المسح في الميدان». From the visits only: camps the survey set ترددي, the barriers counted in them, those set without a count
    yet, and those the survey set عادي. (V39.67: no «awaiting confirmation» — the stations no longer mark camps.) */
-function tardBarStats(){
+function tardBarStats(zone){   /* (V43.19) by holy site when asked — the owner: «عرفات: كام مخيم ترددي وكام بوابة تفويج من المسح» */
   var o = { conf:0, withBar:0, bars:0, noCount:0, pending:0, normal:0 };
   (STATE.sites || []).forEach(function(x){
     if (x.type !== 'مخيم' || x.hidden || x.deleted) return;
+    if (zone && taxOf(x).g !== zone) return;
     var r = (STATE.recs || {})[x.id], ct = r && !r.deleted ? r.ctype : '';
     if (siteTard(x)){ o.conf++; var n = siteTbar(x); if (n > 0){ o.withBar++; o.bars += n; } else o.noCount++; }   /* (V39.70) field choices only */
     else if (ct === 'عادي') o.normal++;
@@ -171,7 +172,11 @@ function tardBarHtml(){
   return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid #F59E0B"><div class="hint" style="margin:0 0 2px">\u26FA ' + esc(t('المخيمات')) + ' \u00b7 ' + esc(t('من المسح الميداني')) + '</div>'
     + '<div style="font-weight:800;font-size:18px;margin:0 0 4px">\u{1F6A7} ' + esc(t('حصر بوابات التفويج')) + ': <span class="num">' + nm(S.bars) + '</span> ' + esc(t('بوابة')) + ' <span class="hint" style="font-size:13px;margin:0">' + esc(t('في')) + ' ' + nm(S.withBar) + ' ' + esc(t('مخيمًا ترددي')) + '</span></div>'
     + '<div class="hint" style="margin:0 0 6px">' + esc(t('الحاجز التنظيمي للتفويج — المخيمُ الذي فيه بوابةُ تفويجٍ ترددي، يختاره الفني أو المشرف في نموذج المسح ويكتب عدد بواباته')) + '</div>'
-    + '<div style="display:flex;flex-wrap:wrap;gap:6px">' + pill(S.conf, 'مخيم ترددي', '#F59E0B') + pill(S.noCount, 'ترددي بلا عدد بوابات بعد', '#EF4444') + '</div></div>';   /* (V39.68) an inventory of gates */
+    + '<div style="display:flex;flex-wrap:wrap;gap:6px">' + pill(S.conf, 'مخيم ترددي', '#F59E0B') + pill(S.noCount, 'ترددي بلا عدد بوابات بعد', '#EF4444') + '</div>'
+    /* (V43.19) the owner: «أطلّع دلوقتي عرفات فيها كام مخيم ترددي وكام بوابة تفويج» — a row per holy site, the same survey figures */
+    + '<table class="tbl" style="margin:8px 0 0"><thead><tr><th>' + esc(t('المشعر')) + '</th><th>' + esc(t('مخيم ترددي')) + '</th><th>' + esc(t('بوابات التفويج')) + '</th><th>' + esc(t('ترددي بلا عدد بوابات بعد')) + '</th><th>' + esc(t('عادي')) + '</th></tr></thead><tbody>'
+    + ['منى', 'عرفات', 'المزدلفة'].map(function(z){ var Z = tardBarStats(z); if (!Z.conf && !Z.normal) return ''; return '<tr><td>' + esc(t(z)) + '</td><td class="num">' + nm(Z.conf) + '</td><td class="num"><b>' + nm(Z.bars) + '</b></td><td class="num">' + nm(Z.noCount) + '</td><td class="num">' + nm(Z.normal) + '</td></tr>'; }).join('')
+    + '</tbody></table></div>';   /* (V39.68) an inventory of gates */
 }
 /* (V39.70) owner: «أي حاجة ترددي تيجي من خالد وعمار، من المشرفين في الميدان — وعدد بوابات التفويج كمان، مش أنا اللي أكتبها؛
    والقديم امسح التاج بتاعه». A camp's type (and its gate count) counts only when a field person chose it: a «تعديل المسح» edit
@@ -184,6 +189,11 @@ function ctSrc(r, key){
   var by = '', at = 0, via = '', stB = r[key + 'By'], stA = r[key + 'At'] || 0;
   if (stB && (!last || stA >= (last.at || 0))){ by = stB; at = stA; via = 'form'; }
   else if (last && String(last.v) === String(r[key])){ by = last.by || ''; at = last.at || 0; via = 'edit'; }
+  /* (V43.19) a value with no stamp and no edit was typed in the survey form before the stamps existed (V39.70): it is the
+     visit author's — production: 215 of Arafat's 217 «ترددي» camps, all Khaled's and Ammar's, carried no stamp and were being
+     left out, so the follow-up would have said 2 camps and 5 gates. The owner's rule stands («anything ترددي comes from the
+     supervisors in the field»): the author's role decides. */
+  else if (r.by){ by = r.by; at = r.at || 0; via = 'visit'; }
   return { v:r[key], by:by, at:at, via:via, field:!!by && isFieldRole(ctNameRole(by)) };
 }
 function ctypeSrc(x){ return x ? ctSrc((STATE.recs || {})[x.id], 'ctype') : null; }
