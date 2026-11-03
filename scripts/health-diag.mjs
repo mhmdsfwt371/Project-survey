@@ -62,4 +62,13 @@ try {
   console.log('PRO · الحالة: ' + (st.state || '—') + ' · آخر تشغيل ' + ago(st.at) + ' (' + (st.why || '') + ') · مخطّط ' + (st.planned ?? '—') + ' · بسيريال ' + (st.withImei ?? '—') + ' · وُجد ' + (st.found ?? '—') + ' · طابق ' + (st.matched ?? '—') + (st.err ? ' · خطأ: ' + st.err + (st.httpStatus ? ' (' + st.httpStatus + ')' : '') : '') + (st.tokExp ? ' · الجلسة حتى ' + iso(st.tokExp) : ''));
   console.log('PRO · التغذية الحيّة: آخر كتابة ' + ago(lv.at) + ' · وحدات مطابقة ' + (lv.n ?? '—') + ' من ' + (lv.total ?? '—') + ' · المصدر ' + (lv.src || '—'));
 } catch (e){ console.log('PRO · ? ' + String(e.message || e).slice(0, 100)); }
+/* (V43.19) the owner's question: per holy site, how many camps the survey set «ترددي» and how many tafweej gates were counted —
+   read from the survey records only (recs: ctype / tbar, zone), the field-stamped ones (ctypeBy) listed apart. */
+try {
+  const qs = await db.collection('recs').where('ctype', '==', 'ترددي').get();
+  const Z = {};
+  qs.forEach(doc => { const r = doc.data() || {}; if (r.deleted) return; const z = r.zone || '—'; const o = Z[z] = Z[z] || { n:0, nField:0, bars:0, barsField:0, noCount:0 };
+    o.n++; const tb = +r.tbar || 0; o.bars += tb; if (!tb) o.noCount++; if (r.ctypeBy){ o.nField++; o.barsField += (r.tbarBy ? tb : 0); } });
+  console.log('TARD · مخيمات «ترددي» في سجلات المسح: ' + Object.keys(Z).map(z => z + ' = ' + Z[z].n + ' مخيم (' + Z[z].nField + ' بختم الميدان) · بوابات ' + Z[z].bars + ' (' + Z[z].barsField + ' بختم الميدان) · بلا عدد ' + Z[z].noCount).join(' | '));
+} catch (e){ console.log('TARD · ? ' + String(e.message || e).slice(0, 120)); }
 process.exit(0);
