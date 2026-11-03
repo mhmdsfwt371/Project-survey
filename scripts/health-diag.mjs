@@ -86,6 +86,10 @@ if (process.env.EV){
     const L = Object.keys(G).sort((a, b) => G[b].n - G[a].n);
     console.log('EV · أحداث ١٤ يومًا: ' + sn.size + ' · أشكال: ' + L.length);
     L.slice(0, 90).forEach(k => console.log('EVK · ' + G[k].n + ' · site ' + G[k].site + ' · ' + k + ' · مثال: ' + G[k].ex));
+    const N2 = {}; sn.forEach(d => { const e = d.data() || {}; const w = String(e.what || ''); if (!/^إشعار/.test(w)) return; const parts = w.split(/\s[\u2014\u2013-]\s/); const k = (parts[1] || '').split(/\s\u00b7\s/)[0].replace(/[0-9\u0660-\u0669]+/g, '#').slice(0, 40); const g = N2[k] = N2[k] || { n:0, ex:'' }; g.n++; if (!g.ex) g.ex = w.slice(0, 150); });
+    Object.keys(N2).sort((a, b) => N2[b].n - N2[a].n).slice(0, 22).forEach(k => console.log('EVN · ' + N2[k].n + ' · ' + k + ' · مثال: ' + N2[k].ex));
+    const T = {}; sn.forEach(d => { const e = d.data() || {}; const w = String(e.what || ''); const k = (w.split(/\s[\u2014\u2013-]\s/)[0] || w).replace(/[0-9\u0660-\u0669]+/g, '#').slice(0, 30); if (!/^(مسح موقع|تحريك موقع|تعديلُ مسح|موقع جديد|رفع صورة|إشعار)$/.test(k)) return; const by = e.by || '?'; T[k + ' ← ' + by] = (T[k + ' ← ' + by] || 0) + 1; });
+    console.log('EVT · ' + Object.keys(T).sort((a, b) => T[b] - T[a]).slice(0, 30).map(k => k + '=' + T[k]).join(' | '));
     const people = {}; sn.forEach(d => { const e = d.data() || {}; people[e.by || '?'] = (people[e.by || '?'] || 0) + 1; });
     console.log('EVP · ' + Object.keys(people).sort((a, b) => people[b] - people[a]).slice(0, 25).map(k => k + '=' + people[k]).join(' | '));
   } catch (e){ console.log('EV · ? ' + String(e.message || e).slice(0, 160)); }
