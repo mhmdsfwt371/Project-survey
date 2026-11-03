@@ -69,6 +69,9 @@ try {
   const Z = {};
   qs.forEach(doc => { const r = doc.data() || {}; if (r.deleted) return; const z = ({ MIN:'منى', ARF:'عرفات', MUZ:'المزدلفة', JAM:'الجمرات' })[(doc.id.split('-')[1] || '')] || (r.zone || doc.id.slice(0, 8));   /* the record has no zone; the id's second segment names the holy site */ const o = Z[z] = Z[z] || { n:0, nField:0, bars:0, barsField:0, noCount:0 };
     o.n++; const tb = +r.tbar || 0; o.bars += tb; if (!tb) o.noCount++; if (r.ctypeBy){ o.nField++; o.barsField += (r.tbarBy ? tb : 0); } });
+  const by = {}, U = {}; (await db.collection('users').get()).forEach(d => { const u = d.data() || {}; if (u.name) U[u.name] = u.role || ''; });
+  qs.forEach(doc => { const r = doc.data() || {}; if (r.deleted) return; const k = (r.by || '—') + ' [' + (U[r.by] || '?') + ']' + (r.ctypeBy ? ' ✓ختم' : ''); by[k] = (by[k] || 0) + 1; });
+  console.log('TARD · من سجّلها: ' + Object.keys(by).map(k => k + ' = ' + by[k]).join(' · '));
   console.log('TARD · مخيمات «ترددي» في سجلات المسح: ' + Object.keys(Z).map(z => z + ' = ' + Z[z].n + ' مخيم (' + Z[z].nField + ' بختم الميدان) · بوابات ' + Z[z].bars + ' (' + Z[z].barsField + ' بختم الميدان) · بلا عدد ' + Z[z].noCount).join(' | '));
 } catch (e){ console.log('TARD · ? ' + String(e.message || e).slice(0, 120)); }
 process.exit(0);
