@@ -15,6 +15,10 @@ on:
         description: الإضافاتُ اليدوية في ٤٨ ساعة (اكتب 1)
         required: false
         type: string
+      ev:
+        description: أشكالُ الأحداث في آخر ١٤ يومًا بأعدادها (اكتب 1)
+        required: false
+        type: string
   push:
     branches: [staging]
     paths: ['.github/workflows/health-diag.yml', 'scripts/health-diag.mjs']
@@ -44,4 +48,5 @@ jobs:
           Q: ${{ inputs.q }}
           OUT: ${{ inputs.out }}
           NEW: ${{ inputs.new }}
+          EV: ${{ inputs.ev }}
         run: node scripts/health-diag.mjs

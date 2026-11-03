@@ -74,4 +74,20 @@ try {
   console.log('TARD · من سجّلها: ' + Object.keys(by).map(k => k + ' = ' + by[k]).join(' · '));
   console.log('TARD · مخيمات «ترددي» في سجلات المسح: ' + Object.keys(Z).map(z => z + ' = ' + Z[z].n + ' مخيم (' + Z[z].nField + ' بختم الميدان) · بوابات ' + Z[z].bars + ' (' + Z[z].barsField + ' بختم الميدان) · بلا عدد ' + Z[z].noCount).join(' | '));
 } catch (e){ console.log('TARD · ? ' + String(e.message || e).slice(0, 120)); }
+/* (V44.0) the shapes of the audit-log events in the last 14 days — to build the activity report's classifier on real texts.
+   Grouped by the text up to its first « — » (the action), with a count, the share carrying a site id, who wrote them and an example. */
+if (process.env.EV){
+  try {
+    const since = Date.now() - 14 * 864e5;
+    const sn = await db.collection('events').where('ts', '>=', since).get();
+    const G = {}, W = {};
+    sn.forEach(d => { const e = d.data() || {}; const w = String(e.what || ''); const k = (w.split(/\s[\u2014\u2013-]\s/)[0] || w).replace(/[0-9\u0660-\u0669]+/g, '#').slice(0, 48);
+      const g = G[k] = G[k] || { n:0, site:0, ex:'' , by:{} }; g.n++; if (e.site) g.site++; if (!g.ex) g.ex = w.slice(0, 110); const b = e.by || '?'; g.by[b] = (g.by[b] || 0) + 1; });
+    const L = Object.keys(G).sort((a, b) => G[b].n - G[a].n);
+    console.log('EV · أحداث ١٤ يومًا: ' + sn.size + ' · أشكال: ' + L.length);
+    L.slice(0, 90).forEach(k => console.log('EVK · ' + G[k].n + ' · site ' + G[k].site + ' · ' + k + ' · مثال: ' + G[k].ex));
+    const people = {}; sn.forEach(d => { const e = d.data() || {}; people[e.by || '?'] = (people[e.by || '?'] || 0) + 1; });
+    console.log('EVP · ' + Object.keys(people).sort((a, b) => people[b] - people[a]).slice(0, 25).map(k => k + '=' + people[k]).join(' | '));
+  } catch (e){ console.log('EV · ? ' + String(e.message || e).slice(0, 160)); }
+}
 process.exit(0);
