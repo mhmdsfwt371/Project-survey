@@ -6,7 +6,7 @@
              all in «متابعة الوزارة ← اعتمادات إدارة التفويج». Every corridor point's card says WHY the point is there: for Mina,
              its place in the tafweej management's 1447 file (PV.TAF1447) or that it completes those paths this season; for
              Arafat, the paths to Namirah Mosque, Jabal al-Rahma and the train, with the purpose chosen per point.
-   DEFINES : PV.TAF_METHOD, PV.TAF_SPECS, tafSpecsHtml, PV.TAF_STAGE, tafStage, tafCats, tafStageBar, tafCatDash, tafCatXlsx, tafSave, tafSites, tafCrit, tafCritHtml, tafPopHtml, tafDash, tafXlsx, tafLayerToggle, tafLayerSync, clickTafweej
+   DEFINES : PV.TAF_DOCS, PV.TAF_METHOD, PV.TAF_SPECS, tafSpecsHtml, PV.TAF_STAGE, tafStage, tafCats, tafStageBar, tafCatDash, tafCatXlsx, tafSave, tafSites, tafCrit, tafCritHtml, tafPopHtml, tafDash, tafXlsx, tafLayerToggle, tafLayerSync, clickTafweej
    NOTE    : The scope, the decision and the gate are in core (03-survey-records-05: PV.TAF_SCOPE, tafInScope, tafOf,
              tafDecision, tafMay, minState). Decisions live in settings/tafappr (one live document).
    ============================================================================ */
@@ -313,19 +313,30 @@ PV.TAF_METHOD = [
   'لكلِّ نقطةٍ اسمٌ خاصٌّ بها يظهر في بطاقتها وفي القوائم والتصدير.'
 ];
 PV.TAF_SPECS = [
-  ['قارئ نقاط الممرات', 'SRSRU8-16', 'Path_Reader.pdf', ['٨ منافذ هوائي · شريحة Impinj E710', 'حتى ٨٠٠ بطاقة في الثانية', 'قدرة بث حتى ٣٣ ديسيبل ملّي واط قابلة للضبط', 'مسافة القراءة حتى ٢٥ مترًا بحسب الهوائي والبطاقة', 'حماية IP65 · تغذية ١٢ فولت']],
+  ['قارئ نقاط الممرات والجمرات', 'SRSRU8-16', 'Path_Reader.pdf', ['٨ منافذ هوائي · شريحة Impinj E710', 'حتى ٨٠٠ بطاقة في الثانية', 'قدرة بث حتى ٣٣ ديسيبل ملّي واط قابلة للضبط', 'مسافة القراءة حتى ٢٥ مترًا بحسب الهوائي والبطاقة', 'حماية IP65 · تغذية ١٢ فولت']],
   ['هوائي نقاط الممرات', 'SRRA12-01', 'Path_Antenna.pdf', ['كسب ١٢ ديسيبل', 'عرض الحزمة ٤٠° أفقيًّا و٤٠° رأسيًّا', 'حماية IP67']],
   ['كاميرا نقاط الممرات', 'MS-C8266-X4RIPG1', 'Path_Cam.pdf', ['دقة 4K (3840×2160) · مستشعر 1/1.8″', 'عدُّ الأشخاص في حتى ٤ مناطق وعدُّ عبور الخط', 'حماية IP67 وIK10']],
   ['قارئ المخيمات', 'SRREU6-04', 'Tent_Reader.pdf', ['٤ منافذ هوائي', 'حتى ٤٠٠ بطاقة في الثانية', 'قدرة بث حتى ٣٣ ديسيبل ملّي واط قابلة للضبط', 'مسافة القراءة حتى ٢٥ مترًا بحسب الهوائي والبطاقة', 'حماية IP53']],
   ['هوائي المخيمات', 'SRRA9-01', 'Tent_Antenna.pdf', ['كسب ٩ ديسيبل', 'عرض الحزمة ٦٠° أفقيًّا و٥٥° رأسيًّا', 'حماية IP67']],
-  ['كاميرا المخيمات', 'MS-C2963 / C5363 / C8163-PE', 'Tent_CAM.pdf', ['ميني بوليت بدقة 2 أو 5 ميجابكسل أو 4K', 'عدُّ العابرين للخط · رؤيةٌ ليلية حتى ٥٠ مترًا', 'حماية IP67 وIK10']],
-  ['كاميرا تتبّع بزوم', 'MS-C8267-X20PE', 'PTZ_Cam.pdf', ['تحريكٌ وإمالةٌ وزوم بصري مع تتبّعٍ تلقائي', 'رؤيةٌ ليلية حتى ١٨٠ مترًا', 'حماية IP66']],
+  ['كاميرا المخيمات', 'MS-C8163-PE', 'Tent_CAM.pdf', ['ميني بوليت بدقة 4K (3840×2160)', 'عدُّ العابرين للخط · رؤيةٌ ليلية حتى ٥٠ مترًا', 'حماية IP67 وIK10']],
+  ['كاميرا الجمرات', 'MS-C8267-X20PE', 'PTZ_Cam.pdf', ['تحريكٌ وإمالةٌ وزوم بصري مع تتبّعٍ تلقائي', 'رؤيةٌ ليلية حتى ١٨٠ مترًا', 'حماية IP66']],
   ['الراوتر', 'UR35', 'Router_UR35.pdf', ['اتصال 4G LTE بشريحتين احتياطيتين', '٥ منافذ إيثرنت وواي فاي', 'أنفاقٌ آمنة VPN']],
   ['بوابة المستشعرات', 'UG65', 'Gateway_UG65.pdf', ['بوابة LoRaWAN بثماني قنوات', 'مدى حتى ١٥ كم في خط النظر ونحو ٢ كم في المناطق العمرانية', 'حماية IP65']],
   ['مستشعر الحرارة والرطوبة', 'EM300-TH', 'Temp_Hum_sensor.pdf', ['يقيس من −٣٠ إلى ٧٠ درجة مئوية والرطوبة من ٠ إلى ١٠٠٪', 'دقةُ الرطوبة ±٣٪ · اتصال LoRaWAN', 'بطارية ٤٠٠٠ ملّي أمبير قابلة للاستبدال · حماية IP67']]
 ];
+/* (V44.9) owner: «ملف نطاق العمل وملف دليل إدارة التفويج يتضافوا على المنصة، واللي يدخل باليوزر بتاعه ينزّلهم زي المواصفات الفنية» */
+PV.TAF_DOCS = [
+  ['نطاق العمل الفني لنقاط الممرات', 'Scope_Corridor_Points_1448.pdf', 'طريقة عمل النقطة ونطاق تغطيتها، والأجهزة ومواصفاتها وأعدادها، واتجاه الحركة، وملف المواقع'],
+  ['دليل المستخدم — إدارة التفويج', 'Guide_Tafweej_1448.pdf', 'الاعتماد والرفض من الخريطة، وإضافة النقاط، ولوحة الاعتمادات والتصنيف — بالصور']
+];
 function tafSpecsHtml(){
-  return '<div class="card" style="margin:0 0 10px"><h4 style="margin:0 0 8px">\u{1F4D0} ' + esc(t('طريقة عمل نقطة الممر')) + '</h4>'
+  return '<div class="card" style="margin:0 0 10px"><h4 style="margin:0 0 8px">\u{1F4DA} ' + esc(t('ملفات إدارة التفويج')) + '</h4>'
+    + PV.TAF_DOCS.map(function(d){
+        return '<div style="border-top:1px solid var(--line, #e2e2e2);padding:8px 0;display:flex;gap:10px;flex-wrap:wrap;align-items:center">'
+          + '<div style="flex:1 1 220px;min-width:0"><b>' + esc(t(d[0])) + '</b><div class="hint" style="margin:2px 0 0">' + esc(t(d[2])) + '</div></div>'
+          + '<a class="btn btn-secondary btn-sm" href="specs/' + encodeURIComponent(d[1]) + '" target="_blank" rel="noopener">\u2B07 ' + esc(t('تنزيل')) + '</a></div>';
+      }).join('') + '</div>'
+    + '<div class="card" style="margin:0 0 10px"><h4 style="margin:0 0 8px">\u{1F4D0} ' + esc(t('طريقة عمل نقطة الممر')) + '</h4>'
     + PV.TAF_METHOD.map(function(l){ return '<p style="margin:0 0 6px;line-height:1.7">\u2022 ' + esc(t(l)) + '</p>'; }).join('') + '</div>'
     + '<div class="card" style="margin:0 0 10px"><h4 style="margin:0 0 8px">\u{1F4C4} ' + esc(t('المواصفات الفنية للأجهزة')) + '</h4>'
     + PV.TAF_SPECS.map(function(d){
