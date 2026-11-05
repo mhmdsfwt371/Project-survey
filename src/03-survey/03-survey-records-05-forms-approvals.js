@@ -99,10 +99,15 @@ function svReview(r){
    outside approval any more. Old ministry approvals still count as approvals. */
 PV.TAF_SCOPE = { zones:{ 'منى':1, 'عرفات':1 }, types:{ 'ممر':1, 'جسر':1 } };   /* (V44.3) owner: «الكباري نقطة ممر برضه» — in Mina and Arafat only; the Jamarat facility's 28 «جسر» entrances stay out */
 PV.TAF_WHY = ['لا حاجة إليها', 'مكانها غير صحيح', 'مكرَّرة', 'سببٌ آخر'];
-function tafInScope(id){
-  var x = typeof siteFind === 'function' ? siteFind(id) : null;
-  return !!(x && PV.TAF_SCOPE.zones[x.zone] && PV.TAF_SCOPE.types[x.type]);
+/* (V44.5) the Jamarat facility's entrances are «جسر» points whose zone reads «منى» — they are not corridors and never in scope.
+   V44.3 added «جسر» to the scope and so pulled them in; they are kept out by their id (NSK-JMR-…) and by their holy-site group. */
+function tafScopeOk(x){
+  if (!x || !PV.TAF_SCOPE.zones[x.zone] || !PV.TAF_SCOPE.types[x.type]) return false;
+  if (/^NSK-JMR-/.test(String(x.id || ''))) return false;
+  var g = typeof taxOf === 'function' ? (taxOf(x) || {}).g : '';
+  return g !== 'الجمرات';
 }
+function tafInScope(id){ return tafScopeOk(typeof siteFind === 'function' ? siteFind(id) : null); }
 function tafOf(id){ return ((STATE.taf || {})[id]) || null; }
 function tafDecision(id){ var o = tafOf(id); return o && (o.d === 'ok' || o.d === 'no') ? o.d : ''; }
 function tafMay(){ var r = effRole(ROLE); return may('tafapprove') || r === 'tafweej' || rankOf(r) >= rankOf('engineer'); }

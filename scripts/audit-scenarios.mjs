@@ -2919,12 +2919,13 @@ console.log('\n══ ١٢٩ · اعتماد إدارة التفويج — نق�
   w.confirm = () => true; w.STATE.taf = {};
   const S = w.STATE.sites, P = w.PV.TAF1447;
   const minaDone = S.find(x => x.zone === 'منى' && x.type === 'ممر' && P.m[x.id] && P.m[x.id][1] === 'd');
-  const minaNew  = S.find(x => x.zone === 'منى' && x.type === 'ممر' && !P.m[x.id]);
+  const minaNew  = S.find(x => x.zone === 'منى' && x.type === 'ممر' && !P.m[x.id] && x.work !== 'إعادة تركيب ١٤٤٧');
   const arf = S.find(x => x.zone === 'عرفات' && x.type === 'ممر'), arf2 = S.filter(x => x.zone === 'عرفات' && x.type === 'ممر')[1];
   const camp = S.find(x => x.zone === 'منى' && x.type === 'مخيم');
   T(!!(minaDone && minaNew && arf && arf2 && camp) && w.ROLES.tafweej && w.rankOf('tafweej') < w.rankOf('engineer') && w.rankOf('tafweej') > w.rankOf('supervisor'), 'الدور «إدارة التفويج» تحت المهندس وفوق المشرف');
   T(w.tafInScope(arf.id) && w.tafInScope(minaDone.id) && !w.tafInScope(camp.id), 'النطاق: ممرات منى وعرفات — لا المخيمات');
-  const jmr = S.find(x => x.type === 'جسر' && x.zone === 'الجمرات');
+  const jmrs = S.filter(x => /^NSK-JMR-/.test(x.id)), jmr = jmrs[0];
+  T(jmrs.length > 0 && jmrs.every(x => !w.tafInScope(x.id)), '(V44.5) مداخلُ منشأة الجمرات (' + jmrs.length + ') خارج النطاق — وإن قرأت منطقتُها «منى»');
   T(w.PV.TAF_SCOPE.types['جسر'] && (!jmr || !w.tafInScope(jmr.id)) && w.tafCrit(arf).lines.some(l => /الذهاب إلى جبل الرحمة والدخول إليه/.test(l[1])), '(V44.3) الكباري في منى وعرفات من النطاق ومداخلُ منشأة الجمرات لا، وبطاقةُ كلِّ ممرٍّ في عرفات تقول: الدراسةُ على الذهاب إلى جبل الرحمة والدخول إليه');
   T(Object.keys(P.m).length === 63 && P.pts.length === 106 && Object.values(P.m).filter(m => m[1] === 'd').length === 43, 'ملف ١٤٤٧: ١٠٦ نقاط، ٦٣ تطابقًا مع ممرات منى، والمركَّبةُ الثلاث والأربعون كلُّها مطابقة');
   /* the gate: a technically approved corridor waits for the tafweej management; a camp needs no outside approval */
@@ -2982,7 +2983,9 @@ console.log('\n══ ١٣٠ · تصنيف نقاط الممرات — ملف ١
   T(w.rolesICanMake().indexOf('tafweej') > -1, 'والدورُ نفسُه في قائمة الأدوار');
   const CS = w.tafCats(), byK = Object.fromEntries(CS.map(c => [c.k, c]));
   const P = w.PV.TAF1447, matched = Object.keys(P.m).length;
-  T(byK.done.L.length === 43 && byK.done.L.every(q => q.f === 'd'), 'تمّ في ١٤٤٧: ٤٣ نقطة — كلُّها «تم إنجازه» في الملف');
+  const shu = byK.done.L.find(q => /Shuaibin/.test(q.x.name || ''));
+  T(byK.done.L.length === 44 && byK.done.L.filter(q => q.f === 'd').length === 43 && shu && !shu.n, '(V44.5) رُكّبت في ١٤٤٧: ٤٤ نقطة — ٤٣ منها في ملف إدارة التفويج، ونقطةُ نفق الشعيبين من سجلّ التركيب');
+  T(/رُكّبت في موسم ١٤٤٧ وفق سجلّ التركيب/.test(w.tafCrit(shu.x).lines.map(l => l[1]).join(' ')), 'ومعيارُ نقطة الشعيبين يقول ذلك صراحةً');
   T(byK.left.L.length === matched - 43 && byK.left.orphan.length === P.pts.filter(p => p[1] !== 'd').length - (matched - 43), 'بقي من الملف: ' + byK.left.L.length + ' نقطةً في النظام + ' + byK.left.orphan.length + ' بلا نقطةٍ بعد');
   T(byK.add.L.every(q => !P.m[q.x.id] && q.x.zone === 'منى') && byK.arf.L.every(q => q.x.zone === 'عرفات') && byK.add.L.length + byK.done.L.length + byK.left.L.length + byK.arf.L.length === w.tafSites('').length, 'إضافاتُ المسح ١٤٤٨ ليست في الملف، وعرفات وحدها، والمجموعُ كلُّ نقاط النطاق');
   /* live: a stage that changes on the map changes here */
@@ -2995,7 +2998,7 @@ console.log('\n══ ١٣٠ · تصنيف نقاط الممرات — ملف ١
   T(w.tabsOf('mfu').some(x => x[0] === 'mtafcat'), 'الوزارةُ ترى «تصنيف نقاط الممرات» بجانب «اعتمادات إدارة التفويج»');
   w.PV.TAF_CAT = 'left';
   const h = w.tafCatDash();
-  T(/تمّ في موسم ١٤٤٧/.test(h) && /يُنفَّذ هذا الموسم/.test(h) && /المسح الميداني ١٤٤٨/.test(h) && /جبل الرحمة/.test(h) && /ليس لها نقطةٌ في النظام بعد/.test(h), 'الصفحة: الأقسامُ الأربعة، ونقاطُ الملف التي بلا نقطةٍ بعد');
+  T(/رُكّبت في موسم ١٤٤٧/.test(h) && /يُنفَّذ هذا الموسم/.test(h) && /المسح الميداني ١٤٤٨/.test(h) && /جبل الرحمة/.test(h) && /ليس لها نقطةٌ في النظام بعد/.test(h), 'الصفحة: الأقسامُ الأربعة، ونقاطُ الملف التي بلا نقطةٍ بعد');
   T(!/data-tafadd/.test(h), 'والوزارةُ لا ترى «أضفها نقطة»');
   w.ROLE = 'tafweej'; w.STATE.meta.role = 'tafweej';
   T(/data-tafadd/.test(w.tafCatDash()), 'وإدارةُ التفويج تراه');

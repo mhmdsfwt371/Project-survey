@@ -31,7 +31,7 @@ function tafSave(id, d, why, note, extra){
 }
 /* the points in scope, each with its decision */
 function tafSites(zone){
-  return (STATE.sites || []).filter(function(x){ return x && PV.TAF_SCOPE.zones[x.zone] && PV.TAF_SCOPE.types[x.type] && (!zone || x.zone === zone); })
+  return (STATE.sites || []).filter(function(x){ return tafScopeOk(x) && (!zone || x.zone === zone); })
     .map(function(x){ return { x:x, o:tafOf(x.id) || {}, d:tafDecision(x.id) }; });
 }
 function tafDist(a, b){ var r = Math.PI / 180, x = (b.lng - a.lng) * r * Math.cos(a.lat * r), y = (b.lat - a.lat) * r; return 6371000 * Math.sqrt(x * x + y * y); }
@@ -40,14 +40,17 @@ function tafDist(a, b){ var r = Math.PI / 180, x = (b.lng - a.lng) * r * Math.co
 function tafCrit(x){
   if (!x || !PV.TAF_SCOPE.types[x.type]) return null;
   var P = PV.TAF1447 || { pts:[], m:{}, f:{} }, o = tafOf(x.id) || {}, L = [];
-  var near = 0; (STATE.sites || []).forEach(function(y){ if (y !== x && y.zone === x.zone && PV.TAF_SCOPE.types[y.type] && +y.lat){ var dd = tafDist({ lat:+x.lat, lng:+x.lng }, { lat:+y.lat, lng:+y.lng }); if (!near || dd < near) near = dd; } });
+  var near = 0; (STATE.sites || []).forEach(function(y){ if (y !== x && y.zone === x.zone && tafScopeOk(y) && +y.lat){ var dd = tafDist({ lat:+x.lat, lng:+x.lng }, { lat:+y.lat, lng:+y.lng }); if (!near || dd < near) near = dd; } });
   var path = (/Path-([A-Za-z0-9_]+?)(?:-\d+[A-Z]?)?$/.exec(String(x.name || '')) || [])[1];
   if (x.zone === 'منى'){
     var m = P.m[x.id], cat;
+    var re47 = x.work === 'إعادة تركيب ١٤٤٧';
     if (m) cat = m[1] === 'd' ? 'ممرات منى — إعادة تركيب من ملف إدارة التفويج ١٤٤٧' : m[1] === 's' ? 'ممرات منى — من ملف إدارة التفويج ١٤٤٧ (كانت مجدولة للتركيب)' : 'ممرات منى — من ملف إدارة التفويج ١٤٤٧ (لم يكن لها مكانُ تثبيت)';
+    else if (re47) cat = 'ممرات منى — إعادة تركيب: رُكّبت في موسم ١٤٤٧';
     else cat = 'ممرات منى — نقطة إكمالٍ جديدة لموسم ١٤٤٨';
     L.push(['المصدر', P.src]);
     if (m) L.push(['في الملف', t('النقطة رقم') + ' ' + m[0] + ' \u00b7 ' + t(P.f[m[1]]) + ' \u00b7 ' + t('على بعد') + ' ' + nm(m[2]) + ' ' + t('م')]);
+    else if (re47) L.push(['في الملف', t('رُكّبت في موسم ١٤٤٧ وفق سجلّ التركيب — وليست ضمن نقاط ملف إدارة التفويج')]);
     else {
       var nk = 0, nn = ''; P.pts.forEach(function(q){ var dd = tafDist({ lat:+x.lat, lng:+x.lng }, { lat:q[2], lng:q[3] }); if (!nk || dd < nk){ nk = dd; nn = q[0]; } });
       L.push(['في الملف', t('ليست في ملف ١٤٤٧ — أُضيفت لإكمال تغطية مسارات الملف ورفع دقة البيانات') + (nk ? ' \u00b7 ' + t('أقربُ نقطةٍ في الملف') + ' ' + nn + ' ' + t('على بعد') + ' ' + nm(Math.round(nk)) + ' ' + t('م') : '')]);
@@ -232,12 +235,16 @@ function tafCats(){
   tafSites('').forEach(function(q){
     var x = q.x, m = P.m[x.id];
     if (x.zone === 'عرفات'){ D.push(q); return; }
-    if (m){ used[m[0]] = 1; (m[1] === 'd' ? A : B).push(Object.assign({ n:m[0], f:m[1] }, q)); }
+    if (m) used[m[0]] = 1;
+    /* (V44.5) owner: «عندك النقاط اللي اتركبت في ١٤٤٧ — ٤٤، منهم واحدة في ممر الشعيبين». The registry's «إعادة تركيب ١٤٤٧» is the
+       record of what was installed (44); the file holds 43 of them — the Al-Shuaibin tunnel point is not in it. */
+    if (x.work === 'إعادة تركيب ١٤٤٧' || (m && m[1] === 'd')) A.push(Object.assign({ n:m ? m[0] : '', f:m ? m[1] : '' }, q));
+    else if (m) B.push(Object.assign({ n:m[0], f:m[1] }, q));
     else C.push(q);
   });
   var orphan = P.pts.filter(function(p){ return p[1] !== 'd' && !used[p[0]]; });   /* file points with no point in the system yet */
   return [
-    { k:'done',  n:'تمّ في موسم ١٤٤٧ — من ملف إدارة التفويج',                     L:A, orphan:[] },
+    { k:'done',  n:'رُكّبت في موسم ١٤٤٧',                                       L:A, orphan:[] },
     { k:'left',  n:'من ملف ١٤٤٧ ولم يُنجَز — يُنفَّذ هذا الموسم',                  L:B, orphan:orphan },
     { k:'add',   n:'إضافاتٌ بناءً على المسح الميداني ١٤٤٨',                        L:C, orphan:[] },
     { k:'arf',   n:'ممرات عرفات — دراسةُ الذهاب إلى جبل الرحمة والدخول إليه',      L:D, orphan:[] }
