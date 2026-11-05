@@ -6,7 +6,7 @@
              all in «متابعة الوزارة ← اعتمادات إدارة التفويج». Every corridor point's card says WHY the point is there: for Mina,
              its place in the tafweej management's 1447 file (PV.TAF1447) or that it completes those paths this season; for
              Arafat, the paths to Namirah Mosque, Jabal al-Rahma and the train, with the purpose chosen per point.
-   DEFINES : PV.TAF_STAGE, tafStage, tafCats, tafStageBar, tafCatDash, tafCatXlsx, tafSave, tafSites, tafCrit, tafCritHtml, tafPopHtml, tafDash, tafXlsx, tafLayerToggle, tafLayerSync, clickTafweej
+   DEFINES : PV.TAF_METHOD, PV.TAF_SPECS, tafSpecsHtml, PV.TAF_STAGE, tafStage, tafCats, tafStageBar, tafCatDash, tafCatXlsx, tafSave, tafSites, tafCrit, tafCritHtml, tafPopHtml, tafDash, tafXlsx, tafLayerToggle, tafLayerSync, clickTafweej
    NOTE    : The scope, the decision and the gate are in core (03-survey-records-05: PV.TAF_SCOPE, tafInScope, tafOf,
              tafDecision, tafMay, minState). Decisions live in settings/tafappr (one live document).
    ============================================================================ */
@@ -138,7 +138,7 @@ function tafDash(){
     + adds.slice(0, 30).map(function(x){ return '<div class="wt-row" style="justify-content:space-between;border-top:1px solid var(--line, #e2e2e2);padding:5px 0"><span><bdi>' + esc(x.id) + '</bdi> \u00b7 ' + esc(x.name || '') + (x.replOf ? ' \u00b7 ' + esc(t('بديلٌ عن')) + ' ' + esc(x.replOf) : '') + '</span><span class="hint" style="margin:0">' + esc(t((LIFE[lifeOf(x)] || LIFE.todo).n)) + '</span>' + btn('\u{1F4CD}', 'btn-quiet btn-sm', ' data-fly="' + esc(x.id) + '"') + '</div>'; }).join('') + '</div>';
   h += '<div class="actions" style="margin:0 0 10px;gap:8px;flex-wrap:wrap">' + btn('\u2B07 Excel', 'btn-secondary btn-sm', ' data-tafxl="1"')
     + btn((PV.TAF_LAYER ? '\u2713 ' : '') + t('نقاطُ ملف ١٤٤٧ على الخريطة'), 'btn-secondary btn-sm', ' data-taflayer="1"') + '</div>';
-  if (!Z) return h + '<p class="hint">' + esc(t('اضغط مشعرًا لترى بطاقتَه: القوائم وأسباب الرفض.')) + '</p>';
+  if (!Z) return h + '<p class="hint">' + esc(t('اضغط مشعرًا لترى بطاقتَه: القوائم وأسباب الرفض.')) + '</p>' + tafSpecsHtml();   /* (V44.7) */
   /* the holy site's scorecard */
   var S = tafSites(Z), C = cnt(S), reasons = {};
   S.forEach(function(q){ if (q.d === 'no'){ var k = q.o.why || 'سببٌ آخر'; reasons[k] = (reasons[k] || 0) + 1; } });
@@ -159,7 +159,7 @@ function tafDash(){
           + (q.d ? '<div class="hint" style="margin:2px 0 0">' + esc(dispName(q.o.by || '')) + (q.o.at ? ' \u00b7 ' + esc(dayKey(q.o.at)) : '') + '</div>' : '') + '</div>';
       }).join('') : '<p class="hint">' + esc(t('لا نقاط في هذه القائمة')) + '</p>')
     + '</div>';
-  return h;
+  return h + tafSpecsHtml();
 }
 function tafXlsx(){
   var rows = tafSites('').map(function(q){ var c = tafCrit(q.x) || { cat:'', lines:[] }, m = (PV.TAF1447 || { m:{} }).m[q.x.id];
@@ -299,4 +299,39 @@ function tafCatXlsx(){
   });
   logEvent('تصدير تصنيف نقاط الممرات \u2014 ' + rows.length);
   return mtXlsx('تصنيف نقاط الممرات', ['التصنيف', 'الرقم', 'الاسم', 'رقمها في ملف ١٤٤٧', 'حالتها في ملف ١٤٤٧', 'المرحلة الآن', 'اعتماد إدارة التفويج', 'خط العرض', 'خط الطول'], rows);
+}
+
+/* ═══ (V44.7) «المواصفات الفنية» — the corridor point's method and every device with its datasheet ═══
+   Owner (5 Nov): «ضيف الملفات دي في السيستم — الأجهزة والقارئات والكاميرات — عشان طلب الدكتور وسام المواصفات كلها». The method lines are
+   the owner's own statement; each device's lines are read from its datasheet in specs/ (the file opens from here). */
+PV.TAF_METHOD = [
+  'نقطةُ الممر بوابةٌ افتراضية: يحدّد القارئُ وهوائياتُه آخرَ قراءةٍ لبطاقة الحاج عند النقطة، وتعدّ الكاميرا الأشخاصَ في كادرٍ محدَّد فتعطي مؤشّرًا على الكثافة.',
+  'تغطّي النقطةُ عرضًا حتى ١٥ مترًا بستة هوائيات، وعمقًا ٤ أمتار على امتداد الممر.',
+  'في كلِّ نقطةٍ من ٦ إلى ٨ هوائيات بحسب عرض الممر، وتُضبط زاويتُها وارتفاعُها بالتجربة في الموقع ضمن مدى ٣٥ إلى ٧٠ درجة.',
+  'القارئُ والهوائياتُ قابلةٌ للضبط، وتُجرَّب كلُّ نقطةٍ في موقعها، فلا يقع تداخلٌ بين نطاقات النقاط.',
+  'اتجاهُ الحركة: في منى من المخيمات إلى الجمرات كما في موسم ١٤٤٧، ويغطّي موسمُ ١٤٤٨ نقاطَ العودة من الجمرات إلى المخيمات؛ وفي عرفات لم يُحدَّد اتجاهٌ بعد إلى حين ورود معلوماتٍ أخرى.',
+  'لكلِّ نقطةٍ اسمٌ خاصٌّ بها يظهر في بطاقتها وفي القوائم والتصدير.'
+];
+PV.TAF_SPECS = [
+  ['قارئ نقاط الممرات', 'SRSRU8-16', 'Path_Reader.pdf', ['٨ منافذ هوائي · شريحة Impinj E710', 'حتى ٨٠٠ بطاقة في الثانية', 'قدرة بث حتى ٣٣ ديسيبل ملّي واط قابلة للضبط', 'مسافة القراءة حتى ٢٥ مترًا بحسب الهوائي والبطاقة', 'حماية IP65 · تغذية ١٢ فولت']],
+  ['هوائي نقاط الممرات', 'SRRA12-01', 'Path_Antenna.pdf', ['كسب ١٢ ديسيبل', 'عرض الحزمة ٤٠° أفقيًّا و٤٠° رأسيًّا', 'حماية IP67']],
+  ['كاميرا نقاط الممرات', 'MS-C8266-X4RIPG1', 'Path_Cam.pdf', ['دقة 4K (3840×2160) · مستشعر 1/1.8″', 'عدُّ الأشخاص في حتى ٤ مناطق وعدُّ عبور الخط', 'حماية IP67 وIK10']],
+  ['قارئ المخيمات', 'SRREU6-04', 'Tent_Reader.pdf', ['٤ منافذ هوائي', 'حتى ٤٠٠ بطاقة في الثانية', 'قدرة بث حتى ٣٣ ديسيبل ملّي واط قابلة للضبط', 'مسافة القراءة حتى ٢٥ مترًا بحسب الهوائي والبطاقة', 'حماية IP53']],
+  ['هوائي المخيمات', 'SRRA9-01', 'Tent_Antenna.pdf', ['كسب ٩ ديسيبل', 'عرض الحزمة ٦٠° أفقيًّا و٥٥° رأسيًّا', 'حماية IP67']],
+  ['كاميرا المخيمات', 'MS-C2963 / C5363 / C8163-PE', 'Tent_CAM.pdf', ['ميني بوليت بدقة 2 أو 5 ميجابكسل أو 4K', 'عدُّ العابرين للخط · رؤيةٌ ليلية حتى ٥٠ مترًا', 'حماية IP67 وIK10']],
+  ['كاميرا تتبّع بزوم', 'MS-C8267-X20PE', 'PTZ_Cam.pdf', ['تحريكٌ وإمالةٌ وزوم بصري مع تتبّعٍ تلقائي', 'رؤيةٌ ليلية حتى ١٨٠ مترًا', 'حماية IP66']],
+  ['الراوتر', 'UR35', 'Router_UR35.pdf', ['اتصال 4G LTE بشريحتين احتياطيتين', '٥ منافذ إيثرنت وواي فاي', 'أنفاقٌ آمنة VPN']],
+  ['بوابة المستشعرات', 'UG65', 'Gateway_UG65.pdf', ['بوابة LoRaWAN بثماني قنوات', 'مدى حتى ١٥ كم في خط النظر ونحو ٢ كم في المناطق العمرانية', 'حماية IP65']],
+  ['مستشعر الحرارة والرطوبة', 'EM300-TH', 'Temp_Hum_sensor.pdf', ['يقيس من −٣٠ إلى ٧٠ درجة مئوية والرطوبة من ٠ إلى ١٠٠٪', 'دقةُ الرطوبة ±٣٪ · اتصال LoRaWAN', 'بطارية ٤٠٠٠ ملّي أمبير قابلة للاستبدال · حماية IP67']]
+];
+function tafSpecsHtml(){
+  return '<div class="card" style="margin:0 0 10px"><h4 style="margin:0 0 8px">\u{1F4D0} ' + esc(t('طريقة عمل نقطة الممر')) + '</h4>'
+    + PV.TAF_METHOD.map(function(l){ return '<p style="margin:0 0 6px;line-height:1.7">\u2022 ' + esc(t(l)) + '</p>'; }).join('') + '</div>'
+    + '<div class="card" style="margin:0 0 10px"><h4 style="margin:0 0 8px">\u{1F4C4} ' + esc(t('المواصفات الفنية للأجهزة')) + '</h4>'
+    + PV.TAF_SPECS.map(function(d){
+        return '<div style="border-top:1px solid var(--line, #e2e2e2);padding:8px 0;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start">'
+          + '<div style="flex:1 1 220px;min-width:0"><b>' + esc(t(d[0])) + '</b> <span class="hint" style="margin:0"><bdi dir="ltr">' + esc(d[1]) + '</bdi></span>'
+          + d[3].map(function(l){ return '<div class="hint" style="margin:2px 0 0">' + esc(t(l)) + '</div>'; }).join('') + '</div>'
+          + '<a class="btn btn-secondary btn-sm" href="specs/' + encodeURIComponent(d[2]) + '" target="_blank" rel="noopener">\u{1F4C4} ' + esc(t('ملف المواصفات')) + '</a></div>';
+      }).join('') + '</div>';
 }

@@ -3003,6 +3003,8 @@ console.log('\n══ ١٣٠ · تصنيف نقاط الممرات — ملف ١
   T(!/data-tafadd/.test(h), 'والوزارةُ لا ترى «أضفها نقطة»');
   w.ROLE = 'tafweej'; w.STATE.meta.role = 'tafweej';
   T(/data-tafadd/.test(w.tafCatDash()), 'وإدارةُ التفويج تراه');
+  { const sp = w.tafSpecsHtml(), fs = { existsSync };
+    T(w.PV.TAF_SPECS.length === 10 && w.PV.TAF_SPECS.every(d => fs.existsSync('specs/' + d[2])) && /بوابةٌ افتراضية/.test(sp) && /ستة هوائيات/.test(sp) && (sp.match(/href="specs\//g) || []).length === 10, '(V44.7) المواصفاتُ الفنية: طريقةُ عمل نقطة الممر، وعشرةُ أجهزة كلٌّ بملفِّ مواصفاته الموجود في specs/'); }
   let got = null; const mx = w.mtXlsx; w.mtXlsx = (n, hd, rows) => { got = { hd, rows }; return true; };
   w.tafCatXlsx();
   T(got && got.rows.length === w.tafSites('').length + byK.left.orphan.length && got.hd.indexOf('المرحلة الآن') > -1, 'الإكسل: كلُّ النقاط بتصنيفها ومرحلتها، ونقاطُ الملف بلا نقطة');

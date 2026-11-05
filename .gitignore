@@ -18,3 +18,8 @@ test-artifacts/
 data/registry.json
 functions/jobs/
 gate/
+
+# (V44.7) emulator log and npm lock — local tooling, never in the public repository
+firestore-debug.log
+ui-debug.log
+package-lock.json
