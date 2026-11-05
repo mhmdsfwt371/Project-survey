@@ -52,11 +52,11 @@ function aqRepParse(q){
   /* (V38.19) النفيُ كلمةٌ مستقلّة: «لم» داخل «المركّبة» (ا-ل-م-ر-ك-ب) كانت تُقرأ «لم ركب» فتنقلب الشرطُ نفيًا */
   var NEG = '\\s(و)?(ما|مش|لم|غير|بدون|من غير|لسه ما|لسه مش)\\s+';   /* و«ومش» */
   /* الوزارة أولًا — «اعتماد» فيها لا يُحسَب على الاعتماد التقني */
-  if (/الوزاره|وزاره/.test(n)){
-    use(/(بانتظار|منتظره|لسه|اعتمدتها|اعتمدت|معتمده من|ردتها|ردت|مردوده|رفضتها|رفضت)?\s*(اعتماد\s*)?(ال)?وزاره/);
-    if (/(بانتظار|منتظره|لسه)/.test(n)){ use(/بانتظار|منتظره|لسه/); add('min', 'بانتظار الوزارة', function(x){ var r = R(x); return !!r && r.minReview === 'pending'; }); }
-    else if (/(ردت|مردود|رفض)/.test(n)){ use(/ردتها|ردت|مردوده|مردود|رفضتها|رفضت/); add('min', 'ردّتها الوزارة', function(x){ var r = R(x); return !!r && (r.minReview === 'revisit' || r.minReview === 'rejected'); }); }
-    else if (/(اعتمد|معتمد)/.test(n)){ use(/اعتمدتها|اعتمدت|معتمده|معتمد/); add('min', 'اعتمدتها الوزارة', function(x){ var r = R(x); return !!r && r.minReview === 'approved'; }); }
+  if (/الوزاره|وزاره|التفويج|تفويج/.test(n)){   /* (V45.1) QA: «الوزارة» and «التفويج» both mean the tafweej management's decision now */
+    use(/(بانتظار|منتظره|لسه|اعتمدتها|اعتمدت|معتمده من|ردتها|ردت|مردوده|رفضتها|رفضت)?\s*(اعتماد\s*)?(ال)?(وزاره|تفويج)/);
+    if (/(بانتظار|منتظره|لسه)/.test(n)){ use(/بانتظار|منتظره|لسه/); add('min', 'بانتظار اعتماد إدارة التفويج', function(x){ return tafInScope(x.id) && !tafDecision(x.id); }); }
+    else if (/(ردت|مردود|رفض)/.test(n)){ use(/ردتها|ردت|مردوده|مردود|رفضتها|رفضت/); add('min', 'رفضتها إدارة التفويج', function(x){ return tafDecision(x.id) === 'no'; }); }
+    else if (/(اعتمد|معتمد)/.test(n)){ use(/اعتمدتها|اعتمدت|معتمده|معتمد/); add('min', 'اعتمدتها إدارة التفويج', function(x){ return tafDecision(x.id) === 'ok'; }); }
   }
   /* المسح */
   if (new RegExp(NEG + '(اتزار|تزار|اتمسح|تتمسح|زرناها|زيار)').test(n) || /لم تزر|بدون زياره|من غير زياره/.test(n)){
@@ -171,7 +171,7 @@ function aqRepRow(x){
   var r = STATE.recs[x.id], i = STATE.inss[x.id], S = (typeof extStatusRows === 'function' && aqRepRow.sr) || null, s0 = S ? S[x.id] : null;
   var sv = !r ? t('لم تُزَر') : r.access !== 'تم الوصول' ? t('زيارةٌ متعذّرة') : r.review === 'approved' ? t('معتمدة') : r.review === 'revisit' ? t('تحتاج زيارةً أخرى') : t('بانتظار الاعتماد');
   var ins = !i ? t('لم تُركَّب') : i.status === 'مُركّب' ? t('مُركّب') + (i.approved ? ' \u00b7 ' + t('معتمد') : '') : t(i.status || 'مسودّة');
-  var mn = !r || !r.minReview ? '' : r.minReview === 'pending' ? t('بانتظار الوزارة') : r.minReview === 'approved' ? t('اعتمدتها الوزارة') : t('ردّتها الوزارة');
+  var mn = !tafInScope(x.id) ? '' : tafDecision(x.id) === 'ok' ? t('اعتمدتها إدارة التفويج') : tafDecision(x.id) === 'no' ? t('رفضتها إدارة التفويج') : t('بانتظار اعتماد إدارة التفويج');   /* (V45.1) */
   return [x.id, x.name || '', x.zone || '', x.type || '', x.sign || '', sv, ins, mn, s0 ? (s0.code || t('مربوطة')) : '', s0 ? String(s0.ser || '') : '',
           s0 ? (s0.sig === 'on' ? t('ترسل') : s0.sig === 'off' ? t('لا ترسل') : t('بلا قارئ ظاهر')) : '', s0 && s0.ov && s0.pct != null ? s0.pct + '%' : ''];
 }

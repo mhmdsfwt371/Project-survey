@@ -6,13 +6,18 @@
              all in «متابعة الوزارة ← اعتمادات إدارة التفويج». Every corridor point's card says WHY the point is there: for Mina,
              its place in the tafweej management's 1447 file (PV.TAF1447) or that it completes those paths this season; for
              Arafat, the paths to Namirah Mosque, Jabal al-Rahma and the train, with the purpose chosen per point.
-   DEFINES : PV.TAF_DOCS, PV.TAF_METHOD, PV.TAF_SPECS, tafSpecsHtml, PV.TAF_STAGE, tafStage, tafCats, tafStageBar, tafCatDash, tafCatXlsx, tafSave, tafSites, tafCrit, tafCritHtml, tafPopHtml, tafDash, tafXlsx, tafLayerToggle, tafLayerSync, clickTafweej
+   DEFINES : tafPending, PV.TAF_DOCS, PV.TAF_METHOD, PV.TAF_SPECS, tafSpecsHtml, PV.TAF_STAGE, tafStage, tafCats, tafStageBar, tafCatDash, tafCatXlsx, tafSave, tafSites, tafCrit, tafCritHtml, tafPopHtml, tafDash, tafXlsx, tafLayerToggle, tafLayerSync, clickTafweej
    NOTE    : The scope, the decision and the gate are in core (03-survey-records-05: PV.TAF_SCOPE, tafInScope, tafOf,
              tafDecision, tafMay, minState). Decisions live in settings/tafappr (one live document).
    ============================================================================ */
 PV.TAF_PUR = ['مسجد نمرة', 'جبل الرحمة', 'تفويج القطار'];
 PV.TAF_COL = { ok:'#22C55E', no:'#E5484D', '':'#94A3B8' };
 
+/* decisions queued on this device and not uploaded yet (kind cfg, id tafappr) */
+function tafPending(){
+  var it = (STATE.queue || []).filter(function(q){ return q && q.kind === 'cfg' && q.id === 'tafappr'; })[0];
+  return (it && it.v && it.v.m && typeof it.v.m === 'object') ? it.v.m : {};
+}
 function tafSave(id, d, why, note, extra){
   if (!tafMay()){ toast(t('الاعتمادُ لإدارة التفويج والمهندس')); return false; }
   if (!tafInScope(id)){ toast(t('الاعتمادُ لنقاط الممرات في منى وعرفات')); return false; }
@@ -20,10 +25,14 @@ function tafSave(id, d, why, note, extra){
   var prev = tafOf(id) || {}, v = Object.assign({}, prev, extra || {}, { d:d, why:d === 'no' ? (why || '') : '', note:d === 'no' ? String(note || '').trim() : '' });
   if (d !== (prev.d || '') || !prev.by){ v.by = STATE.meta.name || ''; v.at = Date.now(); }   /* who decided and when — a purpose or a note added later keeps the decider */
   STATE.taf = STATE.taf || {}; STATE.taf[id] = v; if (DB.memo) DB.memo.life = null;
+  /* (V45.1) QA: the decision went straight to the database, and offline (or on a dropped request) it showed as saved on the
+     device and never reached anyone — the one write in the app outside the queue. It now goes through the queue like every
+     other write: kept locally, retried, merged on the server; and the queued patch carries every decision still waiting
+     (the queue merges a later write over an earlier one field by field — the nested map would have lost the earlier id). */
   var patch = {}; patch[id] = v;
-  if (typeof FB !== 'undefined' && FB.ready && FB.db) DB.col('settings').doc('tafappr').set({ m:patch, at:Date.now(), _by:STATE.meta.uid || '', _at:Date.now() }, { merge:true })
-    .catch(function(e){ softErr('اعتماد إدارة التفويج', e, t('تعذّر الحفظ — تحقّق من الاتصال')); });
-  else toast(t('لا اتصال — اعتمِد حين يعود الاتصال'));
+  var pend = tafPending(); Object.keys(pend).forEach(function(k){ if (!patch[k]) patch[k] = pend[k]; });
+  CORE.set('cfg', 'tafappr', { m:patch, at:Date.now() });
+  if (typeof FB === 'undefined' || !FB.ready || !FB.db || (typeof navigator !== 'undefined' && navigator.onLine === false)) toast(t('حُفظ على الجهاز — يُرفَع حين يعود الاتصال'));
   var same = extra && d === (prev.d || '');
   logEvent((same ? 'تحديث معيار نقطة' : d === 'ok' ? 'اعتماد إدارة التفويج' : d === 'no' ? 'رفض إدارة التفويج' : 'تراجع عن قرار إدارة التفويج') + ' \u2014 ' + id + (v.why ? ' \u00b7 ' + v.why : '') + (v.note ? ' \u00b7 ' + v.note.slice(0, 120) : ''), id);
   PV.TAF_REJ = ''; render(1);

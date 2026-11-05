@@ -133,7 +133,7 @@ var SHEETS = {
     var out = [['رقم الشاخص / الاسم','النقطة','الاسم','المشعر','المربع','الشاخص','الشركة','المشرف','تاريخ الزيارة','الاعتماد التقني','تاريخه','حالة الوزارة','بواسطة','تاريخه','ملاحظة الوزارة','نوع التركيب','مصدر الكهرباء','العرض المتاح','الارتفاع المتاح','التحديات']];
     surveyList().filter(function(x){ return x.rec && svReview(x.rec) === 'approved'; }).forEach(function(x){ var r = x.rec, ms = minState(r);
       out.push([siteKey(x.site), x.id, x.site.name || '', x.site.zone || '', x.site.sq || '', x.site.sign || '', x.site.co || '', r.by || '', r.at ? dayKey(r.at) : '', r.reviewBy || '', r.reviewAt ? dayKey(r.reviewAt) : '',
-                ms === 'approved' ? 'اعتمدت الوزارة' : (ms === 'returned' ? 'أعادتها الوزارة' : 'بانتظار الوزارة'), r.minBy || '', r.minAt ? dayKey(r.minAt) : '', r.minNote || '',
+                ms === 'approved' ? 'اعتمدتها إدارة التفويج' : (ms === 'returned' ? 'رفضتها إدارة التفويج' : 'بانتظار اعتماد إدارة التفويج'), r.minBy || '', r.minAt ? dayKey(r.minAt) : '', r.minNote || '',
                 r.mount || '', r.power || '', r.wid_m != null ? r.wid_m : '', r.hgt_m != null ? r.hgt_m : '', (r.chals || []).join(' · ')]); });
     return out;
   },

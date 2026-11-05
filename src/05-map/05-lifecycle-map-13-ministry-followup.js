@@ -170,7 +170,7 @@ var SV_LISTS = {
   denied:  ['منع دخول — تنسيق',          function(x, r){ return !!(r && r.access === 'منع دخول'); }],
   missing: ['غير موجودة ميدانيًا — تصحيح السجل', function(x, r){ return !!(r && r.access === 'غير موجود'); }],
   noalloc: ['مخيمات بلا تخصيص',          function(x, r){ return /^مخيمات/.test(taxOf(x).t) && (x.reason === 'عدم وجود تخصيص' || !String(x.co || '').trim()); }],
-  minwait: ['بانتظار اعتماد الوزارة',     function(x, r){ return lifeOf(x) === 'minwait'; }],
+  minwait: ['بانتظار اعتماد إدارة التفويج',     function(x, r){ return lifeOf(x) === 'minwait'; }],
   /* (V37.0) قرارُ المالك: الزيارةُ غيرُ المسح */
   srv:     ['تم المسح',                    function(x, r){ return svDone(r); }],
   srvr:    ['المتبقي — لم يُمسح',          function(x, r){ return !svDone(r); }],

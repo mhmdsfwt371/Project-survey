@@ -3013,6 +3013,41 @@ console.log('\n══ ١٣٠ · تصنيف نقاط الممرات — ملف ١
   w.mtXlsx = mx; w.PV.TAF_CAT = ''; w.STATE.taf = taf0; w.ROLE = role0; w.STATE.meta.role = mr0;
 }
 
+/* ── ١٣١ · (V45.1) QA: قرارُ إدارة التفويج يمرّ بالطابور، ويبقى بلا شبكة، ولا تمحوه قراءةٌ حيّة، ويُبلَّغ المهندسُ به ── */
+console.log('\n══ ١٣١ · قرار إدارة التفويج عبر الطابور — حفظٌ بلا شبكة، وبقاءٌ فوق النسخة الحيّة، وتبليغ ══');
+{
+  const role0 = w.ROLE, mr0 = w.STATE.meta.role, taf0 = w.STATE.taf, q0 = w.STATE.queue.slice(), NS = w.notifStore(), n0 = NS.length;
+  w.STATE.taf = {}; w.STATE.queue = []; w.ROLE = 'tafweej'; w.STATE.meta.role = 'tafweej'; w.STATE.meta.name = 'إدارة التفويج (فحص)';
+  const S = w.STATE.sites, cor = S.filter(x => w.tafInScope(x.id)), a = cor[3].id, b = cor[4].id;
+  w.tafSave(a, 'ok'); w.tafSave(b, 'no', 'مكرَّرة', 'فحص الطابور');
+  const q = w.STATE.queue.filter(x => x.kind === 'cfg' && x.id === 'tafappr');
+  T(q.length === 1 && q[0].v && q[0].v.m && q[0].v.m[a] && q[0].v.m[a].d === 'ok' && q[0].v.m[b] && q[0].v.m[b].d === 'no', 'قراران متتاليان بلا شبكة = كتابةٌ واحدةٌ في الطابور تحمل القرارين (لا يُفقَد الأول)');
+  T(w.FB.colOf('cfg') === 'settings', 'والطابورُ يكتبها في settings/tafappr بدمج');
+  const live = w.FB.live('cfg', Object.assign({}, q[0].v, { _by:'u', _at:1 }));
+  T(Object.keys(live).sort().join(',') === '_at,_by,at,m', 'وحقولُ الوثيقة المرفوعة هي ما تسمح به القاعدة: m · at · _by · _at');
+  T(w.tafPending()[a] && w.tafPending()[b], 'tafPending يرى القرارين المنتظرين');
+  /* a live snapshot that does not hold the local decisions yet must not wipe them */
+  const srv = {}; srv[cor[9].id] = { d:'ok', by:'آخر', at:1 };
+  const before = Object.assign({}, w.STATE.taf); w.STATE.taf = Object.assign({}, srv, w.tafPending());
+  T(w.STATE.taf[a] && w.STATE.taf[b] && w.STATE.taf[cor[9].id], 'النسخةُ الحيّة تُركَّب تحت القرارات المنتظرة لا فوقها');
+  /* the engineer is told of a decision that lands, not his own, and not at first load */
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.STATE.meta.name = 'مهندس الفحص';
+  const nb = NS.length;
+  const fire = (prevM, newM, seen) => { w.STATE.taf = prevM; w.PV.TAF_SEEN = seen; const old = w.STATE.taf; w.STATE.taf = Object.assign({}, newM);
+    if (w.PV.TAF_SEEN && w.may('approve')) Object.keys(w.STATE.taf).forEach(id => { const nw = w.STATE.taf[id] || {}, od = old[id] || {}; if (!nw.d || nw.d === od.d || nw.by === (w.STATE.meta.name || '')) return;
+      if (nw.d === 'no') w.notifPush('رفضتها إدارة التفويج', id, { site:id, lv:'عاجل', actor:nw.by || '', at:nw.at || Date.now() }); else if (nw.d === 'ok') w.notifPush('اعتمدت إدارة التفويج', id, { site:id, lv:'مهم', actor:nw.by || '', at:nw.at || Date.now() }); }); w.PV.TAF_SEEN = 1; };
+  const live2 = String(readFileSync('src/01-core/01-core-registry-06-data-gate-live.js', 'utf8'));
+  T(/PV\.TAF_SEEN && typeof notifPush === 'function'/.test(live2) && /nw\.by === \(STATE\.meta\.name \|\| ''\)/.test(live2) && /CORE\.saveSoon\(\)/.test(live2.slice(live2.indexOf('tafappr'))), 'المُنصتُ الحيّ: يبلّغ بعد أوّل قراءة، لا قرارَ صاحبِه، ويحفظ محلّيًّا');
+  const m1 = {}; m1[a] = { d:'ok', by:'إدارة التفويج', at:2 }; const m2 = {}; m2[a] = { d:'no', why:'مكرَّرة', note:'ن', by:'إدارة التفويج', at:3 };
+  fire({}, m1, 0); T(NS.length === nb, 'أوّلُ قراءةٍ (الرصيد القديم) لا تُطلق تبليغًا');
+  fire(m1, m2, 1); T(NS.length === nb + 1 && /رفضتها إدارة التفويج/.test(JSON.stringify(NS[0])), 'تغيّرُ القرار إلى رفضٍ يبلّغ المهندس');
+  T(String(readFileSync('src/01-core/01-core-registry-05-sync-scale.js', 'utf8')).indexOf('taf:STATE.taf || {}') > -1, 'والقراراتُ تُحفَظ في النسخة المحلّية فتبقى بلا شبكة بعد إعادة الفتح');
+  /* the retired ministry tab is gone for everyone */
+  w.ROLE = 'admin'; w.STATE.meta.role = 'admin';
+  T(!w.tabsOf('survey').some(x => x[0] === 'minappr'), 'تبويبُ «اعتماد الوزارة» القديم لا يظهر حتى لصاحب المشروع');
+  w.STATE.taf = taf0; w.STATE.queue = q0; NS.splice(0, NS.length - n0); w.ROLE = role0; w.STATE.meta.role = mr0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

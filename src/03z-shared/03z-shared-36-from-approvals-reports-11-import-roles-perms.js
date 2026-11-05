@@ -634,6 +634,7 @@ var TAB_SEE = {
 /* ما يراه هذا الدورُ من شرائح الأم — بقواعد الرؤية نفسِها */
 function tabsOf(pid){
   return (TABS[pid] || []).filter(function(tb){
+    if (tb[0] === 'minappr') return false;   /* (V45.1) QA: the ministry approval was retired in V44.2 — its tab hid from the ministry only and still showed to engineers */
     var f = tb[4] && TAB_SEE[tb[4]];
     return f ? f(pid) : seesRaw(tb[0]);
   });

@@ -131,11 +131,11 @@ function aqAnswer(q){
       + (!top.length ? '<p class="hint" style="margin:0">' + esc(t('لا تحدياتِ مسجّلة في هذا النطاق')) + '</p>' : ''), aqGo('التحديات والمعوقات', 'page|mobs'));
   }
   /* ٨ · (V38.15) اعتمادُ الوزارة */
-  if (/الوزاره|اعتماد الوزاره|مراجعه الوزاره|الوزارة/.test(n) && !/تقرير|ملف/.test(n)){
+  if (/الوزاره|اعتماد الوزاره|مراجعه الوزاره|الوزارة|التفويج/.test(n) && !/تقرير|ملف/.test(n)){   /* (V45.1) QA: counts the tafweej management's decisions, not the retired ministry approval */
     var mp = 0, ma = 0, mr = 0;
-    pool.forEach(function(x){ var r = STATE.recs[x.id]; if (!r) return; if (r.minReview === 'pending') mp++; else if (r.minReview === 'approved') ma++; else if (r.minReview === 'revisit' || r.minReview === 'rejected') mr++; });
-    out += aqCard(t('اعتماد الوزارة') + (scopeTxt ? ' \u00b7 ' + scopeTxt : ''), aqRow('بانتظار الوزارة', nm(mp)) + aqRow('اعتمدتها الوزارة', nm(ma)) + aqRow('ردّتها الوزارة', nm(mr)),
-      aqGo('اعتماد الوزارة', 'page|minappr'));
+    pool.forEach(function(x){ if (!tafInScope(x.id)) return; var dd = tafDecision(x.id); if (dd === 'ok') ma++; else if (dd === 'no') mr++; else mp++; });
+    out += aqCard(t('اعتماد إدارة التفويج') + (scopeTxt ? ' \u00b7 ' + scopeTxt : ''), aqRow('بانتظار اعتماد إدارة التفويج', nm(mp)) + aqRow('اعتمدتها إدارة التفويج', nm(ma)) + aqRow('رفضتها إدارة التفويج', nm(mr)),
+      aqGo('اعتمادات إدارة التفويج', 'page|mfu'));
   }
   /* ٩ · (V38.15) الإشغالُ الأعلى من آخر جسر */
   if (/اشغال|زحمه|ازدحام|مليان|ممتلي|ممتلئ|اعلي اشغال/.test(n) && typeof extStatusRows === 'function'){

@@ -178,12 +178,12 @@ function notifOnArrival(kind, id, prev, v){
     else if (rv === 'approved' && pv !== 'approved' && notifConcerns(v))
       notifPush('اعتماد تقني', t('اعتُمدت زيارةُ') + ' ' + id, { to:v.by || '', site:id, lv:'عادي', actor:(v.by || v._byName || who), at:at });
     /* الوزارةُ تُخبَر بما ينتظرها، والمهندسُ بما قرّرته */
-    else if (minState(v) === 'pending' && minState(p) !== 'pending' && may('minapprove') && effRole(ROLE) === 'viewer')
-      notifPush('بانتظار اعتمادكم', id + ' \u2014 ' + t('إعدادُ التركيب بانتظار اعتماد الوزارة'), { site:id, lv:'مهم', actor:(v.by || v._byName || who), at:at });
+    else if (minState(v) === 'pending' && minState(p) !== 'pending' && effRole(ROLE) === 'tafweej')   /* (V45.1) QA: was gated on the ministry's capability, which V44.2 removed — it never fired */
+      notifPush('بانتظار اعتمادكم', id + ' \u2014 ' + t('نقطةُ ممرٍّ اعتُمدت تقنيًّا — بانتظار اعتماد إدارة التفويج'), { site:id, lv:'مهم', actor:(v.by || v._byName || who), at:at });
     else if (minState(v) === 'approved' && minState(p) !== 'approved' && (may('approve') || notifConcerns(v)))
-      notifPush('اعتمدت الوزارة', id + ' \u2014 ' + t('جاهزةٌ للتركيب'), { site:id, lv:'مهم', actor:(v.by || v._byName || who), at:at });
+      notifPush('اعتمدت إدارة التفويج', id + ' \u2014 ' + t('جاهزةٌ للتركيب'), { site:id, lv:'مهم', actor:(v.by || v._byName || who), at:at });
     else if (minState(v) === 'returned' && minState(p) !== 'returned' && may('approve'))
-      notifPush('ردّت الوزارة', id + (v.minNote ? ' \u2014 ' + v.minNote : ''), { site:id, lv:'عاجل', actor:(v.by || v._byName || who), at:at });
+      notifPush('رفضتها إدارة التفويج', id + (v.minNote ? ' \u2014 ' + v.minNote : ''), { site:id, lv:'عاجل', actor:(v.by || v._byName || who), at:at });
     else if (rv === 'revisit' && pv !== 'revisit' && notifConcerns(v))
       notifPush('تحتاج زيارة أخرى', id + (v.revisitNote ? ' \u2014 ' + v.revisitNote : ''), { to:v.by || '', site:id, lv:'عاجل', actor:(v.by || v._byName || who), at:at });
     return;

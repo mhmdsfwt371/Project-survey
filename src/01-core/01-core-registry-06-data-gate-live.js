@@ -212,8 +212,24 @@ function liveSmall(){
   try {
     PV.LIVE_SMALL.push(DB.col('settings').doc('tafappr').onSnapshot(function(doc){
       snapReads(doc);
-      STATE.taf = (doc && doc.exists && (doc.data() || {}).m) || {};
+      var srvM = (doc && doc.exists && (doc.data() || {}).m) || {};
+      /* (V45.1) a decision queued on this device and not uploaded yet stays on top of the server's copy, instead of vanishing
+         from the map until the upload — and the local copy is saved so a reopen without network keeps it */
+      var pend = typeof tafPending === 'function' ? tafPending() : {}, before = STATE.taf || {};
+      STATE.taf = Object.assign({}, srvM, pend);
+      /* (V45.1) QA: nobody was told of a decision — the old notices hung on the visit document, which a decision never touches.
+         The engineer (and whoever approves) hears each approval and rejection as it lands, not their own, and not the backlog at start. */
+      if (PV.TAF_SEEN && typeof notifPush === 'function' && typeof may === 'function' && may('approve')){
+        Object.keys(STATE.taf).forEach(function(id){
+          var nw = STATE.taf[id] || {}, od = before[id] || {};
+          if (!nw.d || nw.d === od.d || nw.by === (STATE.meta.name || '')) return;
+          if (nw.d === 'no') notifPush('رفضتها إدارة التفويج', id + ' \u2014 ' + (nw.why || '') + (nw.note ? ' \u00b7 ' + nw.note : ''), { site:id, lv:'عاجل', actor:nw.by || '', at:nw.at || Date.now() });
+          else if (nw.d === 'ok') notifPush('اعتمدت إدارة التفويج', id + ' \u2014 ' + t('جاهزةٌ للجدولة'), { site:id, lv:'مهم', actor:nw.by || '', at:nw.at || Date.now() });
+        });
+      }
+      PV.TAF_SEEN = 1;
       if (DB.memo) DB.memo.life = null;
+      CORE.saveSoon();
       if (!document.querySelector('#content input:focus, #content textarea:focus') && ['map', 'mfu', 'survey', 'site'].indexOf(CUR) > -1) render(1);
     }, function(e){ softErr('إنصات اعتماد إدارة التفويج', e, ''); }));
   } catch (e){ softErr('إنصات اعتماد إدارة التفويج', e, ''); }

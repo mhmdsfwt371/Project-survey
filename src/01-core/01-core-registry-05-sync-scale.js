@@ -185,6 +185,7 @@ var CORE = {
       notifAt:STATE.meta.notifAt || 0,
       epoch:STATE.meta.epoch || 0,
       wbs:STATE.wbs || null,
+      taf:STATE.taf || {},   /* (V45.1) the tafweej decisions — so a device reopened without network still colours the corridors */
       wtask:STATE.wtask || null,
       trials:STATE.trials || null,
       bugs:STATE.bugs || null
@@ -209,6 +210,7 @@ var CORE = {
       if (v.notifAt) STATE.meta.notifAt = v.notifAt;
       if (v.epoch) STATE.meta.epoch = v.epoch;
       if (v.wbs && Array.isArray(v.wbs.rows)) STATE.wbs = v.wbs;
+      if (v.taf && typeof v.taf === 'object') STATE.taf = v.taf;   /* (V45.1) */
       if (v.wtask && Array.isArray(v.wtask.rows)) STATE.wtask = v.wtask;
       if (v.trials && Array.isArray(v.trials.rows)) STATE.trials = v.trials;
       if (v.bugs && typeof v.bugs === 'object') STATE.bugs = v.bugs;

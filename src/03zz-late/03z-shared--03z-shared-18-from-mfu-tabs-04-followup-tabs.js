@@ -66,7 +66,7 @@ function mtAlertsHtml(){
   var own = 0; mtSites().forEach(function(x){ if (mtGrpOf(x.id) === 'owner' && mtNewWeek(x.id)) own++; });
   if (own) al.push(mtDot(own, 'تحتاج تنسيق مع الجهة المالكة — جديدة هذا الأسبوع', '\u{1F91D}', '#EF4444', mtOpen('sv', 'neww:owner')));
   var appr = 0; mtSites().forEach(function(x){ if (lifeOf(x) === 'minwait') appr++; });
-  if (appr) al.push(mtDot(appr, 'جاهزة لاعتماد الوزارة', '\u2705', '#22C55E', mtOpen('sv', 'life:minwait')));
+  if (appr) al.push(mtDot(appr, 'بانتظار اعتماد إدارة التفويج', '\u2705', '#22C55E', mtOpen('sv', 'life:minwait')));
   if (!al.length) return '';
   return '<div class="card mt-alerts" style="margin:0 0 12px"><div class="card-body"><div style="font-weight:700;margin-bottom:8px">\u{1F514} ' + esc(t('تنبيهات الأسبوع')) + '</div>' + mtGrid(al, 200) + '</div></div>';
 }

@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V45.0",
+  "app_version": "V45.1",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2422,7 +2422,8 @@
   "V44.7": "specs/ holds ten datasheets (Path_Reader, Path_Antenna, Path_Cam, Tent_Reader, Tent_Antenna, Tent_CAM, PTZ_Cam, Router_UR35, Gateway_UG65, Temp_Hum_sensor). PV.TAF_METHOD (the owner's statements) and PV.TAF_SPECS (device, model, file, key lines from each datasheet) render through tafSpecsHtml at the foot of tafDash. .gitignore: firestore-debug.log, ui-debug.log, package-lock.json (the emulator log committed in V44.2 removed).",
   "V44.8": "sw.js: a navigation to a file (pdf, docx, xlsx, pptx, zip, kmz, kml, csv, png, jpg) under /specs/ or /docs/ goes network-first with a cache fallback, and is no longer answered with the app shell (isNav now excludes files). Scenario 130 +1 (static order check).",
   "V44.9": "PV.TAF_DOCS (title, file in specs/, one-line summary) renders first in tafSpecsHtml as a download card; specs/Scope_Corridor_Points_1448.pdf (v1.1) and specs/Guide_Tafweej_1448.pdf (v1.1, screenshots of this build). PV.TAF_SPECS: reader label covers Jamarat, camp camera MS-C8163-PE, PTZ labelled the Jamarat camera. Scenario 130 updated (12 links, both documents exist).",
-  "V45.0": "wfDiagram (06-ministry-alerts-09) renders HTML step cards (.wf-st[data-wfk]) with small SVG arrows instead of an SVG with measured text; visit row: todo → assigned → visited → minwait → ready, plus a minback branch; step list gains the tafweej actor. audit-cycle: order and branch checked, no <svg text>."
+  "V45.0": "wfDiagram (06-ministry-alerts-09) renders HTML step cards (.wf-st[data-wfk]) with small SVG arrows instead of an SVG with measured text; visit row: todo → assigned → visited → minwait → ready, plus a minback branch; step list gains the tafweej actor. audit-cycle: order and branch checked, no <svg text>.",
+  "V45.1": "tafSave → CORE.set('cfg','tafappr',{m,at}) carrying tafPending() (the queue shallow-merges v, the nested map would have dropped the earlier id); live listener overlays tafPending() on the server map, saves locally, and after the first snapshot notifPush-es changed decisions to may('approve') holders (not the decider). STATE.taf persisted in the idb snapshot. Notifications: the waiting notice fires for effRole 'tafweej'. assistant/assistant-reports/approvals-review/docx export/alerts/followup labels read tafDecision/tafInScope. tabsOf hides 'minappr' for all; EXP page list drops it. Scenario 131."
   },
   "map_and_geolocation": {
     "tile_layers": {
