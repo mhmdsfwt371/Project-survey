@@ -1,9 +1,9 @@
 /* Nusuk Survey — offline shell cache */
-const CACHE = 'nusuk-survey-v44.7';
+const CACHE = 'nusuk-survey-v44.8';
 const SHELL = [
   './',
   './index.html',
-  './app-office.js?v=44.7',   /* (V38.39) المجالاتُ المؤجَّلة — تُثبَّت مع الهيكل فتعمل بلا شبكة؛ الرقمُ يُحدَّث مع كلِّ نسخة */
+  './app-office.js?v=44.8',   /* (V38.39) المجالاتُ المؤجَّلة — تُثبَّت مع الهيكل فتعمل بلا شبكة؛ الرقمُ يُحدَّث مع كلِّ نسخة */
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png',
@@ -152,7 +152,22 @@ self.addEventListener('fetch', function (e) {
      يُخدَم من كاش النسخة الحالية فورًا، والجديدُ يصل بدورة العامل نفسِها: sw.js
      شبكةٌ فقط، ورقمُ الكاش يتبدّل، فيُثبَّت الجديدُ ويُنشَّط ويُعاد التحميل
      (مسارُ التحديث في التطبيق وزرُّ النسخة كما هما). وأوّلُ تثبيتٍ يجلب من الشبكة. */
-  const isNav = req.mode === 'navigate' || req.url.indexOf('index.html') !== -1;
+  /* (V44.8) owner: «بعمل داونلود للملف بيفتح البرنامج ويطلع الإيرور» — opening a datasheet (specs/*.pdf) is a navigation, and every
+     navigation was answered with the app shell, so the app booted in place of the file. A navigation to a file (pdf, docx, xlsx…)
+     is not the app: it goes to the network, kept for offline like the docs. */
+  const isFile = /\.(pdf|docx?|xlsx?|pptx?|zip|kmz|kml|csv|png|jpe?g)(\?|#|$)/i.test(req.url.split('#')[0].split('?')[0]);   /* no URL(): the worker's sandbox test has none */
+  if (isFile && (req.url.indexOf('/specs/') !== -1 || req.url.indexOf('/docs/') !== -1)) {
+    e.respondWith(
+      fetch(new Request(req.url, { cache: 'reload' }))
+        .then(function (res) {
+          if (res && res.status === 200) { const copy = res.clone(); caches.open(CACHE).then(function (c) { c.put(req, copy); }); }
+          return res;
+        })
+        .catch(function () { return caches.match(req).then(function (h) { return h || new Response('', { status: 504 }); }); })
+    );
+    return;
+  }
+  const isNav = (req.mode === 'navigate' && !isFile) || req.url.indexOf('index.html') !== -1;
   const isShellPage = isNav || req.url.indexOf('manifest.webmanifest') !== -1;   /* اسم التطبيق وأيقونته */
   if (isShellPage) {
     e.respondWith(

@@ -3004,6 +3004,8 @@ console.log('\n══ ١٣٠ · تصنيف نقاط الممرات — ملف ١
   w.ROLE = 'tafweej'; w.STATE.meta.role = 'tafweej';
   T(/data-tafadd/.test(w.tafCatDash()), 'وإدارةُ التفويج تراه');
   { const sp = w.tafSpecsHtml(), fs = { existsSync };
+    { const sw = readFileSync('sw.js', 'utf8'), iF = sw.indexOf('const isFile'), iN = sw.indexOf('const isNav');
+      T(iF > 0 && iF < iN && /\(req\.mode === 'navigate' && !isFile\)/.test(sw) && /\/specs\//.test(sw.slice(iF, iN)), '(V44.8) فتحُ ملف مواصفاتٍ لا يُجاب بالتطبيق: العاملُ يرسل التنقّلَ إلى ملفٍّ (pdf وغيره) للشبكة، ولا يقدّم له هيكلَ التطبيق'); }
     T(w.PV.TAF_SPECS.length === 10 && w.PV.TAF_SPECS.every(d => fs.existsSync('specs/' + d[2])) && /بوابةٌ افتراضية/.test(sp) && /ستة هوائيات/.test(sp) && (sp.match(/href="specs\//g) || []).length === 10, '(V44.7) المواصفاتُ الفنية: طريقةُ عمل نقطة الممر، وعشرةُ أجهزة كلٌّ بملفِّ مواصفاته الموجود في specs/'); }
   let got = null; const mx = w.mtXlsx; w.mtXlsx = (n, hd, rows) => { got = { hd, rows }; return true; };
   w.tafCatXlsx();
