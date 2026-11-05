@@ -74,11 +74,11 @@ function mkPlace(x, z, r, sun, TOUCH){
   /* ما لم يُزر يُرى على القمر الصناعي (V17.86): حافّةٌ برتقاليةٌ متقطّعة */
   var todoSat = kind === 'poly' && !ring && !picked && MAP_SAT && lifeOf(x) === 'todo';
   var st, rad = picked ? r + 2.5 : r;
-  var r47 = !ring && !picked && kind !== 'poly' && typeof taf47 === 'function' && taf47(x);   /* (V44.6) installed in 1447 from the tafweej file */
+  if (!ring && !picked && kind !== 'poly' && typeof taf47 === 'function' && taf47(x)) ring = PV.TAF47_C;   /* (V44.6) installed in 1447 from the tafweej file: a pink outline, the stage stays the fill */
   if (kind === 'poly') st = { color: todoSat ? '#FFB000' : (ring || col), dashArray: todoSat ? '6 4' : null,
       weight: picked ? 2.4 : (ring ? 2 : (todoSat ? 2 : (z >= 15 ? 1.3 : (z >= 13 ? 1 : 0.8)))),
       fillColor:col, fillOpacity: picked ? 0.55 : (todoSat ? 0.18 : (z >= 15 ? 0.4 : 0.55)) };
-  else st = { color: picked ? '#fff' : (ring || (r47 ? PV.TAF47_C : '#0B1220')), weight: (picked ? 2 : (ring ? 2 : (r47 ? 2.6 : 0.9))) * (sun ? 1.8 : 1),
+  else st = { color: picked ? '#fff' : (ring || '#0B1220'), weight: (picked ? 2 : (ring ? 2 : 0.9)) * (sun ? 1.8 : 1),
       fillColor:col, fillOpacity: picked ? 1 : 0.95 };
   if (kind === 'shape') rad = rad * (shp === 'diamond' ? 1.18 : 1.05);   /* المعيّنُ أوسعُ قليلًا فيُعرَف بشكله */
   var key = kind + '|' + shp + '|' + posK + '|' + z + '|' + rad + '|' + st.color + '|' + st.weight + '|' + st.fillColor + '|' + st.fillOpacity + '|' + (st.dashArray || '');

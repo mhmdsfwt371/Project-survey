@@ -207,7 +207,7 @@ function legendRows(){
   + '<div class="lg-row lg-tot"><span class="lg-n">' + esc(t('في هذا الترشيح')) + '</span>'
   + '<b class="num lg-c">' + nm(TOT) + '</b></div>'
   + (function(){ var n47 = 0; ((typeof layerFiltered === 'function') ? layerFiltered() : []).forEach(function(x){ if (typeof taf47 === 'function' && taf47(x)) n47++; });   /* (V44.6) */
-      return n47 ? '<div class="lg-row"><i class="lg-dot" style="background:transparent;box-shadow:inset 0 0 0 2.5px ' + PV.TAF47_C + '"></i><span class="lg-n">' + esc(t('إطارٌ وردي: رُكّبت في ١٤٤٧ من ملف إدارة التفويج')) + '</span><b class="num lg-c">' + nm(n47) + '</b></div>' : ''; })();
+      return n47 ? '<p class="hint" style="margin:6px 0 0;display:flex;align-items:center;gap:6px"><i style="display:inline-block;width:12px;height:12px;border-radius:50%;box-shadow:inset 0 0 0 2.5px ' + PV.TAF47_C + '"></i>' + esc(t('إطارٌ وردي: رُكّبت في ١٤٤٧ من ملف إدارة التفويج')) + ' \u00b7 ' + nm(n47) + '</p>' : ''; })();   /* a note under the key, not a key row (the rows are the stages and their total) */
   /* (V39.27) the summaries of the mode's records — shown once the mode has at least one */
   var BCx = { 'تمام':0, 'تحدٍّ':0, 'ملاحظة':0 }; ((typeof layerFiltered === 'function') ? layerFiltered() : []).forEach(function(x){ var b0 = briefOf(x.id); if (b0 && BCx[b0.st] !== undefined) BCx[b0.st]++; });
   if (BCx['تمام'] + BCx['تحدٍّ'] + BCx['ملاحظة'] > 0){
