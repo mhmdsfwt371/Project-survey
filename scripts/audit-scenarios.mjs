@@ -2986,6 +2986,7 @@ console.log('\n══ ١٣٠ · تصنيف نقاط الممرات — ملف ١
   const shu = byK.done.L.find(q => /Shuaibin/.test(q.x.name || ''));
   T(byK.done.L.length === 44 && byK.done.L.filter(q => q.f === 'd').length === 43 && shu && !shu.n, '(V44.5) رُكّبت في ١٤٤٧: ٤٤ نقطة — ٤٣ منها في ملف إدارة التفويج، ونقطةُ نفق الشعيبين من سجلّ التركيب');
   T(/رُكّبت في موسم ١٤٤٧ وفق سجلّ التركيب/.test(w.tafCrit(shu.x).lines.map(l => l[1]).join(' ')), 'ومعيارُ نقطة الشعيبين يقول ذلك صراحةً');
+  T(w.STATE.sites.filter(w.taf47).length === 44 && w.taf47(shu.x) && w.PV.TAF47_C && !/الوزارة/.test(w.LIFE.ready.n), '(V44.6) الأربعُ والأربعون تحمل إطارًا ورديًّا على الخريطة (ومعها الشعيبين)، و«جاهزة» لم تعد تذكر الوزارة');
   T(byK.left.L.length === matched - 43 && byK.left.orphan.length === P.pts.filter(p => p[1] !== 'd').length - (matched - 43), 'بقي من الملف: ' + byK.left.L.length + ' نقطةً في النظام + ' + byK.left.orphan.length + ' بلا نقطةٍ بعد');
   T(byK.add.L.every(q => !P.m[q.x.id] && q.x.zone === 'منى') && byK.arf.L.every(q => q.x.zone === 'عرفات') && byK.add.L.length + byK.done.L.length + byK.left.L.length + byK.arf.L.length === w.tafSites('').length, 'إضافاتُ المسح ١٤٤٨ ليست في الملف، وعرفات وحدها، والمجموعُ كلُّ نقاط النطاق');
   /* live: a stage that changes on the map changes here */

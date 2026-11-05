@@ -176,7 +176,7 @@ function tafLayerSync(){
   if (typeof MAP === 'undefined' || !MAP || typeof L === 'undefined') return;
   if (PV.TAF_LG){ try { MAP.removeLayer(PV.TAF_LG); } catch (e){} PV.TAF_LG = null; }
   if (!PV.TAF_LAYER || !PV.TAF1447) return;
-  var col = { d:'#22C55E', s:'#F59E0B', x:'#94A3B8' }, g = L.layerGroup();
+  var col = { d:PV.TAF47_C, s:'#F59E0B', x:'#94A3B8' }, g = L.layerGroup();
   PV.TAF1447.pts.forEach(function(p){
     L.circleMarker([p[2], p[3]], { renderer:MAP_CV, radius:7, color:'#111', weight:1.5, fillColor:col[p[1]], fillOpacity:.95, dashArray:'2,2' })
       .bindTooltip(t('ملف ١٤٤٧') + ' \u00b7 ' + t('النقطة رقم') + ' ' + p[0] + ' \u00b7 ' + t(PV.TAF1447.f[p[1]])).addTo(g);
@@ -244,7 +244,7 @@ function tafCats(){
   });
   var orphan = P.pts.filter(function(p){ return p[1] !== 'd' && !used[p[0]]; });   /* file points with no point in the system yet */
   return [
-    { k:'done',  n:'رُكّبت في موسم ١٤٤٧',                                       L:A, orphan:[] },
+    { k:'done',  n:'رُكّبت في موسم ١٤٤٧ — من نقاط إدارة التفويج',                                       L:A, orphan:[] },
     { k:'left',  n:'من ملف ١٤٤٧ ولم يُنجَز — يُنفَّذ هذا الموسم',                  L:B, orphan:orphan },
     { k:'add',   n:'إضافاتٌ بناءً على المسح الميداني ١٤٤٨',                        L:C, orphan:[] },
     { k:'arf',   n:'ممرات عرفات — دراسةُ الذهاب إلى جبل الرحمة والدخول إليه',      L:D, orphan:[] }
@@ -267,7 +267,7 @@ function tafCatDash(){
     + btn((PV.TAF_LAYER ? '\u2713 ' : '') + t('نقاطُ ملف ١٤٤٧ على الخريطة'), 'btn-secondary btn-sm', ' data-taflayer="1"') + '</div>';
   CS.forEach(function(c){
     var on = open === c.k;
-    h += '<div class="card" style="margin:0 0 10px">'
+    h += '<div class="card" style="margin:0 0 10px' + (c.k === 'done' ? ';border-inline-start:5px solid ' + PV.TAF47_C : '') + '">'
       + '<button type="button" data-tafcat="' + c.k + '" style="display:flex;justify-content:space-between;align-items:baseline;width:100%;background:none;border:0;padding:0;cursor:pointer;color:inherit;text-align:start">'
       + '<b style="font-size:16px">' + esc(t(c.n)) + '</b><span><b style="font-size:20px">' + nm(c.L.length) + '</b>' + (c.orphan.length ? ' <span class="hint" style="margin:0">+ ' + nm(c.orphan.length) + ' ' + esc(t('بلا نقطةٍ في النظام بعد')) + '</span>' : '') + ' ' + (on ? '\u25B4' : '\u25BE') + '</span></button>'
       + '<div style="margin:8px 0 0">' + tafStageBar(c.L) + '</div>';

@@ -108,6 +108,10 @@ function tafScopeOk(x){
   return g !== 'الجمرات';
 }
 function tafInScope(id){ return tafScopeOk(typeof siteFind === 'function' ? siteFind(id) : null); }
+/* (V44.6) owner: «الـ٤٤ (٤٣ + الشعيبين) من النقاط اللي اتبعتت الموسم اللي فات من إدارة التفويج واتركّبت — تبان بلون مختلف».
+   They keep their stage colour (fill) and wear a magenta outline everywhere on the map; the legend says what it means. */
+PV.TAF47_C = '#FF2BD6';
+function taf47(x){ return !!x && x.zone === 'منى' && x.type === 'ممر' && x.work === 'إعادة تركيب ١٤٤٧'; }
 function tafOf(id){ return ((STATE.taf || {})[id]) || null; }
 function tafDecision(id){ var o = tafOf(id); return o && (o.d === 'ok' || o.d === 'no') ? o.d : ''; }
 function tafMay(){ var r = effRole(ROLE); return may('tafapprove') || r === 'tafweej' || rankOf(r) >= rankOf('engineer'); }
