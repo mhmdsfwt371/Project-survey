@@ -157,7 +157,7 @@ function wfDiagram(){
   var arrow = '<svg class="wf-ar" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M20 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   var step = function(key, extra){
     var L = LIFE[key] || LIFE.todo;
-    return '<div class="wf-st" data-wfk="' + key + '" style="border-color:' + L.c + ';background:color-mix(in srgb,' + L.c + ' 14%, transparent)">'
+    return '<div class="wf-st wfk-' + key + '" style="border-color:' + L.c + ';background:color-mix(in srgb,' + L.c + ' 14%, transparent)">'
       + '<div class="wf-h"><i style="background:' + L.c + '"></i><b>' + esc(t(L.n)) + '</b></div>'
       + '<div class="wf-d">' + esc(t(L.d)) + '</div>' + (extra || '') + '</div>';
   };
