@@ -37,7 +37,7 @@ try {
   if (!same) ok = false;
 } catch (e){ say('⚠ تعذّر قراءةُ القواعد المنشورة: ' + String(e.message).slice(0, 120)); }
 /* ٢) حساباتٌ مؤقّتة */
-const ROLES = ['engineer', 'supervisor', 'tech', 'viewer', 'exec'], pw = 'Rc-' + randomUUID() + '-9a', tok = {};
+const ROLES = ['engineer', 'tafweej', 'supervisor', 'tech', 'viewer', 'exec'], pw = 'Rc-' + randomUUID() + '-9a', tok = {};
 for (const r of ROLES){
   const uid = 'rc-' + r, email = 'rc-' + r + '@nusuk.local';
   try { await auth.updateUser(uid, { email, password:pw, disabled:false }); } catch { await auth.createUser({ uid, email, password:pw }); }
@@ -89,11 +89,12 @@ say((ctl === 'منع' ? '✓' : '✗') + ' الضابط: محاولةٌ بلا �
 if (ctl !== 'منع'){ say('⚠ الطريقةُ لا تميّز السماحَ من المنع هنا — لا نتيجة'); ok = false; }
 else {
   const CASES = [
-    ['تعديلُ زيارةٍ تنتظر الاعتماد', r => writeProbe(r, 'recs/' + recPending, { note:'فحص' }), { engineer:'سماح', supervisor:'سماح', tech:'سماح', viewer:'منع', exec:'منع' }, recPending],
+    ['تعديلُ زيارةٍ تنتظر الاعتماد', r => writeProbe(r, 'recs/' + recPending, { note:'فحص' }), { engineer:'سماح', tafweej:'منع', supervisor:'سماح', tech:'سماح', viewer:'منع', exec:'منع' }, recPending],
     ['خلاصةُ الزيارة — كتابةٌ حقيقيةٌ على سجلّ الاختبار', r => realProbe(r, 'recs/zz-rulecheck', { bst:'ملاحظة' }), { viewer:'سماح', exec:'منع' }, RC_OK ? 'x' : ''],
     ['خلاصةُ التركيب — كتابةٌ حقيقيةٌ على سجلّ الاختبار', r => realProbe(r, 'inss/zz-rulecheck', { bst:'ملاحظة' }), { viewer:'سماح', exec:'منع' }, RC_OK ? 'x' : ''],
-    ['نقلُ موقعٍ (تجاوز السجل)', r => writeProbe(r, 'sites/' + siteAny, { movedBy:'فحص' }), { engineer:'سماح', supervisor:'سماح', tech:'سماح', viewer:'منع', exec:'منع' }, siteAny],
-    ['قراءةُ المشتريات', r => readProbe(r, 'purchases'), { engineer:'سماح', supervisor:'منع', tech:'منع', viewer:'منع', exec:'منع' }, 'x']
+    ['نقلُ موقعٍ (تجاوز السجل)', r => writeProbe(r, 'sites/' + siteAny, { movedBy:'فحص' }), { engineer:'سماح', tafweej:'منع', supervisor:'سماح', tech:'سماح', viewer:'منع', exec:'منع' }, siteAny],
+    ['(V44.4) قرارُ إدارة التفويج — settings/tafappr', r => writeProbe(r, 'settings/tafappr', { at:1 }), { engineer:'سماح', tafweej:'سماح', supervisor:'منع', tech:'منع', viewer:'منع', exec:'منع' }, 'x'],
+    ['قراءةُ المشتريات', r => readProbe(r, 'purchases'), { engineer:'سماح', tafweej:'منع', supervisor:'منع', tech:'منع', viewer:'منع', exec:'منع' }, 'x']
   ];
   say('\n| الفحص | ' + ROLES.join(' | ') + ' |'); say('|---|' + ROLES.map(() => '---').join('|') + '|');
   for (const [name, fn, exp, target] of CASES){

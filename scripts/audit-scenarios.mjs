@@ -2973,6 +2973,38 @@ console.log('\n══ ١٢٩ · اعتماد إدارة التفويج — نق�
   w.STATE.recs = recs0; w.STATE.taf = taf0; w.confirm = cf0; w.ROLE = role0; w.STATE.meta.role = mr0; w.STATE.meta.name = nm0; w.PV.NS_REPL = ''; w.PV.TAF_Z = '';
 }
 
+/* ── ١٣٠ · (V44.4) تصنيف نقاط الممرات بحسب أصلها، ووظيفةُ «إدارة التفويج» في إنشاء الحساب ── */
+console.log('\n══ ١٣٠ · تصنيف نقاط الممرات — ملف ١٤٤٧ (تمّ / بقي) والمسح الميداني ١٤٤٨ وعرفات ══');
+{
+  const role0 = w.ROLE, mr0 = w.STATE.meta.role, taf0 = w.STATE.taf; w.STATE.taf = {};
+  T(w.jobsList().some(j => j.role === 'tafweej' && j.n === 'إدارة التفويج'), 'وظيفةُ «إدارة التفويج» في قائمة الوظائف عند إنشاء حساب');
+  w.ROLE = 'admin'; w.STATE.meta.role = 'admin';
+  T(w.rolesICanMake().indexOf('tafweej') > -1, 'والدورُ نفسُه في قائمة الأدوار');
+  const CS = w.tafCats(), byK = Object.fromEntries(CS.map(c => [c.k, c]));
+  const P = w.PV.TAF1447, matched = Object.keys(P.m).length;
+  T(byK.done.L.length === 43 && byK.done.L.every(q => q.f === 'd'), 'تمّ في ١٤٤٧: ٤٣ نقطة — كلُّها «تم إنجازه» في الملف');
+  T(byK.left.L.length === matched - 43 && byK.left.orphan.length === P.pts.filter(p => p[1] !== 'd').length - (matched - 43), 'بقي من الملف: ' + byK.left.L.length + ' نقطةً في النظام + ' + byK.left.orphan.length + ' بلا نقطةٍ بعد');
+  T(byK.add.L.every(q => !P.m[q.x.id] && q.x.zone === 'منى') && byK.arf.L.every(q => q.x.zone === 'عرفات') && byK.add.L.length + byK.done.L.length + byK.left.L.length + byK.arf.L.length === w.tafSites('').length, 'إضافاتُ المسح ١٤٤٨ ليست في الملف، وعرفات وحدها، والمجموعُ كلُّ نقاط النطاق');
+  /* live: a stage that changes on the map changes here */
+  const q0 = byK.done.L[0], x0 = q0.x, life = () => { if (w.DB.memo) w.DB.memo.life = null; if (w.MK) w.MK.lifeMemo = null; return w.tafStage(x0).k; };
+  const before = life();
+  w.STATE.taf[x0.id] = { d:'no', why:'مكرَّرة', note:'تجربة', by:'x', at:1 };
+  T(life() === 'no' || before === 'inst', 'رفضٌ على الخريطة يظهر هنا «مرفوضة» في الحال');
+  delete w.STATE.taf[x0.id];
+  w.ROLE = 'viewer'; w.STATE.meta.role = 'viewer';
+  T(w.tabsOf('mfu').some(x => x[0] === 'mtafcat'), 'الوزارةُ ترى «تصنيف نقاط الممرات» بجانب «اعتمادات إدارة التفويج»');
+  w.PV.TAF_CAT = 'left';
+  const h = w.tafCatDash();
+  T(/تمّ في موسم ١٤٤٧/.test(h) && /يُنفَّذ هذا الموسم/.test(h) && /المسح الميداني ١٤٤٨/.test(h) && /جبل الرحمة/.test(h) && /ليس لها نقطةٌ في النظام بعد/.test(h), 'الصفحة: الأقسامُ الأربعة، ونقاطُ الملف التي بلا نقطةٍ بعد');
+  T(!/data-tafadd/.test(h), 'والوزارةُ لا ترى «أضفها نقطة»');
+  w.ROLE = 'tafweej'; w.STATE.meta.role = 'tafweej';
+  T(/data-tafadd/.test(w.tafCatDash()), 'وإدارةُ التفويج تراه');
+  let got = null; const mx = w.mtXlsx; w.mtXlsx = (n, hd, rows) => { got = { hd, rows }; return true; };
+  w.tafCatXlsx();
+  T(got && got.rows.length === w.tafSites('').length + byK.left.orphan.length && got.hd.indexOf('المرحلة الآن') > -1, 'الإكسل: كلُّ النقاط بتصنيفها ومرحلتها، ونقاطُ الملف بلا نقطة');
+  w.mtXlsx = mx; w.PV.TAF_CAT = ''; w.STATE.taf = taf0; w.ROLE = role0; w.STATE.meta.role = mr0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

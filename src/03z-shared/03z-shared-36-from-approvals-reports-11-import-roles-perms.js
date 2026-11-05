@@ -20,7 +20,7 @@ var ROLES = {
     n:'الإدارة العليا', d:'الموقفُ التنفيذيُّ والمخاطرُ والقرار — قراءةً',
     guide:'دليل الإدارة العليا — الموقف والقرار',
     /* V16.25: الخريطةُ ولوحةُ الفريق — من فوقُ يرى ما تحته كلَّه، قراءةً */
-    nav:['map','mywork','board','exec','mfu','mtaf','mweek','msurv','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','wplan','pace','miles','evm','budm','risks','chg','ncr','repcenter','exp','diary','pmi','lessons','stake','reg','guide','acct','notif'],
+    nav:['map','mywork','board','exec','mfu','mtaf','mtafcat','mweek','msurv','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','wplan','pace','miles','evm','budm','risks','chg','ncr','repcenter','exp','diary','pmi','lessons','stake','reg','guide','acct','notif'],
     can:{ provision:1, edit:0, approve:0, settings:0, money:1, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0 } },
 
@@ -46,7 +46,7 @@ var ROLES = {
   tafweej:{
     n:'إدارة التفويج', d:'اعتمادُ نقاط الممرات في منى وعرفات أو رفضُها من الخريطة، وإضافةُ النقاط',
     guide:'دليل إدارة التفويج — الاعتماد من الخريطة',
-    nav:['map','site','newsite','mfu','mtaf','mweek','msurv','minst','mcos','mobs','mdaily','mcamps','pace','survey','added','guide','acct','notif'],
+    nav:['map','site','newsite','mfu','mtaf','mtafcat','mweek','msurv','minst','mcos','mobs','mdaily','mcamps','pace','survey','added','guide','acct','notif'],
     can:{ propose:1, edit:0, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0, tafapprove:1 } },
 
@@ -70,7 +70,7 @@ var ROLES = {
     /* V16.55: الوزارةُ ترى حساباتِ الوزارة وحدَها — قراءةً (can.users = 0) */
     /* V16.65: «المتعذّر والراكد» للوزارة قراءةً — بصوره وسببه وقرار المهندس */
     /* V16.66: اعتمادُ الوزارة لإعداد التركيب — فعلُها الوحيد في النظام */
-    nav:['map','site','newsite','mfu','mtaf','mweek','msurv','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','pace','repcenter','exp','diary','miles','reg','co','survey','minappr','stuck','chalm','dis','ncr','users','guide','acct'],
+    nav:['map','site','newsite','mfu','mtaf','mtafcat','mweek','msurv','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','pace','repcenter','exp','diary','miles','reg','co','survey','minappr','stuck','chalm','dis','ncr','users','guide','acct'],
     /* minapprove: اعتمادُ إعداد التركيب — الفعلُ الوحيدُ الذي تكتبه الوزارة */
     can:{ propose:1, edit:0, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0, minapprove:0 }   /* (V44.2) لا اعتمادَ للوزارة — صار لإدارة التفويج */
@@ -478,6 +478,7 @@ var TABS = {
     ['mreq','طلبات الوزارة','📨','ما طلبته الوزارةُ وآخرُ إفادةٍ فيه والدعمُ المطلوب.', '', 'hidden'],
     ['mdaily','ملخص العمل اليومي','📈','الزياراتُ والتركيبُ والفكُّ وما تحتاج زيارةً أخرى تقنيًا — يومًا بيوم.'],
     ['mtaf','اعتمادات إدارة التفويج','🧭','نقاطُ الممرات في منى وعرفات: ما اعتُمد وما رُفض بسببه وما بقي — بالمشعر، بقوائمَ وتصدير.'],   /* (V44.2) */
+    ['mtafcat','تصنيف نقاط الممرات','🗂','نقاطُ الممرات بحسب أصلها: ما تمّ من ملف إدارة التفويج ١٤٤٧، وما بقي منه، وما أُضيف بالمسح الميداني ١٤٤٨ — بحالة كلٍّ الآن.'],   /* (V44.4) */
     ['pace','الوتيرة والهدف','⏱','هنلحق؟ — المتبقّي والموعد والمطلوب يوميًّا، ومعدّلُ آخر سبعة أيام، وتاريخُ الانتهاء المتوقّع.'],   /* (V43.18) from the overview */
     /* (V43.18) the overview's remaining tabs — hidden, reachable by key for exports and old links */
     ['over','الصورة العامة','📊','الصورة التنفيذية لحظيًّا — تُحدَّث مع كل عملية ميدانية.', '', 'hidden'],

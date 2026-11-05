@@ -6,7 +6,7 @@
              all in «متابعة الوزارة ← اعتمادات إدارة التفويج». Every corridor point's card says WHY the point is there: for Mina,
              its place in the tafweej management's 1447 file (PV.TAF1447) or that it completes those paths this season; for
              Arafat, the paths to Namirah Mosque, Jabal al-Rahma and the train, with the purpose chosen per point.
-   DEFINES : tafSave, tafSites, tafCrit, tafCritHtml, tafPopHtml, tafDash, tafXlsx, tafLayerToggle, tafLayerSync, clickTafweej
+   DEFINES : PV.TAF_STAGE, tafStage, tafCats, tafStageBar, tafCatDash, tafCatXlsx, tafSave, tafSites, tafCrit, tafCritHtml, tafPopHtml, tafDash, tafXlsx, tafLayerToggle, tafLayerSync, clickTafweej
    NOTE    : The scope, the decision and the gate are in core (03-survey-records-05: PV.TAF_SCOPE, tafInScope, tafOf,
              tafDecision, tafMay, minState). Decisions live in settings/tafappr (one live document).
    ============================================================================ */
@@ -199,6 +199,97 @@ function clickTafweej(e){   /* named click… so the global guard (actList) read
   if ((el = e.target.closest('[data-tafz]'))){ var z = el.getAttribute('data-tafz'); PV.TAF_Z = PV.TAF_Z === z ? '' : z; render(1); return true; }
   if ((el = e.target.closest('[data-taflist]'))){ PV.TAF_LIST = el.getAttribute('data-taflist'); render(1); return true; }
   if (e.target.closest('[data-tafxl]')){ tafXlsx(); return true; }
+  if ((el = e.target.closest('[data-tafcat]'))){ var ck = el.getAttribute('data-tafcat'); PV.TAF_CAT = PV.TAF_CAT === ck ? '' : ck; render(1); return true; }   /* (V44.4) */
+  if (e.target.closest('[data-tafcatxl]')){ tafCatXlsx(); return true; }
+  if ((el = e.target.closest('[data-tafadd]'))){
+    var pn = el.getAttribute('data-tafadd'), pt = (PV.TAF1447.pts || []).filter(function(q){ return q[0] === pn; })[0]; if (!pt) return true;
+    PV.NS_REPL = ''; NEWSITE.zone = 'منى'; NEWSITE.type = 'ممر'; NEWSITE.lat = pt[2]; NEWSITE.lng = pt[3]; NEWSITE.nm = t('ملف ١٤٤٧') + ' — ' + t('النقطة رقم') + ' ' + pn;
+    goPage('newsite'); render(); toast(t('راجع الموضع ثم احفظ')); return true; }
   if (e.target.closest('[data-taflayer]')){ tafLayerToggle(); return true; }
   return false;
+}
+
+/* ═══ (V44.4) «تصنيف نقاط الممرات» — the corridor points by where they come from ═══
+   Owner: «لستة بالنقاط الخاصة بـ١٤٤٧ … ٣ كاتيجوري: اللي تم من ملف إدارة التفويج موسم ٤٧، واللي لسه (هيتعمل السنة دي)، والإضافات
+   بناءً على المسح الميداني ١٤٤٨ — وأيُّ حالةٍ تتغيّر هناك تتغيّر هنا وعلى الخريطة». Each point carries its live stage (lifeOf);
+   the file points that have no point in the system yet are listed too, with «أضفها نقطة» for whoever may add. Arafat stands apart. */
+PV.TAF_STAGE = [
+  ['todo',  'لم تُزَر بعد',                ['todo', 'assigned', 'tomorrow', 'stuck', 'tech']],
+  ['vis',   'زِيرت',                       ['visited', 'revisit']],
+  ['wait',  'بانتظار اعتماد إدارة التفويج', ['minwait']],
+  ['ready', 'معتمدة — للتركيب',            ['ready', 'sched', 'inprog', 'insfail']],
+  ['inst',  'مركّبة',                       ['installed', 'handed', 'maint']],
+  ['no',    'مرفوضة',                      ['minback']],
+  ['dis',   'مفكوكة',                      ['dis']]
+];
+function tafStage(x){
+  var lf = lifeOf(x), hit = PV.TAF_STAGE[0];
+  PV.TAF_STAGE.forEach(function(g){ if (g[2].indexOf(lf) > -1) hit = g; });
+  return { k:hit[0], n:hit[1], c:(LIFE[hit[2][0]] || LIFE.todo).c, life:lf };
+}
+function tafCats(){
+  var P = PV.TAF1447 || { pts:[], m:{} }, used = {}, A = [], B = [], C = [], D = [];
+  tafSites('').forEach(function(q){
+    var x = q.x, m = P.m[x.id];
+    if (x.zone === 'عرفات'){ D.push(q); return; }
+    if (m){ used[m[0]] = 1; (m[1] === 'd' ? A : B).push(Object.assign({ n:m[0], f:m[1] }, q)); }
+    else C.push(q);
+  });
+  var orphan = P.pts.filter(function(p){ return p[1] !== 'd' && !used[p[0]]; });   /* file points with no point in the system yet */
+  return [
+    { k:'done',  n:'تمّ في موسم ١٤٤٧ — من ملف إدارة التفويج',                     L:A, orphan:[] },
+    { k:'left',  n:'من ملف ١٤٤٧ ولم يُنجَز — يُنفَّذ هذا الموسم',                  L:B, orphan:orphan },
+    { k:'add',   n:'إضافاتٌ بناءً على المسح الميداني ١٤٤٨',                        L:C, orphan:[] },
+    { k:'arf',   n:'ممرات عرفات — دراسةُ الذهاب إلى جبل الرحمة والدخول إليه',      L:D, orphan:[] }
+  ];
+}
+function tafStageBar(L){
+  var cnt = {}; L.forEach(function(q){ var s = tafStage(q.x); cnt[s.k] = (cnt[s.k] || 0) + 1; });
+  var tot = L.length || 1;
+  return '<div style="display:flex;height:12px;border-radius:6px;overflow:hidden;background:rgba(127,127,127,.15)" aria-hidden="true">'
+    + PV.TAF_STAGE.map(function(g){ return cnt[g[0]] ? '<span title="' + esc(t(g[1]) + ' \u00b7 ' + cnt[g[0]]) + '" style="width:' + (100 * cnt[g[0]] / tot) + '%;background:' + (LIFE[g[2][0]] || LIFE.todo).c + '"></span>' : ''; }).join('') + '</div>'
+    + '<div class="hint" style="display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 0">' + PV.TAF_STAGE.filter(function(g){ return cnt[g[0]]; }).map(function(g){
+        return '<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:2px;display:inline-block;background:' + (LIFE[g[2][0]] || LIFE.todo).c + '"></span>' + esc(t(g[1])) + ' <b>' + nm(cnt[g[0]]) + '</b></span>'; }).join('') + '</div>';
+}
+function tafCatDash(){
+  var CS = tafCats(), open = PV.TAF_CAT || '', me = tafMay();   /* adding a file point is the tafweej management's and the office's */
+  var tot = CS.reduce(function(s, c){ return s + c.L.length; }, 0);
+  var h = '<p class="lede" style="margin:0 0 10px">' + esc(t('نقاطُ الممرات بحسب أصلها: ما أُنجز من ملف إدارة التفويج لموسم ١٤٤٧، وما بقي منه، وما أُضيف بناءً على المسح الميداني لهذا الموسم — بحالة كلِّ نقطةٍ الآن، وتتغيّر مع الخريطة.')) + '</p>'
+    + stats([['نقاطُ ممرات', nm(tot)]].concat(CS.map(function(c){ return [c.n, nm(c.L.length) + (c.orphan.length ? ' + ' + nm(c.orphan.length) : '')]; })))
+    + '<div class="actions" style="margin:0 0 10px;gap:8px;flex-wrap:wrap">' + btn('\u2B07 Excel', 'btn-secondary btn-sm', ' data-tafcatxl="1"')
+    + btn((PV.TAF_LAYER ? '\u2713 ' : '') + t('نقاطُ ملف ١٤٤٧ على الخريطة'), 'btn-secondary btn-sm', ' data-taflayer="1"') + '</div>';
+  CS.forEach(function(c){
+    var on = open === c.k;
+    h += '<div class="card" style="margin:0 0 10px">'
+      + '<button type="button" data-tafcat="' + c.k + '" style="display:flex;justify-content:space-between;align-items:baseline;width:100%;background:none;border:0;padding:0;cursor:pointer;color:inherit;text-align:start">'
+      + '<b style="font-size:16px">' + esc(t(c.n)) + '</b><span><b style="font-size:20px">' + nm(c.L.length) + '</b>' + (c.orphan.length ? ' <span class="hint" style="margin:0">+ ' + nm(c.orphan.length) + ' ' + esc(t('بلا نقطةٍ في النظام بعد')) + '</span>' : '') + ' ' + (on ? '\u25B4' : '\u25BE') + '</span></button>'
+      + '<div style="margin:8px 0 0">' + tafStageBar(c.L) + '</div>';
+    if (on){
+      h += c.L.slice().sort(function(a, b){ return (a.n || 0) - (b.n || 0) || (a.x.id < b.x.id ? -1 : 1); }).map(function(q){
+        var x = q.x, st = tafStage(x);
+        return '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--line, #e2e2e2);padding:6px 0">'
+          + (q.n ? '<span class="pill" title="' + esc(t('رقمها في ملف ١٤٤٧')) + '">#' + esc(q.n) + '</span>' : '')
+          + '<span style="flex:1;min-width:180px"><b><bdi>' + esc(x.id) + '</bdi></b> \u00b7 ' + esc(x.name || '') + '</span>'
+          + '<span class="pill" style="border-color:' + st.c + ';color:' + st.c + '">' + esc(t(st.n)) + '</span>'
+          + btn('\u{1F4CD}', 'btn-quiet btn-sm', ' data-fly="' + esc(x.id) + '"') + '</div>';
+      }).join('');
+      if (c.orphan.length) h += '<h4 style="margin:12px 0 6px">' + esc(t('نقاطٌ في ملف ١٤٤٧ ليس لها نقطةٌ في النظام بعد')) + ' <b class="num">' + nm(c.orphan.length) + '</b></h4>'
+        + c.orphan.map(function(p){
+            return '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--line, #e2e2e2);padding:6px 0"><span class="pill">#' + esc(p[0]) + '</span>'
+              + '<span style="flex:1;min-width:180px">' + esc(t(PV.TAF1447.f[p[1]])) + ' \u00b7 <bdi dir="ltr">' + p[2].toFixed(5) + ', ' + p[3].toFixed(5) + '</bdi></span>'
+              + (me ? btn('\u2795 ' + t('أضفها نقطة'), 'btn-secondary btn-sm', ' data-tafadd="' + esc(p[0]) + '"') : '') + '</div>';
+          }).join('');
+    }
+    h += '</div>';
+  });
+  return h;
+}
+function tafCatXlsx(){
+  var rows = [];
+  tafCats().forEach(function(c){
+    c.L.forEach(function(q){ var st = tafStage(q.x); rows.push([t(c.n), q.x.id, q.x.name || '', q.n || '', q.f ? t(PV.TAF1447.f[q.f]) : '', t(st.n), q.d === 'ok' ? t('معتمدة') : q.d === 'no' ? t('مرفوضة') : t('متبقّية'), +q.x.lat || '', +q.x.lng || '']); });
+    c.orphan.forEach(function(p){ rows.push([t(c.n), '', t('بلا نقطةٍ في النظام بعد'), p[0], t(PV.TAF1447.f[p[1]]), '', '', p[2], p[3]]); });
+  });
+  logEvent('تصدير تصنيف نقاط الممرات \u2014 ' + rows.length);
+  return mtXlsx('تصنيف نقاط الممرات', ['التصنيف', 'الرقم', 'الاسم', 'رقمها في ملف ١٤٤٧', 'حالتها في ملف ١٤٤٧', 'المرحلة الآن', 'اعتماد إدارة التفويج', 'خط العرض', 'خط الطول'], rows);
 }
