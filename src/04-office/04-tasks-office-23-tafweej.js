@@ -40,7 +40,7 @@ function tafDist(a, b){ var r = Math.PI / 180, x = (b.lng - a.lng) * r * Math.co
 function tafCrit(x){
   if (!x || !PV.TAF_SCOPE.types[x.type]) return null;
   var P = PV.TAF1447 || { pts:[], m:{}, f:{} }, o = tafOf(x.id) || {}, L = [];
-  var near = 0; (STATE.sites || []).forEach(function(y){ if (y !== x && y.zone === x.zone && y.type === x.type && +y.lat){ var dd = tafDist({ lat:+x.lat, lng:+x.lng }, { lat:+y.lat, lng:+y.lng }); if (!near || dd < near) near = dd; } });
+  var near = 0; (STATE.sites || []).forEach(function(y){ if (y !== x && y.zone === x.zone && PV.TAF_SCOPE.types[y.type] && +y.lat){ var dd = tafDist({ lat:+x.lat, lng:+x.lng }, { lat:+y.lat, lng:+y.lng }); if (!near || dd < near) near = dd; } });
   var path = (/Path-([A-Za-z0-9_]+?)(?:-\d+[A-Z]?)?$/.exec(String(x.name || '')) || [])[1];
   if (x.zone === 'منى'){
     var m = P.m[x.id], cat;
@@ -56,6 +56,7 @@ function tafCrit(x){
     return { cat:cat, lines:L.concat(near ? [['أقربُ نقطة ممرٍّ أخرى', nm(Math.round(near)) + ' ' + t('م')]] : []).concat(o.crit ? [['ملاحظة', o.crit]] : []) };
   }
   if (x.zone === 'عرفات'){
+    L.push(['الدراسة', 'تمّت الدراسةُ وتحديدُ النقاط بناءً على الذهاب إلى جبل الرحمة والدخول إليه']);   /* (V44.3) owner's sentence, on every Arafat corridor card */
     L.push(['الأساس', 'تغطيةُ مسارات المشاة إلى مسجد نمرة وجبل الرحمة وتفويج القطار']);
     L.push(['غرضُ هذه النقطة', o.pur ? t(o.pur) : t('لم يُحدَّد بعد')]);
     if (near) L.push(['أقربُ نقطة ممرٍّ أخرى', nm(Math.round(near)) + ' ' + t('م')]);

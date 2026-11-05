@@ -2924,6 +2924,8 @@ console.log('\n══ ١٢٩ · اعتماد إدارة التفويج — نق�
   const camp = S.find(x => x.zone === 'منى' && x.type === 'مخيم');
   T(!!(minaDone && minaNew && arf && arf2 && camp) && w.ROLES.tafweej && w.rankOf('tafweej') < w.rankOf('engineer') && w.rankOf('tafweej') > w.rankOf('supervisor'), 'الدور «إدارة التفويج» تحت المهندس وفوق المشرف');
   T(w.tafInScope(arf.id) && w.tafInScope(minaDone.id) && !w.tafInScope(camp.id), 'النطاق: ممرات منى وعرفات — لا المخيمات');
+  const jmr = S.find(x => x.type === 'جسر' && x.zone === 'الجمرات');
+  T(w.PV.TAF_SCOPE.types['جسر'] && (!jmr || !w.tafInScope(jmr.id)) && w.tafCrit(arf).lines.some(l => /الذهاب إلى جبل الرحمة والدخول إليه/.test(l[1])), '(V44.3) الكباري في منى وعرفات من النطاق ومداخلُ منشأة الجمرات لا، وبطاقةُ كلِّ ممرٍّ في عرفات تقول: الدراسةُ على الذهاب إلى جبل الرحمة والدخول إليه');
   T(Object.keys(P.m).length === 63 && P.pts.length === 106 && Object.values(P.m).filter(m => m[1] === 'd').length === 43, 'ملف ١٤٤٧: ١٠٦ نقاط، ٦٣ تطابقًا مع ممرات منى، والمركَّبةُ الثلاث والأربعون كلُّها مطابقة');
   /* the gate: a technically approved corridor waits for the tafweej management; a camp needs no outside approval */
   w.STATE.recs[arf.id] = Object.assign({}, w.STATE.recs[arf.id] || {}, { id:arf.id, access:'تم الوصول', review:'approved', status:'تمت الزيارة', at:Date.now() });

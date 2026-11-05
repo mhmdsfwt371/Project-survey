@@ -97,7 +97,7 @@ function svReview(r){
    (settings/tafappr: { m: { <site id>: { d:'ok'|'no'|'', why, note, by, at, repl?, pur?, crit? } } }).
    The installation gate keeps its place in the cycle: a point in scope waits for «ok»; a point outside the scope needs no
    outside approval any more. Old ministry approvals still count as approvals. */
-PV.TAF_SCOPE = { zones:{ 'منى':1, 'عرفات':1 }, types:{ 'ممر':1 } };
+PV.TAF_SCOPE = { zones:{ 'منى':1, 'عرفات':1 }, types:{ 'ممر':1, 'جسر':1 } };   /* (V44.3) owner: «الكباري نقطة ممر برضه» — in Mina and Arafat only; the Jamarat facility's 28 «جسر» entrances stay out */
 PV.TAF_WHY = ['لا حاجة إليها', 'مكانها غير صحيح', 'مكرَّرة', 'سببٌ آخر'];
 function tafInScope(id){
   var x = typeof siteFind === 'function' ? siteFind(id) : null;
