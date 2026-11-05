@@ -49,10 +49,12 @@ w.svSave(0);
 say(w.lifeOf(x)==='visited', '٢ الزيارةُ حُفظت — تنتظر الاعتماد');
 // ٣ اعتماد
 w.svApprove(x.id);
-say(w.lifeOf(x)==='minwait', '٣ اعتُمدت تقنيًّا — بانتظار الوزارة');
-/* V16.66: اعتمادُ الوزارة لإعداد التركيب — مديرُ المشروع يملكه بديلًا */
-{ const R0 = w.ROLE; w.ROLE = 'admin'; w.minApprove(x.id, ''); w.ROLE = R0; }
-say(w.lifeOf(x)==='ready', '٣ب اعتمدت الوزارةُ — بانتظار الجدولة');
+/* (V44.2) the approval after the technical one is the tafweej management's, for the corridors of Mina and Arafat only */
+if (w.tafInScope(x.id)){
+  say(w.lifeOf(x)==='minwait', '٣ اعتُمدت تقنيًّا — بانتظار اعتماد إدارة التفويج');
+  { const R0 = w.ROLE; w.ROLE = 'admin'; w.tafSave(x.id, 'ok'); w.ROLE = R0; }
+} else say(w.lifeOf(x)==='ready', '٣ اعتُمدت تقنيًّا — خارج نطاق إدارة التفويج فلا تنتظر اعتمادًا خارجيًّا');
+say(w.lifeOf(x)==='ready', '٣ب بانتظار الجدولة');
 // ٤ حلٌّ يُقترَح ويُعتمَد
 w.solutionSave(x.id, { [it.code]: 2 });
 const sol=(w.STATE.inss[x.id]||{}).solution;
