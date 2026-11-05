@@ -105,7 +105,7 @@ function tafInScope(id){
 }
 function tafOf(id){ return ((STATE.taf || {})[id]) || null; }
 function tafDecision(id){ var o = tafOf(id); return o && (o.d === 'ok' || o.d === 'no') ? o.d : ''; }
-function tafMay(){ var r = effRole(ROLE); return r === 'tafweej' || rankOf(r) >= rankOf('engineer'); }
+function tafMay(){ var r = effRole(ROLE); return may('tafapprove') || r === 'tafweej' || rankOf(r) >= rankOf('engineer'); }
 function minState(r){
   if (!r || svReview(r) !== 'approved') return '';
   var id = r.id || r.site || '';

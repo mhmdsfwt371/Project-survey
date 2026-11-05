@@ -6,7 +6,7 @@
              all in «متابعة الوزارة ← اعتمادات إدارة التفويج». Every corridor point's card says WHY the point is there: for Mina,
              its place in the tafweej management's 1447 file (PV.TAF1447) or that it completes those paths this season; for
              Arafat, the paths to Namirah Mosque, Jabal al-Rahma and the train, with the purpose chosen per point.
-   DEFINES : tafSave, tafSites, tafCrit, tafCritHtml, tafPopHtml, tafDash, tafXlsx, tafLayerToggle, tafLayerSync, tafClick
+   DEFINES : tafSave, tafSites, tafCrit, tafCritHtml, tafPopHtml, tafDash, tafXlsx, tafLayerToggle, tafLayerSync, clickTafweej
    NOTE    : The scope, the decision and the gate are in core (03-survey-records-05: PV.TAF_SCOPE, tafInScope, tafOf,
              tafDecision, tafMay, minState). Decisions live in settings/tafappr (one live document).
    ============================================================================ */
@@ -174,14 +174,14 @@ function tafLayerSync(){
   if (!PV.TAF_LAYER || !PV.TAF1447) return;
   var col = { d:'#22C55E', s:'#F59E0B', x:'#94A3B8' }, g = L.layerGroup();
   PV.TAF1447.pts.forEach(function(p){
-    L.circleMarker([p[2], p[3]], { radius:7, color:'#111', weight:1.5, fillColor:col[p[1]], fillOpacity:.95, dashArray:'2,2' })
+    L.circleMarker([p[2], p[3]], { renderer:MAP_CV, radius:7, color:'#111', weight:1.5, fillColor:col[p[1]], fillOpacity:.95, dashArray:'2,2' })
       .bindTooltip(t('ملف ١٤٤٧') + ' \u00b7 ' + t('النقطة رقم') + ' ' + p[0] + ' \u00b7 ' + t(PV.TAF1447.f[p[1]])).addTo(g);
   });
   PV.TAF_LG = g.addTo(MAP);
 }
 
 /* clicks — called from the click router */
-function tafClick(e){
+function clickTafweej(e){   /* named click… so the global guard (actList) reads its attributes — a name outside that pattern had its buttons swallowed */
   var el;
   if ((el = e.target.closest('[data-tafok]'))){ tafSave(el.getAttribute('data-tafok'), 'ok'); return true; }
   if ((el = e.target.closest('[data-tafno]'))){ PV.TAF_REJ = el.getAttribute('data-tafno'); PV.TAF_WHYSEL = ''; render(1); return true; }

@@ -267,7 +267,7 @@ function clickAPart7B(e){
     else toast(t('لا نتائج'));
     return true;
   }
-  if (typeof tafClick === 'function' && tafClick(e)) return true;   /* (V44.2) اعتماد إدارة التفويج */
+  if (typeof clickTafweej === 'function' && clickTafweej(e)) return true;   /* (V44.2) اعتماد إدارة التفويج */
   var acs = e.target.closest('[data-actspan]'); if (acs){ PV.ACT.span = acs.getAttribute('data-actspan'); render(1); return true; }   /* (V44.0) */
   if (e.target.closest('[data-actfetch]')){ actFetch(); return true; }
   var acd = e.target.closest('[data-actday]'); if (acd){ PV.ACT.span = 'custom'; PV.ACT.from = PV.ACT.to = acd.getAttribute('data-actday'); render(1); return true; }   /* (V44.1) the dashboard's clicks */

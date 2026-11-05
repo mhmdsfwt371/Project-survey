@@ -111,10 +111,13 @@ d.getElementById('patName').value = 'مخيم قياسي'; d.getElementById('pat
 click('[data-patsave]');
 T(w.patList().length === 1 && w.patList()[0].n === 'مخيم قياسي', 'النمط حُفظ');
 T(w.STATE.queue.some(q => q.kind === 'cfg' && q.id === 'patterns'), 'النمط يُرفَع إلى settings/patterns');
-/* V16.66: بين الاعتماد التقنيِّ والحلِّ اعتمادُ الوزارة لإعداد التركيب */
-T(w.lifeOf(site) === 'minwait', 'معتمدةٌ تقنيًّا — بانتظار الوزارة');
-{ const R0 = w.ROLE; w.ROLE = 'admin'; w.minApprove(site.id, ''); w.ROLE = R0; }
-T(w.lifeOf(site) === 'ready', 'اعتمدت الوزارةُ إعدادَ التركيب');
+/* V16.66 → (V44.2): the approval between the technical one and the solution is the tafweej management's, for the corridor
+   points of Mina and Arafat only; any other point needs no outside approval (there is no ministry approval any more) */
+if (w.tafInScope(site.id)){
+  T(w.lifeOf(site) === 'minwait', 'ممرٌّ معتمدٌ تقنيًّا — بانتظار اعتماد إدارة التفويج');
+  { const R0 = w.ROLE; w.ROLE = 'admin'; w.tafSave(site.id, 'ok'); w.ROLE = R0; }
+} else T(w.lifeOf(site) === 'ready', 'نقطةٌ خارج نطاق إدارة التفويج — لا تنتظر اعتمادًا خارجيًّا');
+T(w.lifeOf(site) === 'ready', 'جاهزةٌ لتحديد الحل');
 click('[data-svsolgo="' + site.id + '"]');
 const so = w.solutionOf(site.id);
 T(so && so.status === 'معتمد' && so.items[it0.code] === 2, 'الحل حُفظ واعتُمد من شاشة واحدة');
