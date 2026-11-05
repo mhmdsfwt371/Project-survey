@@ -148,76 +148,43 @@ function wfStep(n, who, what, page){
     + '</div></div>';
 }
 
-/* رسمُ الدورة: صناديقُ الحالات بألوانها من LIFE نفسِها — فما يراه على
-   الخريطة يجده هنا بالحرف. SVG لا صورة: يكبر ويصغر ويُترجَم ويُطبَع. */
+/* رسمُ الدورة: صناديقُ الحالات بألوانها من LIFE نفسِها — فما يراه على الخريطة يجده هنا بالحرف.
+   (V45.0) owner's screenshot: «محتاجة تتعدّل وتتعمل بطريقة أفضل من كده بدون تداخل، وضيف خطوة التفويج». The SVG drew Arabic with
+   text-anchor in an RTL page, so the labels ran outside their boxes and over their neighbours. Now each step is an HTML card that
+   lays out right-to-left and wraps its own text (nothing is measured, so nothing can overflow), with a small SVG arrow between
+   cards; and the visit cycle carries the tafweej step, with its rejection branch and who skips it. */
 function wfDiagram(){
-  var rows = [
-    { t:'دورة الزيارة', k:['todo','assigned','visited','ready'], why:'الرَّدُّ يعيدها إلى «تحتاج زيارةً أخرى» ثم تعود مسارَها.' },
-    { t:'دورة التركيب', k:['ready','sched','installed'], why:'لا جدولةَ قبل اعتماد الحل، ولا نقاطَ قبل اعتماد التدقيق.' },
-    { t:'بعد التركيب',  k:['installed','maint','dis'], why:'الصيانةُ في أثناء الموسم، والفكُّ بعده — كلاهما يُسنَد كما يُسنَد التركيب.' }
-  ];
-  /* النصُّ العربيُّ لا يُقَصُّ ولا يفيض: يُلَفُّ سطرين ويتّسع الصندوقُ لهما.
-     كان `slice(22)` يقطع الكلمةَ نصفَها، والوصفُ يمتدُّ خارجَ إطاره فيركب
-     على جاره — تُقرأ الصورةُ فتظنُّ الرسمَ معطوبًا. */
-  var wrap = function(txt, per, lines){
-    var w = String(txt || '').split(/\s+/), out2 = [], cur = '';
-    for (var i = 0; i < w.length; i++){
-      var nx = cur ? cur + ' ' + w[i] : w[i];
-      if (nx.length > per && cur){ out2.push(cur); cur = w[i]; if (out2.length === lines - 1) break; }
-      else cur = nx;
-    }
-    if (cur && out2.length < lines) out2.push(cur);
-    var rest = w.slice(out2.join(' ').split(/\s+/).length).join(' ');
-    if (rest && out2.length === lines) out2[lines - 1] = (out2[lines - 1] + ' …');
-    return out2;
+  var arrow = '<svg class="wf-ar" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M20 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var step = function(key, extra){
+    var L = LIFE[key] || LIFE.todo;
+    return '<div class="wf-st" data-wfk="' + key + '" style="border-color:' + L.c + ';background:color-mix(in srgb,' + L.c + ' 14%, transparent)">'
+      + '<div class="wf-h"><i style="background:' + L.c + '"></i><b>' + esc(t(L.n)) + '</b></div>'
+      + '<div class="wf-d">' + esc(t(L.d)) + '</div>' + (extra || '') + '</div>';
   };
-  var W = 900, bw = 196, bh = 82, gap = 22, out = '';
-  var y = 8;
-  rows.forEach(function(r){
-    out += '<text x="' + (W - 6) + '" y="' + (y + 14) + '" text-anchor="end" '
-        +  'font-size="15" font-weight="700" fill="var(--ink)">' + esc(t(r.t)) + '</text>';
-    y += 26;
-    var n = r.k.length;
-    var total = n * bw + (n - 1) * gap;
-    var x0 = W - Math.round((W - total) / 2) - bw;   /* من اليمين لليسار */
-    r.k.forEach(function(key, i){
-      var L = LIFE[key] || LIFE.todo;
-      var x = x0 - i * (bw + gap);
-      var nm2 = wrap(t(L.n), 20, 2), ds = wrap(t(L.d), 26, 3);
-      out += '<rect x="' + x + '" y="' + y + '" rx="10" width="' + bw + '" height="' + bh + '" '
-          +  'fill="' + L.c + '" fill-opacity="0.18" stroke="' + L.c + '" stroke-width="2"/>'
-          +  '<circle cx="' + (x + bw - 13) + '" cy="' + (y + 15) + '" r="5.5" fill="' + L.c + '"/>'
-          +  nm2.map(function(ln, j){
-               return '<text x="' + (x + bw - (j ? 12 : 25)) + '" y="' + (y + 19 + j * 15) + '" text-anchor="end" '
-                 + 'font-size="12.5" font-weight="700" fill="var(--ink)">' + esc(ln) + '</text>';
-             }).join('')
-          +  ds.map(function(ln, j){
-               return '<text x="' + (x + bw - 12) + '" y="' + (y + 22 + nm2.length * 15 + j * 13) + '" text-anchor="end" '
-                 + 'font-size="10.5" fill="var(--ink-soft)">' + esc(ln) + '</text>';
-             }).join('');
-      if (i < n - 1){
-        var ax = x - gap + 4, ay = y + bh / 2;
-        out += '<line x1="' + (ax + gap - 8) + '" y1="' + ay + '" x2="' + (ax + 4) + '" y2="' + ay + '" '
-            +  'stroke="var(--ink-soft)" stroke-width="2"/>'
-            +  '<polygon points="' + ax + ',' + ay + ' ' + (ax + 8) + ',' + (ay - 5) + ' ' + (ax + 8) + ',' + (ay + 5) + '" '
-            +  'fill="var(--ink-soft)"/>';
-      }
-    });
-    y += bh + 10;
-    out += '<text x="' + (W - 6) + '" y="' + (y + 10) + '" text-anchor="end" font-size="11" '
-        +  'fill="var(--ink-soft)">' + esc(t(r.why)) + '</text>';
-    y += 30;
-  });
-  return card('\u{1F5FA} ' + t('رسمُ الدورة — بألوان الخريطة نفسِها'),
-      '<div style="overflow-x:auto"><svg viewBox="0 0 ' + W + ' ' + y + '" width="100%" '
-      + 'style="min-width:820px;height:auto" role="img" aria-label="' + esc(t('رسم دورة حياة النقطة')) + '">'
-      + out + '</svg></div>'
-      + '<div class="chips" style="margin:10px 0 0">' + LIFE_ORDER.map(function(k){
-          return '<span class="chip"><i style="display:inline-block;width:10px;height:10px;border-radius:50%;'
-            + 'background:' + LIFE[k].c + ';margin-inline-end:6px"></i>' + esc(t(LIFE[k].n)) + '</span>';
-        }).join('') + '</div>'
-      + '<p class="hint" style="margin:10px 0 0">'
-      + esc(t('اللونُ نفسُه على الخريطة: تفتح الخريطةَ فتعرف موضعَ كلِّ نقطةٍ من الدورة بنظرة.')) + '</p>');
+  var row = function(title, keys, why, branch){
+    return '<div class="wf-row"><div class="wf-t">' + esc(t(title)) + '</div>'
+      + '<div class="wf-flow">' + keys.map(function(k, i){ return (i ? arrow : '') + step(k); }).join('') + '</div>'
+      + (branch || '') + '<div class="hint wf-why">' + esc(t(why)) + '</div></div>';
+  };
+  var css = '<style>.wf-row{margin:0 0 18px}.wf-t{font-weight:800;font-size:15px;margin:0 0 8px}'
+    + '.wf-flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px}'
+    + '.wf-st{flex:1 1 170px;max-width:240px;min-width:150px;border:2px solid;border-radius:12px;padding:10px 12px;box-sizing:border-box}'
+    + '.wf-h{display:flex;align-items:flex-start;gap:7px;font-size:13.5px;line-height:1.5}.wf-h i{flex:0 0 10px;width:10px;height:10px;border-radius:50%;margin-top:6px}'
+    + '.wf-d{font-size:12px;line-height:1.6;color:var(--ink-soft);margin-top:4px}'
+    + '.wf-ar{flex:0 0 22px;align-self:center;color:var(--ink-soft)}'
+    + '.wf-br{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0 0;padding:10px;border:1px dashed var(--line, #44506a);border-radius:12px}'
+    + '.wf-br .wf-st{flex:0 1 240px}.wf-why{margin:8px 0 0}'
+    + '@media (max-width:640px){.wf-st{max-width:none;flex-basis:100%}.wf-ar{transform:rotate(-90deg);margin:0 auto}}</style>';
+  var branch = '<div class="wf-br"><span class="hint" style="margin:0">' + esc(t('إن رفضتها إدارة التفويج:')) + '</span>' + step('minback')
+    + '<span class="hint" style="margin:0;flex:1 1 220px">' + esc(t('تتوقّف ولا تُركَّب حتى تتراجع إدارةُ التفويج عن قرارها، أو تُضاف بديلتُها إن كان مكانُها غيرَ صحيح.')) + '</span></div>';
+  return card('\u{1F5FA} ' + t('رسمُ الدورة — بألوان الخريطة نفسِها'), css
+    + row('دورة الزيارة', ['todo', 'assigned', 'visited', 'minwait', 'ready'], 'خطوةُ «اعتماد إدارة التفويج» لنقاط الممرات في منى وعرفات وحدها؛ والمخيماتُ والجمراتُ والقطارُ تنتقل من الاعتماد التقني إلى «معتمدة» مباشرة. والرَّدُّ من المهندس يعيدها إلى «تحتاج زيارةً أخرى» ثم تعود مسارَها.', branch)
+    + row('دورة التركيب', ['ready', 'sched', 'installed'], 'لا جدولةَ قبل اعتماد الحل، ولا نقاطَ قبل اعتماد التدقيق.')
+    + row('بعد التركيب', ['installed', 'maint', 'dis'], 'الصيانةُ في أثناء الموسم، والفكُّ بعده — كلاهما يُسنَد كما يُسنَد التركيب.')
+    + '<div class="chips" style="margin:6px 0 0">' + LIFE_ORDER.map(function(k){
+        return '<span class="chip"><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + LIFE[k].c + ';margin-inline-end:6px"></i>' + esc(t(LIFE[k].n)) + '</span>';
+      }).join('') + '</div>'
+    + '<p class="hint" style="margin:10px 0 0">' + esc(t('اللونُ نفسُه على الخريطة: تفتح الخريطةَ فتعرف موضعَ كلِّ نقطةٍ من الدورة بنظرة.')) + '</p>');
 }
 function wfBody(){
   var visit = [
@@ -226,7 +193,8 @@ function wfBody(){
     ['المشرف','يزور النقطةَ ويملأ نموذجَ المسح بصورتَيه وقياساته — أو يسجّل تعذُّرَ الوصول بسببه','svForm'],
     ['النظام','تُحفَظ الزيارةُ «بانتظار الاعتماد» — وتظهر فورًا في اعتماد الزيارات ببياناتها الجديدة','svappr'],
     ['المهندس','يعتمد الزيارةَ فتُغلَق مهمتُها وتُحتسب نقاطُها — أو يردُّها «تحتاج زيارةً أخرى» بسببٍ مكتوب','svappr'],
-    ['المشرف','إن رُدَّت وجدها في مهامّه بسبب الردّ — يزورها ثانيةً وتُحفَظ جولةً ثانيةً تنتظر الاعتماد','mywork']
+    ['المشرف','إن رُدَّت وجدها في مهامّه بسبب الردّ — يزورها ثانيةً وتُحفَظ جولةً ثانيةً تنتظر الاعتماد','mywork'],
+    ['إدارة التفويج','نقطةُ الممرّ في منى وعرفات تنتظر بعد الاعتماد التقنيِّ قرارَها من بطاقة النقطة على الخريطة: تعتمدها فتنتقل إلى الجدولة، أو ترفضها بسببٍ وتعليقٍ فتتوقّف','mfu']   /* (V45.0) the follow-up page that holds «اعتمادات إدارة التفويج» */
   ];
   var install = [
     ['المهندس','بعد اعتماد الزيارة يقترح حلَّها: الأصنافُ وكمّياتُها من الكتالوج — يدويًّا أو بنمطٍ جاهز','solution'],

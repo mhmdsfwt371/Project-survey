@@ -141,6 +141,9 @@ delete w.STATE.tasks['TK-dis-' + site.id]; delete w.STATE.tasks['TK-maint-' + si
 w.ROLE = 'engineer'; w.goPage('wf'); w.render(1);
 const wfx = d.getElementById('content').textContent;
 T(d.querySelector('#content svg') && wfx.indexOf('رسمُ الدورة') > -1, 'رسمُ الدورة يُرسَم في «دورة العمل»');
+/* (V45.0) the steps are HTML cards (they wrap their own text — no overlap) and the visit cycle carries the tafweej step and its rejection branch */
+{ const st = [...d.querySelectorAll('#content .wf-st')].map(e => e.getAttribute('data-wfk'));
+  T(st.length >= 12 && st.indexOf('minwait') > st.indexOf('visited') && st.indexOf('minwait') < st.indexOf('ready') && st.indexOf('minback') > -1 && !d.querySelector('#content svg text'), 'رسمُ الدورة: خطوةُ اعتماد إدارة التفويج بين الزيارة والاعتماد، وفرعُ الرفض، وبطاقاتٌ لا نصوصَ مقيسة'); }
 /* ٨ · النمط يُطبَّق على نقطة أخرى */
 w.SOL_LINES = {}; w.CUR = 'solution'; w.render(1);
 w.patApply('مخيم قياسي');
