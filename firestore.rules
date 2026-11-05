@@ -26,7 +26,7 @@ service cloud.firestore {
     // دورٌ يُضاف من التطبيق (settings/roles: { r: { <مفتاح>: { base, rank } } }) يُعامَل هنا
     // بدور أساسه في كلِّ شرط، وبرتبته المكتوبة، وبمفتاحه في مصفوفة الصلاحيات —
     // فيُضبَط وحدَه دون أن يُنشَر شيء. والمفتاحُ غيرُ المعروف بلا وثيقةٍ = بلا دور.
-    function knownRole(r){ return r in ['exec', 'admin', 'engineer', 'supervisor', 'viewer', 'tech', 'cprep', 'casm', 'cins', 'buyer', 'store', 'acct', 'helper', 'driver']; }
+    function knownRole(r){ return r in ['exec', 'admin', 'engineer', 'tafweej', 'supervisor', 'viewer', 'tech', 'cprep', 'casm', 'cins', 'buyer', 'store', 'acct', 'helper', 'driver']; }
     function rolesPath(){ return /databases/$(db)/documents/settings/roles; }
     function customRole(r){
       return exists(rolesPath()) ? get(rolesPath()).data.get('r', {}).get(r, {}) : {};
@@ -58,6 +58,7 @@ service cloud.firestore {
       return r == 'exec' ? 110
            : r == 'admin' ? 100
            : r == 'engineer' ? 90
+           : r == 'tafweej' ? 80
            : r == 'supervisor' ? 70
            : r in ['cprep', 'casm', 'cins'] ? 50
            : r == 'viewer' ? 10 : 30;
@@ -321,6 +322,8 @@ service cloud.firestore {
     match /settings/extApi { allow read: if mgr(); }
     // (V38.80) تكلفةُ قاعدة البيانات: يكتبها الخادمُ وحدَه (مفتاحُ الخدمة يتجاوز القواعد) ويقرؤها المكتبُ والإدارةُ العليا
     match /settings/cost { allow read: if mgr() || (ok() && role() == 'exec'); allow write: if false; }
+    // (V44.2) قراراتُ إدارة التفويج: يكتبها المهندسُ والمدير وإدارةُ التفويج — في حقلٍ واحدٍ m؛ ويقرؤها الجميع
+    match /settings/tafappr { allow read: if ok(); allow write: if ok() && (mgr() || role() == 'tafweej') && (resource == null ? request.resource.data.keys().hasOnly(['m', 'at', '_by', '_at']) : request.resource.data.diff(resource.data).affectedKeys().hasOnly(['m', 'at', '_by', '_at'])); }
     match /settings/{id} {
       // الكتلُ المتطابقةُ تُجمَع بـ«أو»: ما لوثيقةٍ بعينها قاعدةٌ أضيقُ يُستثنى هنا
       // صراحةً وإلا فتحته هذه — كما استُثنيت الجوالات، ويُستثنى التقرير (V17.94)
@@ -348,7 +351,7 @@ service cloud.firestore {
     match /events/{id} {
       allow read:   if pm('events', 'r', ok());
       // الأثرُ يكتبه من يعمل — لا المطّلعُ ولا الإدارةُ العليا فهما يقرآن فقط
-      allow create: if pm('events', 'w', canW());
+      allow create: if pm('events', 'w', canW()) || (ok() && role() == 'tafweej');   // (V44.2) أثرُ اعتماد إدارة التفويج ورفضِها
       allow update: if ok()
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['_at', '_by']);
       allow delete: if false;
@@ -363,7 +366,8 @@ service cloud.firestore {
     // الفكُّ والمواقعُ المقترحةُ وطلباتُ الشركات وحساباتُ الفنيين
     match /dismantles/{id} { allow read: if pm('dismantles', 'r', ok()); allow create, update: if pm('dismantles', 'w', canW()); allow update: if briefOnly(); allow delete: if pm('dismantles', 'd', mgr()); }   // (V39.27) الخلاصةُ للوزارة
     // (V37.68) الوزارةُ تقترح نقطةً: إنشاءٌ فقط، بمصدر «ministry» وغيرَ معتمدة — والاعتمادُ والتعديلُ للمهندس كما كانا
-    match /newsites/{id} { allow read: if pm('newsites', 'r', ok()); allow create: if pm('newsites', 'w', canW()) || (ok() && role() == 'viewer' && request.resource.data.get('origin', '') == 'ministry' && request.resource.data.get('approved', true) == false); allow update: if pm('newsites', 'w', canW()); allow delete: if pm('newsites', 'd', mgr()); }
+    // (V44.2) وإدارةُ التفويج تضيف نقطةً بمصدر «tafweej» (لا بمصدر المكتب)
+    match /newsites/{id} { allow read: if pm('newsites', 'r', ok()); allow create: if pm('newsites', 'w', canW()) || (ok() && role() == 'viewer' && request.resource.data.get('origin', '') == 'ministry' && request.resource.data.get('approved', true) == false) || (ok() && role() == 'tafweej' && request.resource.data.get('origin', '') == 'tafweej'); allow update: if pm('newsites', 'w', canW()); allow delete: if pm('newsites', 'd', mgr()); }
     match /coreqs/{id} { allow read: if pm('coreqs', 'r', ok()); allow create: if pm('coreqs', 'w', canW()); allow update: if pm('coreqs', 'a', mgr()); allow delete: if pm('coreqs', 'd', mgr()); }
     // طلباتُ التصويب: يكتبها الميدانُ ولا يعتمدها إلا المهندس
     match /fixreqs/{id} { allow read: if pm('fixreqs', 'r', ok()); allow create: if pm('fixreqs', 'w', canW()); allow update: if pm('fixreqs', 'a', mgr()); allow delete: if pm('fixreqs', 'd', mgr()); }

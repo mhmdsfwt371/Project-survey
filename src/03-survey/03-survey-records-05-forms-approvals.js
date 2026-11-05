@@ -91,10 +91,33 @@ function svReview(r){
    تقنيًّا** يرفع النقطةَ إلى الوزارة، والوزارةُ تعتمد إعدادَ التركيب أو تُعيده
    بملاحظة — وحينها فقط تصير «جاهزةً للتركيب». في الوثيقة نفسِها: `review`
    للتقني و`minReview` للوزارة، فلا تُفقَد ولا تتعارض. */
+/* ═══ (V44.2) اعتمادُ إدارة التفويج — بدل اعتماد الوزارة ═══
+   Owner: «مفيش اعتماد وزارة — اعتماد إدارة التفويج». Its scope: the corridor points of Mina and Arafat (not camps, not the
+   Jamarat, not the train). A decision is per point, taken on the map at any time; it lives in one live settings document
+   (settings/tafappr: { m: { <site id>: { d:'ok'|'no'|'', why, note, by, at, repl?, pur?, crit? } } }).
+   The installation gate keeps its place in the cycle: a point in scope waits for «ok»; a point outside the scope needs no
+   outside approval any more. Old ministry approvals still count as approvals. */
+PV.TAF_SCOPE = { zones:{ 'منى':1, 'عرفات':1 }, types:{ 'ممر':1 } };
+PV.TAF_WHY = ['لا حاجة إليها', 'مكانها غير صحيح', 'مكرَّرة', 'سببٌ آخر'];
+function tafInScope(id){
+  var x = typeof siteFind === 'function' ? siteFind(id) : null;
+  return !!(x && PV.TAF_SCOPE.zones[x.zone] && PV.TAF_SCOPE.types[x.type]);
+}
+function tafOf(id){ return ((STATE.taf || {})[id]) || null; }
+function tafDecision(id){ var o = tafOf(id); return o && (o.d === 'ok' || o.d === 'no') ? o.d : ''; }
+function tafMay(){ var r = effRole(ROLE); return r === 'tafweej' || rankOf(r) >= rankOf('engineer'); }
 function minState(r){
   if (!r || svReview(r) !== 'approved') return '';
-  if (r.minReview === 'approved') return 'approved';
-  if (r.minReview === 'returned') return 'returned';
+  var id = r.id || r.site || '';
+  if (!id){   /* no id to look the point up by: the old meaning */
+    if (r.minReview === 'approved') return 'approved';
+    if (r.minReview === 'returned') return 'returned';
+    return 'pending';
+  }
+  if (!tafInScope(id)) return 'approved';
+  var d = tafDecision(id);
+  if (d === 'no') return 'returned';
+  if (d === 'ok' || r.minReview === 'approved') return 'approved';
   return 'pending';
 }
 function minOk(id){ return minState(STATE.recs[id]) === 'approved'; }

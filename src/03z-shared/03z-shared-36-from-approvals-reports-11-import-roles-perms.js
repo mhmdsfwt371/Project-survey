@@ -20,7 +20,7 @@ var ROLES = {
     n:'الإدارة العليا', d:'الموقفُ التنفيذيُّ والمخاطرُ والقرار — قراءةً',
     guide:'دليل الإدارة العليا — الموقف والقرار',
     /* V16.25: الخريطةُ ولوحةُ الفريق — من فوقُ يرى ما تحته كلَّه، قراءةً */
-    nav:['map','mywork','board','exec','mfu','mweek','msurv','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','wplan','pace','miles','evm','budm','risks','chg','ncr','repcenter','exp','diary','pmi','lessons','stake','reg','guide','acct','notif'],
+    nav:['map','mywork','board','exec','mfu','mtaf','mweek','msurv','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','wplan','pace','miles','evm','budm','risks','chg','ncr','repcenter','exp','diary','pmi','lessons','stake','reg','guide','acct','notif'],
     can:{ provision:1, edit:0, approve:0, settings:0, money:1, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0 } },
 
@@ -41,6 +41,15 @@ var ROLES = {
           exportAll:1, importAll:1, delete:1, users:1, phones:1, perms:1 }
   },
   /* (V43.18) the owner: supervisors keep the pace and «now · tomorrow · late» after the overview left — 'mdaily' added */
+  /* (V44.2) إدارةُ التفويج — تحت المهندس: ترى الخريطةَ والمواقعَ ومتابعةَ الوزارة والمسحَ الميداني، تضيف نقطةً (بمصدر «tafweej»)،
+     وتعتمد نقاطَ الممرات في منى وعرفات أو ترفضها بسببٍ وتعليق. لا تمسح نقطةً ولا تحرّكها ولا تعدّل مسحًا أو تركيبًا. */
+  tafweej:{
+    n:'إدارة التفويج', d:'اعتمادُ نقاط الممرات في منى وعرفات أو رفضُها من الخريطة، وإضافةُ النقاط',
+    guide:'دليل إدارة التفويج — الاعتماد من الخريطة',
+    nav:['map','site','newsite','mfu','mtaf','mweek','msurv','minst','mcos','mobs','mdaily','mcamps','pace','survey','added','guide','acct','notif'],
+    can:{ propose:1, edit:0, approve:0, settings:0, money:0, inventory:0, workshop:0,
+          exportAll:1, importAll:0, delete:0, users:0, phones:0, tafapprove:1 } },
+
   supervisor:{
     n:'مشرف', d:'الميدان ولوحة المتابعة — يسجّل الزيارةَ على أيِّ نقطة، ويعدّل بياناتِ النقطة الأساسية، ويردّ زيارةَ فريقه للتصحيح، ويُنشئ فنيّيه — والاعتمادُ والتصنيفُ للمهندس',   /* (V28.6) */
     guide:'دليل الفني والمشرف — العمل الميداني',
@@ -61,10 +70,10 @@ var ROLES = {
     /* V16.55: الوزارةُ ترى حساباتِ الوزارة وحدَها — قراءةً (can.users = 0) */
     /* V16.65: «المتعذّر والراكد» للوزارة قراءةً — بصوره وسببه وقرار المهندس */
     /* V16.66: اعتمادُ الوزارة لإعداد التركيب — فعلُها الوحيد في النظام */
-    nav:['map','site','newsite','mfu','mweek','msurv','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','pace','repcenter','exp','diary','miles','reg','co','survey','minappr','stuck','chalm','dis','ncr','users','guide','acct'],
+    nav:['map','site','newsite','mfu','mtaf','mweek','msurv','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','pace','repcenter','exp','diary','miles','reg','co','survey','minappr','stuck','chalm','dis','ncr','users','guide','acct'],
     /* minapprove: اعتمادُ إعداد التركيب — الفعلُ الوحيدُ الذي تكتبه الوزارة */
     can:{ propose:1, edit:0, approve:0, settings:0, money:0, inventory:0, workshop:0,
-          exportAll:1, importAll:0, delete:0, users:0, phones:0, minapprove:1 }
+          exportAll:1, importAll:0, delete:0, users:0, phones:0, minapprove:0 }   /* (V44.2) لا اعتمادَ للوزارة — صار لإدارة التفويج */
   },
   /* الفني يرث «مشرف» ويعمل تحته: يرى المُسند إليه وينفّذه ولا يعتمد شيئًا */
   tech:{
@@ -312,7 +321,7 @@ function pmCard(){
    «مديره»: حسابًا من النظام مرتبتُه أعلى. فالفنيُّ مديرُه مشرفُه،
    والمشرفُ مديرُه المهندس، والمهندسُ مديرُه مديرُ المشروع.
    والمرتبةُ تُقرأ من الدور — والدورُ يُشتقُّ من الوظيفة. */
-var ROLE_RANK = { exec:110, admin:100, engineer:90, supervisor:70,
+var ROLE_RANK = { exec:110, admin:100, engineer:90, tafweej:80, supervisor:70,
                   cprep:50, casm:50, cins:50,
                   tech:30, buyer:30, store:30, acct:30, helper:30, driver:30,
                   viewer:10 };
@@ -468,6 +477,7 @@ var TABS = {
     ['mobs','التحديات والمعوقات','🚧','كلُّ عائقٍ بفئته وجهته وآلية معالجته ومسؤوله وحالته — بفلتر المشعر والنوع.'],
     ['mreq','طلبات الوزارة','📨','ما طلبته الوزارةُ وآخرُ إفادةٍ فيه والدعمُ المطلوب.', '', 'hidden'],
     ['mdaily','ملخص العمل اليومي','📈','الزياراتُ والتركيبُ والفكُّ وما تحتاج زيارةً أخرى تقنيًا — يومًا بيوم.'],
+    ['mtaf','اعتمادات إدارة التفويج','🧭','نقاطُ الممرات في منى وعرفات: ما اعتُمد وما رُفض بسببه وما بقي — بالمشعر، بقوائمَ وتصدير.'],   /* (V44.2) */
     ['pace','الوتيرة والهدف','⏱','هنلحق؟ — المتبقّي والموعد والمطلوب يوميًّا، ومعدّلُ آخر سبعة أيام، وتاريخُ الانتهاء المتوقّع.'],   /* (V43.18) from the overview */
     /* (V43.18) the overview's remaining tabs — hidden, reachable by key for exports and old links */
     ['over','الصورة العامة','📊','الصورة التنفيذية لحظيًّا — تُحدَّث مع كل عملية ميدانية.', '', 'hidden'],
@@ -544,7 +554,7 @@ var TABS = {
     ['survey','المسح الميداني','🔍','ما مُسح ومن مسحه ومتى — وإعادةُ تصنيف ما تعذّر منه لزيارةٍ ثانية.'],
     ['svappr','الاعتماد التقني','✅','ما زاره المشرفون ببياناته الجديدة — يعتمده المهندسُ تقنيًّا أو يردُّه لزيارةٍ أخرى، ثم يقترح حلَّه.'],
     ['solution','حل التركيب','🔧','الأجهزةُ المقترحة لكل نقطة — يعتمدها المهندس قبل أن تصير طلبَ تركيب.'],
-    ['minappr','اعتماد الوزارة','🏛','ما اعتُمد تقنيًّا وينتظر اعتمادَ الوزارة لإعداد التركيب — تعتمده أو تُعيده بملاحظة.'],
+    ['minappr','اعتماد الوزارة','🏛','ما اعتُمد تقنيًّا وينتظر اعتمادَ الوزارة لإعداد التركيب — تعتمده أو تُعيده بملاحظة.', '', 'hidden'],
     ['ready','جاهز للتركيب','🟠','ما اعتمدته الوزارةُ وحلُّه معتمدٌ ولم يُسنَد تركيبُه بعد — يُجدوَل من هنا.'],
     ['qa','التدقيق الهندسي','🔎','اعتماد التركيبات والسيريالات قبل الإقفال — ولا نقاطَ قبله.'],
     ['ncr','عدم المطابقة','🚫','ما خالف المواصفة — وإجراؤه التصحيحي حتى الإغلاق.'],

@@ -270,6 +270,7 @@ function mapPaint(light){
   if (covPaint.on) covPaint();   /* (V39.14) */
   if (heatPaint.on) heatPaint();   /* (V39.16) */   /* (V25.7) */
   /* (V38.34) train gates are registry points now — painted like any point */
+  if (PV.TAF_LAYER && typeof tafLayerSync === 'function') tafLayerSync();   /* (V44.2) نقاطُ ملف ١٤٤٧ فوق الرسمة */
 }
 
 /* (V38.20) «فتح موقع النقطة على الخريطة لا يعمل للمشرف»: كان الطيرانُ بعد نصف ثانيةٍ ثابتة، والخريطةُ في أوّل فتحٍ

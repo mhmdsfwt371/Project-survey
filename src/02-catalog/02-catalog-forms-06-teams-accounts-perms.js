@@ -237,11 +237,11 @@ var PERMS = [
 ];
 
 var /* بترتيب السلطة: من يملك كلَّ شيءٍ إلى من ينقل ولا يكتب */
-ROLE_ORDER = ['admin','engineer','buyer','store','acct','cprep','casm',
+ROLE_ORDER = ['admin','engineer','tafweej','buyer','store','acct','cprep','casm',
               'supervisor','cins','tech','helper','driver','viewer'];
 
 function roleName(k){
-  return { engineer:'مهندس', supervisor:'مشرف', tech:'فني', cprep:'تهيئة',
+  return { engineer:'مهندس', tafweej:'إدارة التفويج', supervisor:'مشرف', tech:'فني', cprep:'تهيئة',
            casm:'تجميع', cins:'تركيب', viewer:'وزارة' }[k] || (typeof ROLES === 'object' && ROLES[k] && ROLES[k].n) || k;   /* (V39.96) admin, exec and custom roles by their own name — not «admin»/«exec» */
 }
 

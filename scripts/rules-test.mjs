@@ -40,6 +40,7 @@ await env.withSecurityRulesDisabled(async (c) => {
   await setDoc(doc(db, 'users/sup'),  { name:'مشرف',   role:'supervisor', active:true });
   await setDoc(doc(db, 'users/tec'),  { name:'فني',    role:'tech',       active:true });
   await setDoc(doc(db, 'users/vwr'),  { name:'وزارة',  role:'viewer',     active:true });
+  await setDoc(doc(db, 'users/taf'),  { name:'تفويج',  role:'tafweej',    active:true });   // (V44.2)
   await setDoc(doc(db, 'users/off'),  { name:'معطّل',  role:'tech',       active:false });
   await setDoc(doc(db, 'recs/S1'),    { id:'S1', access:'تم الوصول', review:'pending', by:'فني' });
   await setDoc(doc(db, 'inss/S1'),    { id:'S1', status:'مُركّب', approved:false, parts:{} });
@@ -482,6 +483,22 @@ await deny('ولا تُرفَع علامةُ الحذف عنه',                
 await ok  ('الفنيُّ يكتب صورةً خامًا بمسار الطوارئ', setDoc(doc(as('tec'), 'photoblobs/S1-9'), { site:'S1', data:'data:image/jpeg;base64,AAAA', at:9 }));
 await ok  ('(V38.62) والمهندسُ يقرأ صورةً خامًا واحدةً حتى تنتقل إلى الدرايف', getDoc(doc(as('eng'), 'photoblobs/S1-9')));
 await deny('ولا يسرد أحدٌ مجموعةَ الخام (لا تُسحَب إلى الأجهزة)', getDocs(query(collection(as('eng'), 'photoblobs'), limit(5))));
+/* (V44.2) إدارةُ التفويج: تعتمد في وثيقتها، وتضيف نقطةً بمصدرها، وتكتب أثرَها — ولا شيءَ غير ذلك */
+console.log('\n══ إدارةُ التفويج ══');
+const tv = { m:{ 'NSK-ARF-COR-0001':{ d:'no', why:'مكانها غير صحيح', note:'تجربة', by:'تفويج', at:1 } }, at:1 };
+await ok  ('إدارةُ التفويج تكتب قرارَها في settings/tafappr', setDoc(doc(as('taf'), 'settings/tafappr'), tv, { merge:true }));
+await ok  ('والمهندسُ يكتبه',                            setDoc(doc(as('eng'), 'settings/tafappr'), tv, { merge:true }));
+await ok  ('والجميعُ يقرؤه (الوزارةُ ترى القرار)',        getDoc(doc(as('vwr'), 'settings/tafappr')));
+await deny('ولا تكتبه الوزارة',                          setDoc(doc(as('vwr'), 'settings/tafappr'), tv, { merge:true }));
+await deny('ولا المشرف',                                 setDoc(doc(as('sup'), 'settings/tafappr'), tv, { merge:true }));
+await deny('ولا تكتب إدارةُ التفويج حقلًا غريبًا فيه',   setDoc(doc(as('taf'), 'settings/tafappr'), { m:{}, x:1 }, { merge:true }));
+await deny('ولا تكتب إعداداتٍ أخرى',                     setDoc(doc(as('taf'), 'settings/points'), { tgtSurvey:1 }, { merge:true }));
+await ok  ('وتضيف نقطةً بمصدر «tafweej»',                setDoc(doc(as('taf'), 'newsites/NSK-ARF-RDR-N900TF'), { id:'NSK-ARF-RDR-N900TF', zone:'عرفات', type:'ممر', origin:'tafweej', isNew:true, approved:false, lat:21.35, lng:39.98 }));
+await deny('ولا تضيفها بمصدر المكتب',                    setDoc(doc(as('taf'), 'newsites/NSK-ARF-RDR-N901TF'), { id:'NSK-ARF-RDR-N901TF', zone:'عرفات', type:'ممر', origin:'office', isNew:true, approved:false, lat:21.35, lng:39.98 }));
+await ok  ('وتكتب أثرَ قرارها في السجل',                 setDoc(doc(as('taf'), 'events/TF1'), { ts:1, at:1, day:'2026-11-05', what:'اعتماد إدارة التفويج — X', by:'تفويج', dev:'d' }));
+await deny('ولا تكتب زيارةً',                            setDoc(doc(as('taf'), 'recs/TF1'), { id:'TF1', access:'تم الوصول', review:'pending', by:'تفويج' }));
+await deny('ولا تركيبًا',                                setDoc(doc(as('taf'), 'inss/TF1'), { id:'TF1', status:'مُركّب' }));
+await deny('ولا تحذف نقطةً أو تحرّكها',                  setDoc(doc(as('taf'), 'sites/S1'), { lat:21.1, lng:39.1 }, { merge:true }));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 if (bad) console.log('::error title=محاكي القواعد::سقط ' + bad + ' فحصًا من ' + n + ' — الأسماءُ في التنبيهات أعلاه');

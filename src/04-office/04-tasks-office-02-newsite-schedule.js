@@ -121,7 +121,7 @@ function nsAddedText(x){
   return t('تمت إضافة') + ' ' + t(tp) + ' ' + t(/[\u0629\u0627]$/.test(tp) ? 'جديدة' : 'جديد') + (where ? ' \u2014 ' + where : '') + (x.by ? ' \u2014 ' + x.by : '');
 }
 function nsSave(){
-  var minProp = ROLE === 'viewer', office = nsOffice() || minProp;   /* (V37.68) قرارُ المالك: نقطةُ الوزارة «مقترحة» يعتمدها المهندس — بلا صورٍ إلزاميةٍ ولا زيارة */
+  var minProp = ROLE === 'viewer', tafProp = effRole(ROLE) === 'tafweej', office = nsOffice() || minProp || tafProp;   /* (V44.2) إدارةُ التفويج تضيف من المكتب — بلا صورٍ إلزامية، بمصدرها */   /* (V37.68) قرارُ المالك: نقطةُ الوزارة «مقترحة» يعتمدها المهندس — بلا صورٍ إلزاميةٍ ولا زيارة */
   var lat = NEWSITE.lat || (PV.MYPOS && PV.MYPOS.lat), lng = NEWSITE.lng || (PV.MYPOS && PV.MYPOS.lng);
   if (!lat || !lng){ toast(t('التقط موضعك أولًا')); return; }
 
@@ -178,10 +178,11 @@ function nsSave(){
     reason:NEWSITE.reason, why:NEWSITE.why,
     region:'منطقة ' + NEWSITE.zone, fstat:'لم يبدأ', inout:'',
     isNew:true, approved:false, by:STATE.meta.name || '', at:Date.now(),
-    origin:minProp ? 'ministry' : (office ? 'office' : 'field'),
+    origin:minProp ? 'ministry' : tafProp ? 'tafweej' : (office ? 'office' : 'field'),
     note:NEWSITE.note
   };
   if (NEWSITE.ex47 && !minProp) site.ex47 = NEWSITE.ex47;   /* (V37.92) نقطةٌ من ملف ١٤٤٧ وُضعت على الخريطة */
+  if (PV.NS_REPL){ site.replOf = PV.NS_REPL; site.note = (site.note ? site.note + ' — ' : '') + t('بديلٌ عن') + ' ' + PV.NS_REPL; }   /* (V44.2) «أضف البديل» من رفض «مكانها غير صحيح» */
   if (nb){ site.nearOf = nb.x.id; if (!minProp) notifPush('نقطة جديدة بجوار مسجَّلة', id + ' \u2190 ' + Math.round(nb.d) + ' م ' + t('من') + ' ' + (nb.x.name || nb.x.id) + ' — ' + t('راجِع أنها ليست مكرّرة'), { site:id, lv:'مهم' }); }   /* (V39.54) */
   if (minProp) propKeep(site); else STATE.sites.push(site);   /* (V37.69) المقترحةُ خارجَ السجلِّ حتى الاعتماد */
   SITE_IX = null; SITE_TOK = null;
@@ -191,13 +192,15 @@ function nsSave(){
   /* الصورُ إلى درايف كسائر صور النظام — لا إلى القاعدة.
      كانت تُكتَب خامًّا هنا وحدها: خمسُ صورٍ بمئتي كيلو تقارب حدَّ الوثيقة
      الواحدة، وتلتهم الجيجابايتَ المتاحَ في أيام. */
-  if (!minProp) Object.keys(NEWSITE.photos).forEach(function(i){
+  if (PV.NS_REPL && typeof tafSave === 'function'){ var o0 = tafOf(PV.NS_REPL) || {}; tafSave(PV.NS_REPL, 'no', o0.why || 'مكانها غير صحيح', o0.note || '', { repl:id }); }
+  PV.NS_REPL = '';
+  if (!minProp && !tafProp) Object.keys(NEWSITE.photos).forEach(function(i){
     var p = NEWSITE.photos[i];
     if (typeof photoQueue === 'function') photoQueue(id, 'new_' + i, p && (p.d || p.data));
   });
 
   if (!office) nsVisitRec(id);
-  if (!minProp) stepDone('newsite', id, office ? 'أضافها المكتب — تُجدوَل زيارتُها' : 'أُضيفت في الموقع — تُحتسَب زيارة', 0);
+  if (!minProp && !tafProp) stepDone('newsite', id, office ? 'أضافها المكتب — تُجدوَل زيارتُها' : 'أُضيفت في الموقع — تُحتسَب زيارة', 0);
   /* (V43.17) owner: a field addition is added automatically — no approval. The notice says what was added, by type, and where */
   if (!minProp) notifPush('موقع جديد', nsAddedText(site), { site:id, lv:'عادي' });
   if (!minProp) logEvent('موقع جديد — ' + id + ' · ' + NEWSITE.zone

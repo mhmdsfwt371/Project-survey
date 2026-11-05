@@ -32,7 +32,7 @@ function genPass(){
 const ROLE_AR = { 'الإدارة العليا':'exec','إدارة عليا':'exec','مدير المشروع':'admin','مدير':'admin','مهندس':'engineer',
   'مشرف':'supervisor','فني':'tech','وزارة':'viewer','مطلع':'viewer','مطّلع':'viewer','فريق التهيئة':'cprep',
   'فريق التجميع':'casm','فريق التركيب':'cins','مشتريات':'buyer','مستودع':'store','محاسب':'acct','مساعد فني':'helper','سائق':'driver' };
-const KNOWN = new Set(['exec','admin','engineer','supervisor','tech','viewer','cprep','casm','cins','buyer','store','acct','helper','driver']);
+const KNOWN = new Set(['exec','admin','engineer','tafweej','supervisor','tech','viewer','cprep','casm','cins','buyer','store','acct','helper','driver']);
 /* الأدوارُ المخصَّصةُ من التطبيق (settings/roles) تُقبَل بمفتاحها أو باسمها — كالأساسية */
 try {
   const rd = await db.collection('settings').doc('roles').get();

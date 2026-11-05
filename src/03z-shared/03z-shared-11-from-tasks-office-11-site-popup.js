@@ -104,6 +104,7 @@ function popHtml(){
     +   '</div>'
 
     /* (V39.27) the mode's summary first — then what the field recorded, folded, in the mode's own form */
+    + (typeof tafPopHtml === 'function' ? tafPopHtml(s) : '')   /* (V44.2) اعتمادُ إدارة التفويج ومعيارُ النقطة */
     + popSumHtml(s) + popFieldHtml(s) + popLiveHtml(s)   /* (V39.49) one live panel per point: Nusuk and AFAQY PRO */
 
     + '<div class="pop-rows">'
@@ -259,11 +260,9 @@ function popNextHtml(s, rec, sv){
             step = 'تمت الزيارة — تنتظر الاعتمادَ التقني'; who = 'المهندس';
             if (may('approve')) go = btn('✅ ' + t('افتح الاعتماد التقني'),'btn-primary btn-sm',' data-goto="svappr" data-gotosite="' + esc(s.id) + '"');
           } else if (ms2 === 'returned'){
-            step = 'أعادتها الوزارةُ بملاحظة — تنتظر المعالجة'; who = 'المهندس';
-            if (may('approve')) go = btn('🏛 ' + t('افتح اعتماد الوزارة'),'btn-primary btn-sm',' data-goto="minappr" data-gotosite="' + esc(s.id) + '"');
+            step = 'رفضتها إدارة التفويج — السببُ في البطاقة'; who = 'إدارة التفويج';
           } else if (ms2 !== 'approved'){
-            step = 'اعتُمدت تقنيًّا — تنتظر اعتمادَ الوزارة لإعداد التركيب'; who = 'الوزارة';
-            if (may('minapprove')) go = btn('🏛 ' + t('افتح اعتماد الوزارة'),'btn-primary btn-sm',' data-goto="minappr" data-gotosite="' + esc(s.id) + '"');
+            step = 'اعتُمدت تقنيًّا — تنتظر اعتمادَ إدارة التفويج'; who = 'إدارة التفويج';
           } else if (!so){
             step = 'تمت الزيارة — تنتظر تحديدَ ما سيُركَّب'; who = 'المهندس';
             if (may('edit')) go = btn('🧩 ' + t('حدّد القطع'),'btn-primary btn-sm',' data-goto="solution"');

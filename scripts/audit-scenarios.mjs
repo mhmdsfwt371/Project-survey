@@ -2912,6 +2912,65 @@ console.log('\n══ ١٢٨ · لوحة نشاط المستخدمين — ال�
   w.mtXlsx = mx; w.ROLE = role0; w.STATE.meta.role = mr0; w.STATE.events = evs0; w.PV.ACT = A0; delete w.PTAB.ev;
 }
 
+/* ── ١٢٩ · (V44.2) اعتماد إدارة التفويج بدل اعتماد الوزارة: النطاق والبوابة والخريطة والمعيار واللوحة والبديل ── */
+console.log('\n══ ١٢٩ · اعتماد إدارة التفويج — نقاطُ ممرات منى وعرفات، من الخريطة، بمعيار كلِّ نقطة ══');
+{
+  const role0 = w.ROLE, mr0 = w.STATE.meta.role, nm0 = w.STATE.meta.name, taf0 = w.STATE.taf, cf0 = w.confirm, recs0 = Object.assign({}, w.STATE.recs);
+  w.confirm = () => true; w.STATE.taf = {};
+  const S = w.STATE.sites, P = w.PV.TAF1447;
+  const minaDone = S.find(x => x.zone === 'منى' && x.type === 'ممر' && P.m[x.id] && P.m[x.id][1] === 'd');
+  const minaNew  = S.find(x => x.zone === 'منى' && x.type === 'ممر' && !P.m[x.id]);
+  const arf = S.find(x => x.zone === 'عرفات' && x.type === 'ممر'), arf2 = S.filter(x => x.zone === 'عرفات' && x.type === 'ممر')[1];
+  const camp = S.find(x => x.zone === 'منى' && x.type === 'مخيم');
+  T(!!(minaDone && minaNew && arf && arf2 && camp) && w.ROLES.tafweej && w.rankOf('tafweej') < w.rankOf('engineer') && w.rankOf('tafweej') > w.rankOf('supervisor'), 'الدور «إدارة التفويج» تحت المهندس وفوق المشرف');
+  T(w.tafInScope(arf.id) && w.tafInScope(minaDone.id) && !w.tafInScope(camp.id), 'النطاق: ممرات منى وعرفات — لا المخيمات');
+  T(Object.keys(P.m).length === 63 && P.pts.length === 106 && Object.values(P.m).filter(m => m[1] === 'd').length === 43, 'ملف ١٤٤٧: ١٠٦ نقاط، ٦٣ تطابقًا مع ممرات منى، والمركَّبةُ الثلاث والأربعون كلُّها مطابقة');
+  /* the gate: a technically approved corridor waits for the tafweej management; a camp needs no outside approval */
+  w.STATE.recs[arf.id] = Object.assign({}, w.STATE.recs[arf.id] || {}, { id:arf.id, access:'تم الوصول', review:'approved', status:'تمت الزيارة', at:Date.now() });
+  w.STATE.recs[camp.id] = Object.assign({}, w.STATE.recs[camp.id] || {}, { id:camp.id, access:'تم الوصول', review:'approved', status:'تمت الزيارة', at:Date.now() });
+  const life = x => { if (w.DB.memo) w.DB.memo.life = null; if (w.MK) w.MK.lifeMemo = null; return w.lifeOfRaw(x); };
+  T(w.minState(w.STATE.recs[arf.id]) === 'pending' && life(arf) === 'minwait', 'ممرٌّ اعتُمد تقنيًّا ينتظر إدارةَ التفويج');
+  T(w.minState(w.STATE.recs[camp.id]) === 'approved', 'ومخيمٌ اعتُمد تقنيًّا لا ينتظر اعتمادًا خارجيًّا — لا اعتمادَ للوزارة');
+  /* the roles: the ministry decides nothing, the supervisor neither; the tafweej management and the engineer decide */
+  w.ROLE = 'viewer'; w.STATE.meta.role = 'viewer';
+  T(!w.tafMay() && !w.may('minapprove'), 'الوزارةُ لا تعتمد شيئًا بعد اليوم');
+  w.ROLE = 'supervisor'; w.STATE.meta.role = 'supervisor';
+  let h = w.tafPopHtml(arf);
+  T(/اعتماد إدارة التفويج/.test(h) && !/data-tafok/.test(h), 'المشرفُ يرى الحالةَ ولا يرى الزرَّين');
+  w.ROLE = 'tafweej'; w.STATE.meta.role = 'tafweej'; w.STATE.meta.name = 'إدارة التفويج — تجربة';
+  h = w.tafPopHtml(arf);
+  T(/data-tafok/.test(h) && /data-tafno/.test(h) && /معيار النقطة/.test(h) && /مسجد نمرة/.test(h), 'إدارةُ التفويج ترى «اعتمد» و«لا تعتمد» ومعيارَ النقطة (عرفات: نمرة وجبل الرحمة والقطار)');
+  T(w.tafPopHtml(camp) === '', 'ولا شيءَ على المخيم');
+  T(w.tafSave(arf.id, 'no', 'مكانها غير صحيح', '') === false && !w.tafDecision(arf.id), 'الرفضُ بلا تعليقٍ مرفوض');
+  w.tafSave(arf.id, 'ok');
+  T(w.tafDecision(arf.id) === 'ok' && w.minState(w.STATE.recs[arf.id]) === 'approved' && life(arf) === 'ready', 'الاعتمادُ يفتح «جاهزة للتركيب»');
+  w.tafSave(arf2.id, 'no', 'مكانها غير صحيح', 'تحت جسر بلا تثبيت');
+  T(w.tafDecision(arf2.id) === 'no' && life(arf2) === 'minback' && w.LIFE.minback.c === '#E5484D' && /رفضتها/.test(w.LIFE.minback.n), 'والرفضُ — ولو قبل الزيارة — أحمرُ ويوقفها');
+  h = w.tafPopHtml(arf2);
+  T(/مكانها غير صحيح/.test(h) && /تحت جسر بلا تثبيت/.test(h) && /data-tafrepl/.test(h) && /data-tafundo/.test(h), 'بطاقةُ المرفوضة: السببُ والتعليق، و«أضف البديل» و«تراجع»');
+  /* the criterion from the 1447 file */
+  const cD = w.tafCrit(minaDone), cN = w.tafCrit(minaNew);
+  T(/إعادة تركيب/.test(cD.cat) && cD.lines.some(l => /النقطة رقم/.test(l[1])) && /نقطة إكمال/.test(cN.cat) && cN.lines.some(l => /ليست في ملف/.test(l[1])), 'معيارُ منى: المركَّبةُ في ١٤٤٧ برقمها في الملف، والجديدةُ «إكمالٌ» مع أقرب نقطةٍ في الملف');
+  /* the replacement: a point added from «add the replacement» is the tafweej management's and points back */
+  w.PV.NS_REPL = arf2.id; Object.assign(w.NEWSITE, { zone:'عرفات', type:'ممر', lat:+arf2.lat + 0.0004, lng:+arf2.lng + 0.0004, nm:'بديل تجربة', sq:'', sign:'', photos:{}, chals:[], reason:'', co:'', coReq:'' });
+  const n0 = S.length; w.nsSave();
+  const nw = S[S.length - 1];
+  T(S.length === n0 + 1 && nw.origin === 'tafweej' && nw.replOf === arf2.id && (w.tafOf(arf2.id) || {}).repl === nw.id, 'البديلُ يُضاف بمصدر «إدارة التفويج» ويُربَط بالمرفوضة في الاتجاهين');
+  /* the dashboard */
+  w.ROLE = 'viewer'; w.STATE.meta.role = 'viewer';
+  T(w.tabsOf('mfu').some(x => x[0] === 'mtaf'), 'الوزارةُ ترى «اعتمادات إدارة التفويج» في متابعة الوزارة');
+  w.PV.TAF_Z = 'عرفات'; w.PV.TAF_LIST = 'no';
+  const d = w.tafDash();
+  T(/المتبقّي/.test(d) && /data-tafz="منى"/.test(d) && /data-tafz="عرفات"/.test(d) && /أسبابُ الرفض/.test(d) && /تحت جسر بلا تثبيت/.test(d) && /إضافاتُ إدارة التفويج/.test(d), 'اللوحة: المتبقّي، وبطاقتا منى وعرفات، وبطاقةُ عرفات بأسباب الرفض والمرفوضة بتعليقها، وإضافاتُ إدارة التفويج');
+  let got = null; const mx = w.mtXlsx; w.mtXlsx = (n, hd, rows) => { got = { hd, rows }; return true; };
+  w.tafXlsx();
+  T(got && got.rows.length === w.tafSites('').length && got.hd.indexOf('سبب الرفض') > -1 && got.hd.indexOf('رقمها في ملف ١٤٤٧') > -1 && got.rows.some(r => r[5] === 'تحت جسر بلا تثبيت'), 'الإكسل: كلُّ نقاط النطاق بالقرار والسبب والتعليق ومعيارِها ورقمِها في ملف ١٤٤٧');
+  w.mtXlsx = mx;
+  T(w.actType('رفض إدارة التفويج — X · مكانها غير صحيح') === 'appr' && w.actType('اعتماد إدارة التفويج — X') === 'appr', 'ويُعَدّ الاعتمادُ والرفضُ في «نشاط المستخدمين»');
+  S.splice(S.indexOf(nw), 1); w.SITE_IX = null;
+  w.STATE.recs = recs0; w.STATE.taf = taf0; w.confirm = cf0; w.ROLE = role0; w.STATE.meta.role = mr0; w.STATE.meta.name = nm0; w.PV.NS_REPL = ''; w.PV.TAF_Z = '';
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

@@ -207,6 +207,7 @@ PAGE.mfu = { m:'المتابعة', t:'متابعة الوزارة',
     if (cur === 'mdaily') return (svListPop() + supPopHtml()) + head + mtDaily();   /* (V37.62) */
     if (cur === 'pace') return head + overPaceBody();   /* (V43.18) «الوتيرة والهدف» moved here from the overview */
     if (['over', 'now', 'reg', 'inst', 'svdash'].indexOf(cur) > -1) return overTabBody(head, cur);   /* (V43.18) hidden, by key */
+    if (cur === 'mtaf') return head + (typeof tafDash === 'function' ? tafDash() : '');   /* (V44.2) اعتمادات إدارة التفويج */
     if (cur === 'mcamps') return head + tardBarHtml() + mtCamps();   /* (V43.19) */   /* (V37.75) المخيماتُ المركزية — إشغالٌ حيٌّ من نظام البطاقات */
     return head + tardBarHtml() + mfuSummary() + (typeof svdLite === 'function' && seesRaw('svdash') ? mtDetails('ما حُصر في المسح — الغرف والهياكل والحساسات', svdLite) : '');   /* (V43.18) */
   }};

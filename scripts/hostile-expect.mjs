@@ -68,6 +68,7 @@ export const HOSTILE = {
   'settings/contacts': { str:DENY3, ina:DENY3, tec:'ADD' },
   'settings/cotel':    { str:DENY3, ina:DENY3, tec:'ADD' },
   'settings/wtask':    { str:DENY3, ina:DENY3, tec:'ADD' },
+  'settings/tafappr':  { str:DENY3, ina:DENY3, tec:'ADD' },   /* (V44.2) قراراتُ إدارة التفويج — يقرؤها الفعّالون ويكتبها المهندسُ والمدير وإدارةُ التفويج */
   'settings/perms':    { str:DENY3, ina:DENY3, tec:'ADD' },
   'settings/roles':    { str:DENY3, ina:DENY3, tec:'ADD' },
   'settings/{id}':     { str:DENY3, ina:DENY3, tec:'ADD' }

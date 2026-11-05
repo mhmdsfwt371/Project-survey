@@ -208,6 +208,15 @@ function liveSmall(){
       if (CUR === 'wbs' && !document.querySelector('#content input:focus')) render(1);
     }, function(e){ softErr('إنصات جدول المتابعة', e, ''); }));
   } catch (e){ softErr('إنصات جدول المتابعة', e, ''); }
+  /* (V44.2) قراراتُ إدارة التفويج: وثيقةٌ واحدةٌ حيّة — اعتمادٌ على الخريطة يُلوِّن النقطةَ عند الجميع في ثوانٍ */
+  try {
+    PV.LIVE_SMALL.push(DB.col('settings').doc('tafappr').onSnapshot(function(doc){
+      snapReads(doc);
+      STATE.taf = (doc && doc.exists && (doc.data() || {}).m) || {};
+      if (DB.memo) DB.memo.life = null;
+      if (!document.querySelector('#content input:focus, #content textarea:focus') && ['map', 'mfu', 'survey', 'site'].indexOf(CUR) > -1) render(1);
+    }, function(e){ softErr('إنصات اعتماد إدارة التفويج', e, ''); }));
+  } catch (e){ softErr('إنصات اعتماد إدارة التفويج', e, ''); }
   /* ═══ وثيقتي أنا — لكلِّ دور ═══
      إنصاتُ «users» لمن رتبتُه فوق ثلاثين وحدَه، فالفنيُّ والمساعدُ والسائقُ
      والمشترياتُ والوزارةُ لا يصلهم تغييرُ دورهم إلا بخروجٍ ودخول — وهي أكثرُ

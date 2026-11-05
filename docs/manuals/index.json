@@ -1,5 +1,5 @@
 {
-  "version": "V44.1",
+  "version": "V44.2",
   "manuals": [
     {
       "id": "exec",
@@ -15,6 +15,11 @@
       "id": "engineer",
       "n": "مهندس",
       "file": "nusuk-manual-engineer.docx"
+    },
+    {
+      "id": "tafweej",
+      "n": "إدارة التفويج",
+      "file": "nusuk-manual-tafweej.docx"
     },
     {
       "id": "supervisor",

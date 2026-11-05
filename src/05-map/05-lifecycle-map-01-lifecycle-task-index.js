@@ -26,8 +26,8 @@ var LIFE = {
   tomorrow:  { c:'#B388FF', n:'مجدولةٌ غدًا',             d:'موعدُ زيارتها غدًا.' },
   visited:   { c:'#4FA3FF', n:'زيارةٌ تمّت — تنتظر الاعتماد', d:'المشرفُ زارها وحفظ، والمهندسُ لم يراجعها بعد.' },
   revisit:   { c:'#FF8FA3', n:'أعادها المهندس — زيارة أخرى', d:'ردَّها المهندسُ بسببٍ مكتوب، وعادت إلى مهام المشرف.' },
-  minwait:   { c:'#F2B134', n:'معتمدةٌ تقنيًّا — بانتظار الوزارة', d:'اعتمدها المهندسُ تقنيًّا، وتنتظر اعتمادَ الوزارة لإعداد التركيب.' },
-  minback:   { c:'#D96C6C', n:'ردّتها الوزارة — تحتاج معالجة', d:'أعادتها الوزارةُ بملاحظةٍ — يعالجها المهندسُ ويرفعها ثانيةً.' },
+  minwait:   { c:'#F2B134', n:'بانتظار اعتماد إدارة التفويج', d:'نقطةُ ممرٍّ في منى أو عرفات تنتظر قرارَ إدارة التفويج قبل أن تُجدوَل للتركيب.' },
+  minback:   { c:'#E5484D', n:'رفضتها إدارة التفويج', d:'لن تُركَّب — السببُ والتعليقُ في بطاقتها.' },
   ready:     { c:'#FF8C42', n:'معتمدةٌ من الوزارة — بانتظار الجدولة', d:'اعتمدت الوزارةُ إعدادَ تركيبها، وتنتظر إسنادَ تركيب.' },
   sched:     { c:'#7C5CFF', n:'مجدولة للتركيب',            d:'أُسند تركيبُها لفريقٍ بموعد.' },   /* (V37.64) الاسمُ نفسُه في اللوحات */
   /* (V38.60) the two quick statuses of an installation that were pressed and never coloured */
@@ -79,6 +79,7 @@ function lifeOfRaw(x){
   if (taskKindOf(id, 'maint')) return 'maint';
   if (handDone(id)) return 'handed';
   if (insDone(id)) return 'installed';
+  if (typeof tafDecision === 'function' && tafDecision(id) === 'no' && tafInScope(id)) return 'minback';   /* (V44.2) rejected by the tafweej management — red, not installed */
   /* (V38.60) «قيد التركيب» and «متعذّر» from the quick marks or the form colour the point — they stayed «scheduled» */
   var insQ = STATE.inss[id];
   if (insQ && insStatusIs(insQ.status, 'متعذّر')) return 'insfail';
