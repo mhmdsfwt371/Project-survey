@@ -70,7 +70,7 @@ var ROLES = {
     /* V16.55: الوزارةُ ترى حساباتِ الوزارة وحدَها — قراءةً (can.users = 0) */
     /* V16.65: «المتعذّر والراكد» للوزارة قراءةً — بصوره وسببه وقرار المهندس */
     /* V16.66: اعتمادُ الوزارة لإعداد التركيب — فعلُها الوحيد في النظام */
-    nav:['map','site','newsite','mfu','mtaf','mtafcat','mweek','msurv','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','pace','repcenter','exp','diary','miles','reg','co','survey','minappr','stuck','chalm','dis','ncr','users','guide','acct'],
+    nav:['map','site','newsite','mfu','mtaf','mtafcat','mweek','msurv','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','pace','repcenter','exp','diary','miles','reg','co','survey','stuck','chalm','dis','ncr','users','guide','acct'],
     /* minapprove: اعتمادُ إعداد التركيب — الفعلُ الوحيدُ الذي تكتبه الوزارة */
     can:{ propose:1, edit:0, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0, minapprove:0 }   /* (V44.2) لا اعتمادَ للوزارة — صار لإدارة التفويج */
@@ -555,7 +555,7 @@ var TABS = {
     ['survey','المسح الميداني','🔍','ما مُسح ومن مسحه ومتى — وإعادةُ تصنيف ما تعذّر منه لزيارةٍ ثانية.'],
     ['svappr','الاعتماد التقني','✅','ما زاره المشرفون ببياناته الجديدة — يعتمده المهندسُ تقنيًّا أو يردُّه لزيارةٍ أخرى، ثم يقترح حلَّه.'],
     ['solution','حل التركيب','🔧','الأجهزةُ المقترحة لكل نقطة — يعتمدها المهندس قبل أن تصير طلبَ تركيب.'],
-    ['minappr','اعتماد الوزارة','🏛','ما اعتُمد تقنيًّا وينتظر اعتمادَ الوزارة لإعداد التركيب — تعتمده أو تُعيده بملاحظة.', '', 'hidden'],
+    /* (V45.1) the «اعتماد الوزارة» tab was retired with the ministry approval (V44.2); its page code stays for the history it holds */
     ['ready','جاهز للتركيب','🟠','ما اعتمدته الوزارةُ وحلُّه معتمدٌ ولم يُسنَد تركيبُه بعد — يُجدوَل من هنا.'],
     ['qa','التدقيق الهندسي','🔎','اعتماد التركيبات والسيريالات قبل الإقفال — ولا نقاطَ قبله.'],
     ['ncr','عدم المطابقة','🚫','ما خالف المواصفة — وإجراؤه التصحيحي حتى الإغلاق.'],
@@ -634,7 +634,6 @@ var TAB_SEE = {
 /* ما يراه هذا الدورُ من شرائح الأم — بقواعد الرؤية نفسِها */
 function tabsOf(pid){
   return (TABS[pid] || []).filter(function(tb){
-    if (tb[0] === 'minappr') return false;   /* (V45.1) QA: the ministry approval was retired in V44.2 — its tab hid from the ministry only and still showed to engineers */
     var f = tb[4] && TAB_SEE[tb[4]];
     return f ? f(pid) : seesRaw(tb[0]);
   });
