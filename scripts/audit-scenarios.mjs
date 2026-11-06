@@ -3070,7 +3070,7 @@ console.log('\n══ ١٣٣ · الإكسبو — بوابةُ مركز الق�
   const seen = r => { w.ROLE = r; w.STATE.meta.role = r; return w.seesPage('expo'); };
   T(seen('engineer') && seen('admin') && seen('exec') && !seen('tech') && !seen('viewer') && !seen('tafweej') && !seen('supervisor'), 'يرى الإكسبو المهندسُ والمديرُ والإدارةُ العليا — لا الميدانُ ولا الوزارةُ ولا إدارةُ التفويج');
   const src = String(readFileSync('src/04-office/04-tasks-office-25-expo.js', 'utf8')), rules = String(readFileSync('firestore.rules', 'utf8'));
-  T(!/172\.20\./.test(src.replace(/placeholder="172\.20\.11\.4"/, '')) && /match \/settings\/expo/.test(rules) && /id != 'expo' && id != 'sysreport'/.test(rules) && /'integPub' && id != 'expo'/.test(rules), 'العناوين ليست في الكود العام، ولـsettings/expo قاعدتُها وحدها (مستثناةٌ من قاعدة الإعدادات العامة قراءةً وكتابة)');
+  T(!/172\.20\./.test(src.replace(/placeholder="172\.20\.11\.4"/, '')) && /match \/settings\/expo/.test(rules) && /id != 'sysreport' && id != 'expo'/.test(rules) && /'integPub' && id != 'expo'/.test(rules), 'العناوين ليست في الكود العام، ولـsettings/expo قاعدتُها وحدها (مستثناةٌ من قاعدة الإعدادات العامة قراءةً وكتابة)');
   w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.PV.EXPO = { url:w.PV.EXPO_URL, devs:d };
   const h = w.PAGE.expo.body();
   T(/command-center/.test(h) && (h.match(/data-expoed="/g) || []).length >= 4 && /لصق قائمة/.test(h), 'الصفحة: بطاقةُ البوابة، والأجهزةُ بأزرار التعديل، و«لصق قائمة»');

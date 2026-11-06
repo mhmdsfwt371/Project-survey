@@ -197,7 +197,7 @@ function render0Tail(wasCur, p, pl, wasTab){
      بعد نصف دقيقة. الشارةُ وحدَها تكتب هذا السطر. */
   syncBadge();
   try { if (typeof chTopSync === 'function') chTopSync(); } catch (eCT){ LS_ERR = eCT; }
-  try { var eT = document.getElementById('expoTop'); if (eT){ eT.hidden = !(ROLE && typeof seesPage === 'function' && seesPage('expo') && (typeof innerWidth !== 'number' || innerWidth > 640));   /* a phone's top bar has no room — the page is in the menu */ if (PV.EXPO && PV.EXPO.url) eT.href = PV.EXPO.url; } } catch (eEX){ LS_ERR = eEX; }   /* (V45.3) the EXPO command center */   /* (V39.8) the unread count on the top bar */
+  try { var eT = document.getElementById('expoTop'); if (eT){ var eShow = !!(ROLE && typeof seesPage === 'function' && seesPage('expo') && (typeof innerWidth !== 'number' || innerWidth > 640)); eT.hidden = !eShow; eT.style.display = eShow ? '' : 'none';   /* a link's class display beats [hidden] — the style decides */   /* a phone's top bar has no room — the page is in the menu */ if (PV.EXPO && PV.EXPO.url) eT.href = PV.EXPO.url; } } catch (eEX){ LS_ERR = eEX; }   /* (V45.3) the EXPO command center */   /* (V39.8) the unread count on the top bar */
 
   var c  = document.getElementById('content');
   var mw = document.getElementById('mapWrap');

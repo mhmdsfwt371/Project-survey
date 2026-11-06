@@ -1,5 +1,5 @@
-/* ════════════════════════════════════════════════════════════════════════════════════════
-   FILE    : 04-tasks-office-25-expo.js
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-25-expo.js
    DOMAIN  : Office — the EXPO module (V45.3)
    PURPOSE : The EXPO command center link and the EXPO devices (type, name, VPN address, serial), each address a direct link, editable by the office
    DEFINES : PV.EXPO, PV.EXPO_URL, PV.EXPO_TYPES, expoLoad, expoSave, expoParse, expoDevHref, PAGE.expo, clickExpo
