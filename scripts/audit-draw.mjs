@@ -377,8 +377,9 @@ console.log('\n══ ٨ · التجربةُ عُدّةٌ في موضعٍ تنت
 console.log('\n══ ٩ · شرائحُ الميدان بترتيب دورة النقطة (V17.74) ══');
 {
   const ids = w.TABS.survey.map(x => x[0]);
-  T(ids.slice(0, 7).join(',') === 'survey,svappr,solution,minappr,ready,qa,ncr', 'المسحُ فالاعتمادُ فالحلُّ فالوزارةُ فالجاهزُ فالتدقيقُ فعدمُ المطابقة: ' + ids.slice(0, 7).join(' ← '));
-  T(ids.slice(7).every(k => ['chal', 'chalm', 'stuck', 'idle', 'added'].indexOf(k) > -1), 'وما خرج عن الدورة بعدها لا بينها — ومعه «المضاف يدويًا» (V43.18)');
+  /* (V45.1) the ministry's tab left the cycle: the tafweej management decides from the map, so the field slices run survey → approval → solution → ready */
+  T(ids.slice(0, 6).join(',') === 'survey,svappr,solution,ready,qa,ncr', 'المسحُ فالاعتمادُ فالحلُّ فالجاهزُ فالتدقيقُ فعدمُ المطابقة: ' + ids.slice(0, 6).join(' ← '));
+  T(ids.slice(6).every(k => ['chal', 'chalm', 'stuck', 'idle', 'added'].indexOf(k) > -1), 'وما خرج عن الدورة بعدها لا بينها — ومعه «المضاف يدويًا» (V43.18)');
   T(w.tabCur('survey') === 'survey', 'والافتراضيُّ يبقى المسح');
 }
 
