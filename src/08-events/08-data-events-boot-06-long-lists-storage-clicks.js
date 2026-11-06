@@ -196,7 +196,8 @@ function render0Tail(wasCur, p, pl, wasTab){
      الحيّة التي تكتبها الشارة — فيقرأ الرأسُ وقتًا مخترعًا حتى تعود الشارةُ
      بعد نصف دقيقة. الشارةُ وحدَها تكتب هذا السطر. */
   syncBadge();
-  try { if (typeof chTopSync === 'function') chTopSync(); } catch (eCT){ LS_ERR = eCT; }   /* (V39.8) the unread count on the top bar */
+  try { if (typeof chTopSync === 'function') chTopSync(); } catch (eCT){ LS_ERR = eCT; }
+  try { var eT = document.getElementById('expoTop'); if (eT){ eT.hidden = !(ROLE && typeof seesPage === 'function' && seesPage('expo')); if (PV.EXPO && PV.EXPO.url) eT.href = PV.EXPO.url; } } catch (eEX){ LS_ERR = eEX; }   /* (V45.3) the EXPO command center */   /* (V39.8) the unread count on the top bar */
 
   var c  = document.getElementById('content');
   var mw = document.getElementById('mapWrap');

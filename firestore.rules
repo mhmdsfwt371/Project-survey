@@ -324,11 +324,13 @@ service cloud.firestore {
     match /settings/cost { allow read: if mgr() || (ok() && role() == 'exec'); allow write: if false; }
     // (V44.2) قراراتُ إدارة التفويج: يكتبها المهندسُ والمدير وإدارةُ التفويج — في حقلٍ واحدٍ m؛ ويقرؤها الجميع
     match /settings/tafappr { allow read: if ok(); allow write: if ok() && (mgr() || role() == 'tafweej') && (resource == null ? request.resource.data.keys().hasOnly(['m', 'at', '_by', '_at']) : request.resource.data.diff(resource.data).affectedKeys().hasOnly(['m', 'at', '_by', '_at'])); }
+    // (V45.3) EXPO: device names and VPN addresses — never in the public code; read by the office and executives, written by the office
+    match /settings/expo { allow read: if isBoss() || mgr() || (ok() && role() == 'exec'); allow write: if (isBoss() || mgr()) && (resource == null ? request.resource.data.keys().hasOnly(['url', 'devs', 'at', '_by', '_at']) : request.resource.data.diff(resource.data).affectedKeys().hasOnly(['url', 'devs', 'at', '_by', '_at'])); }   // the project owner (boss) has no role of his own — he is let in by name, as everywhere else
     match /settings/{id} {
       // الكتلُ المتطابقةُ تُجمَع بـ«أو»: ما لوثيقةٍ بعينها قاعدةٌ أضيقُ يُستثنى هنا
       // صراحةً وإلا فتحته هذه — كما استُثنيت الجوالات، ويُستثنى التقرير (V17.94)
-      allow read: if ok() && id != 'contacts' && id != 'cotel' && id != 'sysreport' && id != 'pmo' && id != 'extApi' && id != 'cost' && id != 'integPub';
-      allow write: if pm('settings', 'w', mgr()) && id != 'sysreport' && id != 'cost' && id != 'pmo';
+      allow read: if ok() && id != 'contacts' && id != 'cotel' && id != 'sysreport' && id != 'pmo' && id != 'extApi' && id != 'cost' && id != 'integPub' && id != 'expo';
+      allow write: if pm('settings', 'w', mgr()) && id != 'sysreport' && id != 'cost' && id != 'pmo' && id != 'expo';   // (V45.3) expo has its own rule with fixed fields
     }
 
     // القائمة الموحّدة للشركات: المدير يضيف ويعتمد — المشرف طلبات فقط

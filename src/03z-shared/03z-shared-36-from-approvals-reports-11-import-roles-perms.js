@@ -20,7 +20,7 @@ var ROLES = {
     n:'الإدارة العليا', d:'الموقفُ التنفيذيُّ والمخاطرُ والقرار — قراءةً',
     guide:'دليل الإدارة العليا — الموقف والقرار',
     /* V16.25: الخريطةُ ولوحةُ الفريق — من فوقُ يرى ما تحته كلَّه، قراءةً */
-    nav:['map','mywork','board','exec','mfu','mtaf','mtafcat','mweek','msurv','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','wplan','pace','miles','evm','budm','risks','chg','ncr','repcenter','exp','diary','pmi','lessons','stake','reg','guide','acct','notif'],
+    nav:['map','mywork','board','exec','mfu','mtaf','mtafcat','mweek','msurv','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','wplan','pace','miles','evm','budm','risks','chg','ncr','repcenter','exp','diary','pmi','lessons','stake','reg','expo','guide','acct','notif'],
     can:{ provision:1, edit:0, approve:0, settings:0, money:1, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0 } },
 

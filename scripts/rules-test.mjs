@@ -490,6 +490,15 @@ await ok  ('إدارةُ التفويج تكتب قرارَها في settings/ta
 await ok  ('والمهندسُ يكتبه',                            setDoc(doc(as('eng'), 'settings/tafappr'), tv, { merge:true }));
 await ok  ('والجميعُ يقرؤه (الوزارةُ ترى القرار)',        getDoc(doc(as('vwr'), 'settings/tafappr')));
 await deny('ولا تكتبه الوزارة',                          setDoc(doc(as('vwr'), 'settings/tafappr'), tv, { merge:true }));
+/* (V45.3) EXPO: device names and VPN addresses — the office reads and writes, the field and the ministry see nothing */
+const ev = { url:'https://expo.nusukreaders.net/command-center', devs:[{ id:'d1', type:'كاميرا', name:'EXPO-Afaqy-Camp', ip:'10.0.0.1', sn:'X' }], at:1 };
+await ok  ('المهندسُ يكتب أجهزةَ الإكسبو في settings/expo',  setDoc(doc(as('eng'), 'settings/expo'), ev, { merge:true }));
+await ok  ('والمهندسُ يقرؤها',                               getDoc(doc(as('eng'), 'settings/expo')));
+await deny('ولا تقرؤها الوزارة',                              getDoc(doc(as('vwr'), 'settings/expo')));
+await deny('ولا الفنيُّ الميداني',                             getDoc(doc(as('tec'), 'settings/expo')));
+await deny('ولا إدارةُ التفويج',                               getDoc(doc(as('taf'), 'settings/expo')));
+await deny('ولا تكتبها إدارةُ التفويج',                         setDoc(doc(as('taf'), 'settings/expo'), ev, { merge:true }));
+await deny('ولا يُكتب فيها حقلٌ غريب',                         setDoc(doc(as('eng'), 'settings/expo'), { evil:1 }, { merge:true }));
 await deny('ولا المشرف',                                 setDoc(doc(as('sup'), 'settings/tafappr'), tv, { merge:true }));
 await deny('ولا تكتب إدارةُ التفويج حقلًا غريبًا فيه',   setDoc(doc(as('taf'), 'settings/tafappr'), { m:{}, x:1 }, { merge:true }));
 await deny('ولا تكتب إعداداتٍ أخرى',                     setDoc(doc(as('taf'), 'settings/points'), { tgtSurvey:1 }, { merge:true }));

@@ -3060,6 +3060,23 @@ console.log('\n══ ١٣٢ · معيار النقطة: لا «على بعد» 
   T(w.PV.TAF_METHOD.some(l => /من ٤ إلى ٦ أمتار/.test(l)), 'وطريقةُ العمل: العمقُ من ٤ إلى ٦ أمتار');
 }
 
+/* ── ١٣٣ · (V45.3) الإكسبو: البوابة والأجهزة بعناوينها — والعناوين ليست في الكود العام ── */
+console.log('\n══ ١٣٣ · الإكسبو — بوابةُ مركز القيادة وأجهزةٌ تُفتح مباشرةً، ولمن يراها ══');
+{
+  const role0 = w.ROLE, mr0 = w.STATE.meta.role, ex0 = w.PV.EXPO;
+  const d = w.expoParse('١\tجيت واي\tGW-UG65\tGW-UG65\t172.20.12.10\t24E124FFFEFBADF4\n١١\tريدر\tReader-R\tReader-R\t172.20.12.2\t25446605\nأنتنا, ANT1-L, 172.20.11.2, 25446617\nسطرٌ بلا عنوان');
+  T(d.length === 3 && d[0].type === 'جيت واي' && d[0].name === 'GW-UG65' && d[0].ip === '172.20.12.10' && d[0].sn === '24E124FFFEFBADF4' && d[2].type === 'أنتنا' && d[2].ip === '172.20.11.2', 'لصقُ صفوف الجدول أو أسطرٍ بفواصل يُخرج النوعَ والاسمَ والعنوانَ والسيريال، ويتخطّى ما لا عنوان فيه');
+  T(w.expoDevHref('172.20.11.4') === 'http://172.20.11.4' && w.expoDevHref('https://10.0.0.1:8443') === 'https://10.0.0.1:8443', 'كلُّ عنوانٍ رابطٌ مباشر (وما فيه بروتوكولٌ يبقى كما هو)');
+  const seen = r => { w.ROLE = r; w.STATE.meta.role = r; return w.seesPage('expo'); };
+  T(seen('engineer') && seen('admin') && seen('exec') && !seen('tech') && !seen('viewer') && !seen('tafweej') && !seen('supervisor'), 'يرى الإكسبو المهندسُ والمديرُ والإدارةُ العليا — لا الميدانُ ولا الوزارةُ ولا إدارةُ التفويج');
+  const src = String(readFileSync('src/04-office/04-tasks-office-25-expo.js', 'utf8')), rules = String(readFileSync('firestore.rules', 'utf8'));
+  T(!/172\.20\./.test(src.replace(/placeholder="172\.20\.11\.4"/, '')) && /match \/settings\/expo/.test(rules) && /id != 'expo';/.test(rules) && /'integPub' && id != 'expo'/.test(rules), 'العناوين ليست في الكود العام، ولـsettings/expo قاعدتُها وحدها (مستثناةٌ من قاعدة الإعدادات العامة قراءةً وكتابة)');
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.PV.EXPO = { url:w.PV.EXPO_URL, devs:d };
+  const h = w.PAGE.expo.body();
+  T(/command-center/.test(h) && (h.match(/data-expoed="/g) || []).length >= 4 && /لصق قائمة/.test(h), 'الصفحة: بطاقةُ البوابة، والأجهزةُ بأزرار التعديل، و«لصق قائمة»');
+  w.PV.EXPO = ex0; w.ROLE = role0; w.STATE.meta.role = mr0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);
