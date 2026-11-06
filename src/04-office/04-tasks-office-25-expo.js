@@ -1,6 +1,7 @@
 /* ════════════════════════════════════════════════════════════════════════════════════════
    FILE    : 04-tasks-office-25-expo.js
    DOMAIN  : Office — the EXPO module (V45.3)
+   PURPOSE : The EXPO command center link and the EXPO devices (type, name, VPN address, serial), each address a direct link, editable by the office
    DEFINES : PV.EXPO, PV.EXPO_URL, PV.EXPO_TYPES, expoLoad, expoSave, expoParse, expoDevHref, PAGE.expo, clickExpo
    NOTE    : Owner (6 Nov): «الإكسبو زي أدون — حاجة من فوق توديني على البورتال، وموديول فيه الـIPs كلها بأسمائها، وكل IP لينك أدخل
              عليه دايركت (بالـVPN)، وأقدر أعدّل الاسم والـIP». The addresses are internal (VPN) and live in settings/expo, never in this
@@ -61,6 +62,7 @@ PAGE.expo = { m:'المتابعة', t:'الإكسبو',
       + '<div style="flex:1 1 260px"><b style="font-size:16px">' + esc(t('مركز قيادة الإكسبو')) + '</b><div class="hint" style="margin:2px 0 0"><bdi dir="ltr">' + esc(E.url) + '</bdi></div></div>'
       + '<a class="btn btn-primary" href="' + esc(E.url) + '" target="_blank" rel="noopener">\u2197 ' + esc(t('افتح البوابة')) + '</a>'
       + (ed ? btn('\u270E ' + t('تعديل الرابط'), 'btn-secondary btn-sm', ' data-expourl="1"') : '') + '</div>'
+      + (PV.EXPO_URLED ? '<div class="card" style="margin:0 0 12px;display:flex;gap:6px;flex-wrap:wrap;align-items:center"><input id="expoU" dir="ltr" value="' + esc(E.url) + '" style="flex:1 1 280px">' + btn('\u2713 ' + t('حفظ'), 'btn-primary btn-sm', ' data-expourlsave="1"') + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-expourl="0"') + '</div>' : '')
       + '<div class="hint" style="margin:0 0 10px">' + esc(t('العناوينُ داخل شبكة الـVPN: شغّل الـVPN على جهازك ثم اضغط العنوان فيفتح الجهازُ مباشرةً.')) + '</div>';
     if (E.err) h += '<p class="hint" style="color:#E5484D">' + esc(t('تعذّر تحميل أجهزة الإكسبو')) + ' — ' + btn(t('أعد المحاولة'), 'btn-quiet btn-sm', ' data-exporeload="1"') + '</p>';
     h += stats([['الأجهزة', nm(E.devs.length)]].concat(types.map(function(k){ return [k, nm(groups[k].length)]; })));
@@ -111,9 +113,10 @@ function clickExpo(e){
   if ((el = e.target.closest('[data-expodel]'))){
     var did = el.getAttribute('data-expodel'); if (!confirm(t('حذفُ هذا الجهاز من القائمة؟'))) return true;
     PV.EXPO.devs = PV.EXPO.devs.filter(function(d){ return d.id !== did; }); PV.EXPO_ED = ''; expoSave(); render(1); return true; }
-  if (e.target.closest('[data-expourl]')){
-    var u = prompt(t('رابط مركز قيادة الإكسبو'), PV.EXPO.url || PV.EXPO_URL); if (u == null) return true; u = String(u).trim();
+  if ((el = e.target.closest('[data-expourl]'))){ PV.EXPO_URLED = el.getAttribute('data-expourl') === '1' ? 1 : 0; render(1); return true; }
+  if (e.target.closest('[data-expourlsave]')){
+    var un = document.getElementById('expoU'), u = un ? String(un.value || '').trim() : '';
     if (!/^https:\/\/\S+$/.test(u)){ toast(t('اكتب رابطًا يبدأ بـ https://')); return true; }
-    PV.EXPO.url = u; expoSave(); render(1); return true; }
+    PV.EXPO.url = u; PV.EXPO_URLED = 0; expoSave(); render(1); toast(t('حُفظ')); return true; }
   return false;
 }

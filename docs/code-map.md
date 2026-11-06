@@ -192,7 +192,7 @@
 | `08-events--08-data-events-boot-06-long-lists-storage-clicks.js` | 198 | 3 | Moved verbatim from src/08-events/08-data-events-boot-06-long-lists-storage-clicks.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or t |
 | `08-events--08-data-events-boot-13-toast-wheel-ios-boot.js` | 12 | 2 | Moved verbatim from src/08-events/08-data-events-boot-13-toast-wheel-ios-boot.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the of |
 
-## `04-office/` — المكتب — الصور والحوكمة والمساعد والتقارير بالكلام والرسم على الخريطة  (24 ملفات · 3866 سطر · 166 دالة)
+## `04-office/` — المكتب — الصور والحوكمة والمساعد والتقارير بالكلام والرسم على الخريطة  (24 ملفات · 3869 سطر · 166 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -219,7 +219,7 @@
 | `04-tasks-office-21-assistant-act.js` | 287 | 16 | The engineer's «تصحيح البيانات» page (V43.18) and the assistant that acts (V43.16): «what do I do» questions — duplicate points, a point that does not show, who |
 | `04-tasks-office-23-tafweej.js` | 367 | 21 | The tafweej management approves or rejects the corridor points of Mina and Arafat from the point's card on the |
 | `04-tasks-office-24-tafweej-1447.js` | 12 | 0 | The basis of the Mina corridor points: the KMZ «point_of_path_update_23-3-2026 ALL_POINTS» that the tafweej |
-| `04-tasks-office-25-expo.js` | 120 | 6 |  |
+| `04-tasks-office-25-expo.js` | 123 | 6 | The EXPO command center link and the EXPO devices (type, name, VPN address, serial), each address a direct link, editable by the office |
 
 ## `05-map/` — الخريطة ودورةُ الحياة — الطبقات والتصدير والاستيراد والدخول وشاشةُ الوزارة  (21 ملفات · 4839 سطر · 248 دالة)
 
@@ -313,4 +313,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 246 ملفًّا · 50904 سطر · 2353 دالة.
+**الإجمالي:** 246 ملفًّا · 50907 سطر · 2353 دالة.
