@@ -3077,6 +3077,15 @@ console.log('\n══ ١٣٣ · الإكسبو — بوابةُ مركز الق�
   w.PV.EXPO = ex0; w.ROLE = role0; w.STATE.meta.role = mr0;
 }
 
+/* ── ١٣٤ · (V45.4) سطرُ الصانع: منصّةٌ من آفاقي · تصميم وتطوير ── */
+console.log('\n══ ١٣٤ · سطرُ الصانع على شاشة الدخول وفي القائمة ══');
+{
+  const h = w.creditHtml();
+  T(/منصّةٌ من آفاقي/.test(h) && /تصميم وتطوير: م\. محمد صفوت/.test(h) && !/ملك|حقوق|©/.test(h), 'نسبةُ العمل لصاحبه بجانب آفاقي — لا ادّعاءَ ملكية');
+  const nav = String(readFileSync('src/00-shell/00-head.html', 'utf8')), lg = String(readFileSync('src/05-map/05-lifecycle-map-09-role-switch-login-install.js', 'utf8'));
+  T(/id="creditNav"/.test(nav) && /creditHtml\(\)/.test(lg), 'على شاشة الدخول، وتحت «تسجيل الخروج» في القائمة');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

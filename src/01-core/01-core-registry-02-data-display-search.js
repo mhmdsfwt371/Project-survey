@@ -69,6 +69,13 @@ function bdiText(s){
 }
 
 
+/* (V45.4) owner: «اكتب Powered by و Designed by». A credit — who made it — beside AFAQY, not an ownership claim:
+   the platform is AFAQY's, the design and development are the engineer's. Two lines, small, on the login screen and under
+   «تسجيل الخروج» in the menu; translated like every other text. */
+PV.CREDIT = { by:'آفاقي', who:'م. محمد صفوت' };
+function creditHtml(){
+  return esc(t('منصّةٌ من آفاقي')) + '<br>' + esc(t('تصميم وتطوير: م. محمد صفوت'));
+}
 function esc(s){ var x = String(s==null?'':s); if (LANG === 'ar' && noTashkeel()) x = x.replace(PV.TASHKEEL_RE, '');   /* (V34.4) */
   return x
   .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')

@@ -423,6 +423,7 @@ function loginPaint(){
           }).join('')
     +   '</div>'
     +   '<p class="note">'+esc(t('لا تسجيل ذاتي — الحسابات تُنشأ من المكتب'))+'</p>'
+    +   '<p class="credit" style="margin:14px 0 0;font-size:11px;line-height:1.6;opacity:.65;text-align:center">' + creditHtml() + '</p>'   /* (V45.4) */
     + '</div>';
 
   function go(){
