@@ -6,7 +6,7 @@
              all in «متابعة الوزارة ← اعتمادات إدارة التفويج». Every corridor point's card says WHY the point is there: for Mina,
              its place in the tafweej management's 1447 file (PV.TAF1447) or that it completes those paths this season; for
              Arafat, the paths to Namirah Mosque, Jabal al-Rahma and the train, with the purpose chosen per point.
-   DEFINES : tafPending, PV.TAF_DOCS, PV.TAF_METHOD, PV.TAF_SPECS, tafSpecsHtml, PV.TAF_STAGE, tafStage, tafCats, tafStageBar, tafCatDash, tafCatXlsx, tafSave, tafSites, tafCrit, tafCritHtml, tafPopHtml, tafDash, tafXlsx, tafLayerToggle, tafLayerSync, clickTafweej
+   DEFINES : tafNearLines, PV.TAF_PAIR_M, tafPending, PV.TAF_DOCS, PV.TAF_METHOD, PV.TAF_SPECS, tafSpecsHtml, PV.TAF_STAGE, tafStage, tafCats, tafStageBar, tafCatDash, tafCatXlsx, tafSave, tafSites, tafCrit, tafCritHtml, tafPopHtml, tafDash, tafXlsx, tafLayerToggle, tafLayerSync, clickTafweej
    NOTE    : The scope, the decision and the gate are in core (03-survey-records-05: PV.TAF_SCOPE, tafInScope, tafOf,
              tafDecision, tafMay, minState). Decisions live in settings/tafappr (one live document).
    ============================================================================ */
@@ -46,6 +46,15 @@ function tafSites(zone){
 function tafDist(a, b){ var r = Math.PI / 180, x = (b.lng - a.lng) * r * Math.cos(a.lat * r), y = (b.lat - a.lat) * r; return 6371000 * Math.sqrt(x * x + y * y); }
 
 /* WHY the point is here — from the 1447 file for Mina, from the Arafat paths for Arafat; distances measured, never assumed */
+/* (V45.2) owner: «لو في نقطتين جنب بعض هيكون بسبب عرض الممر — النقطة عرضها بالكتير ١٥ متر والعمق من ٤ إلى ٦ متر».
+   Two corridor points within 30 m (two widths side by side) are explained on the card instead of reading as a duplicate. */
+PV.TAF_PAIR_M = 30;
+function tafNearLines(near){
+  if (!near) return [];
+  var L = [['أقربُ نقطة ممرٍّ أخرى', nm(Math.round(near)) + ' ' + t('م')]];
+  if (near <= PV.TAF_PAIR_M) L.push(['نقطتان متجاورتان', t('بسبب عرض الممر: تغطّي النقطةُ عرضًا حتى ١٥ مترًا وعمقًا من ٤ إلى ٦ أمتار، فيحتاج الممرُّ الأعرضُ نقطتين متجاورتين')]);
+  return L;
+}
 function tafCrit(x){
   if (!x || !PV.TAF_SCOPE.types[x.type]) return null;
   var P = PV.TAF1447 || { pts:[], m:{}, f:{} }, o = tafOf(x.id) || {}, L = [];
@@ -58,20 +67,20 @@ function tafCrit(x){
     else if (re47) cat = 'ممرات منى — إعادة تركيب: رُكّبت في موسم ١٤٤٧';
     else cat = 'ممرات منى — نقطة إكمالٍ جديدة لموسم ١٤٤٨';
     L.push(['المصدر', P.src]);
-    if (m) L.push(['في الملف', t('النقطة رقم') + ' ' + m[0] + ' \u00b7 ' + t(P.f[m[1]]) + ' \u00b7 ' + t('على بعد') + ' ' + nm(m[2]) + ' ' + t('م')]);
+    if (m) L.push(['في الملف', t('النقطة رقم') + ' ' + m[0] + ' \u00b7 ' + t(P.f[m[1]])]);   /* (V45.2) owner: «شيل على بعد ١١ متر» — the gap between the file's and our coordinates read as a distance to something done */
     else if (re47) L.push(['في الملف', t('رُكّبت في موسم ١٤٤٧ وفق سجلّ التركيب — وليست ضمن نقاط ملف إدارة التفويج')]);
     else {
       var nk = 0, nn = ''; P.pts.forEach(function(q){ var dd = tafDist({ lat:+x.lat, lng:+x.lng }, { lat:q[2], lng:q[3] }); if (!nk || dd < nk){ nk = dd; nn = q[0]; } });
       L.push(['في الملف', t('ليست في ملف ١٤٤٧ — أُضيفت لإكمال تغطية مسارات الملف ورفع دقة البيانات') + (nk ? ' \u00b7 ' + t('أقربُ نقطةٍ في الملف') + ' ' + nn + ' ' + t('على بعد') + ' ' + nm(Math.round(nk)) + ' ' + t('م') : '')]);
     }
     if (path) L.push(['المسار', path]);
-    return { cat:cat, lines:L.concat(near ? [['أقربُ نقطة ممرٍّ أخرى', nm(Math.round(near)) + ' ' + t('م')]] : []).concat(o.crit ? [['ملاحظة', o.crit]] : []) };
+    return { cat:cat, lines:L.concat(tafNearLines(near)).concat(o.crit ? [['ملاحظة', o.crit]] : []) };
   }
   if (x.zone === 'عرفات'){
     L.push(['الدراسة', 'تمّت الدراسةُ وتحديدُ النقاط بناءً على الذهاب إلى جبل الرحمة والدخول إليه']);   /* (V44.3) owner's sentence, on every Arafat corridor card */
     L.push(['الأساس', 'تغطيةُ مسارات المشاة إلى مسجد نمرة وجبل الرحمة وتفويج القطار']);
     L.push(['غرضُ هذه النقطة', o.pur ? t(o.pur) : t('لم يُحدَّد بعد')]);
-    if (near) L.push(['أقربُ نقطة ممرٍّ أخرى', nm(Math.round(near)) + ' ' + t('م')]);
+    L.push.apply(L, tafNearLines(near));
     if (o.crit) L.push(['ملاحظة', o.crit]);
     return { cat:'ممرات عرفات', lines:L };
   }
@@ -315,7 +324,7 @@ function tafCatXlsx(){
    the owner's own statement; each device's lines are read from its datasheet in specs/ (the file opens from here). */
 PV.TAF_METHOD = [
   'نقطةُ الممر بوابةٌ افتراضية: يحدّد القارئُ وهوائياتُه آخرَ قراءةٍ لبطاقة الحاج عند النقطة، وتعدّ الكاميرا الأشخاصَ في كادرٍ محدَّد فتعطي مؤشّرًا على الكثافة.',
-  'تغطّي النقطةُ عرضًا حتى ١٥ مترًا بستة هوائيات، وعمقًا ٤ أمتار على امتداد الممر.',
+  'تغطّي النقطةُ عرضًا حتى ١٥ مترًا بستة هوائيات، وعمقًا من ٤ إلى ٦ أمتار على امتداد الممر؛ فإن كان الممرُّ أعرضَ وُضعت فيه نقطتان متجاورتان.',
   'في كلِّ نقطةٍ من ٦ إلى ٨ هوائيات بحسب عرض الممر، وتُضبط زاويتُها وارتفاعُها بالتجربة في الموقع ضمن مدى ٣٥ إلى ٧٠ درجة.',
   'القارئُ والهوائياتُ قابلةٌ للضبط، وتُجرَّب كلُّ نقطةٍ في موقعها، فلا يقع تداخلٌ بين نطاقات النقاط.',
   'اتجاهُ الحركة: في منى من المخيمات إلى الجمرات كما في موسم ١٤٤٧، ويغطّي موسمُ ١٤٤٨ نقاطَ العودة من الجمرات إلى المخيمات؛ وفي عرفات لم يُحدَّد اتجاهٌ بعد إلى حين ورود معلوماتٍ أخرى.',

@@ -3048,6 +3048,18 @@ console.log('\n══ ١٣١ · قرار إدارة التفويج عبر الط
   w.STATE.taf = taf0; w.STATE.queue = q0; NS.splice(0, NS.length - n0); w.ROLE = role0; w.STATE.meta.role = mr0;
 }
 
+/* ── ١٣٢ · (V45.2) سطرُ «في الملف» بلا مسافة، وتفسيرُ النقطتين المتجاورتين ── */
+console.log('\n══ ١٣٢ · معيار النقطة: لا «على بعد» لنقطة الملف، وتفسيرُ نقطتين متجاورتين بعرض الممر ══');
+{
+  const S = w.STATE.sites.filter(x => w.tafInScope(x.id)), P = w.PV.TAF1447;
+  const m = S.find(x => P.m[x.id]); const fl = w.tafCrit(m).lines.find(l => l[0] === 'في الملف');
+  T(fl && !/على بعد/.test(fl[1]) && /النقطة رقم/.test(fl[1]), 'سطرُ «في الملف» يذكر رقمَ النقطة وحالتَها بلا مسافة: ' + (fl ? fl[1] : '—'));
+  const pair = S.find(x => w.tafCrit(x).lines.some(l => l[0] === 'نقطتان متجاورتان'));
+  const solo = S.find(x => { const n = w.tafCrit(x).lines.find(l => /أقرب/.test(l[0])); return n && !w.tafCrit(x).lines.some(l => l[0] === 'نقطتان متجاورتان'); });
+  T(pair && solo && w.tafNearLines(30).length === 2 && w.tafNearLines(31).length === 1 && w.tafNearLines(0).length === 0, 'نقطةٌ على ٣٠ مترًا أو أقل من أخرى تُفسَّر بعرض الممر، وما أبعدُ يكتفي بأقرب نقطة');
+  T(w.PV.TAF_METHOD.some(l => /من ٤ إلى ٦ أمتار/.test(l)), 'وطريقةُ العمل: العمقُ من ٤ إلى ٦ أمتار');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);
