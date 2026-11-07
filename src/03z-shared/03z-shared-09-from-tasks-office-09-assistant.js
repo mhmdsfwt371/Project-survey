@@ -20,9 +20,25 @@ function assistDiag(){
    المسارُ «أ» بقرار المالك: لا نموذجَ خارجيّ ولا بياناتٍ تخرج من الجهاز. يفهم بالعامية: نقطةٌ بمعرِّفها
    أو شاخصِها، وأعدادُ التركيب والمسح بمشعرٍ ونوع، وإشارةُ القرّاء، ورصيدُ صنفٍ في المخزن، وما ينقص
    للجاهزية — ويجيب بالرقم وزرٍّ إلى الشاشة. وما لا يفهمه يبقى في سجلّ الأسئلة ليُضاف. */
+/* (V46.8) the brain hears the field as it speaks — Egyptian and Saudi words, common misspellings — mapped to the words below */
+PV.AQ_SYN = [
+  [/(^|\s)(كام|قديش|كمن|كم عدد|عدد)(?=\s|$)/g, '$1كم'], [/(^|\s)(فين|وين|مكان)(?=\s|$)/g, '$1اين'], [/(^|\s)(منو|من هو)(?=\s|$)/g, '$1مين'],
+  [/(ركبوا|ركبنا|ركبتو|انركبت)/g, 'ركبت'],   /* verbs only — the report builder reads «مركبه» itself */
+  [/(زاروا|زرنا|زورت)/g, 'زياره'],
+  [/(سلموا|سلمنا)/g, 'سلمت'], [/(فكوا|فكينا)/g, 'فك'],
+  [/(واقفه|واقف|متعطله|متعطل|اتاخرت|اتاخر)/g, 'متاخر'],
+  [/(التفويج|تفويج|ادارة التفويج|اداره التفويج)/g, 'التفويج'], [/(الجمرات|جمرات|جمره)/g, 'الجمرات'],
+  [/(عرفه|عرفات|عرفة)/g, 'عرفات'], [/(مزدلفه|مزدلفة)/g, 'مزدلفه'], [/(النهارده|النهاردة|اليوم ده|الحين|الان)/g, 'اليوم'],
+  [/(مستنيه|مستنين|مستني|منتظره|منتظر|تنتظر|ينتظر|مستناه)/g, 'بانتظار'], [/^كم (?!نقط)/, 'كم نقطه ']
+];
 function aqNorm(q){
-  return String(q || '').replace(/[\u064B-\u0652\u0640]/g, '').replace(/[أإآ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه')
+  var s = String(q || '').replace(/[\u064B-\u0652\u0640]/g, '').replace(/[أإآ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه')
     .replace(/[\u0660-\u0669]/g, function(d){ return String(d.charCodeAt(0) - 0x660); }).toLowerCase();
+  (PV.AQ_SYN || []).forEach(function(r){ s = s.replace(r[0], r[1]); });
+  s = s.replace(/\s+/g, ' ').trim();
+  /* a question about what waits on the tafweej management is that card, whatever else it says */
+  if (/التفويج/.test(s) && /بانتظار|متاخر|كم/.test(s) && !/رفض|اعتمد/.test(s)) s = 'النقاط بانتظار التفويج';
+  return s;
 }
 
 function aqTypes(){
@@ -40,7 +56,8 @@ function aqGo(lbl, target){ return '<button type="button" class="btn btn-primary
 
 function aqCard(title, body, btns){
   return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid var(--ok, #2e9e6a)"><div class="pid">' + esc(t('مساعد البيانات')) + '</div>'
-    + '<h4 style="margin:2px 0 6px">' + esc(title) + '</h4>' + body + (btns ? '<div class="actions" style="margin:8px 0 0;flex-wrap:wrap;gap:6px">' + btns + '</div>' : '') + '</div>';
+    + '<h4 style="margin:2px 0 6px">' + esc(title) + '</h4>' + body + (btns ? '<div class="actions" style="margin:8px 0 0;flex-wrap:wrap;gap:6px">' + btns + '</div>' : '')
+    + '<div class="ds-src">' + esc(t('محسوبٌ الآن من بيانات النظام')) + ' \u00b7 ' + esc(new Date().toTimeString().slice(0, 5)) + '</div></div>';   /* (V46.8) the source of the number, under every answer */
 }
 
 function aqRow(k, v){ return '<div class="kk-zl" style="margin:3px 0"><span>' + esc(t(k)) + '</span><b class="num">' + v + '</b></div>'; }

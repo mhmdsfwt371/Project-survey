@@ -188,7 +188,7 @@ function assistHtml(){
     +   '</div>'
     + '</div>'
     + '<div class="pop-body">'
-    + '<input type="search" id="assistQ" value="' + esc(ASSIST_Q) + '" placeholder="'
+    + '<input type="search" id="assistQ" class="ds-ask" value="' + esc(ASSIST_Q) + '" placeholder="'
     +   esc(t('اسأل عقلَ النظام — مثلًا: كم نقطة رُكّبت في منى؟')) + '" dir="auto" style="width:100%;margin:0 0 12px">'
     + '<div id="assistRes">' + assistResHtml() + '</div>'   /* (V36.1) النتائجُ وحدَها تُستبدَل مع الكتابة */
     + '</div></div>';

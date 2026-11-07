@@ -158,7 +158,7 @@ function brainBriefHtml(){
   return '<div class="ds-brain">'
     + '<div class="ds-brain-know"><span>' + esc(t('أقرأ الآن')) + '</span> <b class="num">' + nm(S.length) + '</b> ' + esc(t('نقطة')) + ' \u00b7 <b class="num">' + nm(vis) + '</b> ' + esc(t('تمّت زيارتها')) + ' \u00b7 <b class="num">' + nm(ins) + '</b> ' + esc(t('رُكّبت أو سُلّمت')) + ' \u00b7 <b class="num">' + nm(Object.keys(STATE.tasks || {}).length) + '</b> ' + esc(t('إسناد')) + '</div>'
     + '<div class="ds-brain-h">' + esc(t('التوجيهُ الآن')) + '</div>'
-    + (lines.length ? lines.join('') : '<p class="hint">' + esc(t('لا شيءَ ينتظرك الآن — كلُّ ما بيدك تمّ.')) + '</p>')
+    + (lines.length ? lines.slice(0, 3).join('') + (lines.length > 3 ? '<details class="ds-more-d"><summary>' + esc(t('توجيهاتٌ أخرى')) + ' (' + nm(lines.length - 3) + ')</summary>' + lines.slice(3).join('') + '</details>' : '') : '<p class="hint">' + esc(t('لا شيءَ ينتظرك الآن — كلُّ ما بيدك تمّ.')) + '</p>')   /* (V46.8) three first — the rest one tap away */
     + '<div class="ds-brain-h">' + esc(t('اسألني')) + '</div><div class="chips" style="margin:0 0 12px">' + chips.map(function(c){ return '<button type="button" class="chip" data-assistask="' + esc(t(c)) + '">' + esc(t(c)) + '</button>'; }).join('') + '</div>'
     + '</div>';
 }

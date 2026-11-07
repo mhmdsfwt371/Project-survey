@@ -29,10 +29,9 @@ function assistResHtml(){
   var answered = !!(ASSIST_Q && (dq || assistIntent(ASSIST_Q) || knownHits(ASSIST_Q).length));   /* (V37.37) بلاغُ المالك: «الحاجات اللي تحت بتشوّش على اللي بدوّر عليه» */
   var results = ASSIST_Q && !answered ? helpSearch(ASSIST_Q, 12) : [], gl = ASSIST_Q && !answered ? glossaryHits(ASSIST_Q) : [];
   if (ASSIST_Q){ assistLog(ASSIST_Q, !!(answered || results.length || gl.length)); }   /* (V37.30) */
-  return assistDiagCard(ASSIST_Q)   /* (V37.23) التشخيصُ أوّلًا */
-    + dq
+  return dq + assistDiagCard(ASSIST_Q)   /* (V37.23) التشخيص · (V46.8) the answer first, the diagnosis after it */
     + (!ASSIST_Q
-        ? brainBriefHtml() + assistHomeHtml()   /* (V37.40) بما يخصّ صاحبَ الجهاز ودورَه وصفحتَه · (V46.7) and first, the brain's direction */
+        ? brainBriefHtml() + '<details class="ds-more-d"><summary>' + esc(t('المزيد — الأدلّة والتقارير والأسئلة')) + '</summary>' + assistHomeHtml() + '</details>'   /* (V46.8) the help, the report builder and the long question list behind «المزيد» */
         : (gl.map(function(g){ return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid var(--acc, #1A5FA8)"><div class="pid">' + esc(t('المصطلح')) + '</div><h4 style="margin:2px 0 6px">' + esc(t(g.t)) + '</h4><p style="margin:0">' + esc(t(g.d)) + '</p></div>'; }).join('')
           + (results.length
             ? results.map(function(e){
