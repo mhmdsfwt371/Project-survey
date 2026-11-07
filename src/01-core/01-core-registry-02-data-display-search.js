@@ -120,6 +120,10 @@ function N(v){ return '<span class="num">'+nm(v)+'</span>'; }
 
 /* القيمةُ رقمٌ مُنسَّقٌ غالبًا (وسمٌ جاهز) فتُترَك، لكنها أحيانًا نصٌّ صرفٌ
    («متاح» · «مستوفٍ» · «—») فيُترجَم بنفس قاعدة خلايا الجدول. */
+/* (V46.5) any page can hand a tile its points: dsList(key, title, points) keeps them under the key, and the detail window
+   (office bundle) turns the key into a list when it opens — the core never calls into the office */
+PV.DSL = PV.DSL || {};
+function dsList(key, title, items){ PV.DSL[key] = { title:title, items:items || [] }; return key; }
 function stat(k,v,cls,key){
   /* (V46.2) a tile that names a detail list opens the detail window — summary tiles, a bar per person, the full list, Excel */
   if (key) return '<div class="stat ds-tile'+(cls?' '+cls:'')+'" data-svlist="'+esc(key)+'" role="button" tabindex="0" title="'+esc(t('التفاصيل'))+'"><div class="k">'+esc(t(k))+'</div>'

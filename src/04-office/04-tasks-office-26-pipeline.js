@@ -4,7 +4,7 @@
    PURPOSE : Where every point stands now, as one line of stages: a node per stage with its count, flowing dashed green
              lines between occupied stages, a red pulse on a stage where something has waited over 7 days; a node opens
              the detail window with those points (the full list, a bar per person, the late ones in red, Excel)
-   DEFINES : dsBento, PV.PIPE, PV.PIPE_WAIT_D, pipeCounts, pipeWaitDays, pipeReg, stagePipe
+   DEFINES : dsListReg, dsBento, PV.PIPE, PV.PIPE_WAIT_D, pipeCounts, pipeWaitDays, pipeReg, stagePipe
    ============================================================================ */
 /* the owner's spec: «a stage pipeline (for anything with stages): nodes with counts, dashed green lines that flow between
    occupied stages, red pulse on a stage where something waits too long, click a stage…». Stages group the lifecycle as the
@@ -86,4 +86,14 @@ function dsBento(SC){
     +   '<div><div class="k">' + esc(t('مُركّبة أو سُلِّمت')) + '</div><div class="v num">' + nm(pc) + '\u066A</div><div class="hint" style="margin:0">' + nm(closed) + ' / ' + nm(n) + '</div></div></button>'
     + '<button type="button" class="ds-b" data-svlist="pipe|taf"><div class="k">' + esc(t('بانتظار إدارة التفويج')) + '</div><div class="v num">' + nm(C.by.taf.length) + '</div>' + (C.late.taf ? '<span class="ds-late">' + nm(C.late.taf) + ' ' + esc(t('متوقّفة')) + '</span>' : '') + '</button>'
     + '</div>';
+}
+
+/* (V46.5) a key handed out by dsList() becomes a detail-window list on first open */
+function dsListReg(key){
+  var D = PV.DSL && PV.DSL[key]; if (!D) return;
+  var pts = function(){ return (D.items || []).map(function(v){ return typeof v === 'string' ? siteFind(v) : (v && v.x ? v.x : v); }).filter(Boolean); };
+  MFU.lists[key] = { title:t(D.title), head:['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'آخر زيارة', 'بواسطة', 'الحالة'],
+    base:function(){ var L = STATE.sites || []; return { n:L.length, name:t('كلِّ النقاط'), zones:svZoneTot(L) }; },
+    rows:function(){ return pts().map(function(x){ var r = STATE.recs[x.id], c = taxOf(x);
+      return [x.id, String(x.name || ''), t(c.g), t(c.t), String(x.co || ''), r && r.at ? dayKey(+r.at) : '', r ? (r.by || '') : '', t((LIFE[lifeOf(x)] || {}).n || '')]; }); } };
 }

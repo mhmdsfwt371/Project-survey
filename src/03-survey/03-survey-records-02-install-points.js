@@ -220,8 +220,8 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
     });
     var coKeys = Object.keys(coL).sort(function(a, b){ return coL[b].n - coL[a].n; });
 
-    return stats([['جاهزٌ للتسليم', N(ready.length), ready.length ? 'acc' : ''],
-                  ['سُلّم', N(handedL.length), handedL.length ? 'ok' : ''],
+    return stats([['جاهزٌ للتسليم', N(ready.length), ready.length ? 'acc' : '', dsList('hand|ready', 'جاهزٌ للتسليم', ready)],
+                  ['سُلّم', N(handedL.length), handedL.length ? 'ok' : '', dsList('hand|done', 'سُلّم', handedL)],
                   ['بلاغاتٌ تمنع', N(ncrOpen.length), ncrOpen.length ? 'bad' : 'ok'],
                   ['شهور الضمان', N(cfgGet('warranty') || 12)]])
 
@@ -335,8 +335,8 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
     var sel = DISF.site && siteFind(DISF.site);
     var ins = sel ? (STATE.inss[sel.id] || {}) : null;
     var ed = may('edit');
-    return stats([['جاهزٌ للفك', N(ready.length), ready.length ? 'acc' : 'ok'],
-                  ['فُكَّ', N(done.length), 'ok'],
+    return stats([['جاهزٌ للفك', N(ready.length), ready.length ? 'acc' : 'ok', dsList('dis|ready', 'جاهزٌ للفك', ready)],
+                  ['فُكَّ', N(done.length), 'ok', dsList('dis|done', 'فُكَّ', done)],
                   ['مُسنَدٌ للفك', N((STATE.sites || []).filter(function(x){ return taskKindOf(x.id, 'dis'); }).length), 'wrn']])
 
       + (ed
@@ -390,8 +390,8 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
       maintList(id).forEach(function(r){ hist.push({ id:id, r:r }); });
     });
     hist.sort(function(a, b){ return b.r.at - a.r.at; });
-    return stats([['قابلٌ للصيانة', N(pool.length), 'acc'],
-                  ['مُسنَدٌ للصيانة', N(asn.length), asn.length ? 'wrn' : 'ok'],
+    return stats([['قابلٌ للصيانة', N(pool.length), 'acc', dsList('mt|pool', 'قابلٌ للصيانة', pool)],
+                  ['مُسنَدٌ للصيانة', N(asn.length), asn.length ? 'wrn' : 'ok', dsList('mt|asn', 'مُسنَدٌ للصيانة', asn)],
                   ['زياراتُ صيانةٍ سُجِّلت', N(hist.length), hist.length ? 'ok' : '']])
 
       + (ed

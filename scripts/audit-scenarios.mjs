@@ -3127,6 +3127,18 @@ console.log('\n══ ١٣٧ · البنتو والجداولُ بطاقات و�
   T(!/font-size:\s*(9|10|10\.5|11|11\.5)px/.test(css), 'لا خطَّ أصغرَ من ١٢ في ورقة الأنماط');
 }
 
+/* ── ١٣٨ · (V46.5) أيُّ صفحةٍ تعطي بلاطتَها نقاطَها ── */
+console.log('\n══ ١٣٨ · dsList — صفحةُ الميدان تربط رقمَها بنافذة التفاصيل بلا نداءٍ للجزء المكتبي ══');
+{
+  const S = w.STATE.sites.slice(0, 3);
+  const k = w.dsList('t|x', 'جاهزٌ للتسليم', [S[0], S[1].id, { x:S[2] }]);
+  T(k === 't|x' && w.PV.DSL[k].items.length === 3, 'المفتاحُ يحمل نقاطَه (كائنًا أو رقمًا أو {x})');
+  w.dsListReg(k); const L = w.MFU.lists[k];
+  T(L && L.rows().length === 3 && L.rows()[1][0] === S[1].id, 'والنافذةُ تحوّله قائمةً عند فتحها');
+  const src = String(readFileSync('src/03-survey/03-survey-records-02-install-points.js', 'utf8'));
+  T(['hand|ready', 'hand|done', 'dis|ready', 'dis|done', 'mt|pool', 'mt|asn'].every(x => src.indexOf("dsList('" + x + "'") > -1), 'بلاطاتُ التسليم والفك والصيانة مربوطة');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

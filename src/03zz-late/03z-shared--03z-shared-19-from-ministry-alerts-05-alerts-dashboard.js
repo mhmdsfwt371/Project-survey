@@ -72,6 +72,7 @@ function svListTitle(key){ if (MFU.lists[key]) return t(MFU.lists[key].title); v
 
 /* (V30.1) */
 function svListPop(){
+  if (SV_POP && PV.DSL && PV.DSL[SV_POP] && typeof dsListReg === 'function') dsListReg(SV_POP);   /* (V46.5) */
   if (!SV_POP || !(SV_LISTS[SV_POP] || svDynList(SV_POP) || MFU.lists[SV_POP] || svObKey(SV_POP) || /^al_/.test(SV_POP))) return '';
   var rowsAll = svListRows(SV_POP), head = svListHead(SV_POP), dcz = svDashCols(head);
   var zonesAll = []; if (dcz.zone > -1){ var zm = {}; rowsAll.forEach(function(r){ zm[String(r[dcz.zone] || '')] = 1; }); zonesAll = Object.keys(zm).filter(Boolean); }
