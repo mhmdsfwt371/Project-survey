@@ -148,7 +148,9 @@ T(/فني أ/.test(c.textContent) && /مشرف ب/.test(c.textContent) && /V15\.
 T(/أجهزةٌ على إصدارٍ قديم/.test(c.textContent) && /مشرف ب \(V15\.1\)/.test(c.textContent), 'والإنذارُ يسمّي من علِق على القديم');
 w.STATE.presence.b.ver = cur; w.render(1); c = d.getElementById('content');
 T(!/أجهزةٌ على إصدارٍ قديم/.test(c.textContent), 'ويختفي حين يتحدّث الجميع');
-T(!/محمد صفوت/.test(c.textContent) && !/V14\.0/.test(c.textContent), 'ولا اسمَ ولا نسخةَ محفورين');
+/* (V46.0) the credit line under every page names the developer on purpose — the table itself must not */
+{ const cc = c.cloneNode(true); cc.querySelectorAll('.ds-credit').forEach(e => e.remove());
+  T(!/محمد صفوت/.test(cc.textContent) && !/V14\.0/.test(cc.textContent), 'ولا اسمَ ولا نسخةَ محفورين (سوى سطر الصانع تحت الصفحة)'); }
 const sh = w.SHEETS.vers();
 T(sh.length === 3 && sh[0].length === 6, 'وورقةُ إكسل «نسخة التطبيق على الأجهزة» تحمل الصفوف', sh.length);
 

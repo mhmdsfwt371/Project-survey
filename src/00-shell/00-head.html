@@ -1299,87 +1299,35 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 .ph-pin::after{content:"";position:absolute;left:50%;bottom:-8px;width:2px;height:8px;margin-left:-1px;background:#fff;opacity:.8}
 .ph-pin{position:relative}
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   (V46.0) Design system — «live control room». Owner's specification, applied as one layer over the app:
-   asphalt navigation, paper-white or deep-night pages, one live-green accent. The skins keep their meaning —
-   «الافتراضي» (ops) is the night, «النهاري» (brand) the day — and both now wear these tokens; the specificity
-   (html[data-skin…]) wins over the old skin blocks without deleting them.
-   ═══════════════════════════════════════════════════════════════════════════ */
-@font-face{font-family:"Cairo";src:url(fonts/Cairo.woff2) format("woff2");font-weight:200 1000;font-style:normal;font-display:swap}
-html, html[data-skin], html[data-skin="brand"][data-theme]{   /* «النهاري» is the day whatever the moon button says */
-  --asphalt:#1E2A36; --asphalt-2:#2A3A4A; --live:#2A7130; --live-bright:#4CC35A; --sig:#E0A32E; --sea:#1F4E79;
-  --paper:#F2F4F7; --card:#FFFFFF; --slate:#5C6B78; --line-strong:#C9D2DB; --track:#E6EBF0; --field:#FFFFFF; --field-line:#E1E6EC;
-  --menu:#1E2A36; --accent:#1F4E79;
-  --lift:0 1px 2px rgba(24,35,46,.05), 0 10px 26px -14px rgba(24,35,46,.28);
-  --ease-in:cubic-bezier(.2,.8,.2,1); --ease-pop:cubic-bezier(.2,.9,.3,1.4);
-  --aur-g:rgba(42,113,48,.16); --aur-s:rgba(31,78,121,.16); --aur-a:rgba(224,163,46,.10);
-  /* the app's own names, mapped */
-  --bg:#F2F4F7; --surface:#FFFFFF; --surface-2:#F7F9FB; --raise:#FFFFFF;
-  --ink:#18232E; --ink-soft:#5C6B78; --ink-mute:#7A8794;
-  --line:#E1E6EC; --line-2:#EDF0F4;
-  --brand:#1F4E79; --brand-ink:#FFFFFF; --brand-soft:#E4EDF6; --brand-deep:#163A5B;
-  --danger:#B42318; --danger-bg:#FDECEA;
-  --ok:#2A7130; --ok-bg:#E7F4E8;
-  --warn:#8A5A00; --warn-bg:#FCF1DC;
-  --sidebar:#1E2A36; --sidebar-ink:#DCE4EB; --sidebar-line:rgba(255,255,255,.10);
-  --radius:16px; --radius-sm:10px;
-  --shadow:0 1px 2px rgba(24,35,46,.05), 0 10px 26px -14px rgba(24,35,46,.28);
-  color-scheme:light;
-}
-html[data-skin="ops"], html[data-theme="dark"]:not([data-skin="brand"]){   /* «الافتراضي» is the night; the moon darkens the rest */
-  --paper:#0E151D; --card:#16212C; --slate:#AEBAC6; --line-strong:#2F4052; --track:#223040; --field:#1B2836; --field-line:#3A4E62;
-  --menu:#0A1118; --accent:#7FB2E5;
-  --lift:0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
-  --aur-g:rgba(42,113,48,.20); --aur-s:rgba(31,78,121,.18); --aur-a:rgba(224,163,46,.12);
-  --bg:#0E151D; --surface:#16212C; --surface-2:#121C26; --raise:#1A2733;
-  --ink:#E4ECF3; --ink-soft:#AEBAC6; --ink-mute:#8494A3;
-  --line:#233140; --line-2:#1C2834;
-  --brand:#7FB2E5; --brand-ink:#0A1118; --brand-soft:#16293B; --brand-deep:#A9CCF0;
-  --danger:#FF8A80; --danger-bg:#3A1714;
-  --ok:#4CC35A; --ok-bg:#12301A;
-  --warn:#E0A32E; --warn-bg:#33270F;
-  --sidebar:#0A1118; --sidebar-ink:#D3DDE6; --sidebar-line:rgba(255,255,255,.08);
-  --shadow:0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
-  color-scheme:dark;
-}
-@media (prefers-color-scheme: dark){ html:not([data-theme="light"]):not([data-skin]){ --bg:#0E151D; --surface:#16212C; --ink:#E4ECF3; --ink-soft:#AEBAC6; --line:#233140; color-scheme:dark } }
-
-/* Type: Cairo for Arabic and Latin (Urdu keeps its Nastaliq where the app sets it); tabular figures everywhere */
+/* (V46.0) Design system «live control room» — owner's spec, one layer over the app: day tokens on html/html[data-skin] («النهاري» stays day), night on html[data-skin=ops] / html[data-theme=dark]:not([data-skin=brand]); Cairo (SIL OFL, fonts/), aurora, asphalt menu with the green pill, drawing title line, cards, controls, focus ring, sticky table heads, red pulse, page arrival + top sweep (html.ds-enter from goPage), pointer light (--hx/--hy), credit under each page; all motion off under prefers-reduced-motion. */
+@font-face{font-family:"Cairo";src:url(fonts/Cairo.woff2) format("woff2");font-weight:200 1000;font-style:normal;font-display:optional}
+html, html[data-skin], html[data-skin="brand"][data-theme]{ --asphalt:#1E2A36; --asphalt-2:#2A3A4A; --live:#2A7130; --live-bright:#4CC35A; --sig:#E0A32E; --sea:#1F4E79; --paper:#F2F4F7; --card:#FFFFFF; --slate:#5C6B78; --line-strong:#C9D2DB; --track:#E6EBF0; --field:#FFFFFF; --field-line:#E1E6EC; --menu:#1E2A36; --accent:#1F4E79; --lift:0 1px 2px rgba(24,35,46,.05), 0 10px 26px -14px rgba(24,35,46,.28); --ease-in:cubic-bezier(.2,.8,.2,1); --ease-pop:cubic-bezier(.2,.9,.3,1.4); --aur-g:rgba(42,113,48,.16); --aur-s:rgba(31,78,121,.16); --aur-a:rgba(224,163,46,.10); --bg:#F2F4F7; --surface:#FFFFFF; --surface-2:#F7F9FB; --raise:#FFFFFF; --ink:#18232E; --ink-soft:#5C6B78; --ink-mute:#7A8794; --line:#E1E6EC; --line-2:#EDF0F4; --brand:#1F4E79; --brand-ink:#FFFFFF; --brand-soft:#E4EDF6; --brand-deep:#163A5B; --danger:#B42318; --danger-bg:#FDECEA; --ok:#2A7130; --ok-bg:#E7F4E8; --warn:#8A5A00; --warn-bg:#FCF1DC; --sidebar:#1E2A36; --sidebar-ink:#DCE4EB; --sidebar-line:rgba(255,255,255,.10); --radius:16px; --radius-sm:10px; --shadow:0 1px 2px rgba(24,35,46,.05), 0 10px 26px -14px rgba(24,35,46,.28); color-scheme:light; }
+html[data-skin="ops"], html[data-theme="dark"]:not([data-skin="brand"]){ --paper:#0E151D; --card:#16212C; --slate:#AEBAC6; --line-strong:#2F4052; --track:#223040; --field:#1B2836; --field-line:#3A4E62; --menu:#0A1118; --accent:#7FB2E5; --lift:0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6); --aur-g:rgba(42,113,48,.20); --aur-s:rgba(31,78,121,.18); --aur-a:rgba(224,163,46,.12); --bg:#0E151D; --surface:#16212C; --surface-2:#121C26; --raise:#1A2733; --ink:#E4ECF3; --ink-soft:#AEBAC6; --ink-mute:#8494A3; --line:#233140; --line-2:#1C2834; --brand:#7FB2E5; --brand-ink:#0A1118; --brand-soft:#16293B; --brand-deep:#A9CCF0; --danger:#FF8A80; --danger-bg:#3A1714; --ok:#4CC35A; --ok-bg:#12301A; --warn:#E0A32E; --warn-bg:#33270F; --sidebar:#0A1118; --sidebar-ink:#D3DDE6; --sidebar-line:rgba(255,255,255,.08); --shadow:0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6); color-scheme:dark; }
+@media (prefers-color-scheme: dark){ html:not([data-theme="light"]):not([data-skin]){ --bg:#0E151D; --surface:#16212C; --ink:#E4ECF3; --ink-soft:#AEBAC6; --line:#233140; color-scheme:dark }
+ }
 body{font-family:"Axiforma","Cairo","Noto Sans Arabic",system-ui,-apple-system,"Segoe UI",sans-serif;font-feature-settings:'tnum' 1}
 html[lang="ur"] body{font-family:"Noto Nastaliq Urdu","Cairo","Noto Sans Arabic",system-ui,sans-serif}
-
-/* Background aurora — three soft glows drifting over ~40 s, behind everything */
 body{isolation:isolate}
-body::before{content:"";position:fixed;inset:-20%;z-index:-1;pointer-events:none;
-  background:radial-gradient(38% 32% at 18% 22%, var(--aur-g), transparent 70%),
-             radial-gradient(34% 30% at 82% 30%, var(--aur-s), transparent 70%),
-             radial-gradient(30% 26% at 55% 85%, var(--aur-a), transparent 70%);
-  animation:dsAurora 40s ease-in-out infinite alternate}
-@keyframes dsAurora{0%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(3%,-2%,0) scale(1.06)}100%{transform:translate3d(-3%,2%,0) scale(1)}}
-
-/* Side menu on asphalt; the active item a live-green pill that eases to its place */
+body::before{content:"";position:fixed;inset:-20%;z-index:-1;pointer-events:none; background:radial-gradient(38% 32% at 18% 22%, var(--aur-g), transparent 70%), radial-gradient(34% 30% at 82% 30%, var(--aur-s), transparent 70%), radial-gradient(30% 26% at 55% 85%, var(--aur-a), transparent 70%); will-change:transform;animation:dsAurora 40s ease-in-out 2.5s infinite alternate}
+@keyframes dsAurora{0%{transform:translate3d(0,0,0) scale(1)}
+50%{transform:translate3d(3%,-2%,0) scale(1.06)}
+100%{transform:translate3d(-3%,2%,0) scale(1)}}
 .sidebar{background:var(--menu)}
 .nav a,.group-toggle{border-radius:999px;transition:background-color .35s var(--ease-in), color .2s, transform .2s var(--ease-in)}
 .nav a.active{background:var(--live);color:#fff;box-shadow:0 0 0 1px rgba(76,195,90,.35), 0 8px 18px -10px rgba(76,195,90,.7);animation:dsPop .35s var(--ease-pop)}
 .nav a:hover .item-icon{transform:translateX(-2px)}
 [dir="ltr"] .nav a:hover .item-icon{transform:translateX(2px)}
 .item-icon{transition:transform .2s var(--ease-in)}
-
-/* Page header: eyebrow, title, a 72 px green→sea line that draws, then shimmers */
 .page-head h1{position:relative;padding-bottom:12px;font-weight:800}
-.page-head h1::after{content:"";position:absolute;inset-inline-start:0;bottom:2px;height:3px;width:72px;border-radius:3px;
-  background:linear-gradient(90deg,var(--live-bright),var(--sea),var(--live-bright));background-size:200% 100%;
-  transform-origin:var(--ds-origin,right);animation:dsDraw .6s var(--ease-in) both, dsShimmer 3.2s linear .6s infinite}
+.page-head h1::after{content:"";position:absolute;inset-inline-start:0;bottom:2px;height:3px;width:72px;border-radius:3px; background:linear-gradient(90deg,var(--live-bright),var(--sea),var(--live-bright));background-size:200% 100%; transform-origin:var(--ds-origin,right);animation:dsDraw .6s var(--ease-in) both, dsShimmer 3.2s linear .6s infinite}
 [dir="ltr"] .page-head h1::after{--ds-origin:left}
-@keyframes dsDraw{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-@keyframes dsShimmer{from{background-position:0 0}to{background-position:-200% 0}}
+@keyframes dsDraw{from{transform:scaleX(0)}
+to{transform:scaleX(1)}}
+@keyframes dsShimmer{from{background-position:0 0}
+to{background-position:-200% 0}}
 .eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--slate)}
-
-/* Surfaces */
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--lift)}
 .topbar{background:color-mix(in srgb, var(--surface) 88%, transparent);backdrop-filter:saturate(1.2) blur(8px);-webkit-backdrop-filter:saturate(1.2) blur(8px)}
-
-/* Controls */
 .btn{border-radius:var(--radius-sm);transition:transform .12s var(--ease-in), box-shadow .2s, background-color .2s}
 .btn:active{transform:scale(.98)}
 .btn-primary{background:var(--asphalt);color:#fff;border-color:var(--asphalt);position:relative;overflow:hidden}
@@ -1389,43 +1337,32 @@ html[data-skin="ops"] .btn-primary, html[data-theme="dark"]:not([data-skin="bran
 a{color:var(--accent)}
 input,select,textarea{background:var(--field);border-color:var(--field-line);border-radius:var(--radius-sm)}
 input:focus-visible,select:focus-visible,textarea:focus-visible,.btn:focus-visible,.chip:focus-visible,.nav a:focus-visible{outline:2px solid var(--live-bright);outline-offset:2px}
-html .chip.on, html[data-skin] .chip.on, html[data-skin] .btn.on, html[data-skin] .tab.on{background:var(--live);border-color:var(--live);color:#fff;animation:dsPop .3s var(--ease-pop)}   /* over the old skins' orange */
-@keyframes dsPop{0%{transform:scale(.94)}100%{transform:scale(1)}}
+html .chip.on, html[data-skin] .chip.on, html[data-skin] .btn.on, html[data-skin] .tab.on{background:var(--live);border-color:var(--live);color:#fff;animation:dsPop .3s var(--ease-pop)}
+@keyframes dsPop{0%{transform:scale(.94)}
+100%{transform:scale(1)}}
 th{position:sticky;top:0;background:var(--surface-2);z-index:1}
 tbody tr{transition:background-color .15s}
 tbody tr:hover{background:color-mix(in srgb, var(--live-bright) 7%, transparent)}
-
-/* Status pulse for anything red that waits (soft ring + glow, 2.4 s) */
 .ds-pulse,.pill.late,.chip.late{animation:dsPulse 2.4s ease-in-out infinite}
-@keyframes dsPulse{0%,100%{box-shadow:0 0 0 0 rgba(180,35,24,0)}50%{box-shadow:0 0 0 4px rgba(180,35,24,.18), 0 0 20px rgba(180,35,24,.25)}}
-
-/* Page arrival: fade + rise 14 px; a thin light sweeps across the top on every page change */
+@keyframes dsPulse{0%,100%{box-shadow:0 0 0 0 rgba(180,35,24,0)}
+50%{box-shadow:0 0 0 4px rgba(180,35,24,.18), 0 0 20px rgba(180,35,24,.25)}}
 html.ds-enter #content{animation:dsArrive .45s var(--ease-in) both}
-@keyframes dsArrive{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-#dsSweep{position:fixed;inset-inline:0;top:0;height:2px;z-index:calc(var(--z-topbar) + 1);pointer-events:none;opacity:0;
-  background:linear-gradient(90deg,transparent,var(--live-bright),var(--sea),transparent);background-size:50% 100%;background-repeat:no-repeat}
+@keyframes dsArrive{from{opacity:0;transform:translateY(14px)}
+to{opacity:1;transform:none}}
+#dsSweep{position:fixed;inset-inline:0;top:0;height:2px;z-index:calc(var(--z-topbar) + 1);pointer-events:none;opacity:0; background:linear-gradient(90deg,transparent,var(--live-bright),var(--sea),transparent);background-size:50% 100%;background-repeat:no-repeat}
 html.ds-enter #dsSweep{animation:dsSweep .7s var(--ease-in)}
-@keyframes dsSweep{0%{opacity:1;background-position:-50% 0}100%{opacity:0;background-position:150% 0}}
-
-/* Pointer light on what you can press — a background layer from --hx/--hy, a 1 px green edge, a small lift */
-@media (hover:hover){
-  .btn:hover,.chip:hover,.nav a:hover,.card.ds-press:hover,.pill:hover{
-    background-image:radial-gradient(140px circle at var(--hx,50%) var(--hy,50%), rgba(76,195,90,.16), transparent 70%);
-    box-shadow:0 0 0 1px rgba(76,195,90,.45), var(--lift);transform:translateY(-1px)}
-  tbody tr:hover{background-image:radial-gradient(140px circle at var(--hx,50%) var(--hy,50%), rgba(76,195,90,.12), transparent 70%)}
-  .btn-primary:hover{background-image:radial-gradient(140px circle at var(--hx,50%) var(--hy,50%), rgba(255,255,255,.18), transparent 70%)}
-}
-
-/* The credit line under every page */
+@keyframes dsSweep{0%{opacity:1;background-position:-50% 0}
+100%{opacity:0;background-position:150% 0}}
+@media (hover:hover){ .btn:hover,.chip:hover,.nav a:hover,.card.ds-press:hover,.pill:hover{ background-image:radial-gradient(140px circle at var(--hx,50%) var(--hy,50%), rgba(76,195,90,.16), transparent 70%); box-shadow:0 0 0 1px rgba(76,195,90,.45), var(--lift);transform:translateY(-1px)}
+tbody tr:hover{background-image:radial-gradient(140px circle at var(--hx,50%) var(--hy,50%), rgba(76,195,90,.12), transparent 70%)}
+.btn-primary:hover{background-image:radial-gradient(140px circle at var(--hx,50%) var(--hy,50%), rgba(255,255,255,.18), transparent 70%)}
+ }
 .ds-credit{margin:28px 0 6px;text-align:center;font-size:12px;line-height:1.7;color:var(--slate)}
 .ds-credit button{background:none;border:0;color:inherit;font:inherit;cursor:pointer;padding:4px 8px;border-radius:8px;min-height:32px}
 .ds-credit button:hover{color:var(--ink)}
-
-/* Everything that moves stops when the device asks */
-@media (prefers-reduced-motion: reduce){
-  *,*::before,*::after{animation:none !important;transition:none !important}
-  body::before{display:none}
-}
+@media (prefers-reduced-motion: reduce){ *,*::before,*::after{animation:none !important;transition:none !important}
+body::before{display:none}
+ }
 </style>
 </head>
 <body>
