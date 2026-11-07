@@ -2,11 +2,11 @@
 
 المصدرُ في `src/` مجلّداتٌ بالمجال، تُجمَّع بترتيب المسار الكامل إلى `index.html` (ملفٌّ واحدٌ عند النشر ليعمل بلا شبكة). سقفُ الملف **1500 سطر** — البوابةُ تقع فوقه.
 
-## `00-shell/` — الهيكل — رأسُ الصفحة والأنماط  (1 ملفات · 1487 سطر · 0 دالة)
+## `00-shell/` — الهيكل — رأسُ الصفحة والأنماط  (1 ملفات · 1495 سطر · 0 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
-| `00-head.html` | 1487 | 0 |  |
+| `00-head.html` | 1495 | 0 |  |
 
 ## `01-core/` — النواة — اللغة والمحرك والمزامنة والسجل  (8 ملفات · 3010 سطر · 132 دالة)
 
@@ -122,7 +122,7 @@
 | `03z-shared-b-26-from-approvals-reports-10-point-actions-export-pdf.js` | 52 | 2 | Definitions moved verbatim from src/07-reports/07-approvals-reports-10-point-actions-export-pdf.js (V38.38–V38.39, stage A of core + chunks, pass b): the core ( |
 | `03z-shared-b-27-from-approvals-reports-11-import-roles-perms.js` | 29 | 0 | Definitions moved verbatim from src/07-reports/07-approvals-reports-11-import-roles-perms.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, |
 
-## `03zz-late/` —   (65 ملفات · 6952 سطر · 451 دالة)
+## `03zz-late/` —   (65 ملفات · 6953 سطر · 451 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -183,7 +183,7 @@
 | `05-map--05-lifecycle-map-10-field-companies.js` | 144 | 9 | Moved verbatim from src/05-map/05-lifecycle-map-10-field-companies.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk  |
 | `05-map--05-lifecycle-map-11-drawing-board-modules.js` | 186 | 16 | Moved verbatim from src/05-map/05-lifecycle-map-11-drawing-board-modules.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office  |
 | `05-map--05-lifecycle-map-12-ministry-screen-progress.js` | 300 | 17 | Moved verbatim from src/05-map/05-lifecycle-map-12-ministry-screen-progress.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the offi |
-| `05-map--05-lifecycle-map-13-ministry-followup.js` | 344 | 34 | Moved verbatim from src/05-map/05-lifecycle-map-13-ministry-followup.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chun |
+| `05-map--05-lifecycle-map-13-ministry-followup.js` | 345 | 34 | Moved verbatim from src/05-map/05-lifecycle-map-13-ministry-followup.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chun |
 | `08-events--08-data-events-boot-01-data-sources-role-guide.js` | 66 | 2 | Moved verbatim from src/08-events/08-data-events-boot-01-data-sources-role-guide.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the |
 | `08-events--08-data-events-boot-02-approvals-governance.js` | 206 | 12 | Moved verbatim from src/08-events/08-data-events-boot-02-approvals-governance.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the of |
 | `08-events--08-data-events-boot-03-settings-types-users.js` | 438 | 21 | Moved verbatim from src/08-events/08-data-events-boot-03-settings-types-users.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the of |
@@ -192,7 +192,7 @@
 | `08-events--08-data-events-boot-06-long-lists-storage-clicks.js` | 198 | 3 | Moved verbatim from src/08-events/08-data-events-boot-06-long-lists-storage-clicks.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or t |
 | `08-events--08-data-events-boot-13-toast-wheel-ios-boot.js` | 12 | 2 | Moved verbatim from src/08-events/08-data-events-boot-13-toast-wheel-ios-boot.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the of |
 
-## `04-office/` — المكتب — الصور والحوكمة والمساعد والتقارير بالكلام والرسم على الخريطة  (24 ملفات · 3886 سطر · 167 دالة)
+## `04-office/` — المكتب — الصور والحوكمة والمساعد والتقارير بالكلام والرسم على الخريطة  (25 ملفات · 3946 سطر · 171 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -220,6 +220,7 @@
 | `04-tasks-office-23-tafweej.js` | 384 | 22 | The tafweej management approves or rejects the corridor points of Mina and Arafat from the point's card on the |
 | `04-tasks-office-24-tafweej-1447.js` | 12 | 0 | The basis of the Mina corridor points: the KMZ «point_of_path_update_23-3-2026 ALL_POINTS» that the tafweej |
 | `04-tasks-office-25-expo.js` | 123 | 6 | The EXPO command center link and the EXPO devices (type, name, VPN address, serial), each address a direct link, editable by the office |
+| `04-tasks-office-26-pipeline.js` | 60 | 4 | Where every point stands now, as one line of stages: a node per stage with its count, flowing dashed green |
 
 ## `05-map/` — الخريطة ودورةُ الحياة — الطبقات والتصدير والاستيراد والدخول وشاشةُ الوزارة  (21 ملفات · 4852 سطر · 248 دالة)
 
@@ -247,7 +248,7 @@
 | `05-lifecycle-map-21-move-devices.js` | 127 | 11 | (V39.31) owner: «عاوز أي نقطة، من أقل نقطة، أقدر أحرّكها: كاميرا وأنتنات وريدر وحساسات وجيت واي وخلافه». A point |
 | `05-lifecycle-map-30-kmz-detailed.js` | 100 | 5 | A detailed KMZ for Google Earth: every planned point, once per app filter as folders, with a full balloon. |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4693 سطر · 168 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4695 سطر · 168 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -261,7 +262,7 @@
 | `06-ministry-alerts-08-pptx-template.js` | 1110 | 33 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 252 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 1475 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 1477 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
 
@@ -313,4 +314,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 246 ملفًّا · 51135 سطر · 2360 دالة.
+**الإجمالي:** 247 ملفًّا · 51206 سطر · 2364 دالة.

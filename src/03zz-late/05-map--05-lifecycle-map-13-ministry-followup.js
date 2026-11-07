@@ -233,6 +233,7 @@ function mfuHeroHtml(){
     + '<div class="kk kk-mini"><div class="kk-rings">'
     +   stageRings(SC)   /* (V37.0) خمسُ مراحل: الزيارة والمسح والتركيب والتسليم والفك */
     + '</div></div>'
+    + (typeof stagePipe === 'function' ? stagePipe() : '')   /* (V46.3) the stage pipeline */
     + '<div class="mfu-hero-grid">'
     +   '<div class="card" style="margin:0"><div class="pid">' + esc(t('مسار العمل الميداني — آخر ١٤ يومًا')) + '</div>' + spark
     +     '<div class="hint" style="margin:6px 0 0">' + esc(t('هذا الأسبوع')) + ' <b>' + nm(wk) + '</b> ' + esc(t('زيارة')) + ' (' + (trend >= 0 ? '+' : '') + nm(trend) + '٪ ' + esc(t('عن الأسبوع الماضي')) + ')' + (fc ? ' \u00b7 ' + esc(fc) : '') + '</div></div>'

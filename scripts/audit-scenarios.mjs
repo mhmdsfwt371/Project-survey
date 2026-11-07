@@ -3101,6 +3101,21 @@ console.log('\n══ ١٣٥ · نافذةُ التفاصيل — البلاطة
   T(/SV_POP && document\.querySelector\('\.svpop'\)/.test(String(readFileSync('src/08-events/08-data-events-boot-13-toast-wheel-ios-boot.js', 'utf8'))), 'والنافذةُ تُغلَق بـEscape');
 }
 
+/* ── ١٣٦ · (V46.3) خطُّ المراحل ── */
+console.log('\n══ ١٣٦ · خطُّ المراحل — كلُّ نقطةٍ في مرحلةٍ واحدة، والمتوقّفُ بالأحمر، والعقدةُ تفتح نقاطها ══');
+{
+  const C = w.pipeCounts(), tot = Object.keys(C.by).reduce((a, k) => a + C.by[k].length, 0);
+  const mapped = {}; w.PV.PIPE.forEach(p => p.st.forEach(s => mapped[s] = 1));
+  const outside = w.STATE.sites.filter(x => !mapped[w.lifeOf(x)]).length;
+  T(tot + outside === w.STATE.sites.length && w.PV.PIPE.length === 8, 'كلُّ نقطةٍ في مرحلةٍ واحدةٍ من الثماني (ما سواها: صيانةٌ أو فكٌّ أو رفض)');
+  const h = w.stagePipe();
+  T((h.match(/class="ds-node/g) || []).length === 8 && (h.match(/data-svlist="pipe\|/g) || []).length === 8 && w.MFU.lists['pipe|review'], 'ثماني عُقدٍ كلٌّ منها يفتح نافذةَ التفاصيل بقائمتها');
+  const x = w.STATE.sites[0], r0 = w.STATE.recs[x.id]; w.STATE.recs[x.id] = { id:x.id, at:Date.now() - 10 * 86400000 };
+  T(w.pipeWaitDays(x.id) > 7, 'المتوقّف: آخرُ ما حدث للنقطة أقدمُ من ٧ أيام');
+  w.STATE.recs[x.id] = r0; if (!r0) delete w.STATE.recs[x.id];
+  T(/stagePipe\(\)/.test(String(readFileSync('src/03zz-late/05-map--05-lifecycle-map-13-ministry-followup.js', 'utf8'))), 'وموضعُه موجزُ الموسم في متابعة الوزارة');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

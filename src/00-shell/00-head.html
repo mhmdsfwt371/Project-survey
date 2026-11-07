@@ -1407,6 +1407,14 @@ html.ds-welcome body::before{animation:dsBloom 1.6s var(--ease-in), dsAurora 40s
 [dir="ltr"] .ds-pbar i{--ds-origin:left}@keyframes dsGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 .ds-late{display:inline-block;color:var(--danger);font-weight:700;border-radius:99px;padding:1px 8px;background:var(--danger-bg);animation:dsPulse 2.4s ease-in-out infinite}
 .svpop tbody tr{animation:dsArrive .35s var(--ease-in) both}.svpop tbody tr:nth-child(2){animation-delay:30ms}.svpop tbody tr:nth-child(3){animation-delay:60ms}.svpop tbody tr:nth-child(4){animation-delay:90ms}.svpop tbody tr:nth-child(5){animation-delay:120ms}.svpop tbody tr:nth-child(n+6){animation-delay:150ms}
+
+/* (V46.3) the stage pipeline */
+.ds-pipe{display:flex;align-items:stretch;gap:0;overflow:hidden}.ds-node{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--ink-soft);cursor:pointer;font:inherit;text-align:center;transition:transform .15s var(--ease-in),box-shadow .2s;min-height:44px}
+.ds-node b{font-size:22px;line-height:1.1;color:var(--ink-mute)}.ds-node span{font-size:12px;line-height:1.35}.ds-node.on{border-color:color-mix(in srgb,var(--live-bright) 55%,var(--line));color:var(--ink)}.ds-node.on b{color:var(--live-bright)}
+.ds-node.late{border-color:var(--danger);animation:dsPulse 2.4s ease-in-out infinite}.ds-node em{font-style:normal;font-size:12px}.ds-node:focus-visible{outline:2px solid var(--live-bright);outline-offset:2px}
+.ds-link{flex:0 0 18px;align-self:center;height:2px;background:repeating-linear-gradient(90deg,var(--line-strong) 0 5px,transparent 5px 9px)}.ds-link.flow{background:repeating-linear-gradient(90deg,var(--live-bright) 0 5px,transparent 5px 9px);background-size:18px 2px;animation:dsFlow .9s linear infinite}
+[dir="rtl"] .ds-link.flow{animation-direction:reverse}@keyframes dsFlow{from{background-position:0 0}to{background-position:18px 0}}
+@media (max-width:820px){.ds-pipe{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.ds-link{display:none}}
 </style>
 </head>
 <body>
@@ -1449,7 +1457,7 @@ html.ds-welcome body::before{animation:dsBloom 1.6s var(--ease-in), dsAurora 40s
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V46.2</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V46.3</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
