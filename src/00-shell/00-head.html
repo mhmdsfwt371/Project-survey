@@ -1335,6 +1335,10 @@ html[data-sun="1"] #content .btn-primary,html[data-sun="1"] #content .btn-second
 
 .ds-ask{font-size:17px !important;padding:14px 16px !important;border-radius:14px !important;border:1px solid color-mix(in srgb,var(--live-bright) 45%,var(--field-line)) !important;box-shadow:0 0 0 4px rgba(76,195,90,.08),0 10px 30px -18px rgba(76,195,90,.6);min-height:52px}.ds-ask:focus{box-shadow:0 0 0 4px rgba(76,195,90,.22),0 10px 30px -14px rgba(76,195,90,.8) !important}
 .ds-src{margin:8px 0 0;font-size:12px;color:var(--slate);border-top:1px dashed var(--line);padding-top:6px}.ds-more-d{margin:8px 0 4px}.ds-more-d>summary{cursor:pointer;color:var(--accent);font-weight:700;font-size:13px;padding:8px 0;min-height:32px;list-style:none}.ds-more-d>summary::before{content:"\25B8 ";display:inline-block;transition:transform .2s}[dir="rtl"] .ds-more-d>summary::before{content:"\25C2 "}.ds-more-d[open]>summary::before{transform:rotate(90deg)}[dir="rtl"] .ds-more-d[open]>summary::before{transform:rotate(-90deg)}
+
+.tb-btn.ds-brainbtn{width:40px !important;min-width:40px;padding:0 !important;justify-content:center;border-radius:50% !important;border:1px solid color-mix(in srgb,var(--live-bright) 55%,transparent) !important;background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--live-bright) 35%,transparent),color-mix(in srgb,var(--live) 25%,transparent) 60%,transparent 75%) !important;box-shadow:0 0 0 0 rgba(76,195,90,.45),0 0 16px -2px rgba(76,195,90,.55);animation:dsMark 3.2s ease-in-out infinite;position:relative}.ds-bmark{font-size:20px;line-height:1;filter:hue-rotate(95deg) saturate(1.4) drop-shadow(0 0 6px rgba(76,195,90,.7))}.tb-btn.ds-brainbtn:hover{transform:translateY(-1px) scale(1.05)}
+@keyframes dsMark{0%,100%{box-shadow:0 0 0 0 rgba(76,195,90,.35),0 0 14px -2px rgba(76,195,90,.5)}50%{box-shadow:0 0 0 5px rgba(76,195,90,0),0 0 24px 0 rgba(76,195,90,.75)}}.ds-brain-act.data{border-style:dashed}
+@media (prefers-reduced-motion: reduce){.tb-btn.ds-brainbtn{animation:none}}
 </style>
 </head>
 <body>
@@ -1377,7 +1381,7 @@ html[data-sun="1"] #content .btn-primary,html[data-sun="1"] #content .btn-second
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V46.8</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V46.9</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>

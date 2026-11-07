@@ -3176,6 +3176,20 @@ console.log('\n══ ١٤١ · عقلُ النظام — العامية وال�
   T(/lines\.slice\(0, 3\)/.test(String(readFileSync('src/01-core/01-core-registry-02-data-display-search.js', 'utf8'))) && /المزيد — الأدلّة والتقارير والأسئلة/.test(String(readFileSync('src/03z-shared/03z-shared-b-10-from-tasks-office-10-assistant-reports.js', 'utf8'))), 'ثلاثةُ توجيهاتٍ أولًا، والأدلّةُ والتقاريرُ خلف «المزيد»');
 }
 
+/* ── ١٤٢ · (V46.9) البحثُ بأي شيءٍ مكتوب، وتنظيمُ البيانات في عقل النظام ── */
+console.log('\n══ ١٤٢ · البحثُ بأي حقلٍ وأي رقم، وتنظيمُ البيانات ══');
+{
+  const ids = q => w.siteSearch(q, 2000).map(x => x.id);
+  T(ids('0018').indexOf('NSK-MIN-RDR-0018') > -1 && ids('RDR 18').indexOf('NSK-MIN-RDR-0018') > -1, 'رقمُ المعرّف وحدَه أو مع جزءٍ منه يجد النقطة');
+  const co = w.STATE.sites.find(x => x.co).co;
+  T(ids(co).length > 0 && ids(co).every(id => { const x = w.siteFind(id); return w.srchNorm(Object.values(x).join(' ')).indexOf(w.srchNorm(co)) > -1; }), 'اسمُ الشركة يجد نقاطَها');
+  T(ids('اعادة تركيب ١٤٤٧').length === ids('إعادة تركيب 1447').length && ids('إعادة تركيب 1447').length > 0, 'الهمزاتُ والأرقامُ العربية تُطابَق كيفما كُتبت');
+  const two = ids('منى ضيوف مخيم'); T(two.length > 0 && two.every(id => w.siteFind(id).zone === 'منى'), 'كلماتٌ عدّةٌ معًا: كلُّ كلمةٍ في النقطة');
+  const role0 = w.ROLE; w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
+  T(/تنظيمُ البيانات/.test(w.brainBriefHtml()) && /نقاطٌ بلا شركة/.test(w.brainBriefHtml()), 'عقلُ النظام يوجّه المكتبَ إلى تنظيم البيانات');
+  w.ROLE = role0; w.STATE.meta.role = role0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

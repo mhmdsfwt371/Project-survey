@@ -151,6 +151,19 @@ function brainBriefHtml(){
       + '<span class="ic" aria-hidden="true">' + b.ic + '</span><span class="tx"><b>' + esc(t(b.n)) + '</b><small>' + esc(t('بيد')) + ' ' + esc(t(b.who)) + ' \u00b7 ' + esc(t(b.why)) + '</small></span>'
       + '<span class="nm"><b class="num">' + nm(ids.length) + '</b>' + (late ? '<em class="ds-late">' + nm(late) + ' ' + esc(t('متوقّفة')) + '</em>' : '') + '</span></button>';
   });
+  /* (V46.9) the data itself: what needs ordering, for the office */
+  if (['engineer', 'admin'].indexOf(role) > -1){
+    var dq = [], ll = {};
+    var noCo = S.filter(function(x){ return !String(x.co || '').trim(); }).map(function(x){ return x.id; });
+    var unk = S.filter(function(x){ return /[?؟]/.test(String(x.name || '') + String(x.sq || '') + String(x.sign || '')); }).map(function(x){ return x.id; });
+    S.forEach(function(x){ var k = (+x.lat).toFixed(5) + ',' + (+x.lng).toFixed(5); (ll[k] = ll[k] || []).push(x.id); });
+    var same = [].concat.apply([], Object.keys(ll).filter(function(k){ return ll[k].length > 1; }).map(function(k){ return ll[k]; }));
+    [[noCo, 'نقاطٌ بلا شركة', 'تُنسَب كلُّ نقطةٍ لشركتها — التقاريرُ والتسليمُ بالشركة'], [unk, 'مربعٌ أو شاخصٌ مجهول (؟)', 'يُكتب المربعُ والشاخصُ من الميدان'], [same, 'نقطتان على الموضع نفسه', 'تُراجَع: تكرارٌ أم نقطتان متلاصقتان فعلًا']].forEach(function(d){
+      if (!d[0].length) return;
+      dq.push('<button type="button" class="ds-brain-act data"' + (typeof MFU !== 'undefined' ? ' data-svlist="' + esc(dsList('brain|dq|' + d[1], d[1], d[0])) + '"' : ' data-p="map"') + '><span class="ic" aria-hidden="true">\u{1F5C2}\uFE0F</span><span class="tx"><b>' + esc(t(d[1])) + '</b><small>' + esc(t('تنظيمُ البيانات')) + ' \u00b7 ' + esc(t(d[2])) + '</small></span><span class="nm"><b class="num">' + nm(d[0].length) + '</b></span></button>');
+    });
+    if (dq.length) lines.push('<details class="ds-more-d"><summary>' + esc(t('تنظيمُ البيانات')) + ' (' + nm(dq.length) + ')</summary>' + dq.join('') + '</details>');
+  }
   var q = (STATE.queue || []).length;
   if (q) lines.unshift('<div class="ds-brain-act warn"><span class="ic" aria-hidden="true">\u2601\uFE0F</span><span class="tx"><b>' + esc(t('على جهازك تعديلاتٌ لم تُرفع بعد')) + '</b><small>' + esc(t('تُرفع وحدها حين يعود الاتصال — لا تمسح بيانات التطبيق')) + '</small></span><span class="nm"><b class="num">' + nm(q) + '</b></span></div>');
   var ins = cnt(['installed', 'handed']), vis = S.length - cnt(['todo', 'assigned', 'tomorrow']);

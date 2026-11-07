@@ -341,9 +341,9 @@ function assistWarnCount(){ try { var d = assistDiag(); return (d.on ? 0 : 0) + 
 
 function assistBadgeSync(){
   var b = document.getElementById('assistBtn'); if (!b) return;
-  if (b.getAttribute('data-lbl') !== LANG){ b.setAttribute('data-lbl', LANG);   /* (V39.5) drawn once, it stayed Arabic in English and Urdu */ b.classList.add('tb-assist'); b.innerHTML = '\u{1F9ED}<span class="tb-assist-t">' + esc(t('المساعد')) + '</span><i class="tb-dot" hidden></i>'; }
+  if (b.getAttribute('data-lbl') !== LANG){ b.setAttribute('data-lbl', LANG);   /* (V39.5) drawn once, it stayed Arabic in English and Urdu */ b.classList.add('tb-assist', 'ds-brainbtn'); b.innerHTML = '<span class="ds-bmark" aria-hidden="true">\u{1F9E0}</span><i class="tb-dot" hidden></i>'; }   /* (V46.9) owner: «شيل كلمة مساعد وحط أيقونة عقل» — the mark alone, glowing in the theme's green
   var n = assistWarnCount(), dot = b.querySelector('.tb-dot'); if (dot) dot.hidden = !n;
-  b.setAttribute('aria-label', t('المساعد') + (n ? ' — ' + t('في جهازك ما يحتاج حلًّا') : ''));
+  b.setAttribute('aria-label', t('عقلُ النظام') + (n ? ' — ' + t('في جهازك ما يحتاج حلًّا') : '')); b.title = t('عقلُ النظام');
   /* تعريفٌ بالمساعد مرةً لكلِّ جهاز بعد التحديث — فقاعةٌ صغيرةٌ تختفي بلمسةٍ أو بعد ثماني ثوانٍ */
   if (!assistBadgeSync.tipped && lsGet('nsk14.assisttip') !== '1' && typeof ROLE !== 'undefined' && ROLE && document.getElementById('nav')){
     assistBadgeSync.tipped = true; lsSet('nsk14.assisttip', '1');

@@ -2,23 +2,31 @@
    FILE    : src/03z-shared/03z-shared-13-from-tasks-office-13-perf-distribution-cameras.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/04-office/04-tasks-office-13-perf-distribution-cameras.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : siteIndex, siteFind, siteSearch, statBump, recLocApply, siteKeyStats, svLabel, declaredKeys, typeOfLabel, declaredTypeKeys, camKind, camKindLabel … (+2 more)
+   DEFINES : srchNorm, siteIndex, siteFind, siteSearch, statBump, recLocApply, siteKeyStats, svLabel, declaredKeys, typeOfLabel, declaredTypeKeys, camKind, camKindLabel … (+2 more)
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ── فهرسٌ للمواقع: بحثٌ فوريٌّ بدل مسحٍ خطي ── */
 var SITE_IX = null, SITE_TOK = null;
 
+/* letters written either way match: hamzas, alif maqsura, ta marbuta, diacritics, Arabic-Indic digits, case */
+function srchNorm(v){ return String(v == null ? '' : v).replace(/[\u064B-\u0652\u0640]/g, '').replace(/[أإآ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/[\u0660-\u0669]/g, function(d){ return String(d.charCodeAt(0) - 0x660); }).toLowerCase().trim(); }
 function siteIndex(){
   /* (V38.69) the index follows the list it was built from: a replaced or grown registry rebuilds it. With the «first point»
      fallbacks gone (popup, point page, forms) a stale index would hide a point that exists — the fallback used to mask that. */
   if (SITE_IX && siteIndex.of === STATE.sites && siteIndex.n === STATE.sites.length) return SITE_IX;
   siteIndex.of = STATE.sites; siteIndex.n = STATE.sites.length;
   SITE_IX = Object.create(null);
-  SITE_TOK = Object.create(null);
+  SITE_TOK = Object.create(null); PV.SITE_HAY = [];
   STATE.sites.forEach(function(x, i){
     SITE_IX[x.id] = x;
     /* مفاتيحُ البحث: المعرّف والشاخص والمربع وكلماتُ الاسم */
     var keys = [x.id, x.sign, x.sq, siteKey(x)];   /* (V35.0) */
+    /* (V46.9) owner: «لما أدوّر على أي حاجة، أدوّر بأي حاجة مكتوبة فيها — اسمها، رقمها — مش مجرد الاسم». Every written field is a key,
+       every number in the id with and without its zeros, the 1447 file number where known; a haystack per point answers several words. */
+    Object.keys(x).forEach(function(k){ var v = x[k]; if ((typeof v === 'string' || typeof v === 'number') && String(v).length < 90 && !/^(lat|lng)$/.test(k)) keys.push(String(v)); });
+    (String(x.id || '').match(/\d+/g) || []).forEach(function(d){ keys.push(d); keys.push(String(+d)); });
+    var f47 = PV.TAF1447 && PV.TAF1447.m && PV.TAF1447.m[x.id]; if (f47 && f47[0]){ keys.push(f47[0]); keys.push(String(f47[0]).replace(/\s+/g, '')); }
+    PV.SITE_HAY[i] = ' ' + keys.map(srchNorm).join(' ') + ' ';
     String(x.name || '').split(/[\s\-—·]+/).forEach(function(t){ if (t.length > 1) keys.push(t); });
     keys.forEach(function(k){
       k = String(k || '').trim();
@@ -37,6 +45,13 @@ function siteSearch(q, lim){
   q = String(q || '').trim();
   if (!q) return STATE.sites.slice(0, lim);
   siteIndex();
+  /* (V46.9) several words, or anything not a whole key: every word must appear somewhere on the point */
+  var qn = srchNorm(q), qt = qn.split(/\s+/).filter(Boolean);
+  if (qt.length > 1 || !SITE_TOK[q]){
+    var hits = [];
+    for (var hi = 0; hi < STATE.sites.length && hits.length < lim; hi++){ var hy = PV.SITE_HAY[hi] || ''; if (qt.every(function(w){ return hy.indexOf(w) > -1; })) hits.push(STATE.sites[hi]); }
+    if (hits.length || qt.length > 1) return hits;
+  }
   /* مطابقةٌ تامةٌ أولًا — أسرعُ ما يكون */
   if (SITE_TOK[q]){
     var hit = SITE_TOK[q].slice(0, lim).map(function(i){ return STATE.sites[i]; });
