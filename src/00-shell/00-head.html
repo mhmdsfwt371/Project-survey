@@ -19,7 +19,7 @@
      المتصفّحُ الحقيقيُّ مرفوضًا. فالنطاقُ كلُّه أضيقُ من «أيِّ موقع» وأوسعُ
      من اسمٍ يُنسى. -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://*.google.com https://*.gstatic.com https://*.googleapis.com https://cdn.sheetjs.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data: https:; media-src 'self' data: blob:; worker-src 'self' blob:; child-src 'self' blob:; connect-src 'self' blob: data: https://us-central1-project-survey-60600.cloudfunctions.net https://*.googleapis.com wss://*.googleapis.com https://*.google.com https://*.firebaseapp.com https://raw.githubusercontent.com https://api.github.com https://tiles.openfreemap.org https://tile.openstreetmap.org https://server.arcgisonline.com https://s3.amazonaws.com https://cdn.sheetjs.com https://cdnjs.cloudflare.com https://*.gstatic.com https://api.nusukcard.net https://event.nusukcard.net https://livefeed.nusukcard.net; frame-src https://*.google.com https://*.googleapis.com https://*.firebaseapp.com; form-action 'self' https://accounts.google.com; base-uri 'self'; object-src 'none'; manifest-src 'self'">
-<meta name="theme-color" content="#185FA5">
+<meta name="theme-color" content="#1E2A36">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -1363,6 +1363,39 @@ tbody tr:hover{background-image:radial-gradient(140px circle at var(--hx,50%) va
 @media (prefers-reduced-motion: reduce){ *,*::before,*::after{animation:none !important;transition:none !important}
 body::before{display:none}
  }
+
+/* (V46.1) owner: «الألوان كلها مايلة للأخضر — ما أفتحش ألاقي تباين مش حلو بين الأخضر والأزرق»، «الماوس لما يقف على أي حاجة ينوّر»، «أشكال في الخلفية تفاعلية بتتحرك»، «أول ما حد يدخل يقول واو». Blues of the interface become greens and teals; the map's stage colours stay (they are data). */
+html, html[data-skin], html[data-skin="brand"][data-theme]{--sea:#1F7A63;--accent:#2A7130;--brand:#2A7130;--brand-ink:#FFFFFF;--brand-soft:#E6F3E7;--brand-deep:#1F5524;--info:#1F7A63;--info-bg:#E3F2EC;--acc:#2A7130;--aur-s:rgba(31,122,99,.16)}
+html[data-skin="ops"], html[data-theme="dark"]:not([data-skin="brand"]){--sea:#2E9C7E;--accent:#7FD18A;--brand:#4CC35A;--brand-ink:#0A1118;--brand-soft:#15301B;--brand-deep:#8EDB97;--info:#6FD3B0;--info-bg:#0F2A24;--acc:#4CC35A;--aur-s:rgba(46,156,126,.18)}
+html[data-skin] .btn-primary{background:var(--asphalt);border-color:var(--asphalt);color:#fff}
+html[data-skin] .skin-row .chip.on, html[data-skin] .card .pid{background:var(--live);border-color:var(--live);color:#fff}
+html[data-skin] .card .pid{background:none;color:var(--live-bright)}
+html[data-skin="ops"] .btn-primary, html[data-theme="dark"]:not([data-skin="brand"]) .btn-primary{background:var(--live);border-color:var(--live);color:#fff}
+html[data-skin] .kk-big, html[data-skin] .card .num[style*="font-size:2"]{color:var(--live-bright);text-shadow:0 0 18px rgba(76,195,90,.35)}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.55;
+  background:radial-gradient(circle at 20% 70%, transparent 0 118px, rgba(76,195,90,.10) 119px 120px, transparent 121px),
+             radial-gradient(circle at 78% 24%, transparent 0 178px, rgba(46,156,126,.10) 179px 180px, transparent 181px),
+             radial-gradient(circle at 62% 82%, transparent 0 58px, rgba(224,163,46,.10) 59px 60px, transparent 61px);
+  translate:calc(var(--mx,0) * -18px) calc(var(--my,0) * -14px);animation:dsRings 60s linear 2.5s infinite;transition:translate .6s var(--ease-in)}
+@keyframes dsRings{0%{transform:rotate(0deg) scale(1)}50%{transform:rotate(4deg) scale(1.04)}100%{transform:rotate(0deg) scale(1)}}
+body::before{translate:calc(var(--mx,0) * 26px) calc(var(--my,0) * 20px);transition:translate .8s var(--ease-in)}
+@media (hover:hover){
+  .card:hover,.tb-btn:hover,.kk:hover,.stat:hover,[data-fly]:hover,.group-toggle:hover{background-image:radial-gradient(160px circle at var(--hx,50%) var(--hy,50%), rgba(76,195,90,.13), transparent 70%);box-shadow:0 0 0 1px rgba(76,195,90,.38), var(--lift)}
+  .tb-btn:hover,[data-fly]:hover{transform:translateY(-1px)}
+  #content a:not(.btn):hover{text-shadow:0 0 12px rgba(76,195,90,.45)}
+}
+html.ds-welcome .sidebar .nav > *{animation:dsSlide .5s var(--ease-in) both}
+html.ds-welcome .sidebar .nav > *:nth-child(1){animation-delay:.05s}html.ds-welcome .sidebar .nav > *:nth-child(2){animation-delay:.1s}html.ds-welcome .sidebar .nav > *:nth-child(3){animation-delay:.15s}html.ds-welcome .sidebar .nav > *:nth-child(4){animation-delay:.2s}html.ds-welcome .sidebar .nav > *:nth-child(5){animation-delay:.25s}html.ds-welcome .sidebar .nav > *:nth-child(6){animation-delay:.3s}html.ds-welcome .sidebar .nav > *:nth-child(7){animation-delay:.35s}html.ds-welcome .sidebar .nav > *:nth-child(n+8){animation-delay:.4s}
+html.ds-welcome .topbar{animation:dsDrop .55s var(--ease-in) both}
+html.ds-welcome #content{animation:dsArrive .7s var(--ease-in) .25s both}
+html.ds-welcome .brand, html.ds-welcome #brandName{animation:dsPop .6s var(--ease-pop) .1s both}
+html.ds-welcome body::before{animation:dsBloom 1.6s var(--ease-in), dsAurora 40s ease-in-out 1.6s infinite alternate}
+@keyframes dsSlide{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+[dir="ltr"] html.ds-welcome .sidebar .nav > *{animation-name:dsSlideL}
+@keyframes dsSlideL{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:none}}
+@keyframes dsDrop{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+@keyframes dsBloom{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+@media (prefers-reduced-motion: reduce){body::after{display:none} html.ds-welcome *{animation:none !important}}
 </style>
 </head>
 <body>
@@ -1405,7 +1438,7 @@ body::before{display:none}
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V46.0</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V46.1</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>

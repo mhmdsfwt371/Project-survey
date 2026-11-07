@@ -253,7 +253,7 @@ var LOGO = document.querySelector('.brand-mark img') ? document.querySelector('.
 var MANIFEST = {
   name:'قارئات أفاقي', short_name:'أفاقي',
   start_url:'./', display:'standalone', orientation:'any',
-  background_color:'#0A0D10', theme_color:'#185FA5', dir:'rtl', lang:'ar',
+  background_color:'#0A0D10', theme_color:'#1E2A36', dir:'rtl', lang:'ar',
   /* الأيقونةُ ملفَّان حقيقيّان في المستودع بالعلامة نفسِها — والـSVG المؤقّتُ
      لا يصلح لآيفون (V16.99) */
   icons:[{ src:'icon-192.png', sizes:'192x192', type:'image/png', purpose:'any' },
@@ -294,22 +294,27 @@ PV.LOGIN_CSS = `
 .lgm img{width:100%;height:auto;display:block}
 #login h1{font-size:19px;color:#E8EBEE;line-height:1.3}
 #login .sub{font-size:12.5px;color:#8A939D;margin-top:2px}
-#login .cnt{font-size:12px;color:#5FA8E8;margin:0 0 16px;font-variant-numeric:tabular-nums}
+#login .cnt{font-size:12px;color:#7FD18A;margin:0 0 16px;font-variant-numeric:tabular-nums}
 #login label{display:block;font-size:12.5px;color:#9BA5AF;margin:0 0 5px}
 #login input,#login select{width:100%;background:#0B1014;border:1px solid #2A333C;
   border-radius:9px;padding:11px 12px;color:#E8EBEE;font:inherit;min-height:44px;margin-bottom:13px}
-#login input:focus,#login select:focus{outline:2px solid #185FA5;border-color:#185FA5}
+#login input:focus,#login select:focus{outline:2px solid #4CC35A;border-color:#4CC35A}
 #login .rem{display:flex;align-items:center;gap:9px;margin:2px 0 14px;
   font-size:13px;color:#C6CFD7;cursor:pointer;user-select:none}
-#login .rem input{width:18px;height:18px;accent-color:#185FA5;cursor:pointer;margin:0}
-#login .go{width:100%;background:#185FA5;color:#fff;border:0;border-radius:9px;
+#login .rem input{width:18px;height:18px;accent-color:#2A7130;cursor:pointer;margin:0}
+#login .go{width:100%;background:#2A7130;color:#fff;border:0;border-radius:9px;
   padding:13px;font:inherit;font-weight:600;cursor:pointer;min-height:48px}
 #login .go:active{transform:scale(.99)}
 #login .note{font-size:11.5px;color:#6C757E;text-align:center;margin:14px 0 0;line-height:1.6}
 #login .langs{display:flex;gap:6px;justify-content:center;margin:16px 0 0}
 #login .langs button{background:transparent;border:1px solid #2A333C;color:#9BA5AF;
   border-radius:99px;padding:6px 14px;font:inherit;font-size:12px;cursor:pointer;min-height:34px}
-#login .langs button.on{background:#185FA5;border-color:#185FA5;color:#fff}
+#login .langs button.on{background:#2A7130;border-color:#2A7130;color:#fff}
+#lgGlow{position:absolute;left:0;top:0;width:520px;height:520px;margin:-260px 0 0 -260px;border-radius:50%;pointer-events:none;z-index:1;
+  background:radial-gradient(circle,rgba(76,195,90,.22),rgba(31,122,99,.10) 40%,transparent 70%);transform:translate3d(50vw,40vh,0);transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+#login .box{animation:lgIn .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes lgIn{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){#lgGlow{display:none}#login .box{animation:none}}
 `;
 
 /* الاسمُ المحفوظُ من آخر دخولٍ — إن أذن صاحبُه */
@@ -500,12 +505,12 @@ function loginBg(){
       if (on) n++;
       ctx.beginPath();
       ctx.arc(p.x, p.y, (on ? 1.9 : 1.05) * dpr, 0, 6.2832);
-      ctx.fillStyle = on ? 'rgba(55,138,221,.9)' : 'rgba(90,102,115,.24)';
+      ctx.fillStyle = on ? 'rgba(76,195,90,.9)' : 'rgba(90,115,102,.24)';
       ctx.fill();
       if (on && i % 17 === 0){
         ctx.beginPath();
         ctx.arc(p.x, p.y, 5.5 * dpr, 0, 6.2832);
-        ctx.fillStyle = 'rgba(55,138,221,.10)';
+        ctx.fillStyle = 'rgba(76,195,90,.12)';
         ctx.fill();
       }
     }
@@ -528,6 +533,13 @@ function loginBg(){
     try { var veil = cv.parentNode.querySelector('.veil'); cv.parentNode.insertBefore(sh, (veil || cv).nextSibling); } catch (e){ LS_ERR = e; }
   }
   window.addEventListener('resize', function(){ build(); draw(1.2); }, { passive:true });
-  cv.__stop = function(){ var e = document.getElementById('lgShine'); if (e) e.remove(); };
+  /* (V46.1) the owner: «أول ما حد يدخل السيستم يقول واو» — a green glow follows the pointer over the holy-sites dot field */
+  if (!calm && window.matchMedia && window.matchMedia('(hover: hover)').matches && !document.getElementById('lgGlow')){
+    var gl = document.createElement('div'); gl.id = 'lgGlow'; gl.setAttribute('aria-hidden', 'true');
+    try { cv.parentNode.insertBefore(gl, cv.nextSibling); } catch (eG){ LS_ERR = eG; }
+    var lgMove = function(e){ var g = document.getElementById('lgGlow'); if (!g){ window.removeEventListener('pointermove', lgMove); return; } g.style.transform = 'translate3d(' + e.clientX + 'px,' + e.clientY + 'px,0)'; };
+    window.addEventListener('pointermove', lgMove, { passive:true });
+  }
+  cv.__stop = function(){ var e = document.getElementById('lgShine'); if (e) e.remove(); var g = document.getElementById('lgGlow'); if (g) g.remove(); };
 }
 

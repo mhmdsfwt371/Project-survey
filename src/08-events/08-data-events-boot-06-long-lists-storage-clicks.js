@@ -190,6 +190,7 @@ function render0Tail(wasCur, p, pl, wasTab){
   var outEl = document.getElementById('outBtn');
   outEl.textContent = t('تسجيل الخروج');
   var crN = document.getElementById('creditNav'); if (crN) crN.innerHTML = creditHtml();   /* (V45.4) */
+  if (ROLE && typeof dsWelcome === 'function') dsWelcome();   /* (V46.1) once, on the first page after signing in */
   var pwB = document.getElementById('pwBtn');
   if (pwB) pwB.textContent = '\u{1F511} ' + t('تغيير كلمة المرور');
 

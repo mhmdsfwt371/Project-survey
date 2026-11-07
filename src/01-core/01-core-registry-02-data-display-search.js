@@ -76,13 +76,18 @@ PV.CREDIT = { by:'آفاقي', who:'م. محمد صفوت' };
 /* (V46.0) the pointer light: one listener sets --hx/--hy on whatever pressable thing is under the pointer (hover devices only) */
 (function(){
   if (typeof window === 'undefined' || !window.matchMedia || !window.matchMedia('(hover: hover)').matches) return;
-  var SEL = '.btn,.chip,.nav a,.pill,.card.ds-press,tbody tr';
+  var SEL = '.btn,.chip,.nav a,.pill,.card,.tb-btn,.kk,.stat,[data-fly],.group-toggle,tbody tr';   /* (V46.1) everything pressable glows */
+  var de = document.documentElement, mxT = 0;
   document.addEventListener('pointermove', function(e){
+    /* (V46.1) the background shapes lean with the pointer — one frame at a time */
+    if (!mxT){ mxT = requestAnimationFrame(function(){ mxT = 0; de.style.setProperty('--mx', ((e.clientX / innerWidth) - .5).toFixed(3)); de.style.setProperty('--my', ((e.clientY / innerHeight) - .5).toFixed(3)); }); }
     var el = e.target && e.target.closest ? e.target.closest(SEL) : null; if (!el) return;
     var r = el.getBoundingClientRect(); el.style.setProperty('--hx', (e.clientX - r.left) + 'px'); el.style.setProperty('--hy', (e.clientY - r.top) + 'px');
   }, { passive:true });
 })();
 /* the credit under every page, opening an About window (author, role, version, history) */
+/* (V46.1) the welcome: the first page after signing in arrives with the menu sliding in, the bar dropping and the glow blooming */
+function dsWelcome(){ if (PV.DS_WELCOMED) return; PV.DS_WELCOMED = 1; try { var h = document.documentElement; h.classList.add('ds-welcome'); setTimeout(function(){ h.classList.remove('ds-welcome'); }, 1800); } catch (e){ PV.DS_ERR = e; } }
 function creditFootHtml(){ return '<div class="ds-credit"><button type="button" id="dsAboutBtn" aria-haspopup="dialog">' + creditHtml().replace('<br>', ' \u00b7 ') + '</button></div>'; }
 function dsAbout(){
   var old = document.getElementById('dsAbout'); if (old) old.remove();
