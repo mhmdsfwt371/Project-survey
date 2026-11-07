@@ -91,10 +91,11 @@ function svListPop(){
     + (zonesAll.length > 1 ? '<div class="chips" style="margin:8px 0 0">' + [['', 'كل المشاعر']].concat(zonesAll.map(function(z){ return [z, z]; })).map(function(z){ return '<button type="button" class="chip' + (SV_ZF === z[0] ? ' on' : '') + '" data-svzf="' + esc(z[0]) + '">' + esc(t(z[1])) + '</button>'; }).join('') + '</div>' : '')
     + (SV_POP === 'nophoto' ? '<p class="hint" style="margin:6px 0">' + esc(t('وجِّه الشبابَ لهذه النقاط لإضافة الصور من «تعديل المسح» — «التُقطت ولم تُرفع» تعني أن الصور على جهاز صاحب الزيارة: يفتح التطبيقَ على الشبكة.')) + '</p>' : '')
     /* (V37.6) طلبُ المالك: «عاوز هنا الصور — أقدر أفتح صور المخيم ده في كل التحديات وأسباب عدم المسح». عمودُ «الصور» في النافذة وحدَها (لا في الإكسل) */
-    + (asDash && rows.length ? svDashHtml(SV_POP, rows, head) : '')
+    + (asDash && rows.length ? svDashHtml(SV_POP, rows, head) + svPeopleHtml(rows, head) : '')
     + (!asDash && rows.length ? table(head.map(function(h){ return h; }).concat([t('الصور')]), shown.map(function(r){ var sx = siteFind(r[0]), pn = PCN[r[0]] || ((STATE.recs[r[0]] || {}).photos || []).length;   /* (V37.7 → V37.14: من الفهرس) */
         /* (V38.75) the name opens the point on the map too */
-        return [ sx ? siteIdHtml(sx) : '<span class="num">' + esc(r[0]) + '</span>' ].concat(r.slice(1).map(function(c, ci){ return ci === 0 && sx && c ? '<span data-fly="' + esc(sx.id) + '" role="link" style="cursor:pointer">' + esc(c) + '</span>' : esc(c || '\u2014'); }))
+        var lateD = svLateDays(r, head);   /* (V46.2) waiting over 7 days → the date in red with its age */
+        return [ sx ? siteIdHtml(sx) : '<span class="num">' + esc(r[0]) + '</span>' ].concat(r.slice(1).map(function(c, ci){ if (lateD && ci + 1 === svDashCols(head).date) return '<span class="ds-late">' + esc(c) + ' \u00b7 ' + nm(lateD) + ' ' + esc(t('يوم')) + '</span>'; return ci === 0 && sx && c ? '<span data-fly="' + esc(sx.id) + '" role="link" style="cursor:pointer">' + esc(c) + '</span>' : esc(c || '\u2014'); }))
           .concat([pn ? '<button type="button" class="btn btn-secondary btn-sm" data-svphotos="' + esc(r[0]) + '">\u{1F4F7} ' + nm(pn) + '</button>' : '<span class="hint" style="margin:0">' + esc(t('لا صور')) + '</span>']); }))
                    + (rows.length > shown.length ? '<div class="actions" style="justify-content:center;margin:10px 0">' + btn('\u2193 ' + t('عرض المزيد') + ' (' + nm(Math.min(80, rows.length - shown.length)) + ' ' + t('من') + ' ' + nm(rows.length - shown.length) + ')', 'btn-secondary btn-sm', ' data-svmore="1"') + '</div><p class="hint" style="text-align:center">' + esc(t('والكلُّ في ملف الإكسل')) + '</p>' : '')   /* (V37.27) */
                    : (asDash ? '' : '<p class="hint">' + esc(t('لا نقاط')) + '</p>'))   /* (V37.58) كانت تظهر تحت اللوحة */
@@ -102,6 +103,26 @@ function svListPop(){
     + (PV.SV_PHO ? svPhoPanel(PV.SV_PHO) : '');
 }
 
+/* (V46.2) the owner's spec — «شريطٌ لكل شخص، والقائمة كاملة والمتأخرُ بالأحمر»:
+   a bar per person (who visited / did it), widest first, growing in; a row is «late» when its last date is over 7 days old
+   and the point is not installed — the date turns red with its age. Lists without a person or a date show neither. */
+PV.SV_LATE_D = 7;
+function svLateDays(r, head){
+  var dc = svDashCols(head); if (dc.date < 0) return 0;
+  var d = String(r[dc.date] || ''); if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return 0;
+  if (typeof insDone === 'function' && insDone(r[0])) return 0;
+  var age = Math.floor((Date.now() - Date.parse(d + 'T12:00:00')) / 86400000);
+  return age > PV.SV_LATE_D ? age : 0;
+}
+function svPeopleHtml(rows, head){
+  var dc = svDashCols(head); if (dc.by < 0) return '';
+  var m = {}, late = 0; rows.forEach(function(r){ var w = String(r[dc.by] || '').trim() || t('غير مسند'); m[w] = (m[w] || 0) + 1; if (svLateDays(r, head)) late++; });
+  var k = Object.keys(m).sort(function(a, b){ return m[b] - m[a]; }); if (!k.length) return '';
+  var mx = m[k[0]];
+  return '<div class="ds-people"><div class="ds-ph"><b>' + esc(t('حسب الشخص')) + '</b>' + (late ? ' <span class="ds-late">' + esc(t('متوقّفة أكثر من ٧ أيام')) + ' ' + nm(late) + '</span>' : '') + '</div>'
+    + k.slice(0, 12).map(function(w, i){ return '<div class="ds-prow"><span class="ds-pn">' + esc(dispName(w)) + '</span><span class="ds-pbar"><i style="width:' + Math.max(4, Math.round(m[w] / mx * 100)) + '%;animation-delay:' + (i * 40) + 'ms"></i></span><b class="num">' + nm(m[w]) + '</b></div>'; }).join('')
+    + (k.length > 12 ? '<div class="hint" style="margin:4px 0 0">' + esc(t('وغيرهم')) + ' ' + nm(k.length - 12) + '</div>' : '') + '</div>';
+}
 function svDashCols(head){   /* (V37.41) الأعمدةُ بأسمائها لا بمواضعها — فتعمل اللوحةُ على كلِّ قائمةٍ في صفحة الوزارة */
   var H = (head || []).map(function(h){ return String(h || ''); }), f = function(rx){ for (var i = 0; i < H.length; i++) if (rx.test(H[i])) return i; return -1; };
   var st = H.length - 1; if (/^الصور$|^التركيب$/.test(H[st] || '')) st = -1;
@@ -110,7 +131,8 @@ function svDashCols(head){   /* (V37.41) الأعمدةُ بأسمائها لا 
 }
 
 function svBaseOf(key){   /* قاعدةُ النسبة: قوائمُ الزيارة والمتبقي من كلِّ النقاط، وما سواها من المزار */
-  var all = STATE.sites || []; if (/^(sv|rem)$/.test(key)) return { n:all.length, name:'كلِّ النقاط', zones:svZoneTot(all) };
+  var all = STATE.sites || [];
+  if (typeof MFU !== 'undefined' && MFU.lists[key] && MFU.lists[key].base) return MFU.lists[key].base();   /* (V46.2) a list that knows its own whole */ if (/^(sv|rem)$/.test(key)) return { n:all.length, name:'كلِّ النقاط', zones:svZoneTot(all) };
   var vis = all.filter(function(x){ return svVisited(STATE.recs[x.id]); }); return { n:vis.length, name:'المزار', zones:svZoneTot(vis) };
 }
 

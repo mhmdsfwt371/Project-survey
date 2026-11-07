@@ -120,12 +120,15 @@ function N(v){ return '<span class="num">'+nm(v)+'</span>'; }
 
 /* القيمةُ رقمٌ مُنسَّقٌ غالبًا (وسمٌ جاهز) فتُترَك، لكنها أحيانًا نصٌّ صرفٌ
    («متاح» · «مستوفٍ» · «—») فيُترجَم بنفس قاعدة خلايا الجدول. */
-function stat(k,v,cls){
+function stat(k,v,cls,key){
+  /* (V46.2) a tile that names a detail list opens the detail window — summary tiles, a bar per person, the full list, Excel */
+  if (key) return '<div class="stat ds-tile'+(cls?' '+cls:'')+'" data-svlist="'+esc(key)+'" role="button" tabindex="0" title="'+esc(t('التفاصيل'))+'"><div class="k">'+esc(t(k))+'</div>'
+       + '<div class="v">'+cellT(v)+' <span class="ds-more" aria-hidden="true">\u203A</span></div></div>';
   return '<div class="stat'+(cls?' '+cls:'')+'"><div class="k">'+esc(t(k))+'</div>'
        + '<div class="v">'+cellT(v)+'</div></div>';
 }
 function stats(list){
-  return '<div class="stats">'+list.map(function(s){ return stat(s[0],s[1],s[2]); }).join('')+'</div>';
+  return '<div class="stats">'+list.map(function(s){ return stat(s[0],s[1],s[2],s[3]); }).join('')+'</div>';
 }
 function meter(label,v,max){
   var p = max ? Math.min(100, Math.round(v/max*100)) : 0;

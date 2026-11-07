@@ -165,6 +165,7 @@ function clickAPart2(e){
     if (KIOSK_ON) kioskCycleStop();   /* الضغطةُ توقف التنقّلَ التلقائي */   /* (V37.14) طلبُ المالك «الويندو بطيئة»: تُدرَج النافذةُ وحدَها بلا رسم الصفحة */
     var hostL = svl.closest('#content') || document.getElementById('content');
     if (hostL){ svPopRemove(); var tmpL = document.createElement('div'); tmpL.innerHTML = (svListPop() + supPopHtml()); while (tmpL.firstChild) hostL.appendChild(tmpL.firstChild); } else render(1);
+    try { var spX = document.querySelector('.svpop [data-svpopclose]'); if (spX) spX.focus({ preventScroll:true }); } catch (eF){ PV.DS_ERR = eF; }   /* (V46.2) focus inside the window */
     return true; }
   if (e.target.closest('[data-svpopclose]')){ PV.SV_PHO = ''; SV_POP = ''; svPopRemove(); return true; }   /* (V37.14) بلا رسم */
   var phd = e.target.closest('[data-phdel]');   /* (V37.17) حذفُ صورةٍ مرفوعة: تختفي من التطبيق والتقارير ويبقى ملفُّها على الدرايف */

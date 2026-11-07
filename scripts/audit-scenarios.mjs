@@ -3086,6 +3086,21 @@ console.log('\n══ ١٣٤ · سطرُ الصانع على شاشة الدخو
   T(/id="creditNav"/.test(nav) && /creditHtml\(\)/.test(lg), 'على شاشة الدخول، وتحت «تسجيل الخروج» في القائمة');
 }
 
+/* ── ١٣٥ · (V46.2) نافذةُ التفاصيل لكل رقم: بلاطةٌ تفتحها، شريطٌ لكل شخص، والمتأخرُ بالأحمر ── */
+console.log('\n══ ١٣٥ · نافذةُ التفاصيل — البلاطة، والأشخاص، والمتأخر ══');
+{
+  const h = w.stats([['معتمدة', '3', 'acc', 'taf_ok|منى'], ['بلا تفاصيل', '1']]);
+  T((h.match(/data-svlist="taf_ok\|منى"/g) || []).length === 1 && /role="button"/.test(h) && (h.match(/ds-tile/g) || []).length === 1, 'البلاطةُ التي تسمّي قائمةً زرٌّ يفتح النافذة، والأخرى تبقى رقمًا');
+  w.tafListReg('منى'); const L = w.MFU.lists['taf_all|منى'];
+  T(L && L.rows().length === w.tafSites('منى').length && L.base().n === w.tafSites('منى').length, 'قوائمُ إدارة التفويج تعرف كلَّها: النسبةُ من نقاط ممرات المشعر لا من المزار');
+  const head = ['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'آخر زيارة', 'بواسطة', 'الحالة'], old = new Date(Date.now() - 12 * 86400000).toISOString().slice(0, 10), fresh = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const rows = [['X1', 'a', '', '', '', old, 'أحمد', ''], ['X2', 'b', '', '', '', fresh, 'أحمد', ''], ['X3', 'c', '', '', '', old, 'خالد', '']];
+  T(w.svLateDays(rows[0], head) > 7 && w.svLateDays(rows[1], head) === 0, 'المتأخرُ: آخرُ تاريخٍ أقدمُ من ٧ أيام والنقطةُ غيرُ مركّبة');
+  const ph = w.svPeopleHtml(rows, head);
+  T((ph.match(/ds-prow/g) || []).length === 2 && /أحمد/.test(ph) && /متوقّفة أكثر من ٧ أيام/.test(ph), 'شريطٌ لكل شخص، وعددُ المتوقّف فوقه');
+  T(/SV_POP && document\.querySelector\('\.svpop'\)/.test(String(readFileSync('src/08-events/08-data-events-boot-13-toast-wheel-ios-boot.js', 'utf8'))), 'والنافذةُ تُغلَق بـEscape');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

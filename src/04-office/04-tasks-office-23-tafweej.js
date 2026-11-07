@@ -6,7 +6,7 @@
              all in «متابعة الوزارة ← اعتمادات إدارة التفويج». Every corridor point's card says WHY the point is there: for Mina,
              its place in the tafweej management's 1447 file (PV.TAF1447) or that it completes those paths this season; for
              Arafat, the paths to Namirah Mosque, Jabal al-Rahma and the train, with the purpose chosen per point.
-   DEFINES : tafNearLines, PV.TAF_PAIR_M, tafPending, PV.TAF_DOCS, PV.TAF_METHOD, PV.TAF_SPECS, tafSpecsHtml, PV.TAF_STAGE, tafStage, tafCats, tafStageBar, tafCatDash, tafCatXlsx, tafSave, tafSites, tafCrit, tafCritHtml, tafPopHtml, tafDash, tafXlsx, tafLayerToggle, tafLayerSync, clickTafweej
+   DEFINES : tafListReg, tafNearLines, PV.TAF_PAIR_M, tafPending, PV.TAF_DOCS, PV.TAF_METHOD, PV.TAF_SPECS, tafSpecsHtml, PV.TAF_STAGE, tafStage, tafCats, tafStageBar, tafCatDash, tafCatXlsx, tafSave, tafSites, tafCrit, tafCritHtml, tafPopHtml, tafDash, tafXlsx, tafLayerToggle, tafLayerSync, clickTafweej
    NOTE    : The scope, the decision and the gate are in core (03-survey-records-05: PV.TAF_SCOPE, tafInScope, tafOf,
              tafDecision, tafMay, minState). Decisions live in settings/tafappr (one live document).
    ============================================================================ */
@@ -39,6 +39,23 @@ function tafSave(id, d, why, note, extra){
   return true;
 }
 /* the points in scope, each with its decision */
+/* (V46.2) the tafweej scorecard's numbers open the detail window: one list per holy site and decision */
+function tafListReg(Z){
+  [['all', 'نقاطُ ممرات'], ['ok', 'معتمدة'], ['no', 'مرفوضة'], ['left', 'متبقّية']].forEach(function(k){
+    var key = 'taf_' + k[0] + '|' + Z; if (MFU.lists[key]) return;
+    MFU.lists[key] = { title:t(Z) + ' \u2014 ' + t(k[1]),
+      base:function(){ var L = tafSites(Z).map(function(q){ return q.x; }); return { n:L.length, name:t('نقاطُ ممرات') + ' ' + t(Z), zones:svZoneTot(L) }; },
+      head:['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'آخر زيارة', 'بواسطة', 'الحالة'],
+      rows:function(){
+        return tafSites(Z).filter(function(q){ return k[0] === 'all' || (k[0] === 'left' ? !q.d : q.d === k[0]); }).map(function(q){
+          var x = q.x, r = STATE.recs[x.id], o = q.o || {};
+          return [x.id, String(x.name || ''), t(taxOf(x).g), t(taxOf(x).t), String(x.co || ''), r && r.at ? dayKey(+r.at) : '', q.d ? (o.by || '') : (r ? (r.by || '') : ''),
+                  q.d === 'ok' ? t('اعتمدتها إدارة التفويج') : q.d === 'no' ? t('رفضتها إدارة التفويج') + (o.why ? ' \u2014 ' + t(o.why) : '') : t('بانتظار اعتماد إدارة التفويج')];
+        });
+      } };
+  });
+  return 'taf_';
+}
 function tafSites(zone){
   return (STATE.sites || []).filter(function(x){ return tafScopeOk(x) && (!zone || x.zone === zone); })
     .map(function(x){ return { x:x, o:tafOf(x.id) || {}, d:tafDecision(x.id) }; });
@@ -164,7 +181,7 @@ function tafDash(){
   var list = S.filter(function(q){ return LST === 'ok' ? q.d === 'ok' : LST === 'no' ? q.d === 'no' : !q.d; });
   var chip = function(k, l, n){ return '<button type="button" class="chip' + (LST === k ? ' on' : '') + '" data-taflist="' + k + '">' + esc(t(l)) + ' ' + nm(n) + '</button>'; };
   h += '<div class="card" style="margin:0 0 10px"><h4 style="margin:0 0 8px">' + esc(t(Z)) + ' \u2014 ' + esc(t('بطاقةُ المشعر')) + '</h4>'
-    + stats([['نقاطُ ممرات', nm(C.n)], ['معتمدة', nm(C.ok), C.ok ? 'acc' : ''], ['مرفوضة', nm(C.no), C.no ? 'bad' : ''], ['متبقّية', nm(C.left), C.left ? 'wrn' : '']])
+    + (tafListReg(Z), stats([['نقاطُ ممرات', nm(C.n), '', 'taf_all|' + Z], ['معتمدة', nm(C.ok), C.ok ? 'acc' : '', 'taf_ok|' + Z], ['مرفوضة', nm(C.no), C.no ? 'bad' : '', 'taf_no|' + Z], ['متبقّية', nm(C.left), C.left ? 'wrn' : '', 'taf_left|' + Z]]))
     + (rk.length ? '<h4 style="margin:12px 0 6px">' + esc(t('أسبابُ الرفض')) + '</h4>' + rk.map(function(k){
         return '<div style="display:flex;align-items:center;gap:8px;margin:3px 0"><span style="flex:0 0 34%">' + esc(t(k)) + '</span><span style="flex:1;height:12px;border-radius:6px;background:rgba(127,127,127,.15);overflow:hidden"><span style="display:block;height:100%;width:' + Math.max(3, Math.round(100 * reasons[k] / rmax)) + '%;background:' + PV.TAF_COL.no + '"></span></span><b>' + nm(reasons[k]) + '</b></div>'; }).join('') : '')
     + '<div class="chips" style="margin:12px 0 6px">' + chip('no', 'المرفوضة', C.no) + chip('left', 'المتبقّية', C.left) + chip('ok', 'المعتمدة', C.ok) + '</div>'

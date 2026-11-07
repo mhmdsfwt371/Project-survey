@@ -1396,6 +1396,17 @@ html.ds-welcome body::before{animation:dsBloom 1.6s var(--ease-in), dsAurora 40s
 @keyframes dsDrop{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
 @keyframes dsBloom{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
 @media (prefers-reduced-motion: reduce){body::after{display:none} html.ds-welcome *{animation:none !important}}
+
+/* (V46.2) the detail window and the tiles that open it */
+.svpop{border-radius:var(--radius) !important;box-shadow:var(--lift),0 30px 80px -30px rgba(0,0,0,.6) !important;animation:svpop-in .32s var(--ease-in) !important}
+.stat.ds-tile{cursor:pointer;transition:transform .15s var(--ease-in),box-shadow .2s}.stat.ds-tile:hover{transform:translateY(-2px);box-shadow:0 0 0 1px rgba(76,195,90,.45),var(--lift)}.stat.ds-tile:focus-visible{outline:2px solid var(--live-bright);outline-offset:2px}
+.ds-more{opacity:.5;font-weight:400;transition:transform .2s var(--ease-in)}.stat.ds-tile:hover .ds-more{opacity:1;transform:translateX(-3px)}
+.ds-people{margin:12px 0 4px;padding:12px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface-2)}.ds-ph{margin:0 0 8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ds-prow{display:grid;grid-template-columns:minmax(90px,30%) 1fr auto;gap:8px;align-items:center;margin:5px 0;font-size:13px}.ds-pn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ds-pbar{height:10px;background:var(--track);border-radius:99px;overflow:hidden}.ds-pbar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--live),var(--live-bright));transform-origin:var(--ds-origin,right);animation:dsGrow .7s var(--ease-in) both}
+[dir="ltr"] .ds-pbar i{--ds-origin:left}@keyframes dsGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.ds-late{display:inline-block;color:var(--danger);font-weight:700;border-radius:99px;padding:1px 8px;background:var(--danger-bg);animation:dsPulse 2.4s ease-in-out infinite}
+.svpop tbody tr{animation:dsArrive .35s var(--ease-in) both}.svpop tbody tr:nth-child(2){animation-delay:30ms}.svpop tbody tr:nth-child(3){animation-delay:60ms}.svpop tbody tr:nth-child(4){animation-delay:90ms}.svpop tbody tr:nth-child(5){animation-delay:120ms}.svpop tbody tr:nth-child(n+6){animation-delay:150ms}
 </style>
 </head>
 <body>
@@ -1438,7 +1449,7 @@ html.ds-welcome body::before{animation:dsBloom 1.6s var(--ease-in), dsAurora 40s
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V46.1</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V46.2</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
