@@ -283,7 +283,8 @@ function render0Tail(wasCur, p, pl, wasTab){
     + moreHtml()   /* (V26.2) */
     + (HELP_OPEN ? helpHtml() : '')
     + '' + gedHtml()   /* (V36.1) المساعدُ في حاويته الثابتة — assistSync؛ (V36.2) ونافذةُ التعديل الموحّد */
-    + (QUEUE_OPEN ? queueHtml() : ''));   /* (V39.5) langFix: the English percent sign in English */
+    + (QUEUE_OPEN ? queueHtml() : '')
+    + (!p.full && typeof creditFootHtml === 'function' ? creditFootHtml() : ''));   /* (V39.5) langFix: the English percent sign in English; (V46.0) the credit under every page */
 
   labelCells(c);
   if (EXP_OPEN) c.insertAdjacentHTML('beforeend', expHtml());

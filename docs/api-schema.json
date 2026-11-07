@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V45.4",
+  "app_version": "V46.0",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2426,7 +2426,8 @@
   "V45.1": "tafSave → CORE.set('cfg','tafappr',{m,at}) carrying tafPending() (the queue shallow-merges v, the nested map would have dropped the earlier id); live listener overlays tafPending() on the server map, saves locally, and after the first snapshot notifPush-es changed decisions to may('approve') holders (not the decider). STATE.taf persisted in the idb snapshot. Notifications: the waiting notice fires for effRole 'tafweej'. assistant/assistant-reports/approvals-review/docx export/alerts/followup labels read tafDecision/tafInScope. tabsOf hides 'minappr' for all; EXP page list drops it. Scenario 131.",
   "V45.2": "tafCrit: the matched-file line drops m[2]; tafNearLines(near) gives the nearest line plus «نقطتان متجاورتان» when near ≤ PV.TAF_PAIR_M (30). PV.TAF_METHOD depth 4–6 m. specs/Scope_Corridor_Points_1448.pdf and Guide_Tafweej_1448.pdf v1.2. Scenario 132.",
   "V45.3": "New page PAGE.expo (04-tasks-office-25-expo.js) in NAV under المتابعة; exec nav gains 'expo' (admin/engineer '*'). Data in settings/expo {url, devs:[{id,type,name,ip,sn}], at} — loaded by a single get, saved via CORE.set('cfg','expo'). expoParse reads pasted table rows or comma lines (finds the IPv4 anywhere); clickExpo handles edit/add/delete/paste/url. Top bar <a id=expoTop> shown when seesPage('expo'), href follows PV.EXPO.url. Rules: match /settings/expo read isBoss()||mgr()||exec, write (isBoss()||mgr()) with fixed fields (create: keys, update: affectedKeys); excluded from the general settings read and write. Hostile: settings/expo DDD for all. rules-test +7 (1080). Scenario 133.",
-  "V45.4": "creditHtml() in core (01-core-registry-02), drawn under the login note and into #creditNav under #outBtn on every shell render; texts translated (Powered by AFAQY / Designed & developed by Eng. Mohamed Safwat). Scenario 134."
+  "V45.4": "creditHtml() in core (01-core-registry-02), drawn under the login note and into #creditNav under #outBtn on every shell render; texts translated (Powered by AFAQY / Designed & developed by Eng. Mohamed Safwat). Scenario 134.",
+  "V46.0": "Design-system layer appended to the shell <style>: tokens on html / html[data-skin] (day; «النهاري» stays day) and html[data-skin=ops] / html[data-theme=dark]:not([data-skin=brand]) (night), mapped onto the app's own names (--bg, --surface, --ink, --brand…) plus the spec's (--asphalt, --live, --live-bright, --sig, --sea, --paper, --card, --slate, --track, --field, --lift, eases). fonts/Cairo.woff2 (variable 200–1000, SIL OFL, fonts/Cairo-OFL.txt). Motion: body::before aurora (40 s), html.ds-enter set by goPage on a real page change (arrival + #dsSweep), .page-head h1::after line (draw + shimmer), pointer light from --hx/--hy (one passive pointermove listener, hover devices only), btn shine/press, chip pop, dsPulse; all off under prefers-reduced-motion. creditFootHtml under every non-full page; dsAbout dialog (focus trapped, Escape closes)."
   },
   "map_and_geolocation": {
     "tile_layers": {

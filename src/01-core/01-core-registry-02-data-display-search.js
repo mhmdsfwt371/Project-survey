@@ -73,6 +73,37 @@ function bdiText(s){
    the platform is AFAQY's, the design and development are the engineer's. Two lines, small, on the login screen and under
    «تسجيل الخروج» in the menu; translated like every other text. */
 PV.CREDIT = { by:'آفاقي', who:'م. محمد صفوت' };
+/* (V46.0) the pointer light: one listener sets --hx/--hy on whatever pressable thing is under the pointer (hover devices only) */
+(function(){
+  if (typeof window === 'undefined' || !window.matchMedia || !window.matchMedia('(hover: hover)').matches) return;
+  var SEL = '.btn,.chip,.nav a,.pill,.card.ds-press,tbody tr';
+  document.addEventListener('pointermove', function(e){
+    var el = e.target && e.target.closest ? e.target.closest(SEL) : null; if (!el) return;
+    var r = el.getBoundingClientRect(); el.style.setProperty('--hx', (e.clientX - r.left) + 'px'); el.style.setProperty('--hy', (e.clientY - r.top) + 'px');
+  }, { passive:true });
+})();
+/* the credit under every page, opening an About window (author, role, version, history) */
+function creditFootHtml(){ return '<div class="ds-credit"><button type="button" id="dsAboutBtn" aria-haspopup="dialog">' + creditHtml().replace('<br>', ' \u00b7 ') + '</button></div>'; }
+function dsAbout(){
+  var old = document.getElementById('dsAbout'); if (old) old.remove();
+  var v = (typeof APP_VER !== 'undefined' ? APP_VER : '') || (document.querySelector('.ver-tag') || {}).textContent || '';
+  var d = document.createElement('div'); d.id = 'dsAbout'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true'); d.setAttribute('aria-labelledby', 'dsAboutT');
+  d.style.cssText = 'position:fixed;inset:0;z-index:var(--z-pop);display:grid;place-items:center;background:rgba(10,17,24,.55);padding:16px';
+  d.innerHTML = '<div class="card" style="max-width:420px;width:100%;padding:20px;text-align:start">'
+    + '<h3 id="dsAboutT" style="margin:0 0 10px">' + esc(t('قارئات أفاقي')) + '</h3>'
+    + '<p style="margin:0 0 6px">' + esc(t('منصّةٌ من آفاقي')) + '</p>'
+    + '<p style="margin:0 0 6px"><b>' + esc(t('تصميم وتطوير: م. محمد صفوت')) + '</b></p>'
+    + '<p class="hint" style="margin:0 0 6px">' + esc(t('المدير الفني للمنطقة الغربية — آفاقي، جدة')) + '</p>'
+    + '<p class="hint" style="margin:0 0 14px">' + esc(t('الإصدار')) + ' <bdi dir="ltr">' + esc(String(v).trim()) + '</bdi> \u00b7 ' + esc(t('منذ يوليو ٢٠٢٦')) + '</p>'
+    + '<div class="actions" style="gap:8px;flex-wrap:wrap"><button type="button" class="btn btn-primary btn-sm" id="dsAboutX">' + esc(t('إغلاق')) + '</button></div></div>';
+  document.body.appendChild(d);
+  var close = function(){ d.remove(); document.removeEventListener('keydown', key, true); var b = document.getElementById('dsAboutBtn'); if (b) b.focus(); };
+  var key = function(e){ if (e.key === 'Escape'){ e.preventDefault(); close(); } else if (e.key === 'Tab'){ var f = d.querySelectorAll('button'); if (!f.length) return; var a = f[0], z = f[f.length - 1]; if (e.shiftKey && document.activeElement === a){ e.preventDefault(); z.focus(); } else if (!e.shiftKey && document.activeElement === z){ e.preventDefault(); a.focus(); } } };
+  document.addEventListener('keydown', key, true);
+  d.addEventListener('click', function(e){ if (e.target === d || e.target.id === 'dsAboutX') close(); });
+  setTimeout(function(){ var x = document.getElementById('dsAboutX'); if (x) x.focus(); }, 0);
+}
+document.addEventListener('click', function(e){ if (e.target && e.target.closest && e.target.closest('#dsAboutBtn, #creditNav')){ e.preventDefault(); dsAbout(); } }, true);
 function creditHtml(){
   return esc(t('منصّةٌ من آفاقي')) + '<br>' + esc(t('تصميم وتطوير: م. محمد صفوت'));
 }

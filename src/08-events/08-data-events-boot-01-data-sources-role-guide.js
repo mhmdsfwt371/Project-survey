@@ -86,6 +86,7 @@ function goPage(id){
   if (typeof SVQ !== 'undefined' && SVQ.id) SVQ = { id:'', key:'', tmp:null };   /* التنقّلُ يغلق لوحَ تعديل المسح (V22.7) */
   if (TABS[id] && PARENT[id] === id) PTAB[id] = id;
   if (id !== 'map' && typeof POP_OPEN !== 'undefined' && POP_OPEN) POP_OPEN = false;   /* (V26.9) نافذةُ نقطة الخريطة لا تبقى «مفتوحةً» في صفحةٍ أخرى — كانت تبتلع أوّلَ نقرةٍ بعد العودة من الخريطة */
+  if (CUR !== id){ try { var dh = document.documentElement; dh.classList.remove('ds-enter'); void dh.offsetWidth; dh.classList.add('ds-enter'); clearTimeout(goPage.dsT); goPage.dsT = setTimeout(function(){ dh.classList.remove('ds-enter'); }, 800); } catch (eDS){ PV.DS_ERR = eDS; } }   /* (V46.0) arrival + top sweep */
   CUR = id;
   try { pageTick(id); } catch (e){ if (typeof softErr === 'function') softErr('pageTick', e, ''); }
   try { boxNote('pg', id); } catch (e){ PV.BOX_ERR = e; }
