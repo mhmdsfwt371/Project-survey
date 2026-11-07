@@ -1,12 +1,12 @@
 {
  "ok": true,
- "at": "2026-11-06T09:42:23.329Z",
+ "at": "2026-11-07T09:04:24.011Z",
  "collections": [
   "accounts: 70",
   "att: 4",
   "bugs: 4",
   "coreqs: 5",
-  "events: 39895",
+  "events: 39939",
   "fixreqs: 3",
   "ghcfg: 1",
   "hb: 1",
@@ -20,16 +20,16 @@
   "presence: 18",
   "provision: 1",
   "recs: 2047",
-  "settings: 45",
+  "settings: 47",
   "sites: 1816",
   "srvorders: 1",
-  "stats: 62",
+  "stats: 63",
   "steps: 2107",
   "tasks: 16",
   "teams: 2",
-  "users: 32",
+  "users: 33",
   "workreqs: 1"
  ],
- "totalDocs": 46413,
+ "totalDocs": 46461,
  "note": "البياناتُ مشفَّرةٌ على الدرايف (backup-full.enc) — هذا الملفُّ أعدادٌ فقط."
 }
