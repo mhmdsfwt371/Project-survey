@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V46.6",
+  "app_version": "V46.7",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2433,7 +2433,8 @@
   "V46.3": "New 04-tasks-office-26-pipeline.js: PV.PIPE (8 stages grouping LIFE keys), pipeCounts() over svListSites() (follows the follow-up filter), pipeWaitDays (r.revAt||r.at > 7 days, waiting stages only), pipeReg registers MFU.lists['pipe|<k>'] with base(); stagePipe() drawn under the season brief's rings. CSS .ds-pipe/.ds-node/.ds-link(.flow), two columns on phones. Scenario 136.",
   "V46.4": "dsBento(SC) (pipeline file) drawn atop the season brief: bento|all, bento|today, bento|closed lists + pipe|taf; ring fills by CSS (--len/--off). table() adds data-label per cell; ≤820 px .data-table.rows → cards via td::before. PV.DS_REV (set by goPage on a page change) → IntersectionObserver adds .ds-rev/.ds-in to cards below the fold. All font-size 9–11.5px in the stylesheet (31) and inline (46) raised to 12px. tafCatReg registers tafcat|<k>. Design layer compacted (shell 1495 → ~1410 lines). Scenario 137.",
   "V46.5": "Core dsList(key, title, points) keeps a tile's points in PV.DSL (ids, site objects or {x}); svListPop calls dsListReg(key) (office) to turn it into an MFU.lists entry on open — the core never calls into the office bundle. Wired: forms page handover, dismantling and maintenance tiles. Scenario 138.",
-  "V46.6": "dsList(key, title, rows, head): with a head the items are ready rows; dsListReg builds a plain list (no dashboard view since the columns carry no zone/type/company). dsTaskRows + PV.DS_TASK_HEAD for task lists. Wired: mywork mw|mine and mw|mine2, ship|all, veh|all. Scenario 139."
+  "V46.6": "dsList(key, title, rows, head): with a head the items are ready rows; dsListReg builds a plain list (no dashboard view since the columns carry no zone/type/company). dsTaskRows + PV.DS_TASK_HEAD for task lists. Wired: mywork mw|mine and mw|mine2, ship|all, veh|all. Scenario 139.",
+  "V46.7": "Core brainBriefHtml() (PV.BRAIN: 7 directions from lifeOf counts, role-filtered, idle > 7 days, queue warning, 4 question chips) drawn first in assistResHtml's home; each line → dsList('brain|<stage>') into the detail window, or data-p=map on a phone without the office bundle. data-assistask chips fill the query and redraw #assistRes. Panel header: .ds-orb + «عقلُ النظام»; top button labelled the same. Scenario 140."
   },
   "map_and_geolocation": {
     "tile_layers": {

@@ -21,6 +21,8 @@ function clickA(e){
 /* clickA — الجزء 1 من 7 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).
    يعالج: assist، p، navtab، gt، g، open، nav، mode، pop، bst، bfsave، pq، help، exp، apick، asn، co، cofilt، comode، mfilt */
 function clickAPart1(e){
+  var aqk = e.target.closest('[data-assistask]');   /* (V46.7) a question chip asks the brain */
+  if (aqk){ ASSIST_Q = aqk.getAttribute('data-assistask'); var aqI = document.getElementById('assistQ'), aqR = document.getElementById('assistRes'), aqB = document.getElementById('assistBack'); if (aqI) aqI.value = ASSIST_Q; if (aqR) aqR.innerHTML = assistResHtml(); if (aqB) aqB.hidden = false; return true; }
   var asb = e.target.closest('[data-assist]');
   if (asb){ try { if (asb.getAttribute('data-assist') === '1') history.pushState({ assist:1 }, ''); } catch (eH){ LS_ERR = eH; }   /* (V37.40) زرُّ رجوع الهاتف يرجع داخل المساعد */ var tpx = document.getElementById('assistTip'); if (tpx) tpx.remove();   /* (V37.30) */
     if (asb.hasAttribute('data-p')){ ASSIST_OPEN = false; }

@@ -127,6 +127,41 @@ function dsList(key, title, items, head){ PV.DSL[key] = { title:title, items:ite
 /* (V46.6) the rows of a task list — the point, its kind, the assignee, the status, the date */
 function dsTaskRows(L){ return (L || []).map(function(x){ return [x.site || '', typeof kindLabel === 'function' ? kindLabel(x.kind) : (x.kind || ''), x.to || '', x.status || 'مُسند', x.at ? dayKey(+x.at) : '']; }); }
 PV.DS_TASK_HEAD = ['النقطة', 'النوع', 'المُسنَد إليه', 'الحالة', 'التاريخ'];
+/* (V46.7) owner: «ظبّط ديزاين المساعد — عاوزه يبان إنه عقل النظام، ويكون فعلًا عقل وموجّه لكل حاجة».
+   The brain reads the whole system now and says what to do next, by whom, and why — each line opens its points in the detail
+   window. Counts come from the lifecycle itself (lifeOf); «waiting» is idle over 7 days since the last thing that happened. */
+PV.BRAIN = [
+  { st:['visited'], ic:'\u2705', n:'زياراتٌ تنتظر اعتمادَ المهندس', who:'المهندس', why:'لا تتقدّم النقطةُ إلى التصفية ولا الجدولة قبل اعتماد زيارتها', roles:['engineer','admin','exec'] },
+  { st:['minwait'], ic:'\u{1F9ED}', n:'نقاطُ ممراتٍ تنتظر قرارَ إدارة التفويج', who:'إدارة التفويج', why:'نقاطُ ممرات منى وعرفات لا تُجدوَل قبل قرارها', roles:['tafweej','engineer','admin','exec'] },
+  { st:['minback'], ic:'\u21BA', n:'نقاطٌ رفضتها إدارةُ التفويج', who:'المهندس', why:'تحتاج بديلًا أو تراجعًا مسبَّبًا', roles:['engineer','admin'] },
+  { st:['ready'], ic:'\u{1F4C5}', n:'معتمدةٌ تنتظر جدولةَ التركيب', who:'المهندس', why:'جاهزةٌ ولم يُسنَد تركيبُها لفريق', roles:['engineer','admin','exec'] },
+  { st:['insfail'], ic:'\u26A0\uFE0F', n:'تعذّر تركيبُها', who:'المهندس', why:'السببُ في سجلّ النقطة — تحتاج قرارًا', roles:['engineer','admin','supervisor'] },
+  { st:['stuck','tech','revisit'], ic:'\u{1F501}', n:'تحتاج زيارةً أخرى', who:'المشرف', why:'طريقٌ مغلق أو تصريحٌ أو تقنيةٌ — أو أعادها المهندس', roles:['supervisor','engineer','admin'] },
+  { st:['todo'], ic:'\u{1F4CD}', n:'لم تُزر ولم تُسنَد بعد', who:'المشرف', why:'أسندها لفرق الميدان', roles:['supervisor','engineer','admin'] }
+];
+function brainBriefHtml(){
+  var role = typeof effRole === 'function' ? effRole(ROLE) : ROLE, S = STATE.sites || [], by = {}, idle = {}, now = Date.now();
+  S.forEach(function(x){ var k = lifeOf(x); (by[k] = by[k] || []).push(x.id); var r = STATE.recs[x.id], at = r ? +(r.revAt || r.at || 0) : 0; if (at && now - at > 7 * 864e5) idle[k] = (idle[k] || 0) + 1; });
+  var cnt = function(st){ return st.reduce(function(a, k){ return a + (by[k] || []).length; }, 0); };
+  var lines = PV.BRAIN.filter(function(b){ return b.roles.indexOf(role) > -1 && cnt(b.st) > 0; }).map(function(b, i){
+    var ids = [].concat.apply([], b.st.map(function(k){ return by[k] || []; })), late = b.st.reduce(function(a, k){ return a + (idle[k] || 0); }, 0);
+    /* the detail window lives in the office bundle; a field phone without it opens the map instead */
+    var go = typeof MFU !== 'undefined' ? ' data-svlist="' + esc(dsList('brain|' + b.st[0], b.n, ids)) + '"' : ' data-p="map"';
+    return '<button type="button" class="ds-brain-act' + (late ? ' late' : '') + '"' + go + ' style="animation-delay:' + (i * 60) + 'ms">'
+      + '<span class="ic" aria-hidden="true">' + b.ic + '</span><span class="tx"><b>' + esc(t(b.n)) + '</b><small>' + esc(t('بيد')) + ' ' + esc(t(b.who)) + ' \u00b7 ' + esc(t(b.why)) + '</small></span>'
+      + '<span class="nm"><b class="num">' + nm(ids.length) + '</b>' + (late ? '<em class="ds-late">' + nm(late) + ' ' + esc(t('متوقّفة')) + '</em>' : '') + '</span></button>';
+  });
+  var q = (STATE.queue || []).length;
+  if (q) lines.unshift('<div class="ds-brain-act warn"><span class="ic" aria-hidden="true">\u2601\uFE0F</span><span class="tx"><b>' + esc(t('على جهازك تعديلاتٌ لم تُرفع بعد')) + '</b><small>' + esc(t('تُرفع وحدها حين يعود الاتصال — لا تمسح بيانات التطبيق')) + '</small></span><span class="nm"><b class="num">' + nm(q) + '</b></span></div>');
+  var ins = cnt(['installed', 'handed']), vis = S.length - cnt(['todo', 'assigned', 'tomorrow']);
+  var chips = ['كم نقطة رُكّبت في منى؟', 'النقاط بانتظار إدارة التفويج', 'مين متأخر في الزيارات؟', 'نقاط تحتاج زيارة تقنية'];
+  return '<div class="ds-brain">'
+    + '<div class="ds-brain-know"><span>' + esc(t('أقرأ الآن')) + '</span> <b class="num">' + nm(S.length) + '</b> ' + esc(t('نقطة')) + ' \u00b7 <b class="num">' + nm(vis) + '</b> ' + esc(t('تمّت زيارتها')) + ' \u00b7 <b class="num">' + nm(ins) + '</b> ' + esc(t('رُكّبت أو سُلّمت')) + ' \u00b7 <b class="num">' + nm(Object.keys(STATE.tasks || {}).length) + '</b> ' + esc(t('إسناد')) + '</div>'
+    + '<div class="ds-brain-h">' + esc(t('التوجيهُ الآن')) + '</div>'
+    + (lines.length ? lines.join('') : '<p class="hint">' + esc(t('لا شيءَ ينتظرك الآن — كلُّ ما بيدك تمّ.')) + '</p>')
+    + '<div class="ds-brain-h">' + esc(t('اسألني')) + '</div><div class="chips" style="margin:0 0 12px">' + chips.map(function(c){ return '<button type="button" class="chip" data-assistask="' + esc(t(c)) + '">' + esc(t(c)) + '</button>'; }).join('') + '</div>'
+    + '</div>';
+}
 function stat(k,v,cls,key){
   /* (V46.2) a tile that names a detail list opens the detail window — summary tiles, a bar per person, the full list, Excel */
   if (key) return '<div class="stat ds-tile'+(cls?' '+cls:'')+'" data-svlist="'+esc(key)+'" role="button" tabindex="0" title="'+esc(t('التفاصيل'))+'"><div class="k">'+esc(t(k))+'</div>'

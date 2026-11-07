@@ -179,9 +179,9 @@ function helpSearch(q, minScore){   /* (V37.37) minScore: المساعدُ لا 
 function assistHtml(){
   return '<div class="pop" id="assistPop" style="width:min(560px,94vw);max-height:min(88vh, calc(var(--vh,1vh) * 100 - 16px));overflow:auto">'
     + '<div class="pop-head">'
-    +   '<div><h3 style="color:var(--ink)">\u{1F9ED} ' + esc(t('المساعد')) + '</h3>'
+    +   '<div class="ds-brain-top"><span class="ds-orb" aria-hidden="true"><i></i><i></i><i></i></span><div><h3 style="color:var(--ink);margin:0">' + esc(t('عقلُ النظام')) + '</h3>'
     +   '<p class="hint" style="margin:2px 0 0">'
-    +     esc(t('اسأل عن أي شيء تريد فعله، ونرشدك إلى مكانه وخطواته.')) + '</p></div>'
+    +     esc(t('يقرأ كلَّ ما في النظام الآن، ويقول لك ماذا تفعل ومن يفعله — واسأله عن أي شيء.')) + '</p></div></div>'
     +   '<div style="display:flex;gap:6px;align-items:center;flex:0 0 auto">'   /* (V37.40) بلاغُ المالك: رجوعٌ وإغلاقٌ واضحان */
     +     '<button type="button" class="btn btn-secondary btn-sm" id="assistBack" data-assistback="1"' + (ASSIST_Q ? '' : ' hidden') + '>\u2192 ' + esc(t('رجوع')) + '</button>'
     +     '<button type="button" class="btn btn-secondary btn-sm" data-assist="0" aria-label="' + esc(t('إغلاق')) + '">\u2715 ' + esc(t('إغلاق')) + '</button>'
@@ -189,7 +189,7 @@ function assistHtml(){
     + '</div>'
     + '<div class="pop-body">'
     + '<input type="search" id="assistQ" value="' + esc(ASSIST_Q) + '" placeholder="'
-    +   esc(t('مثلا: أريد إضافة فني جديد')) + '" dir="auto" style="width:100%;margin:0 0 12px">'
+    +   esc(t('اسأل عقلَ النظام — مثلًا: كم نقطة رُكّبت في منى؟')) + '" dir="auto" style="width:100%;margin:0 0 12px">'
     + '<div id="assistRes">' + assistResHtml() + '</div>'   /* (V36.1) النتائجُ وحدَها تُستبدَل مع الكتابة */
     + '</div></div>';
 }

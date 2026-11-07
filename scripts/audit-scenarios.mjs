@@ -3151,6 +3151,21 @@ console.log('\n══ ١٣٩ · نافذةُ التفاصيل لقوائم لي�
   T(["dsList('mw|mine'", "dsList('mw|mine2'", "dsList('ship|all'", "dsList('veh|all'"].every(x => src.indexOf(x) > -1), '«مُسند إليّ» في شغلي، والشحنات، والأسطول مربوطة');
 }
 
+/* ── ١٤٠ · (V46.7) عقلُ النظام: يقرأ ويوجّه بحسب الدور ── */
+console.log('\n══ ١٤٠ · عقلُ النظام — ما يقرؤه، والتوجيهُ بحسب الدور، والأسئلة ══');
+{
+  const role0 = w.ROLE, mr0 = w.STATE.meta.role, x = w.STATE.sites[0], r0 = w.STATE.recs[x.id];
+  w.STATE.recs[x.id] = Object.assign({}, r0 || {}, { id:x.id, at:Date.now() - 9 * 864e5, by:'خالد', sv_done:true }); if (w.DB.memo) w.DB.memo = null;
+  w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
+  const h = w.brainBriefHtml();
+  T(/أقرأ الآن/.test(h) && /التوجيهُ الآن/.test(h) && (h.match(/data-assistask=/g) || []).length === 4, 'يقرأ النظامَ الآن، ويوجّه، ويقترح أسئلة');
+  T(/زياراتٌ تنتظر اعتمادَ المهندس/.test(h) && /متوقّفة/.test(h), 'المهندسُ يرى زياراتِه المنتظرة والمتوقّفَ منها');
+  w.ROLE = 'tafweej'; w.STATE.meta.role = 'tafweej';
+  T(!/زياراتٌ تنتظر اعتمادَ المهندس/.test(w.brainBriefHtml()), 'وإدارةُ التفويج لا ترى ما ليس بيدها');
+  T(w.PV.BRAIN.every(b => b.n && b.who && b.why && b.roles.length), 'كلُّ توجيهٍ: ماذا، وبيد مَن، ولماذا');
+  w.STATE.recs[x.id] = r0; if (!r0) delete w.STATE.recs[x.id]; if (w.DB.memo) w.DB.memo = null; w.ROLE = role0; w.STATE.meta.role = mr0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);
