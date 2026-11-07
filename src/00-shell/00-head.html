@@ -1339,6 +1339,13 @@ html[data-sun="1"] #content .btn-primary,html[data-sun="1"] #content .btn-second
 .tb-btn.ds-brainbtn{width:40px !important;min-width:40px;padding:0 !important;justify-content:center;border-radius:50% !important;border:1px solid color-mix(in srgb,var(--live-bright) 55%,transparent) !important;background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--live-bright) 35%,transparent),color-mix(in srgb,var(--live) 25%,transparent) 60%,transparent 75%) !important;box-shadow:0 0 0 0 rgba(76,195,90,.45),0 0 16px -2px rgba(76,195,90,.55);animation:dsMark 3.2s ease-in-out infinite;position:relative}.ds-bmark{font-size:20px;line-height:1;filter:hue-rotate(95deg) saturate(1.4) drop-shadow(0 0 6px rgba(76,195,90,.7))}.tb-btn.ds-brainbtn:hover{transform:translateY(-1px) scale(1.05)}
 @keyframes dsMark{0%,100%{box-shadow:0 0 0 0 rgba(76,195,90,.35),0 0 14px -2px rgba(76,195,90,.5)}50%{box-shadow:0 0 0 5px rgba(76,195,90,0),0 0 24px 0 rgba(76,195,90,.75)}}.ds-brain-act.data{border-style:dashed}
 @media (prefers-reduced-motion: reduce){.tb-btn.ds-brainbtn{animation:none}}
+
+.map-top .ds-mgrp{background:color-mix(in srgb,var(--surface) 82%,transparent) !important;color:var(--ink) !important;border:1px solid var(--line) !important}.map-top .ds-mgrp.has{border-color:color-mix(in srgb,var(--live-bright) 60%,var(--line)) !important}.map-top .ds-mgrp.open{background:var(--live) !important;color:#fff !important;border-color:var(--live) !important}.ds-caret{opacity:.7;font-size:12px}
+.ds-msheet{flex:1 1 100%;order:99;margin:4px 0 0;padding:12px;border-radius:16px;background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid color-mix(in srgb,var(--live-bright) 35%,var(--line));box-shadow:var(--lift),0 18px 40px -20px rgba(0,0,0,.6);animation:dsArrive .3s var(--ease-in) both;max-height:min(60vh,520px);overflow:auto}
+.ds-msh-h{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin:0 0 10px}.ds-msh-h b{display:block;color:var(--ink);font-size:15px}.ds-msh-h small{display:block;color:var(--slate);font-size:12px;margin-top:2px}.ds-msh-x{min-width:36px;min-height:36px;border-radius:50%;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);cursor:pointer;font:inherit}
+.ds-msh-b{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}.ds-msh-b .map-chip{width:100%;justify-content:flex-start;border-radius:12px !important;min-height:44px;background:var(--surface-2) !important;color:var(--ink) !important;border:1px solid var(--line) !important;position:relative;padding-inline-end:30px}.ds-msh-b .map-chip.on{background:color-mix(in srgb,var(--live) 22%,var(--surface-2)) !important;border-color:var(--live-bright) !important}.ds-msh-b .map-chip.on::after{content:"\2713";position:absolute;inset-inline-end:10px;color:var(--live-bright);font-weight:800}.ds-msh-b .chip-pair{display:contents}
+@media (max-width:520px){.ds-msh-b{grid-template-columns:1fr 1fr}}
+.ds-msh-g{font-size:12px;font-weight:800;color:var(--live-bright);margin:10px 0 6px}
 </style>
 </head>
 <body>
@@ -1381,7 +1388,7 @@ html[data-sun="1"] #content .btn-primary,html[data-sun="1"] #content .btn-second
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V46.9</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V47.0</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>

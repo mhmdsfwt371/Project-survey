@@ -2,11 +2,11 @@
 
 المصدرُ في `src/` مجلّداتٌ بالمجال، تُجمَّع بترتيب المسار الكامل إلى `index.html` (ملفٌّ واحدٌ عند النشر ليعمل بلا شبكة). سقفُ الملف **1500 سطر** — البوابةُ تقع فوقه.
 
-## `00-shell/` — الهيكل — رأسُ الصفحة والأنماط  (1 ملفات · 1419 سطر · 0 دالة)
+## `00-shell/` — الهيكل — رأسُ الصفحة والأنماط  (1 ملفات · 1426 سطر · 0 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
-| `00-head.html` | 1419 | 0 |  |
+| `00-head.html` | 1426 | 0 |  |
 
 ## `01-core/` — النواة — اللغة والمحرك والمزامنة والسجل  (8 ملفات · 3065 سطر · 135 دالة)
 
@@ -222,7 +222,7 @@
 | `04-tasks-office-25-expo.js` | 123 | 6 | The EXPO command center link and the EXPO devices (type, name, VPN address, serial), each address a direct link, editable by the office |
 | `04-tasks-office-26-pipeline.js` | 101 | 6 | Where every point stands now, as one line of stages: a node per stage with its count, flowing dashed green |
 
-## `05-map/` — الخريطة ودورةُ الحياة — الطبقات والتصدير والاستيراد والدخول وشاشةُ الوزارة  (21 ملفات · 4852 سطر · 248 دالة)
+## `05-map/` — الخريطة ودورةُ الحياة — الطبقات والتصدير والاستيراد والدخول وشاشةُ الوزارة  (21 ملفات · 4867 سطر · 248 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -236,7 +236,7 @@
 | `05-lifecycle-map-08-cameras-report-sw-update.js` | 316 | 21 | Ministry camera report, service worker registration, auto-update, version announcement, the epoch (no uploads from a pre-epoch device) and 'sync everyone now'. |
 | `05-lifecycle-map-09-role-switch-login-install.js` | 546 | 20 | Role switching, logout, add-to-home-screen prompts (incl. iPhone) and the login page. |
 | `05-lifecycle-map-10-field-companies.js` | 262 | 8 | Field map-first home, composite-name parsing, companies board and company camps classified. |
-| `05-lifecycle-map-11-drawing-board-modules.js` | 378 | 10 | Drawing board and its modules: survey details, single challenge key, rooms with sensors. |
+| `05-lifecycle-map-11-drawing-board-modules.js` | 393 | 10 | Drawing board and its modules: survey details, single challenge key, rooms with sensors. |
 | `05-lifecycle-map-12-ministry-screen-progress.js` | 119 | 5 | Ministry hall screen, completion forecast, progress map, far points, satellite in the ministry screen, week sentence and the hall view. |
 | `05-lifecycle-map-13-ministry-followup.js` | 184 | 15 | Ministry follow-up page: dynamic follow-up, season brief header, 'whose turn' groups, two modes, and the no-challenge camps card. |
 | `05-lifecycle-map-15-coverage.js` | 79 | 8 | (V39.14) owner: coverage on the map — what each installed device covers, so a gap or an overlap is seen, |
@@ -248,7 +248,7 @@
 | `05-lifecycle-map-21-move-devices.js` | 127 | 11 | (V39.31) owner: «عاوز أي نقطة، من أقل نقطة، أقدر أحرّكها: كاميرا وأنتنات وريدر وحساسات وجيت واي وخلافه». A point |
 | `05-lifecycle-map-30-kmz-detailed.js` | 100 | 5 | A detailed KMZ for Google Earth: every planned point, once per app filter as folders, with a full balloon. |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4712 سطر · 168 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4715 سطر · 168 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -262,7 +262,7 @@
 | `06-ministry-alerts-08-pptx-template.js` | 1110 | 33 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 252 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 1494 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 1497 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
 
@@ -314,4 +314,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 247 ملفًّا · 51293 سطر · 2371 دالة.
+**الإجمالي:** 247 ملفًّا · 51318 سطر · 2371 دالة.

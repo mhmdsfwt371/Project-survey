@@ -349,7 +349,7 @@ function assistBadgeSync(){
     assistBadgeSync.tipped = true; lsSet('nsk14.assisttip', '1');
     var tip = document.createElement('div'); tip.id = 'assistTip'; tip.setAttribute('role', 'status');
     var r = b.getBoundingClientRect(); tip.style.cssText = 'position:fixed;top:' + Math.round(r.bottom + 8) + 'px;inset-inline-end:8px;max-width:260px;z-index:1960;background:#2A7130;color:#fff;border-radius:12px;padding:10px 12px;font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.35)';
-    tip.innerHTML = '<b>' + esc(t('جديد: المساعد')) + '</b><br>' + esc(t('يشخّص جهازك ويحلّ المشكلة بزرّ، أو يوصّلها للمهندس بحالة جهازك. جرّبه لما يحصل أي حاجة.')) + ' <button type="button" class="btn btn-quiet btn-sm" data-assist="1" style="color:#fff">' + esc(t('افتحه')) + '</button>';
+    tip.innerHTML = '<b>' + esc(t('جديد: عقلُ النظام')) + '</b><br>' + esc(t('يشخّص جهازك ويحلّ المشكلة بزرّ، أو يوصّلها للمهندس بحالة جهازك. جرّبه لما يحصل أي حاجة.')) + ' <button type="button" class="btn btn-quiet btn-sm" data-assist="1" style="color:#fff">' + esc(t('افتحه')) + '</button>';
     document.body.appendChild(tip); setTimeout(function(){ var x = document.getElementById('assistTip'); if (x) x.remove(); }, 8000);
   }
 }

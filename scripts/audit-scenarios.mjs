@@ -3190,6 +3190,18 @@ console.log('\n══ ١٤٢ · البحثُ بأي حقلٍ وأي رقم، و�
   w.ROLE = role0; w.STATE.meta.role = role0;
 }
 
+/* ── ١٤٣ · (V47.0) شريطُ الخريطة: مجموعاتٌ مسمّاة، وكلُّ مجموعةٍ لوحتُها ── */
+console.log('\n══ ١٤٣ · شريطُ الخريطة — أربعُ مجموعاتٍ مسمّاة، ولوحةٌ واحدةٌ مفتوحة بعنوانها ووصفها ══');
+{
+  const m0 = w.PV.MTOP; w.PV.MTOP = '';
+  let h = w.mapUIHtml();
+  T((h.match(/class="map-chip ds-mgrp/g) || []).length === 4 && !/ds-msheet/.test(h), 'الشريطُ مغلق: أربعُ مجموعاتٍ ولا لوحة');
+  w.PV.MTOP = 'layers'; h = w.mapUIHtml();
+  T((h.match(/class="ds-msheet"/g) || []).length === 1 && /data-iot="1"/.test(h.slice(h.indexOf('ds-msheet'))) && /data-mtop=""/.test(h), 'الطبقاتُ تفتح لوحتَها وحدها، فيها عناصرُها وزرُّ إغلاق');
+  T(h.indexOf('data-iot="1"') > h.indexOf('ds-msheet'), 'وعناصرُ المجموعة داخل اللوحة لا في الصف');
+  w.PV.MTOP = m0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

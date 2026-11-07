@@ -366,12 +366,27 @@ function mapTopFold(h){
     var n = by[g].filter(isOn).length;
     return (g === 'map' ? '\u{1F5FA} ' + esc(t('الخريطة')) : g === 'layers' ? '\u{1F9E9} ' + esc(t('الطبقات')) : '\u22EF ' + esc(t('المزيد'))) + (n ? ' \u00b7 <span class="num">' + nm(n) + '</span>' : '');
   };
+  /* (V47.0) owner: «كل مرة بضغط سهم عشان يقول المزيد فبتلخبط — دي بتاعت إيه؟ الطبقات تتقفل ساعات وتتفتح ساعات». The bar now shows
+     four named groups and the direct actions; a group opens its own panel under the bar — a title, what it is for, its items as
+     clear rows with their state, and a close — instead of spilling its chips into the row. One panel at a time; the items keep
+     their own buttons and handlers, so nothing behind them changes. */
+  var GT = { stage:['ما تلوّنه الخريطة', 'اختر المرحلة التي تلوّن بها النقاط'], map:['شكلُ الخريطة', 'قمرٌ صناعي أو تضاريس ثلاثية الأبعاد'],
+             layers:['الطبقات', 'معلوماتٌ تُعرَض فوق النقاط — شغّل ما تحتاجه'], more:['أدواتُ العمل', 'الإسناد والتحديد والتلوين بالشركات'] };
+  var openG = open === '*' ? '' : open;
   items.forEach(function(x){
     var g = grp(x); if (!g){ out += x; return; }
-    if (!seen[g]){ seen[g] = 1; var on = open === '*' || open === g;
-      out += '<button type="button" class="map-chip' + (on || by[g].some(isOn) && g !== 'stage' ? ' on' : (g === 'stage' ? ' on' : '')) + '" data-mtop="' + (on && open !== '*' ? '' : g) + '" aria-expanded="' + (on ? 'true' : 'false') + '">' + label(g) + ' ' + (on ? '\u25B4' : '\u25BE') + '</button>';
-      if (on) out += by[g].join('');
+    if (!seen[g]){ seen[g] = 1; var on = openG === g, n = by[g].filter(isOn).length;
+      out += '<button type="button" class="map-chip ds-mgrp' + (on ? ' open' : '') + (n && g !== 'stage' ? ' has' : '') + '" data-mtop="' + (on ? '' : g) + '" aria-expanded="' + (on ? 'true' : 'false') + '">' + label(g) + ' <span class="ds-caret" aria-hidden="true">' + (on ? '\u25B4' : '\u25BE') + '</span></button>';
     }
   });
+  if (open === '*'){   /* «everything» (the guide and the checks open it so): one panel, every group under its own heading */
+    out += '<div class="ds-msheet" role="dialog"><div class="ds-msh-h"><div><b>' + esc(t('كلُّ أدوات الخريطة')) + '</b></div><button type="button" class="ds-msh-x" data-mtop="" aria-label="' + esc(t('إغلاق')) + '">\u2715</button></div>'
+      + ['stage', 'map', 'layers', 'more'].filter(function(g){ return by[g].length; }).map(function(g){ return '<div class="ds-msh-g">' + esc(t(GT[g][0])) + '</div><div class="ds-msh-b">' + by[g].join('') + '</div>'; }).join('') + '</div>';
+  }
+  if (openG && by[openG] && by[openG].length){
+    out += '<div class="ds-msheet" role="dialog" aria-label="' + esc(t(GT[openG][0])) + '"><div class="ds-msh-h"><div><b>' + esc(t(GT[openG][0])) + '</b><small>' + esc(t(GT[openG][1])) + '</small></div>'
+      + '<button type="button" class="ds-msh-x" data-mtop="" aria-label="' + esc(t('إغلاق')) + '">\u2715</button></div>'
+      + '<div class="ds-msh-b">' + by[openG].join('') + '</div></div>';
+  }
   return out;
 }
