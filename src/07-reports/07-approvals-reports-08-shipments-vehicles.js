@@ -533,7 +533,7 @@ PAGE.fleet = { m:'الميدان', t:'السيارات',
     var byKind = {};
     vehList().forEach(function(v){ byKind[v.kind] = (byKind[v.kind] || 0) + 1; });
 
-    return stats([['في الأسطول', N(vehList().length)],
+    return stats([['في الأسطول', N(vehList().length), '', dsList('veh|all', 'في الأسطول', vehList().map(function(x){ return [x.plate || x.id, x.model || '', x.year || '', x.own || '', x.st || '', x.licExp || '', x.insExp || '']; }), ['اللوحة', 'الطراز', 'السنة', 'الملكية', 'الحالة', 'انتهاء الرخصة', 'انتهاء التأمين'])],
                   ['متاحة', N(vehList().filter(function(v){ return v.st === 'متاحة'; }).length), 'ok'],
                   ['مُسندة', N(vehList().filter(function(v){ return v.st === 'مُسندة'; }).length), 'acc'],
                   ['نقصٌ عن الحاجة', N(need.gap), need.gap ? 'bad' : 'ok']])

@@ -63,7 +63,7 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
     return myQueueCard()   /* (V39.85) */
       + attMyCard()
       + routeCard()
-      + stats([['مُسند إليّ', N(mine.length), mine.length ? 'wrn' : 'ok'],
+      + stats([['مُسند إليّ', N(mine.length), mine.length ? 'wrn' : 'ok', dsList('mw|mine', 'مُسند إليّ', dsTaskRows(mine), PV.DS_TASK_HEAD)],
                   ['أنجزتُ اليوم', N(doneToday), 'ok'],
                   ['نقاطي هذا الشهر', N(Math.round(e.total)), 'acc'],
                   ['ترتيبي', e.rank ? nm(e.rank) : '—']])
@@ -336,7 +336,7 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
     var back = mine.filter(function(x){ return x.kind === 'install' ? (STATE.inss[x.site] || {}).status === 'مُعاد' : svReview(STATE.recs[x.site]) === 'revisit'; }).length;
     var myPts = (typeof scoreOf === 'function') ? (scoreOf(me) || {}).total || 0 : 0;
 
-    return stats([['مُسند إليّ', N(mine.length), 'acc'],
+    return stats([['مُسند إليّ', N(mine.length), 'acc', dsList('mw|mine2', 'مُسند إليّ', dsTaskRows(mine), PV.DS_TASK_HEAD)],
                   ['أنجزتُ', N(done), 'ok'],
                   ['المتبقي', N(mine.length - done), mine.length-done?'wrn':''],
                   ['أُعيد إليّ', N(back), back ? 'bad' : ''],

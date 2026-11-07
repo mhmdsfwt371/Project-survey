@@ -123,7 +123,10 @@ function N(v){ return '<span class="num">'+nm(v)+'</span>'; }
 /* (V46.5) any page can hand a tile its points: dsList(key, title, points) keeps them under the key, and the detail window
    (office bundle) turns the key into a list when it opens — the core never calls into the office */
 PV.DSL = PV.DSL || {};
-function dsList(key, title, items){ PV.DSL[key] = { title:title, items:items || [] }; return key; }
+function dsList(key, title, items, head){ PV.DSL[key] = { title:title, items:items || [], head:head || null }; return key; }   /* with head: items are ready rows (tasks, shipments, vehicles…) */
+/* (V46.6) the rows of a task list — the point, its kind, the assignee, the status, the date */
+function dsTaskRows(L){ return (L || []).map(function(x){ return [x.site || '', typeof kindLabel === 'function' ? kindLabel(x.kind) : (x.kind || ''), x.to || '', x.status || 'مُسند', x.at ? dayKey(+x.at) : '']; }); }
+PV.DS_TASK_HEAD = ['النقطة', 'النوع', 'المُسنَد إليه', 'الحالة', 'التاريخ'];
 function stat(k,v,cls,key){
   /* (V46.2) a tile that names a detail list opens the detail window — summary tiles, a bar per person, the full list, Excel */
   if (key) return '<div class="stat ds-tile'+(cls?' '+cls:'')+'" data-svlist="'+esc(key)+'" role="button" tabindex="0" title="'+esc(t('التفاصيل'))+'"><div class="k">'+esc(t(k))+'</div>'

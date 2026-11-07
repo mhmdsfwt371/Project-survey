@@ -91,6 +91,7 @@ function dsBento(SC){
 /* (V46.5) a key handed out by dsList() becomes a detail-window list on first open */
 function dsListReg(key){
   var D = PV.DSL && PV.DSL[key]; if (!D) return;
+  if (D.head){ MFU.lists[key] = { title:t(D.title), head:D.head, rows:function(){ return D.items; }, base:function(){ return { n:D.items.length, name:t(D.title), zones:{} }; } }; return; }   /* (V46.6) a list of tasks, shipments, vehicles… */
   var pts = function(){ return (D.items || []).map(function(v){ return typeof v === 'string' ? siteFind(v) : (v && v.x ? v.x : v); }).filter(Boolean); };
   MFU.lists[key] = { title:t(D.title), head:['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'آخر زيارة', 'بواسطة', 'الحالة'],
     base:function(){ var L = STATE.sites || []; return { n:L.length, name:t('كلِّ النقاط'), zones:svZoneTot(L) }; },

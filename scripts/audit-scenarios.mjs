@@ -3139,6 +3139,18 @@ console.log('\n══ ١٣٨ · dsList — صفحةُ الميدان تربط ر
   T(['hand|ready', 'hand|done', 'dis|ready', 'dis|done', 'mt|pool', 'mt|asn'].every(x => src.indexOf("dsList('" + x + "'") > -1), 'بلاطاتُ التسليم والفك والصيانة مربوطة');
 }
 
+/* ── ١٣٩ · (V46.6) قوائمُ ليست نقاطًا: المهامُّ والشحناتُ والأسطول ── */
+console.log('\n══ ١٣٩ · نافذةُ التفاصيل لقوائم ليست نقاطًا — المهامُّ والشحنات والأسطول ══');
+{
+  const rows = w.dsTaskRows([{ site:'NSK-X', kind:'visit', to:'خالد', status:'مُسند', at:Date.now() }]);
+  T(rows.length === 1 && rows[0][0] === 'NSK-X' && rows[0][2] === 'خالد' && rows[0].length === w.PV.DS_TASK_HEAD.length, 'صفُّ المهمة: النقطة والنوع والمُسنَد إليه والحالة والتاريخ');
+  const k = w.dsList('t|ship', 'شحنات', [['R1', 'قارئ', '4', 'مورّد', 'في الطريق', '', '']], ['المرجع', 'الصنف', 'الكمية', 'المورّد', 'الحالة', 'الوصول المتوقّع', 'استُلم']);
+  w.dsListReg(k); const L = w.MFU.lists[k];
+  T(L && L.rows().length === 1 && L.head[0] === 'المرجع' && L.base().n === 1, 'قائمةٌ بأعمدتها تُفتح كما هي (والنسبةُ من عددها)');
+  const src = String(readFileSync('src/02-catalog/02-catalog-forms-04-mywork-diary.js', 'utf8')) + String(readFileSync('src/07-reports/07-approvals-reports-08-shipments-vehicles.js', 'utf8')) + String(readFileSync('src/07-reports/07-approvals-reports-03-trials-invoices.js', 'utf8'));
+  T(["dsList('mw|mine'", "dsList('mw|mine2'", "dsList('ship|all'", "dsList('veh|all'"].every(x => src.indexOf(x) > -1), '«مُسند إليّ» في شغلي، والشحنات، والأسطول مربوطة');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

@@ -318,7 +318,7 @@ PAGE.inv = { m:'الورشة والمخزون', t:'المخزون',
     var late = shipList().filter(function(x){ return shipLate(x) > 0; });
     var open = shipList().filter(function(x){ return !x.got; });
 
-    return stats([['شحنات', N(shipList().length)],
+    return stats([['شحنات', N(shipList().length), '', dsList('ship|all', 'شحنات', shipList().map(function(x){ return [x.ref || x.id, x.item || '', nm(x.qty || 0), x.sup || '', x.st || '', x.eta || '', x.got || '']; }), ['المرجع', 'الصنف', 'الكمية', 'المورّد', 'الحالة', 'الوصول المتوقّع', 'استُلم'])],
                   ['في الطريق', N(open.length), open.length ? 'acc' : ''],
                   ['وصلت', N(shipList().length - open.length), 'ok'],
                   ['متأخرة', N(late.length), late.length ? 'bad' : 'ok']])
