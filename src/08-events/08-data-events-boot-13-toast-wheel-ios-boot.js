@@ -592,7 +592,7 @@ document.addEventListener('keydown', function(e){
     if (q){ e.preventDefault(); q.focus(); q.select(); return; }
   }
   if (e.key !== 'Escape') return;
-  if (typeof SV_POP !== 'undefined' && SV_POP && document.querySelector('.svpop')){ PV.SV_PHO = ''; SV_POP = ''; svPopRemove(); return; }   /* (V46.2) the detail window closes on Escape */
+  if (typeof SV_POP !== 'undefined' && SV_POP && document.querySelector('.svpop')){ PV.SV_PHO = ''; SV_POP = ''; document.querySelectorAll('.svpop, .svpop-veil').forEach(function(n){ n.remove(); }); return; }   /* (V46.2) the detail window closes on Escape — removed here, the core never calls into the office bundle */
   /* أوضاعُ الرسم أوّلًا: هي التي تحجز الضغطةَ التالية (V17.53) */
   if (typeof PIN_ON !== 'undefined' && PIN_ON){ pinCancel(); return; }
   if (typeof ROUTE === 'object' && ROUTE.on){ routeCancel(); return; }
