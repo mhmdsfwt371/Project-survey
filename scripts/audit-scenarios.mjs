@@ -3202,6 +3202,17 @@ console.log('\n══ ١٤٣ · شريطُ الخريطة — أربعُ مجم�
   w.PV.MTOP = m0;
 }
 
+/* ── ١٤٤ · (V47.1) لوحةُ مجموعة الخريطة تُغلَق بالخارج وبعد الاختيار ── */
+console.log('\n══ ١٤٤ · لوحةُ الخريطة تُغلَق بلمسةٍ خارجها، وبعد الاختيار في المجموعات أحادية الاختيار ══');
+{
+  const m0 = w.PV.MTOP, ev = (type, el) => { const e = new w.Event(type, { bubbles:true, cancelable:true }); el.dispatchEvent(e); };
+  w.PV.MTOP = 'layers'; ev('pointerdown', w.document.body);
+  T(w.PV.MTOP === '', 'لمسةٌ خارج اللوحة (على الخريطة أو أي مكان) تغلقها');
+  w.PV.MTOP = 'layers'; const sh = w.document.createElement('div'); sh.className = 'ds-msheet'; const bt = w.document.createElement('button'); sh.appendChild(bt); w.document.body.appendChild(sh);
+  ev('pointerdown', bt); T(w.PV.MTOP === 'layers', 'ولمسةٌ داخلها لا تغلقها');
+  sh.remove(); w.PV.MTOP = m0;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

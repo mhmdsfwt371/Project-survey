@@ -85,6 +85,21 @@ PV.CREDIT = { by:'آفاقي', who:'م. محمد صفوت' };
     var r = el.getBoundingClientRect(); el.style.setProperty('--hx', (e.clientX - r.left) + 'px'); el.style.setProperty('--hy', (e.clientY - r.top) + 'px');
   }, { passive:true });
 })();
+/* (V47.1) owner: «لما أختار وأضغط إكس أو في أي مكان في الشاشة، البوب أب تتقفل — ده مش بيحصل». The map's group panel closes on its ✕,
+   on a tap anywhere outside it (the map included), and right after a choice in a one-choice group (stage, map look, tools);
+   the layers panel stays open while layers are switched, since several are chosen at once. */
+document.addEventListener('click', function(e){
+  if (!PV.MTOP || PV.MTOP === '*' || !e.target || !e.target.closest) return;
+  var inSheet = e.target.closest('.ds-msheet'), onGrp = e.target.closest('.ds-mgrp, [data-mtop]');
+  if (onGrp) return;   /* the group chips and ✕ handle themselves */
+  if (inSheet && PV.MTOP !== 'layers' && e.target.closest('button')) setTimeout(function(){ PV.MTOP = ''; render(1); }, 0);
+}, true);
+/* a touch or press anywhere outside (the map swallows its clicks, so this listens to the press itself) */
+document.addEventListener('pointerdown', function(e){
+  if (!PV.MTOP || PV.MTOP === '*' || !e.target || !e.target.closest) return;
+  if (e.target.closest('.ds-msheet, .ds-mgrp, [data-mtop]')) return;
+  PV.MTOP = ''; setTimeout(function(){ render(1); }, 0);
+}, true);
 /* the credit under every page, opening an About window (author, role, version, history) */
 /* (V46.1) the welcome: the first page after signing in arrives with the menu sliding in, the bar dropping and the glow blooming */
 function dsWelcome(){ if (PV.DS_WELCOMED) return; PV.DS_WELCOMED = 1; try { var h = document.documentElement; h.classList.add('ds-welcome'); setTimeout(function(){ h.classList.remove('ds-welcome'); }, 1800); } catch (e){ PV.DS_ERR = e; } }
