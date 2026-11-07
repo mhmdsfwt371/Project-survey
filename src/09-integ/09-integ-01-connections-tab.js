@@ -212,7 +212,7 @@ function jobsCardHtml(){
   var steps = (v.steps || []).map(function(x){
     var nmL = x.name === 'provision' ? t('الحسابات') : x.name === 'photos-sync' ? t('الصور إلى الدرايف') : x.name;
     return '<div style="display:flex;justify-content:space-between;margin:4px 0"><span>' + (x.code === 0 ? '\u2705' : '\u274C') + ' ' + esc(nmL) + '</span><span class="hint num" style="margin:0">' + nm(Math.round((x.ms || 0) / 1000)) + ' ' + esc(t('ث')) + '</span></div>'
-      + (x.code !== 0 && x.tail ? '<pre class="hint" style="white-space:pre-wrap;margin:0 0 6px;font-size:11px" dir="auto">' + esc(x.tail) + '</pre>' : '');
+      + (x.code !== 0 && x.tail ? '<pre class="hint" style="white-space:pre-wrap;margin:0 0 6px;font-size:12px" dir="auto">' + esc(x.tail) + '</pre>' : '');
   }).join('');
   return card('\u{1F501} ' + t('الحسابات والصور على السحابة'), '<div style="margin:0 0 6px">' + head + '</div>' + steps);
 }
@@ -658,5 +658,5 @@ iotDashHtml.board = function(rows, camps, F){
     : '<p class="hint" style="margin:0">' + esc(t('مفيش مخيم محتاج تدخّل دلوقتي')) + '</p>';
   var ms = Date.now() - T0;
   return health + sec('حسب المنطقة', byZone) + sec('إشارة الحساسات', signal) + sec('بطارية الحساسات', battery) + sec('الجيت واي', gw) + sec('أكتر المخيمات المحتاجة تدخّل', worstHtml)
-    + '<p class="hint" style="margin:10px 0 0;font-size:11px">' + esc(t('اضغط أي مربع يفتح قايمته')) + ' \u00b7 ' + nm(ms) + ' ' + esc(t('مللي ثانية')) + '</p>';
+    + '<p class="hint" style="margin:10px 0 0;font-size:12px">' + esc(t('اضغط أي مربع يفتح قايمته')) + ' \u00b7 ' + nm(ms) + ' ' + esc(t('مللي ثانية')) + '</p>';
 };

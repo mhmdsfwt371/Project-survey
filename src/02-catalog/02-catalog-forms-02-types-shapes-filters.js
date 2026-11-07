@@ -413,7 +413,7 @@ function tfwRow(){
       return '<button type="button" class="cat' + (TFW.d === o[0] ? ' on' : '') + '" data-tfwd="' + o[0] + '">' + esc(t(o[1])) + '</button>'; }).join('') + '</div>';
   if (TFW.f >= 0 && TFW.f < TFW_ALL && TFW.data) h += '<div class="tfw-card"><i style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:middle;background:' + (TFW_COL[TFW.f] || '#F5C400') + '55;border:2px solid ' + (TFW_COL[TFW.f] || '#F5C400') + '"></i> ' + esc(t('مخيمات الدور')) + ' ' + esc(t(PV.TFW_FL[TFW.f])) + ': <b>' + nm(tfwCampsOf(TFW.f).length) + '</b> ' + esc(t('مخيمًا')) + ' \u2014 ' + esc(t('مظلّلةٌ على الخريطة بلون الدور')) + '</div>';   /* (V27.8) */
   if (TFW.f === TFW_ALL) h += '<div class="tfw-card">' + PV.TFW_FL.map(function(n, i){ return '<span style="display:inline-flex;align-items:center;gap:5px;margin-inline-end:12px"><i style="width:18px;height:4px;border-radius:2px;background:' + TFW_COL[i] + '"></i>' + esc(t('الدور') + ' ' + t(n)) + ' <span class="num">' + nm(tfwCampsOf(i).length) + '</span> ' + esc(t('مخيمًا')) + '</span>'; }).join('')
-      + '<div class="hint" style="margin:4px 0 0;font-size:11px">' + esc(t('الخط المتصل: الذهاب · المتقطع: العودة')) + '</div></div>';
+      + '<div class="hint" style="margin:4px 0 0;font-size:12px">' + esc(t('الخط المتصل: الذهاب · المتقطع: العودة')) + '</div></div>';
   if (TFW.camp){ var cs = siteFind(TFW.camp.id), mins = function(m){ return nm(Math.max(1, Math.round(m / 60))); };
     h += '<div class="tfw-card"><b>' + esc(t('مسار المخيم')) + ': ' + esc(cs ? siteTitle(cs) : TFW.camp.id) + '</b> \u2014 ' + esc(t('الدور') + ' ' + t(PV.TFW_FL[TFW.camp.f]))
       + '<div style="margin:4px 0 0"><i style="display:inline-block;width:16px;height:4px;border-radius:2px;background:#F5C400;vertical-align:middle"></i> ' + esc(t('الذهاب')) + ' <b class="num">' + nm(TFW.camp.go.len) + '</b> ' + esc(t('م')) + ' \u00b7 ' + mins(TFW.camp.go.len) + ' ' + esc(t('دقيقة مشيا'))
@@ -428,7 +428,7 @@ function tfwRow(){
       + ' \u00b7 ' + esc(t('فرقُ المنسوب')) + ' <b class="num">' + nm(F.elev) + '</b> ' + esc(t('م')) + ' \u00b7 ' + esc(t(F.lift)) + '</div>'
       + '<div style="margin:4px 0 0">' + esc(t('ملاحظة الوزارة')) + ': ' + esc(t(F.note)) + (F.rec && F.rec !== '\u2014' ? ' \u2014 <b>' + esc(t('المقترح')) + ':</b> ' + esc(t(F.rec)) : '') + '</div>'
       + '<div class="hint" style="margin:4px 0 0">' + esc(t('نقاطُنا على مسار هذا الدور (٤٠ م)')) + ': <b class="num">' + nm(F.near.n) + '</b> \u2014 ' + esc(by) + '</div>'
-      + '<div class="hint" style="margin:4px 0 0;font-size:11px">' + esc(t('المصدر')) + ': ' + esc(TFW.data.src) + ' \u00b7 ' + esc(t('أصفر: الذهاب · أحمر: العودة')) + '</div></div>';
+      + '<div class="hint" style="margin:4px 0 0;font-size:12px">' + esc(t('المصدر')) + ': ' + esc(TFW.data.src) + ' \u00b7 ' + esc(t('أصفر: الذهاب · أحمر: العودة')) + '</div></div>';
   }
   return h;
 }

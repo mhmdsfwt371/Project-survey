@@ -317,6 +317,6 @@ function phDeletedHtml(site, ins){
   var L = (typeof photosOf === 'function' ? photosOf(site) : []).filter(function(x){ var p = x[1] || {}; return p.del && (/^ins/.test(String(p.kind || '')) === !!ins); });
   if (!L.length) return '';
   return '<details style="margin-top:8px"><summary class="hint" style="cursor:pointer">\u{1F5D1} ' + esc(t('صورٌ محذوفة')) + ' \u00b7 ' + nm(L.length) + '</summary>'
-    + L.map(function(x){ var p = x[1], d0 = p.del || {}; return '<div class="svq-row"><div class="svq-k" style="flex:1 1 60%"><b style="color:var(--ink)">' + esc(x[0]) + '</b><div class="hint" style="margin:0;font-size:11.5px">' + esc(t('حذفها')) + ' ' + esc(dispName(d0.by) || d0.by || '—') + ' \u00b7 ' + esc(fmtDT(d0.at)) + (d0.why ? ' \u00b7 ' + esc(d0.why) : '') + '</div></div>' + btn('\u21A9 ' + t('استرجع'), 'btn-quiet btn-sm', ' data-phrestore="' + esc(x[0]) + '"') + '</div>'; }).join('')
+    + L.map(function(x){ var p = x[1], d0 = p.del || {}; return '<div class="svq-row"><div class="svq-k" style="flex:1 1 60%"><b style="color:var(--ink)">' + esc(x[0]) + '</b><div class="hint" style="margin:0;font-size:12px">' + esc(t('حذفها')) + ' ' + esc(dispName(d0.by) || d0.by || '—') + ' \u00b7 ' + esc(fmtDT(d0.at)) + (d0.why ? ' \u00b7 ' + esc(d0.why) : '') + '</div></div>' + btn('\u21A9 ' + t('استرجع'), 'btn-quiet btn-sm', ' data-phrestore="' + esc(x[0]) + '"') + '</div>'; }).join('')
     + '</details>';
 }

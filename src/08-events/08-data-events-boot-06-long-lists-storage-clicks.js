@@ -191,6 +191,11 @@ function render0Tail(wasCur, p, pl, wasTab){
   outEl.textContent = t('تسجيل الخروج');
   var crN = document.getElementById('creditNav'); if (crN) crN.innerHTML = creditHtml();   /* (V45.4) */
   if (ROLE && typeof dsWelcome === 'function') dsWelcome();   /* (V46.1) once, on the first page after signing in */
+  if (PV.DS_REV){ PV.DS_REV = 0; try {   /* (V46.4) sections below the fold fade in as they arrive; the redraws after a click do not replay it */
+    if ('IntersectionObserver' in window && !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)){
+      var revIO = new IntersectionObserver(function(es){ es.forEach(function(en){ if (en.isIntersecting){ en.target.classList.add('ds-in'); revIO.unobserve(en.target); } }); }, { rootMargin:'0px 0px -40px 0px' });
+      document.querySelectorAll('#content .card, #content .ds-bento, #content .ds-pipe-card').forEach(function(el){ if (el.getBoundingClientRect().top > innerHeight){ el.classList.add('ds-rev'); revIO.observe(el); } });
+    } } catch (eRV){ PV.DS_ERR = eRV; } }
   var pwB = document.getElementById('pwBtn');
   if (pwB) pwB.textContent = '\u{1F511} ' + t('تغيير كلمة المرور');
 

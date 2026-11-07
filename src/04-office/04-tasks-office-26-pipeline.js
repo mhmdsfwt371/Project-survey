@@ -4,7 +4,7 @@
    PURPOSE : Where every point stands now, as one line of stages: a node per stage with its count, flowing dashed green
              lines between occupied stages, a red pulse on a stage where something has waited over 7 days; a node opens
              the detail window with those points (the full list, a bar per person, the late ones in red, Excel)
-   DEFINES : PV.PIPE, PV.PIPE_WAIT_D, pipeCounts, pipeWaitDays, pipeReg, stagePipe
+   DEFINES : dsBento, PV.PIPE, PV.PIPE_WAIT_D, pipeCounts, pipeWaitDays, pipeReg, stagePipe
    ============================================================================ */
 /* the owner's spec: «a stage pipeline (for anything with stages): nodes with counts, dashed green lines that flow between
    occupied stages, red pulse on a stage where something waits too long, click a stage…». Stages group the lifecycle as the
@@ -56,4 +56,34 @@ function stagePipe(){
   return '<div class="card ds-pipe-card" style="margin:12px 0"><div class="pid">' + esc(t('خطُّ المراحل — أين تقف كلُّ نقطةٍ الآن')) + '</div>'
     + '<div class="ds-pipe">' + nodes + '</div>'
     + '<div class="hint" style="margin:8px 0 0">' + esc(t('اضغط مرحلةً لتفتح نقاطها. الأحمرُ: نقاطٌ تنتظر أكثرَ من ٧ أيام منذ آخر ما حدث لها.')) + '</div></div>';
+}
+
+/* (V46.4) the owner's spec — «bento summary grid: a 2×2 hero tile (total + a bar split by real sources), a 2×1 tile with a slowly
+   turning gradient edge, a tile with an SVG ring (closed ÷ total) that fills on first view. Every visual is built from live
+   numbers», and every tile opens the detail window. The split is by holy site; «closed» is installed or handed over. */
+PV.BENTO_C = ['#4CC35A', '#2E9C7E', '#E0A32E', '#7FB2E5', '#C9A27E', '#9FB0AA'];
+function dsBento(SC){
+  var L = typeof svListSites === 'function' ? svListSites() : (STATE.sites || []), n = L.length, z = {};
+  L.forEach(function(x){ var g = taxOf(x).g || '\u2014'; z[g] = (z[g] || 0) + 1; });
+  var zk = Object.keys(z).sort(function(a, b){ return z[b] - z[a]; });
+  var today = dayKey(Date.now()), tv = L.filter(function(x){ var r = STATE.recs[x.id]; return r && r.at && dayKey(+r.at) === today; });
+  var C = pipeCounts(), closed = C.by.ins.length + C.by.hand.length, pc = n ? Math.round(closed / n * 100) : 0, R = 40, len = 2 * Math.PI * R;
+  MFU.lists['bento|all'] = { title:t('كلُّ النقاط'), head:['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'آخر زيارة', 'بواسطة', 'الحالة'],
+    base:function(){ return { n:L.length, name:t('كلِّ النقاط'), zones:svZoneTot(L) }; },
+    rows:function(){ return L.map(function(x){ var r = STATE.recs[x.id], c = taxOf(x); return [x.id, String(x.name || ''), t(c.g), t(c.t), String(x.co || ''), r && r.at ? dayKey(+r.at) : '', r ? (r.by || '') : '', t((LIFE[lifeOf(x)] || {}).n || '')]; }); } };
+  MFU.lists['bento|today'] = { title:t('زيارات اليوم'), head:['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'آخر زيارة', 'بواسطة', 'الحالة'],
+    base:function(){ return { n:L.length, name:t('كلِّ النقاط'), zones:svZoneTot(L) }; },
+    rows:function(){ return tv.map(function(x){ var r = STATE.recs[x.id], c = taxOf(x); return [x.id, String(x.name || ''), t(c.g), t(c.t), String(x.co || ''), dayKey(+r.at), r.by || '', t((LIFE[lifeOf(x)] || {}).n || '')]; }); } };
+  MFU.lists['bento|closed'] = { title:t('مُركّبة أو سُلِّمت'), head:MFU.lists['bento|all'].head, base:MFU.lists['bento|all'].base,
+    rows:function(){ return MFU.lists['bento|all'].rows().filter(function(r){ var x = siteFind(r[0]); return x && /^(installed|handed)$/.test(lifeOf(x)); }); } };
+  if (!MFU.lists['pipe|taf']) pipeReg(C);
+  return '<div class="ds-bento">'
+    + '<button type="button" class="ds-b hero" data-svlist="bento|all"><div class="k">' + esc(t('كلُّ النقاط')) + '</div><div class="v num">' + nm(n) + '</div>'
+    +   '<div class="ds-split">' + zk.map(function(k, i){ return '<i style="width:' + (z[k] / n * 100).toFixed(2) + '%;background:' + PV.BENTO_C[i % PV.BENTO_C.length] + ';animation-delay:' + (i * 80) + 'ms"></i>'; }).join('') + '</div>'
+    +   '<div class="ds-leg">' + zk.map(function(k, i){ return '<span style="--c:' + PV.BENTO_C[i % PV.BENTO_C.length] + '">' + esc(t(k)) + ' <b class="num">' + nm(z[k]) + '</b></span>'; }).join('') + '</div></button>'
+    + '<button type="button" class="ds-b wide edge" data-svlist="bento|today"><div class="k">' + esc(t('زيارات اليوم')) + '</div><div class="v num">' + nm(tv.length) + '</div><div class="hint" style="margin:0">' + esc(today) + '</div></button>'
+    + '<button type="button" class="ds-b ring" data-svlist="bento|closed"><svg class="ds-ring" viewBox="0 0 100 100" aria-hidden="true"><circle class="tr" cx="50" cy="50" r="' + R + '"/><circle class="fg" cx="50" cy="50" r="' + R + '" stroke-dasharray="' + len.toFixed(1) + '" style="--len:' + len.toFixed(1) + ';--off:' + (len * (1 - pc / 100)).toFixed(1) + '"/></svg>'
+    +   '<div><div class="k">' + esc(t('مُركّبة أو سُلِّمت')) + '</div><div class="v num">' + nm(pc) + '\u066A</div><div class="hint" style="margin:0">' + nm(closed) + ' / ' + nm(n) + '</div></div></button>'
+    + '<button type="button" class="ds-b" data-svlist="pipe|taf"><div class="k">' + esc(t('بانتظار إدارة التفويج')) + '</div><div class="v num">' + nm(C.by.taf.length) + '</div>' + (C.late.taf ? '<span class="ds-late">' + nm(C.late.taf) + ' ' + esc(t('متوقّفة')) + '</span>' : '') + '</button>'
+    + '</div>';
 }

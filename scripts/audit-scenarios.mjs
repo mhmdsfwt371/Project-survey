@@ -3116,6 +3116,17 @@ console.log('\n══ ١٣٦ · خطُّ المراحل — كلُّ نقطةٍ 
   T(/stagePipe\(\)/.test(String(readFileSync('src/03zz-late/05-map--05-lifecycle-map-13-ministry-followup.js', 'utf8'))), 'وموضعُه موجزُ الموسم في متابعة الوزارة');
 }
 
+/* ── ١٣٧ · (V46.4) البنتو، والجداولُ بطاقاتٍ على الهاتف، وأصغرُ خطٍّ ١٢ ── */
+console.log('\n══ ١٣٧ · البنتو والجداولُ بطاقات وأصغرُ خطٍّ ١٢ ══');
+{
+  const h = w.dsBento(w.stageCounts());
+  T((h.match(/class="ds-b[ "]/g) || []).length === 4 && /ds-b hero/.test(h) && /ds-b wide edge/.test(h) && /ds-ring/.test(h) && (h.match(/data-svlist="/g) || []).length === 4, 'أربعُ بلاطات: البطلُ مقسومًا بالمشعر، وحافةٌ تدور، وحلقةٌ تمتلئ، وكلُّها تفتح نافذة التفاصيل');
+  T(w.MFU.lists['bento|all'].rows().length === w.svListSites().length, 'وبلاطةُ البطل تعدّ كلَّ النقاط وتفتحها');
+  T(/data-label="العمود"/.test(w.table(['العمود'], [['قيمة']])), 'كلُّ خليةٍ تحمل اسمَ عمودها فتصير بطاقةً على الهاتف');
+  const css = String(readFileSync('src/00-shell/00-head.html', 'utf8'));
+  T(!/font-size:\s*(9|10|10\.5|11|11\.5)px/.test(css), 'لا خطَّ أصغرَ من ١٢ في ورقة الأنماط');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

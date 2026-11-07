@@ -141,7 +141,7 @@ function coFiltHtml(){
     +     btn('عرض', 'btn-primary btn-sm', ' data-cogo="1"')
     +     btn('مسح التحديد', 'btn-quiet btn-sm', ' data-cogo="0"')
     +   '</div>'
-    +   '<p class="hint" style="font-size:11.5px;margin:9px 0 0">'
+    +   '<p class="hint" style="font-size:12px;margin:9px 0 0">'
     +     nm(shown.length) + ' ' + esc(t('من')) + ' ' + nm(CO_LIST.length) + ' '
     +     esc(t('شركة')) + (PV.CO_SEL.length ? ' · ' + nm(PV.CO_SEL.length) + ' ' + esc(t('محدَّدة')) : '')
     +     ' — ' + esc(t('لكل واحدة لونٌ ثابت فلا يتجاور لونان متشابهان.'))

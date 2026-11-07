@@ -89,7 +89,7 @@ function extOvCard(tentCode, ov, readerInfo, tentMeta){
 function extStatBox(label, val, color){
   return '<div style="background:var(--surface-2);border-radius:8px;padding:6px 8px;text-align:center">'
     + '<div class="num" style="font-size:16px;font-weight:800;color:' + color + '">' + val + '</div>'
-    + '<div style="font-size:11px;opacity:.7">' + esc(label) + '</div></div>';
+    + '<div style="font-size:12px;opacity:.7">' + esc(label) + '</div></div>';
 }
 
 /* ── بطاقة إعداد التوكن (للمهندس) ── */
@@ -112,7 +112,7 @@ function extTokCard(){
   } else {
     h += '<p class="hint" style="font-size:13px;margin:0 0 8px">'
       + esc(t('افتح nusukcard.net ← Console في المتصفح ← شغّل:')) + '</p>'
-      + '<code style="font-size:11px;display:block;background:var(--surface-2);padding:6px;border-radius:6px;direction:ltr;word-break:break-all;margin-bottom:8px">'
+      + '<code style="font-size:12px;display:block;background:var(--surface-2);padding:6px;border-radius:6px;direction:ltr;word-break:break-all;margin-bottom:8px">'
       + esc('copy(local' + "Storage.getItem('mj.accessToken'))")
       + '</code>'
       + '<div style="display:flex;gap:6px;flex-wrap:wrap">'
@@ -373,7 +373,7 @@ function ex47OrphCard(){
     return [ '<b dir="ltr">' + esc(o.nm) + '</b><br>' + pill('\u{1F4CD} ' + t('ليست على الخريطة'), 'warn'),
              '<span class="num" dir="ltr">' + esc(o.rdr || '\u2014') + '</span>',
              '<input id="orIn' + i + '" list="orList" dir="ltr" autocomplete="off" style="min-width:150px" placeholder="NSK-…" value="' + esc(gs ? gs.id : '') + '">'
-               + (gs ? '<div class="hint" style="margin:2px 0 0;font-size:11px">' + esc(t('اقتراح')) + ': ' + esc(gs.name || gs.id) + '</div>' : ''),
+               + (gs ? '<div class="hint" style="margin:2px 0 0;font-size:12px">' + esc(t('اقتراح')) + ': ' + esc(gs.name || gs.id) + '</div>' : ''),
              btn(t('اربط'), 'btn-secondary btn-sm', ' data-orlink="' + i + '|' + k + '"') + ' ' + btn('\u{1F4CD} ' + t('ضعها على الخريطة'), 'btn-quiet btn-sm', ' data-orplace="' + k + '"') ];
   });
   return card('نقاط ملف ١٤٤٧ خارج الخريطة — ' + nm(L.length),
@@ -473,8 +473,8 @@ function extBridgeCard(){
         + '<li>' + esc(t('هناك: F12 ← Console ← الصق ← Enter (وإن رفض كروم اللصق اكتب allow pasting)')) + '</li>'
         + '<li>' + esc(t('ينزل ملفُّ nusuk-bridge — ارفعه بزرِّ «ارفع ملف تصدير» أعلاه، أو الصق الناتجَ هنا واضغط «اعتمد»')) + '</li></ol>'
         + '<div class="actions" style="margin:0 0 8px">' + btn('\u{1F4CB} ' + t('انسخ أمر الجسر'), 'btn-secondary btn-sm', ' data-brcopy="1"') + '</div>'
-        + (EXT._brShow ? '<textarea readonly dir="ltr" rows="3" style="width:100%;font-size:11px">' + esc(extBridgeCmd()) + '</textarea>' : '')
-        + '<textarea id="brIn" dir="ltr" rows="3" style="width:100%;font-size:11px;margin-top:6px" placeholder="' + esc(t('الصق ناتجَ الأمر هنا')) + '"></textarea>'
+        + (EXT._brShow ? '<textarea readonly dir="ltr" rows="3" style="width:100%;font-size:12px">' + esc(extBridgeCmd()) + '</textarea>' : '')
+        + '<textarea id="brIn" dir="ltr" rows="3" style="width:100%;font-size:12px;margin-top:6px" placeholder="' + esc(t('الصق ناتجَ الأمر هنا')) + '"></textarea>'
         + '<div class="actions" style="margin:6px 0 0">' + btn('\u2713 ' + t('اعتمد'), 'btn-secondary btn-sm', ' data-brok="1"') + '</div>', '\u2462'));
 }
 

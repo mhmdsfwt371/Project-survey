@@ -171,7 +171,7 @@ function navMain(){
 navMain.MIN = 3; navMain.FLOOR = 30;   /* no new globals (V39.83) */
 function navLiveHint(){
   var S = navScores(); if (S.total >= navMain.FLOOR) return '';
-  return '<div class="hint" style="margin:4px 12px 6px;font-size:11px;opacity:.8">' + esc(t('القائمةُ تترتّب حسب استعمالك بعد')) + ' ' + nm(navMain.FLOOR - S.total) + ' ' + esc(t('فتحة — واضغط مطوّلًا على أيِّ شاشة لتثبيتها فوق أو تحت')) + '</div>';
+  return '<div class="hint" style="margin:4px 12px 6px;font-size:12px;opacity:.8">' + esc(t('القائمةُ تترتّب حسب استعمالك بعد')) + ' ' + nm(navMain.FLOOR - S.total) + ' ' + esc(t('فتحة — واضغط مطوّلًا على أيِّ شاشة لتثبيتها فوق أو تحت')) + '</div>';
 }
 
 /* (V39.3) the folded last group: the screens opened less than five times in five weeks — never removed, one tap away */

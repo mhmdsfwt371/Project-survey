@@ -6,7 +6,7 @@
              all in «متابعة الوزارة ← اعتمادات إدارة التفويج». Every corridor point's card says WHY the point is there: for Mina,
              its place in the tafweej management's 1447 file (PV.TAF1447) or that it completes those paths this season; for
              Arafat, the paths to Namirah Mosque, Jabal al-Rahma and the train, with the purpose chosen per point.
-   DEFINES : tafListReg, tafNearLines, PV.TAF_PAIR_M, tafPending, PV.TAF_DOCS, PV.TAF_METHOD, PV.TAF_SPECS, tafSpecsHtml, PV.TAF_STAGE, tafStage, tafCats, tafStageBar, tafCatDash, tafCatXlsx, tafSave, tafSites, tafCrit, tafCritHtml, tafPopHtml, tafDash, tafXlsx, tafLayerToggle, tafLayerSync, clickTafweej
+   DEFINES : tafCatReg, tafListReg, tafNearLines, PV.TAF_PAIR_M, tafPending, PV.TAF_DOCS, PV.TAF_METHOD, PV.TAF_SPECS, tafSpecsHtml, PV.TAF_STAGE, tafStage, tafCats, tafStageBar, tafCatDash, tafCatXlsx, tafSave, tafSites, tafCrit, tafCritHtml, tafPopHtml, tafDash, tafXlsx, tafLayerToggle, tafLayerSync, clickTafweej
    NOTE    : The scope, the decision and the gate are in core (03-survey-records-05: PV.TAF_SCOPE, tafInScope, tafOf,
              tafDecision, tafMay, minState). Decisions live in settings/tafappr (one live document).
    ============================================================================ */
@@ -265,6 +265,15 @@ function tafStage(x){
   PV.TAF_STAGE.forEach(function(g){ if (g[2].indexOf(lf) > -1) hit = g; });
   return { k:hit[0], n:hit[1], c:(LIFE[hit[2][0]] || LIFE.todo).c, life:lf };
 }
+/* (V46.4) each categorisation number opens the detail window with its points */
+function tafCatReg(CS){
+  CS.forEach(function(c){
+    MFU.lists['tafcat|' + c.k] = { title:t(c.n), head:['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'آخر زيارة', 'بواسطة', 'الحالة'],
+      base:function(){ var L = tafSites('').map(function(q){ return q.x; }); return { n:L.length, name:t('نقاطُ ممرات'), zones:svZoneTot(L) }; },
+      rows:function(){ return c.L.map(function(q){ var x = q.x, r = STATE.recs[x.id], cx = taxOf(x);
+        return [x.id, String(x.name || ''), t(cx.g), t(cx.t), String(x.co || ''), r && r.at ? dayKey(+r.at) : '', r ? (r.by || '') : '', t((LIFE[lifeOf(x)] || {}).n || '')]; }); } };
+  });
+}
 function tafCats(){
   var P = PV.TAF1447 || { pts:[], m:{} }, used = {}, A = [], B = [], C = [], D = [];
   tafSites('').forEach(function(q){
@@ -297,7 +306,7 @@ function tafCatDash(){
   var CS = tafCats(), open = PV.TAF_CAT || '', me = tafMay();   /* adding a file point is the tafweej management's and the office's */
   var tot = CS.reduce(function(s, c){ return s + c.L.length; }, 0);
   var h = '<p class="lede" style="margin:0 0 10px">' + esc(t('نقاطُ الممرات بحسب أصلها: ما أُنجز من ملف إدارة التفويج لموسم ١٤٤٧، وما بقي منه، وما أُضيف بناءً على المسح الميداني لهذا الموسم — بحالة كلِّ نقطةٍ الآن، وتتغيّر مع الخريطة.')) + '</p>'
-    + stats([['نقاطُ ممرات', nm(tot)]].concat(CS.map(function(c){ return [c.n, nm(c.L.length) + (c.orphan.length ? ' + ' + nm(c.orphan.length) : '')]; })))
+    + (tafCatReg(CS), stats([['نقاطُ ممرات', nm(tot)]].concat(CS.map(function(c){ return [c.n, nm(c.L.length) + (c.orphan.length ? ' + ' + nm(c.orphan.length) : ''), '', 'tafcat|' + c.k]; }))))
     + '<div class="actions" style="margin:0 0 10px;gap:8px;flex-wrap:wrap">' + btn('\u2B07 Excel', 'btn-secondary btn-sm', ' data-tafcatxl="1"')
     + btn((PV.TAF_LAYER ? '\u2713 ' : '') + t('نقاطُ ملف ١٤٤٧ على الخريطة'), 'btn-secondary btn-sm', ' data-taflayer="1"') + '</div>';
   CS.forEach(function(c){

@@ -305,7 +305,7 @@ PV.LOGIN_CSS = `
 #login .go{width:100%;background:#2A7130;color:#fff;border:0;border-radius:9px;
   padding:13px;font:inherit;font-weight:600;cursor:pointer;min-height:48px}
 #login .go:active{transform:scale(.99)}
-#login .note{font-size:11.5px;color:#6C757E;text-align:center;margin:14px 0 0;line-height:1.6}
+#login .note{font-size:12px;color:#6C757E;text-align:center;margin:14px 0 0;line-height:1.6}
 #login .langs{display:flex;gap:6px;justify-content:center;margin:16px 0 0}
 #login .langs button{background:transparent;border:1px solid #2A333C;color:#9BA5AF;
   border-radius:99px;padding:6px 14px;font:inherit;font-size:12px;cursor:pointer;min-height:34px}
@@ -428,7 +428,7 @@ function loginPaint(){
           }).join('')
     +   '</div>'
     +   '<p class="note">'+esc(t('لا تسجيل ذاتي — الحسابات تُنشأ من المكتب'))+'</p>'
-    +   '<p class="credit" style="margin:14px 0 0;font-size:11px;line-height:1.6;opacity:.65;text-align:center">' + creditHtml() + '</p>'   /* (V45.4) */
+    +   '<p class="credit" style="margin:14px 0 0;font-size:12px;line-height:1.6;opacity:.65;text-align:center">' + creditHtml() + '</p>'   /* (V45.4) */
     + '</div>';
 
   function go(){

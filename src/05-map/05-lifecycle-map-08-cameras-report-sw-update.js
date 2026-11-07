@@ -76,7 +76,7 @@ function camxRows(x, kvf){
     return '<div class="cx"><b>' + esc(t('كاميرا')) + ' ' + esc(k.n || '\u2014') + '</b> \u2014 ' + esc(t(k.kind === 'P' ? 'متحرّكة' : k.kind === 'L' ? 'قارئة لوحات (LPR)' : 'ثابتة'))
       + (k.ip ? L('IP ' + esc(k.ip) + (/\d/.test(k.vlan || '') ? ' \u00b7 VLAN ' + esc(k.vlan) : '')) : '')
       + (k.model ? L(esc(k.model) + (PV.CAM_SPEC[k.model] ? ' \u00b7 ' + esc(PV.CAM_SPEC[k.model]) : '')) : '')
-      + (k.ip ? L('<span class="hint" style="margin:0;font-size:11px">rtsp://' + esc(k.ip) + ':554/cam/realmonitor?channel=1&amp;subtype=0</span>') : '')
+      + (k.ip ? L('<span class="hint" style="margin:0;font-size:12px">rtsp://' + esc(k.ip) + ':554/cam/realmonitor?channel=1&amp;subtype=0</span>') : '')
       + '</div>';
   }).join('') + '</div>';
   return (c.cpe || c.ant ? kvf('المستقبِل على العمود', ltr([c.cpe, c.ant].filter(Boolean).join(' \u00b7 '))) : '')

@@ -168,7 +168,7 @@ function table(head, rows, foot, opt){
     + '</tr></thead><tbody>'
     + rows.map(function(r){
         if (r && r.raw) return r.raw;                      /* صفٌّ خامٌ يمتدُّ على الأعمدة — لوحاتُ المراجعة */
-        return '<tr>'+r.map(function(c){ return '<td>'+cellT(c)+'</td>'; }).join('')+'</tr>'; }).join('')
+        return '<tr>'+r.map(function(c, ci){ return '<td data-label="'+esc(head[ci] != null ? t(head[ci]) : '')+'">'+cellT(c)+'</td>'; }).join('')+'</tr>'; }).join('')   /* (V46.4) the label shows on phones, where rows are cards */
     + '</tbody>'
     + (foot ? '<tfoot><tr>'+foot.map(function(c){ return '<td>'+cellT(c)+'</td>'; }).join('')+'</tr></tfoot>' : '')
     + '</table></div>';

@@ -49,7 +49,7 @@ function importCard(){
           +   '<span style="opacity:.75">'+esc(t('الأعمدة'))+':</span> '
           +   im[2].map(function(c){ return esc(t(c)); }).join(' · ')
           + '</div>'
-          + '<div class="hint" style="margin:5px 0 0;font-size:11.5px">'+esc(t(im[3]))+'</div>'
+          + '<div class="hint" style="margin:5px 0 0;font-size:12px">'+esc(t(im[3]))+'</div>'
           + '</div>';
       }).join('')
     + '<div style="padding:10px 0;border-top:1px solid var(--line)">'

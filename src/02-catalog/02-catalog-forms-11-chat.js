@@ -130,9 +130,9 @@ function chLineHtml(v){
   var who = sys ? '' : '<b>' + esc(dispName(v.from) || v.from) + '</b>' + (v.role && ROLES[v.role] ? ' <span class="hint" style="margin:0">' + esc(t(ROLES[v.role].n)) + '</span>' : '') + (v.to ? ' \u2192 ' + esc(dispName(v.to) || v.to) : '');
   return '<div style="margin:4px 0;display:flex;flex-direction:column;align-items:' + (sys ? 'center' : (mine ? 'flex-start' : 'flex-end')) + '">'
     + '<div style="max-width:88%;padding:7px 11px;border-radius:12px;' + (sys ? 'background:transparent;border:1px dashed var(--line);font-size:12.5px' : (mine ? 'background:var(--brand);color:var(--brand-ink)' : 'background:var(--surface);border:1px solid var(--line)')) + '">'
-    + (who ? '<div style="font-size:11.5px;opacity:.85;margin-bottom:2px">' + who + '</div>' : '') + '<div style="white-space:pre-wrap">' + (sys ? '\u2139 ' : '') + esc(v.text) + '</div>'
+    + (who ? '<div style="font-size:12px;opacity:.85;margin-bottom:2px">' + who + '</div>' : '') + '<div style="white-space:pre-wrap">' + (sys ? '\u2139 ' : '') + esc(v.text) + '</div>'
     + (v.kind === 'fwd' && v.ref && v.ref !== me ? '<div style="margin-top:6px">' + btn('\u{1F4AC} ' + t('ردّ على') + ' ' + (dispName(v.ref) || v.ref), 'btn-quiet btn-sm', ' data-chopen-t="dm:' + esc(v.ref) + '"') + '</div>' : '')
-    + '<div class="hint" style="margin:3px 0 0;font-size:11px;opacity:.8"><span class="num">' + esc(fmtTime(v.at, { hour:'2-digit', minute:'2-digit' })) + '</span> \u00b7 ' + esc(fmtDate(v.at))
+    + '<div class="hint" style="margin:3px 0 0;font-size:12px;opacity:.8"><span class="num">' + esc(fmtTime(v.at, { hour:'2-digit', minute:'2-digit' })) + '</span> \u00b7 ' + esc(fmtDate(v.at))
     + (chMayDel() ? ' <button type="button" class="btn-quiet" data-chdel="' + esc(v.id) + '" aria-label="' + esc(t('امسح الرسالة')) + '" style="border:0;background:transparent;padding:0 4px;cursor:pointer">\u{1F5D1}</button>' : '') + '</div></div></div>';
 }
 /* (V39.7) owner: «زرار مسح يكون مع المهندس والمدير» — the engineer and above delete a line or a whole conversation; the
@@ -202,7 +202,7 @@ function chListHtml(){
   var sysN = chMsgs().filter(function(v){ return v.kind === 'sys' && chVisible(v); }).length;
   var row = function(key, title, prev, at, un){
     return '<div class="list-item" data-chopen-t="' + esc(key) + '" style="cursor:pointer"><div class="li-main"><div class="li-title">' + esc(title) + '</div><div class="li-sub">' + prev + '</div></div>'
-      + '<div class="li-end"><span class="hint" style="margin:0;font-size:11px">' + esc(at ? (typeof stepAgo === 'function' ? stepAgo(at) : fmtDT(at)) : '') + '</span>' + (un ? ' <span class="tb-badge" style="position:static;display:inline-block">' + nm(un) + '</span>' : '') + '</div></div>';
+      + '<div class="li-end"><span class="hint" style="margin:0;font-size:12px">' + esc(at ? (typeof stepAgo === 'function' ? stepAgo(at) : fmtDT(at)) : '') + '</span>' + (un ? ' <span class="tb-badge" style="position:static;display:inline-block">' + nm(un) + '</span>' : '') + '</div></div>';
   };
   var rows = TH.map(function(r){
     var v = r.last, un = r.key === 'sys' ? 0 : chMsgs().filter(function(x){ return x.from !== me && chVisible(x) && chKey(x) === r.key && (+x.at || 0) > Math.max(g, S[r.key] || 0); }).length;

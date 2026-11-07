@@ -44,7 +44,7 @@ function expHtml(){
     + '</div>'
     + '<div class="actions">' + btn('تصدير','btn-primary',' data-expgo="1"')
     +   btn('إلغاء','btn-secondary',' data-exp="0"') + '</div></div>'
-    + '<p class="hint" style="font-size:11.5px">'
+    + '<p class="hint" style="font-size:12px">'
     +   esc(t('الإكسل ورقةٌ لكل قسم بعناوينها كما تظهر على الشاشة · وملفُّ الطباعة صفحةٌ لكل قسم برسمها البياني.')) + '<br>'
     +   esc(t('يُصدَّر ما بعد التصفية — وبلا تصفيةٍ يُصدَّر الكلّ.'))
     + '</p></div>';

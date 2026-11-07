@@ -129,7 +129,7 @@ function siteShared(x){   /* (V35.1) كم سطرًا يحمل هذا الشاخ�
 }
 function siteIdHtml(x){ if (!x) return ''; var k = siteKey(x), sh = siteShared(x) > 1 && x.co;
   /* (V38.75) owner: a point's name in any list opens it on the map — the key is a link to the point */
-  return '<b class="num" data-fly="' + esc(x.id) + '" role="link" title="' + esc(t('على الخريطة')) + '" style="cursor:pointer;text-decoration:underline dotted">' + bdi(k) + '</b>' + (sh ? '<div class="hint" style="margin:0;font-size:11px">' + esc(x.co) + '</div>' : '') + (k !== x.id ? '<div class="num hint" style="margin:0;font-size:11px">' + bdi(x.id) + '</div>' : ''); }
+  return '<b class="num" data-fly="' + esc(x.id) + '" role="link" title="' + esc(t('على الخريطة')) + '" style="cursor:pointer;text-decoration:underline dotted">' + bdi(k) + '</b>' + (sh ? '<div class="hint" style="margin:0;font-size:12px">' + esc(x.co) + '</div>' : '') + (k !== x.id ? '<div class="num hint" style="margin:0;font-size:12px">' + bdi(x.id) + '</div>' : ''); }
 function siteKeyLabel(x){ return x && x.type === 'مخيم' ? 'رقم الشاخص' : (x && x.type === 'ممر' && siteKey(x) !== x.id ? 'الاسم في ١٤٤٧' : 'المعرّف'); }
 
 /* ── قرارُ المالك (V36.4): ما رُكّب لا يُحذَف ── */

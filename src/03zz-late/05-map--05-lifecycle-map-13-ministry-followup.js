@@ -230,6 +230,7 @@ function mfuHeroHtml(){
     + '<div class="mfu-hero-band"><div><div class="mfu-hero-t">' + esc(t('موجز الموسم')) + '</div><div class="hint" style="margin:0">' + esc(hijriToday()) + ' \u00b7 ' + esc(today) + '</div></div>'
     +   '<div class="mfu-hero-today"><span>' + esc(t('اليوم')) + '</span> <b>' + nm(dd.sv) + '</b> ' + esc(t('مسح')) + ' \u00b7 <b>' + nm(dd.ins) + '</b> ' + esc(t('تركيب')) + ' \u00b7 <b>' + nm(dd.hand) + '</b> ' + esc(t('تسليم')) + ' \u00b7 <b>' + nm(dd.dis) + '</b> ' + esc(t('فك'))   /* (V34.3) الأربعةُ يومًا بيوم */
     +     (next ? ' \u00b7 <span title="' + esc(next.n) + '">' + esc(t('أقرب معلَم')) + ' <b>' + nm(Math.max(0, Math.round((next.d - now) / 864e5))) + '</b> ' + esc(t('يومًا')) + '</span>' : '') + '</div></div>'
+    + (typeof dsBento === 'function' ? dsBento(SC) : '')   /* (V46.4) the bento summary */
     + '<div class="kk kk-mini"><div class="kk-rings">'
     +   stageRings(SC)   /* (V37.0) خمسُ مراحل: الزيارة والمسح والتركيب والتسليم والفك */
     + '</div></div>'

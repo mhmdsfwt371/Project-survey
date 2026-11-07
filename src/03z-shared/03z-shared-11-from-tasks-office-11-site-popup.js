@@ -21,7 +21,7 @@ function netRows(x, kvf){
   if (!/^\d+\.\d+\.\d+$/.test(n)) return '';
   var L = function(v){ return '<div dir="ltr" class="cx-l">' + v + '</div>'; };
   return kvf('عناوين الأجهزة', '<div class="cx-box">' + L(esc(t('راوتر')) + ' ' + esc(n) + '.1') + L(esc(t('قارئ')) + ' ' + esc(n) + '.2') + L(esc(t('كاميرا')) + ' ' + esc(n) + '.3')
-    + '<div class="hint" style="margin:2px 0 0;font-size:11px" dir="ltr">' + esc(n) + '.0/24</div></div>');
+    + '<div class="hint" style="margin:2px 0 0;font-size:12px" dir="ltr">' + esc(n) + '.0/24</div></div>');
 }
 
 /* (V37.72) طلبُ المالك «عاوز الوزارة تقدر تشوف الصور — شيء مهم جدًّا»: كانت صورُ الزيارة في صفحة التفاصيل والنموذج وحدَهما، وصفحةُ التفاصيل محجوبةٌ عن الوزارة
@@ -202,7 +202,7 @@ function popMarksHtml(st, s, task){
   /* (V38.58) owner's rule: the engineer may say «installed» from here; supervisor and technician record the
      installation in its form with parts, serials and photos */
   if (FIELD_MODE === 'install' && !may('approve')){
-    marks = '<span class="hint" style="margin:0;font-size:11.5px">' + esc(t('سجّل التركيبَ من «نموذج التركيب» بقطعه وسيريالاته وصوره')) + '</span>';
+    marks = '<span class="hint" style="margin:0;font-size:12px">' + esc(t('سجّل التركيبَ من «نموذج التركيب» بقطعه وسيريالاته وصوره')) + '</span>';
   } else if (FIELD_MODE === 'install'){
     marks = [['مجدول','#FF8C42'], ['مُركّب','#3AD6A0'], ['متعذّر','#E05252']].map(function(o){
       var on = st === o[0];
@@ -218,9 +218,9 @@ function popMarksHtml(st, s, task){
       : recIsQuick(rq) ? '<span class="pill info">' + esc(t('تمت الزيارة — بقرار المهندس')) + '</span>'   /* (V28.4) لا زرَّ إلغاء — الحذفُ موقوف */
       : '';
   } else if (task || rankOf(ROLE) >= rankOf('supervisor')){   /* (V28.7) المشرفُ والفنيُّ: الزيارةُ من نموذج المسح بصوره */
-    marks = STATE.recs[s.id] ? '' : '<span class="hint" style="margin:0;font-size:11.5px">' + esc(t('سجّل الزيارةَ من «نموذج المسح» بصورها')) + '</span>';
+    marks = STATE.recs[s.id] ? '' : '<span class="hint" style="margin:0;font-size:12px">' + esc(t('سجّل الزيارةَ من «نموذج المسح» بصورها')) + '</span>';
   } else {
-    marks = '<span class="hint" style="margin:0;font-size:11.5px">'
+    marks = '<span class="hint" style="margin:0;font-size:12px">'
       + esc(t('لم تُجدول زيارة لهذه النقطة بعد')) + '</span>';
   }
 

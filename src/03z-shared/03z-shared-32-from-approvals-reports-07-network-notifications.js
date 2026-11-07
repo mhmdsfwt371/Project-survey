@@ -335,7 +335,7 @@ function notifPop(n){
   el.innerHTML = '<button type="button" class="npop-x" data-npopx="1" aria-label="' + esc(t('إغلاق')) + '">\u2715</button>'
     + '<div style="font-weight:700;font-size:13px;padding-inline-end:26px">' + esc(t(n.kind)) + '</div>'
     + '<div class="hint" style="margin:2px 0 0;font-size:12.5px">' + esc(n.text) + '</div>'
-    + '<div class="hint" style="margin:4px 0 0;font-size:11.5px"><a href="#" data-nmute="1">' + esc(t('كتم ساعة')) + '</a></div>';
+    + '<div class="hint" style="margin:4px 0 0;font-size:12px"><a href="#" data-nmute="1">' + esc(t('كتم ساعة')) + '</a></div>';
   wrap.appendChild(el);
   clearTimeout(PV.POP_T);
   setTimeout(function(){ if (el.parentNode) el.remove(); }, 9000);

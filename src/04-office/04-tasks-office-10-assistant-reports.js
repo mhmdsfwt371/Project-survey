@@ -21,11 +21,11 @@ function aqRepExport(fmt){
     return;
   }
   var css = 'body{font:11.5px/1.55 system-ui,"Segoe UI",Tahoma;margin:18px;color:#111}h1{font-size:19px;margin:0;color:#1F4E79}'
-    + '.meta{color:#556;font-size:11px;margin:4px 0 10px}.box{border:1px solid #dfe6ee;border-radius:10px;padding:8px 12px;margin:0 0 10px;background:#f8fbff}'
-    + '.pill{display:inline-block;border:1px solid #9cc3e6;border-radius:99px;padding:1px 9px;margin:2px;font-size:11px;background:#eef6ff}'
-    + 'table{width:100%;border-collapse:collapse;font-size:10.5px}th{background:#1F4E79;color:#fff;padding:5px 6px;text-align:start;font-weight:600}'
+    + '.meta{color:#556;font-size:12px;margin:4px 0 10px}.box{border:1px solid #dfe6ee;border-radius:10px;padding:8px 12px;margin:0 0 10px;background:#f8fbff}'
+    + '.pill{display:inline-block;border:1px solid #9cc3e6;border-radius:99px;padding:1px 9px;margin:2px;font-size:12px;background:#eef6ff}'
+    + 'table{width:100%;border-collapse:collapse;font-size:12px}th{background:#1F4E79;color:#fff;padding:5px 6px;text-align:start;font-weight:600}'
     + 'td{border-bottom:1px solid #dde3ea;padding:4px 6px}tr:nth-child(even) td{background:#f6f9fc}.big{font-size:22px;font-weight:800;color:#12203a}'
-    + '.foot{margin-top:10px;color:#889;font-size:10px}@page{size:A4 landscape;margin:12mm}';
+    + '.foot{margin-top:10px;color:#889;font-size:12px}@page{size:A4 landscape;margin:12mm}';
   var html = '<div style="display:flex;align-items:center;gap:12px">' + (LOGO ? '<img src="' + LOGO + '" alt="AFAQY" style="height:36px;width:auto">' : '')
     + '<h1>' + esc(t('قارئات أفاقي — تقرير')) + '</h1></div>'
     + '<div class="meta">' + esc(t('حج ١٤٤٨هـ')) + ' \u00b7 ' + esc(fmtDT()) + ' \u00b7 ' + esc(dispName(STATE.meta.name || '')) + '</div>'

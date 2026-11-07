@@ -239,7 +239,7 @@ function kmzCamTable(x){
   var c = camNetOf(x); if (!c || !c.cams || !c.cams.length) return '';
   var X = function(v){ return String(v == null ? '' : v).replace(/[<>&]/g, function(ch){ return ch === '<' ? '&lt;' : ch === '>' ? '&gt;' : '&amp;'; }); };
   return '<br><b>Uplink:</b> ' + X([c.cpe ? 'CPE ' + c.cpe : '', c.ant, c.sector, c.secAnt].filter(Boolean).join(' · ')) + (c.status ? '<br><b>Status:</b> ' + X(c.status) : '')
-    + '<table border="1" cellpadding="3" style="border-collapse:collapse;font-size:11px"><tr><th>CAM</th><th>Model</th><th>Type</th><th>Spec</th><th>IP</th><th>VLAN</th></tr>'
+    + '<table border="1" cellpadding="3" style="border-collapse:collapse;font-size:12px"><tr><th>CAM</th><th>Model</th><th>Type</th><th>Spec</th><th>IP</th><th>VLAN</th></tr>'
     + c.cams.map(function(k){ return '<tr><td>' + X(k.n) + '</td><td>' + X(k.model) + '</td><td>' + (k.kind === 'P' ? 'PTZ' : 'Fixed') + '</td><td>' + X(PV.CAM_SPEC[k.model] || '') + '</td><td>' + X(k.ip) + '</td><td>' + X(k.vlan) + '</td></tr>'
         + '<tr><td colspan="6">rtsp://' + X(k.ip) + ':554/cam/realmonitor?channel=1&amp;subtype=0</td></tr>'; }).join('') + '</table>';
 }
