@@ -94,7 +94,9 @@ T(other && !calls.sources.nskc.data.features.some(f=>f.properties.id===other.pro
  // العودة
  d.querySelector('[data-m3]').dispatchEvent(new w.MouseEvent('click',{bubbles:true})); await new Promise(r=>setTimeout(r,300));
  T(w.MAP_3D===false && d.getElementById('m3Box').hidden, 'الضغطةُ الثانية تعيد المسطّح');
- T(d.querySelector('[data-m3]').textContent.includes('٣د'), 'والزرُّ عاد «٣د»');
+ /* (V47.1) a choice in the map-look panel closes it — reopen it to read the button */
+if (!d.querySelector('[data-m3]')){ w.PV.MTOP = 'map'; w.render(1); }
+T(d.querySelector('[data-m3]').textContent.includes('٣د'), 'والزرُّ عاد «٣د»');
  T(errs.length===0, 'بلا أخطاءِ متصفّح'+(errs.length?': '+errs.slice(0,3).join(' | '):''));
  console.log(bad ? '\nجردُ الخريطة الثلاثية فشل ✗ (' + bad + ')' : '\nالثلاثيُّ هو الخريطةُ نفسُها مرفوعةً ✅');
  process.exit(bad ? 1 : 0);
