@@ -161,7 +161,7 @@ function clickAPart2(e){
     return true;
   }
   if (e.target.closest('[data-boxcopy]')){ boxCopy(); return true; }
-  if (e.target.closest('[data-briefcopy]')){ try { navigator.clipboard.writeText(mfuBriefText()); toast(t('نُسخ الملخّص')); } catch (er){ toast(t('تعذّر النسخ')); } return true; }   /* (V29.9) */
+  if (e.target.closest('[data-briefcopy]')){ nskCopy(mfuBriefText(), t('نُسخ الملخّص')); return true; }   /* (V29.9) */
   var svl = e.target.closest('[data-svlist]');   /* (V29.6) */
   if (svl){ SV_POP = svl.getAttribute('data-svlist'); PV.SV_PHO = ''; SV_VIEW = 'dash'; PV.SV_SHOW = 80; SV_ZF = svl.getAttribute('data-svzone') || ''; SV_SUB = svl.getAttribute('data-svsub0') || ''; PV.SV_STACK = [];   /* (V37.62) مربعُ التبويب يفتح لوحتَه مصفّاةً */   /* (V37.49) بطاقةُ المشعر تفتح لوحتَها مصفّاةً */
     if (KIOSK_ON) kioskCycleStop();   /* الضغطةُ توقف التنقّلَ التلقائي */   /* (V37.14) طلبُ المالك «الويندو بطيئة»: تُدرَج النافذةُ وحدَها بلا رسم الصفحة */

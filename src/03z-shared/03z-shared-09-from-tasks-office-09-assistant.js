@@ -118,6 +118,36 @@ function aqAnswer(q){
       return aqRow(b.item, nm(b.store) + ' ' + esc(t('مخزن')) + ' \u00b7 ' + nm(b.custody) + ' ' + esc(t('عهدة')) + ' \u00b7 ' + nm(b.used) + ' ' + esc(t('رُكّب')));
     }).join('') || '<p class="hint" style="margin:0">' + esc(t('لا حركاتٍ في المخزن بعد')) + '</p>', aqGo('الأرصدة', 'page|invb'));
   }
+  /* (V47.2) QA: «نقاط تحتاج زيارة تقنية» was answered with the general progress, and «مين متأخر في الزيارات؟» with the weekly tasks.
+     Both read the lifecycle itself (lifeOf) — the same states the map and the brain count. The Ministry sees counts only: no names, no «returned». */
+  var aqMin = typeof ROLE !== 'undefined' && ROLE === 'viewer';
+  var aqList = function(key, title, ids, lbl){ return (ids.length && typeof MFU !== 'undefined') ? '<button type="button" class="btn btn-primary btn-sm" data-svlist="' + esc(dsList(key, title, ids)) + '">' + esc(t(lbl)) + '</button>' : aqGo('الخريطة', 'page|map'); };
+  if (/تحتاج زياره|زياره تقنيه|زياره اخري|زياره تانيه|اعاده زياره|اعاده الزياره/.test(n)){
+    var tv = { tech:[], stuck:[], revisit:[] };
+    pool.forEach(function(x){ var k = lifeOf(x); if (tv[k]) tv[k].push(x.id); });
+    var tvAll = tv.tech.concat(tv.stuck, aqMin ? [] : tv.revisit);
+    out += aqCard(t('نقاط تحتاج زيارة أخرى') + (scopeTxt ? ' \u00b7 ' + scopeTxt : ' \u00b7 ' + t('كلُّ المشاعر')),
+      aqRow('الإجمالي', nm(tvAll.length)) + aqRow('تحتاج زيارة تقنية', nm(tv.tech.length)) + aqRow('تحتاج زيارة أخرى تقنيا', nm(tv.stuck.length))
+      + (aqMin ? '' : aqRow('أعادها المهندس لزيارة أخرى', nm(tv.revisit.length))),
+      aqList('aq|tech', 'نقاط تحتاج زيارة أخرى', tvAll, 'اعرض النقاط'));
+  }
+  if (/متاخر|تاخير/.test(n) && /زياره|زيارات|مسح/.test(n)){
+    var lv = {}, lvIds = [], lvUn = 0, lvNow = Date.now();
+    pool.forEach(function(x){
+      var k = lifeOf(x);
+      if (k === 'todo'){ lvUn++; return; }
+      if (k !== 'assigned') return;
+      var tk = taskKindOf(x.id, 'visit'); if (!tk || !tk.at || lvNow - (+tk.at) < 7 * 864e5) return;
+      lvIds.push(x.id); var w = tk.to || t('بلا مسؤول'); lv[w] = (lv[w] || 0) + 1;
+    });
+    var lvWho = Object.keys(lv).sort(function(a, b){ return lv[b] - lv[a]; }).slice(0, 6);
+    out += aqCard(t('الزيارات المتأخرة') + (scopeTxt ? ' \u00b7 ' + scopeTxt : ' \u00b7 ' + t('كلُّ المشاعر')),
+      aqRow('مسندة ولم تزر منذ أكثر من أسبوع', nm(lvIds.length))
+      + (aqMin ? '' : lvWho.map(function(w){ return aqRow(w, nm(lv[w])); }).join(''))
+      + aqRow('لم تزر ولم تسند بعد', nm(lvUn))
+      + (!lvIds.length ? '<p class="hint" style="margin:6px 0 0">' + esc(t('لا زيارات متأخرة — كل ما أسند قبل أسبوع تمت زيارته')) + '</p>' : ''),
+      aqList('aq|latevis', 'الزيارات المتأخرة', lvIds, 'اعرض النقاط'));
+  }
   /* ٤ · أعدادُ التركيب والمسح */
   if (/تركيب|اتركب|مركب|ركبنا|اتمسح|مسح|زياره|زيارات|زرنا|اعتماد|معتمد|انجاز|نسبه|كام|كم|عدد|قد ايه|اد ايه/.test(n) && !out && !/الوزاره|تحدي|معوق|اشغال|مهام|متاخر/.test(n)){
     var tot = pool.length, inst = pool.filter(function(x){ var i = STATE.inss[x.id]; return i && i.status === 'مُركّب'; }).length;
@@ -131,7 +161,7 @@ function aqAnswer(q){
       aqGo('المسح الميداني', 'page|msurv') + ' ' + aqGo('حالة التركيبات', 'page|minst'));
   }
   /* ٦ · (V38.15) المهامُّ الأسبوعية المتأخرة */
-  if (/متاخر|تاخير|تأخير|المهام|مهام|مين متاخر/.test(n) && typeof wtRows === 'function'){
+  if (/متاخر|تاخير|تأخير|المهام|مهام|مين متاخر/.test(n) && typeof wtRows === 'function' && !(/زياره|زيارات|مسح/.test(n) && !/مهام/.test(n))){   /* (V47.2) late visits have their own card above */
     var W = wtRows().filter(function(r){ return r && r.st !== 'مكتمل'; }), late = W.filter(wtLate).sort(function(a, b){ return wtDue(a) - wtDue(b); });
     var byWho = {}; late.forEach(function(r){ var k = r.who || t('بلا مسؤول'); byWho[k] = (byWho[k] || 0) + 1; });
     out += aqCard(t('المهام الأسبوعية'), aqRow('مفتوحة', nm(W.length)) + aqRow('متأخرة', nm(late.length))

@@ -1347,6 +1347,37 @@ html[data-sun="1"] #content .btn-primary,html[data-sun="1"] #content .btn-second
 @media (max-width:520px){.ds-msh-b{grid-template-columns:1fr 1fr}}
 .ds-msh-g{font-size:12px;font-weight:800;color:var(--live-bright);margin:10px 0 6px}
 .ds-msh-x,.ds-msheet button{touch-action:manipulation}
+/* (V47.2) QA pass of every page in both skins — contrast and tap targets. Appended to the shell <style>. */
+/* 1 · the side menu is dark in both skins: its links must not take the day's dark green */
+html[data-skin] .sidebar a:not(.active), html[data-skin] .sidebar .btn-quiet, html[data-skin] .sidebar .link{color:#8EDB97}
+html[data-skin] .sidebar .btn-secondary{color:#E4ECF3;border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.06)}
+/* 2 · the ministry tokens read on each skin's surface (red 3.0 → 6+ at night; gold 2.7 → 5+ by day) */
+html[data-skin="ops"], html[data-theme="dark"]:not([data-skin="brand"]){--min-red:#FF8A80;--min-gold:#E0A32E}
+html, html[data-skin], html[data-skin="brand"][data-theme]{--min-red:#B42318;--min-gold:#8A5A00;--ink-mute:#5C6B78}
+html[data-skin="ops"]{--min-red:#FF8A80;--min-gold:#E0A32E;--ink-mute:#8FA0B0}
+/* 3 · day skin: accents that sit on white keep 4.5:1 */
+html[data-skin="brand"][data-theme] .card .pid, html[data-skin="brand"][data-theme] .kk-big, html[data-skin="brand"][data-theme] .card .num[style*="font-size:2"], html[data-skin="brand"][data-theme] .ds-brain-h, html[data-skin="brand"][data-theme] .ds-msh-g, html[data-skin="brand"][data-theme] .ds-node.on b, html[data-skin="brand"][data-theme] .ds-brain-act .nm b, html[data-skin="brand"][data-theme] #content [style*="color:#22C55E"], html[data-skin="brand"][data-theme] #content [style*="color:#22c55e"]{color:#2A7130 !important;text-shadow:none}
+html[data-skin="brand"][data-theme] .mfu-kpi-l, html[data-skin="brand"][data-theme] .mfu-add > summary, html[data-skin="brand"][data-theme] #content [style*="color:#C8943E"], html[data-skin="brand"][data-theme] #content [style*="color:#c8943e"]{color:#8A5A00 !important}
+html[data-skin="brand"][data-theme] .mfu-kpi-v{color:#18232E}
+html[data-skin="brand"][data-theme] .pill{color:#18232E}
+html[data-skin="brand"][data-theme] .pill.wrn, html[data-skin="brand"][data-theme] .pill[style*="F59E0B"], html[data-skin="brand"][data-theme] .pill[style*="f59e0b"]{color:#7A4E00 !important;border-color:#B7791F !important;background:#FCF1DC !important}
+html[data-skin="brand"][data-theme] .pill[style*="EF4444"], html[data-skin="brand"][data-theme] .pill[style*="ef4444"], html[data-skin="brand"][data-theme] .pill.bad{color:#B42318 !important;border-color:#B42318 !important;background:#FDECEA !important}
+html[data-skin="brand"][data-theme] .pill.off, html[data-skin="brand"][data-theme] .pill[style*="94A3B8"], html[data-skin="brand"][data-theme] .pill[style*="94a3b8"]{color:#3F4C59 !important}
+/* 4 · night: red pills on dark surfaces */
+html[data-skin="ops"] .pill.bad, html[data-skin="ops"] .pill[style*="EF4444"], html[data-skin="ops"] .pill[style*="ef4444"]{color:#FF8A80 !important;border-color:#FF8A80 !important}
+/* 5 · anything painted with the brand colour carries white text, whatever sits inside it */
+html[data-skin] .btn-primary .hint, html[data-skin] .btn-primary .num, html[data-skin] .btn-primary b, html[data-skin] .btn-primary span{color:#fff !important;text-shadow:none}
+html[data-skin] .mfu-blk-h{background:#1E2A36 !important;color:#fff !important;border-inline-start:4px solid #4CC35A}
+/* 6 · tap targets: permission-matrix cells and any bare button in a page */
+#content button, #content [role="button"]{min-height:32px}
+#content button.pill, #content .pill[role="button"]{min-width:36px;display:inline-flex;align-items:center;justify-content:center}
+/* 7 · the bento's fourth split colour stays in the green family */
+html[data-skin="brand"][data-theme] #content [style*="color:#27AE60"], html[data-skin="brand"][data-theme] #content [style*="color:#E2B33C"]{color:#1E6B2E !important}
+html[data-skin="brand"][data-theme] #content [style*="color:#E2B33C"]{color:#8A5A00 !important}
+html[data-skin="brand"][data-theme] #content .btn-quiet .num, html[data-skin="brand"][data-theme] #content .btn-secondary .num, html[data-skin="brand"][data-theme] #content .card .num{color:#2A7130;text-shadow:none}
+html[data-skin="brand"][data-theme] .kk-eta.mute{color:#3F4C59}
+html[data-skin="brand"][data-theme] #content .btn-primary .num, html[data-skin="brand"][data-theme] #content .btn-primary .num[style], html[data-skin="brand"][data-theme] #content .btn-primary .hint{color:#fff !important}
+html[data-skin="brand"][data-theme] #content [style*="color:#B7950B"]{color:#8A5A00 !important}
 </style>
 </head>
 <body>
@@ -1389,7 +1420,7 @@ html[data-sun="1"] #content .btn-primary,html[data-sun="1"] #content .btn-second
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V47.1</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V47.2</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>

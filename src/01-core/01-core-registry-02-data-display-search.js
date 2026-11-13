@@ -166,6 +166,19 @@ function brainBriefHtml(){
       + '<span class="ic" aria-hidden="true">' + b.ic + '</span><span class="tx"><b>' + esc(t(b.n)) + '</b><small>' + esc(t('بيد')) + ' ' + esc(t(b.who)) + ' \u00b7 ' + esc(t(b.why)) + '</small></span>'
       + '<span class="nm"><b class="num">' + nm(ids.length) + '</b>' + (late ? '<em class="ds-late">' + nm(late) + ' ' + esc(t('متوقّفة')) + '</em>' : '') + '</span></button>';
   });
+  /* (V47.2) QA: the technician and the crews had no line at all. Theirs is what is assigned to them, by where each point stands. */
+  if (['tech', 'crews'].indexOf(role) > -1){
+    var mine = typeof mineFiltered === 'function' ? mineFiltered() : [], mk = {};
+    mine.forEach(function(x){ var k = lifeOf(x); (mk[k] = mk[k] || []).push(x.id); });
+    [[['revisit', 'stuck', 'tech'], '\u{1F501}', 'أعيدت إليك لزيارة أخرى', 'ابدأ بها — تنتظر زيارتك لتكتمل'],
+     [['assigned', 'tomorrow'], '\u{1F4CD}', 'نقاط مسندة إليك تنتظر الزيارة', 'افتحها من الخريطة وسجل الزيارة من الموقع'],
+     [['sched', 'inprog'], '\u{1F527}', 'تركيبات مسندة إليك', 'يحسب التركيب بعد حفظ نموذجه بالقطع والصور']].forEach(function(b, i){
+      var ids = [].concat.apply([], b[0].map(function(k){ return mk[k] || []; })); if (!ids.length) return;
+      lines.push('<button type="button" class="ds-brain-act"' + (typeof MFU !== 'undefined' ? ' data-svlist="' + esc(dsList('brain|me|' + b[0][0], b[2], ids)) + '"' : ' data-p="map"') + ' style="animation-delay:' + (i * 60) + 'ms">'
+        + '<span class="ic" aria-hidden="true">' + b[1] + '</span><span class="tx"><b>' + esc(t(b[2])) + '</b><small>' + esc(t(b[3])) + '</small></span>'
+        + '<span class="nm"><b class="num">' + nm(ids.length) + '</b></span></button>');
+    });
+  }
   /* (V46.9) the data itself: what needs ordering, for the office */
   if (['engineer', 'admin'].indexOf(role) > -1){
     var dq = [], ll = {};

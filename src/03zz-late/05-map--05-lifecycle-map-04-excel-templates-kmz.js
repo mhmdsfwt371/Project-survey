@@ -60,7 +60,7 @@ function xlsPage(){
     var tabT = TABS[CUR] ? (tabsOf(CUR).filter(function(x){ return x[0] === tabCur(CUR); })[0] || [])[1] : '';
     XLSX.writeFile(wb, 'نسك-' + t(p.t) + (tabT ? '-' + t(tabT) : '') + '-' + dayKey() + '.xlsx');
     logEvent('إكسل الصفحة — ' + p.t + (tabT ? ' · ' + tabT : '') + ' · ' + nm(n) + ' جدول');
-    toast(nm(n) + ' ' + t('جدولًا صُدِّر بكلِّ صفوفه'));
+    toast(n === 1 ? t('صُدِّر جدول واحد بكل صفوفه') : n === 2 ? t('صُدِّر جدولان بكل صفوفهما') : nm(n) + ' ' + t(n <= 10 ? 'جداول صُدِّرت بكل صفوفها' : 'جدولًا صُدِّر بكلِّ صفوفه'));   /* (V47.2) Arabic counts: 1 · 2 · 3–10 · 11+ */
     return true;
   });
 }

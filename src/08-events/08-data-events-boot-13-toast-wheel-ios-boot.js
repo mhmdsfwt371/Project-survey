@@ -28,6 +28,24 @@ function labelCells(root){
   }
 }
 
+/* (V47.2) One copy routine for every «copy» button: it says «copied» only after the clipboard accepted the text.
+   Old field phones without the async clipboard fall back to a hidden textarea; a refusal calls `fail` (or says so). */
+function nskCopy(txt, okMsg, fail){
+  var no = function(){ if (typeof fail === 'function') fail(); else toast(t('تعذّر النسخ')); };
+  var yes = function(){ toast(okMsg); };
+  var old = function(){
+    try {
+      var a = document.createElement('textarea'); a.value = String(txt); a.setAttribute('readonly', '');
+      a.style.cssText = 'position:fixed;top:0;opacity:0'; document.body.appendChild(a); a.select();
+      var done = document.execCommand('copy'); document.body.removeChild(a);
+      if (done) yes(); else no();
+    } catch (e){ no(); }
+  };
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(String(txt)).then(yes, old);
+    else old();
+  } catch (e){ old(); }
+}
 function toast(label){
   var old = document.getElementById('nskToast');
   if (old) old.remove();

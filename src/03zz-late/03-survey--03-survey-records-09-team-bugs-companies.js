@@ -200,9 +200,7 @@ function briefingSend(uid){
 
 function briefingCopyAll(){
   var txt = briefingRows().map(briefingText).join('\n\n\u2014\u2014\u2014\n\n');
-  var done = function(){ toast(t('نُسخت رسائلُ الفريق — ألصقها في مجموعة واتساب')); };
-  try { navigator.clipboard.writeText(txt).then(done, function(){ toast(t('تعذّر النسخ')); }); }
-  catch (e){ toast(t('تعذّر النسخ')); }
+  nskCopy(txt, t('نُسخت رسائلُ الفريق — ألصقها في مجموعة واتساب'));
 }
 
 /* ── إشعار واتساب ── */
@@ -311,8 +309,7 @@ function waGo(co, kind, when, copy){
   if (!co){ toast(t('اختر الشركة')); return; }
   var txt = waText(kind || 'plan', co, when || '');
   if (copy){
-    try { if (navigator.clipboard) navigator.clipboard.writeText(txt); toast(t('نُسخ النص')); }
-    catch (e){ toast(t('تعذّر النسخ')); }
+    nskCopy(txt, t('نُسخ النص'));
     return;
   }
   var ph = coTelOf(co);

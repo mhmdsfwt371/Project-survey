@@ -293,6 +293,8 @@ function render0Tail(wasCur, p, pl, wasTab){
     + (!p.full && typeof creditFootHtml === 'function' ? creditFootHtml() : ''));   /* (V39.5) langFix: the English percent sign in English; (V46.0) the credit under every page */
 
   labelCells(c);
+  /* (V47.2) the page-Excel arrow exports tables and lists: a page that draws neither does not offer it */
+  { var xb = c.querySelector('[data-xlspage]'); if (xb && !c.querySelector('.list > *') && !Array.prototype.some.call(c.querySelectorAll('table'), function(tb){ return tb.querySelectorAll('tr').length > 1; })) xb.parentNode.removeChild(xb); }
   if (EXP_OPEN) c.insertAdjacentHTML('beforeend', expHtml());
   /* الشاشةُ نفسُها والشريحةُ نفسُها: يبقى الموضع. غيرُهما: يُصعَد للرأس. */
   scrollBack(wasCur === CUR && wasTab === (TABS[CUR] ? tabCur(CUR) : ''));

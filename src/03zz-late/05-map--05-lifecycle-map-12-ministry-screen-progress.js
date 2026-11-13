@@ -218,7 +218,7 @@ function kioskRing(done, total, label, doneKey, remKey, idle){
     +   '<text x="55" y="61" class="kk-pct" aria-valuenow="' + pr + '">' + nm(pr) + '٪</text></svg>'
     + '<div class="kk-lab">' + esc(t(label)) + ' \u203A</div>'
     + '<div class="kk-sub">' + (total ? nm(done) + ' ' + esc(t('من')) + ' ' + nm(total)
-        + (rem ? ' \u00b7 <span role="button" tabindex="0" data-svlist="' + esc(remKey) + '" style="color:var(--min-red);font-weight:700;cursor:pointer;white-space:nowrap">' + esc(t('متبقي')) + ' ' + nm(rem) + ' \u203A</span>' : '')
+        + (rem ? ' \u00b7 <span role="button" tabindex="0" data-svlist="' + esc(remKey) + '" style="color:var(--min-red);font-weight:700;cursor:pointer;white-space:nowrap;display:inline-block;padding:9px 6px;margin:-9px 0">' + esc(t('متبقي')) + ' ' + nm(rem) + ' \u203A</span>' : '')
         : esc(t(idle || 'لم يبدأ بعد'))) + '</div></div>';
 }
 

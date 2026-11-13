@@ -80,7 +80,7 @@ function basemapDownload(){
   }).then(function(b){
     if (b.size > BASEMAP_MAX) throw new Error('too-big');
     return caches.open(PV.BASEMAP_CACHE).then(function(c){ return c.put(PV.BASEMAP_FILE, new Response(b, { headers:{ 'content-type':'application/octet-stream', 'content-length':String(b.size) } })); }).then(basemapWarm).then(function(){ BASEMAP.have = true; BASEMAP.loading = false; toast(t('نُزِّلت خريطةُ المشاعر — تعمل الآن بلا شبكة')); logEvent('خريطةُ المشاعر نُزِّلت — ' + Math.round(b.size / 1048576) + ' م.ب'); render(1); try { basemapAttach(); } catch (e){ LS_ERR = e; } return true; });
-  }).catch(function(e){ BASEMAP.loading = false; toast(t(String(e && e.message) === 'no-file' ? 'لم تُبنَ خريطةُ المشاعر بعد — انظر docs/maps' : 'تعذّر تنزيلُ الخريطة')); render(1); return false; });
+  }).catch(function(e){ BASEMAP.loading = false; toast(t(String(e && e.message) === 'no-file' ? 'خريطة المشاعر غير متاحة للتنزيل الآن — راجع المهندس' : 'تعذّر تنزيلُ الخريطة')); render(1); return false; });
 }
 
 function basemapScripts(){

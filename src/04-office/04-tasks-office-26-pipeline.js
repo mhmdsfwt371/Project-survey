@@ -61,7 +61,7 @@ function stagePipe(){
 /* (V46.4) the owner's spec — «bento summary grid: a 2×2 hero tile (total + a bar split by real sources), a 2×1 tile with a slowly
    turning gradient edge, a tile with an SVG ring (closed ÷ total) that fills on first view. Every visual is built from live
    numbers», and every tile opens the detail window. The split is by holy site; «closed» is installed or handed over. */
-PV.BENTO_C = ['#4CC35A', '#2E9C7E', '#E0A32E', '#7FB2E5', '#C9A27E', '#9FB0AA'];
+PV.BENTO_C = ['#4CC35A', '#2E9C7E', '#E0A32E', '#8FD3A6', '#C9A27E', '#9FB0AA'];
 function dsBento(SC){
   var L = typeof svListSites === 'function' ? svListSites() : (STATE.sites || []), n = L.length, z = {};
   L.forEach(function(x){ var g = taxOf(x).g || '\u2014'; z[g] = (z[g] || 0) + 1; });

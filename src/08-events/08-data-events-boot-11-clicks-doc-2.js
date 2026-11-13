@@ -481,7 +481,7 @@ function onDocClickPart7(e){
   if (e.target.closest('[data-fhpos]')){   /* (V29.4) */
     try { navigator.geolocation.getCurrentPosition(function(p){ PV.MYPOS = { lat:p.coords.latitude, lng:p.coords.longitude, acc:p.coords.accuracy, at:Date.now() }; render(1); }, function(){ toast(t('تعذّر تحديدُ الموقع — فعِّل الموقع للتطبيق')); }, { enableHighAccuracy:true, timeout:15000, maximumAge:30000 }); } catch (er){ toast(t('تعذّر تحديدُ الموقع')); }
     return; }
-  if (e.target.closest('[data-fhcopy]')){ var tx1 = fhTodayText(fhToday()); try { navigator.clipboard.writeText(tx1); toast(t('نُسخ الملخّص')); } catch (er){ toast(t('تعذّر النسخ')); } return; }
+  if (e.target.closest('[data-fhcopy]')){ var tx1 = fhTodayText(fhToday()); nskCopy(tx1, t('نُسخ الملخّص')); return; }
   if (e.target.closest('[data-fhwa]')){ try { window.open('https://wa.me/?text=' + encodeURIComponent(fhTodayText(fhToday())), '_blank', 'noopener'); toast(t('فُتح واتساب بالملخّص — اختر المشرف')); } catch (er){ toast(t('تعذّر الفتح')); } return; }
   if (e.target.closest('[data-fhprep]')){ PV.FH_PREP = Date.now();
     if (typeof basemapDownload === 'function' && typeof BASEMAP === 'object' && BASEMAP && !BASEMAP.have && !BASEMAP.loading) basemapDownload().then(function(){ render(1); });

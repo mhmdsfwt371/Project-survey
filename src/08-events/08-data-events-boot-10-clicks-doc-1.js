@@ -221,7 +221,7 @@ function onDocClickPart2(e){
   if (svm){ SV_MORE = svm.getAttribute('data-svmore') === '1'; render(1); return; }
   /* الشريحةُ المفتوحةُ سلفًا لا تتغيّر بالضغط عليها — فيُقال ما هو معروضٌ
      الآن بدل صمتٍ يظنُّه الناقرُ عطلًا. */
-  if (e.target.closest('[data-pwcopy]')){ if (PV.PW_FLOW){ try { navigator.clipboard.writeText(PV.PW_FLOW.pass); toast(t('نُسخت')); } catch (er){ toast(PV.PW_FLOW.pass); } } return; }
+  if (e.target.closest('[data-pwcopy]')){ if (PV.PW_FLOW){ var pw1 = PV.PW_FLOW.pass; nskCopy(pw1, t('نُسخت'), function(){ toast(pw1); }); } return; }
   if (e.target.closest('[data-pwclose]')){ PV.PW_FLOW = null; clearInterval(PV.PW_POLL); PV.PW_POLL = 0; render(1); return; }
   var pndd = e.target.closest('[data-pnddel]');
   if (pndd){ pendDel(pndd.getAttribute('data-pnddel')); return; }

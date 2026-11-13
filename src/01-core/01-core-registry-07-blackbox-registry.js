@@ -51,7 +51,17 @@ function softErr(where, e, tell){
   try { console.warn('[أفاقي] ' + where + ': ' + msg); } catch (e2){ LS_ERR = e2; }
   if (tell && !SOFT_SAID[where]){
     SOFT_SAID[where] = 1;
-    toast(t(tell));
+    /* (V47.2) Offline with an empty cache every pull fails at once: ten notices in a row said the same thing.
+       Failed pulls inside one short window are told once; a single failure keeps its own precise wording. */
+    if (String(where).indexOf('\u0633\u062D\u0628 ') === 0){
+      softErr.pulls = (softErr.pulls || []).concat([tell]);
+      if (!softErr.timer) softErr.timer = setTimeout(function(){
+        var L = softErr.pulls || []; softErr.pulls = []; softErr.timer = 0;
+        if (L.length === 1) toast(t(L[0]));
+        else if (L.length) toast(t('تعذّر سحب بعض البيانات — المعروض هو المحفوظ على الجهاز، ويكتمل عند عودة الاتصال'));
+      }, 1500);
+    }
+    else toast(t(tell));
   }
 }
 
