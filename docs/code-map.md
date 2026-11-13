@@ -248,7 +248,7 @@
 | `05-lifecycle-map-21-move-devices.js` | 127 | 11 | (V39.31) owner: «عاوز أي نقطة، من أقل نقطة، أقدر أحرّكها: كاميرا وأنتنات وريدر وحساسات وجيت واي وخلافه». A point |
 | `05-lifecycle-map-30-kmz-detailed.js` | 100 | 5 | A detailed KMZ for Google Earth: every planned point, once per app filter as folders, with a full balloon. |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 4723 سطر · 168 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (14 ملفات · 4732 سطر · 168 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -262,7 +262,8 @@
 | `06-ministry-alerts-08-pptx-template.js` | 1110 | 33 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 252 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 1505 | 4 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 1446 | 2 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11b-password-change.js` | 68 | 2 | The forced password change after a temporary password. Moved verbatim out of 11-whats-new.js (V47.2): |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
 
@@ -314,4 +315,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 247 ملفًّا · 51443 سطر · 2372 دالة.
+**الإجمالي:** 248 ملفًّا · 51452 سطر · 2372 دالة.
