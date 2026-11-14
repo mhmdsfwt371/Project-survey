@@ -1,0 +1,12 @@
+verdict:  GREEN
+commit:   b31f8ee35c54074533bdfcba07ec400da5d39e58
+version:  V47.2
+title:    V47.2 — مفتاحُ الترقية يُسأل أوّلًا: المنتهي يُقال باسمه، والقريبُ من نهايته يُنبَّه له قبل أسبوعين
+event:    workflow_dispatch  (the full list, then promotion to main)
+on main:  no
+when:     2026-11-14T02:14:57.501Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/43544474300
+jobs:     fast=skipped · real=success · shards=success · promote=skipped · chain=success
+passed:   browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     —
+missing:  —
