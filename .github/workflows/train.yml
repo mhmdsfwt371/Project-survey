@@ -21,14 +21,47 @@ jobs:
   train:
     runs-on: ubuntu-24.04
     steps:
+      # (V47.2) The promotion key is a personal token: it expires, and regenerating it kills the stored copy. A dead key
+      # used to kill the checkout itself — the job fell before judging, the commit was stamped «failure» though all ten
+      # gates were green, and the owner got «a step broke» with no reason. The key is asked first; a dead one falls back
+      # to the run's own token for reading, the gate is judged truthfully, and promotion says exactly what to renew.
+      - name: مفتاحُ الترقية — حيٌّ أم منتهٍ
+        id: key
+        env:
+          PT: ${{ secrets.PROMOTE_TOKEN }}
+        run: |
+          use=dead; days=""
+          if [ -n "$PT" ]; then
+            hdr=$(curl -sS -m 20 -I -H "Authorization: Bearer $PT" https://api.github.com/rate_limit || true)
+            if printf '%s' "$hdr" | head -1 | grep -q ' 200'; then
+              use=live
+              exp=$(printf '%s' "$hdr" | tr -d '\r' | awk -F': ' 'tolower($1)=="github-authentication-token-expiration"{print $2}')
+              if [ -n "$exp" ]; then days=$(( ( $(date -d "$exp" +%s) - $(date +%s) ) / 86400 )) || days=""; fi
+            fi
+          fi
+          echo "use=$use" >> "$GITHUB_OUTPUT"; echo "days=$days" >> "$GITHUB_OUTPUT"
+          if [ "$use" = "dead" ]; then echo "::warning title=مفتاحُ الترقية::PROMOTE_TOKEN منتهٍ أو مرفوض — البوابةُ تحكم كما هي، ولا ترقيةَ حتى يُجدَّد"; else echo "✓ مفتاحُ الترقية حيّ${days:+ — يبقى له $days يومًا}"; fi
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           ref: staging
-          token: ${{ secrets.PROMOTE_TOKEN || github.token }}
+          token: ${{ steps.key.outputs.use == 'live' && secrets.PROMOTE_TOKEN || github.token }}
       - uses: actions/setup-node@v5
         with:
           node-version: 20
+      - name: مفتاحُ الترقية يقترب من نهايته — تنبيهٌ واحدٌ قبل أسبوعين
+        # (V47.2) the key's end was learnt from a release that did not arrive; the daily train now says it two weeks ahead, once
+        if: steps.key.outputs.use == 'live' && steps.key.outputs.days != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DAYS: ${{ steps.key.outputs.days }}
+        run: |
+          if [ "$DAYS" -gt 14 ]; then exit 0; fi
+          open=$(gh issue list --state open --limit 100 --json title --jq '[.[] | select(.title | startswith("مفتاح الترقية ينتهي"))] | length' || echo 0)
+          if [ "$open" != "0" ]; then echo "التنبيهُ مفتوحٌ أصلًا"; exit 0; fi
+          gh issue create --title "مفتاح الترقية ينتهي بعد $DAYS يوما — جدده قبل أن يقف الإصدار" --body "@${{ github.repository_owner }}
+          مفتاح الترقية (PROMOTE_TOKEN) ينتهي بعد $DAYS يوما. بعد انتهائه تبقى الإصدارات الخضراء على فرع التجربة ولا تصل الإنتاج.
+          التجديد: أنشئ مفتاحا جديدا ثم ضعه في Settings ← Secrets and variables ← Actions ← PROMOTE_TOKEN، وأغلق هذا البلاغ." || echo "::warning::تعذّر فتحُ تنبيه المفتاح"
       - name: اختيارُ آخر التزامٍ خضراءَ بوابتُه
         id: pick
         env:
@@ -45,6 +78,10 @@ jobs:
         run: |
           if git merge-base --is-ancestor "${{ steps.pick.outputs.sha }}" origin/main; then
             echo "::notice title=لا جديد::الأصلُ يحمل هذا الالتزامَ أصلًا"; exit 0
+          fi
+          if [ "${{ steps.key.outputs.use }}" != "live" ]; then   # (V47.2) a dead key is said by name — the train does not leave silently
+            CHAIN_SHA="${{ steps.pick.outputs.sha }}" node scripts/chain-alert.mjs "الترقية" "مفتاحُ الترقية (PROMOTE_TOKEN) منتهٍ أو مرفوض — الالتزامُ أخضرُ وينتظر. جدِّده من إعدادات المستودع: Settings ← Secrets and variables ← Actions ← PROMOTE_TOKEN، ثم شغِّل Release train" || true
+            exit 0
           fi
           node scripts/train-promote.mjs "${{ steps.pick.outputs.sha }}"
       - name: إطلاقُ سير التغذية بعد الترقية
