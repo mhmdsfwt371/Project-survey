@@ -1,0 +1,12 @@
+verdict:  RED
+commit:   f4aeb88b11592d1715623701ff88663783297d20
+version:  V47.2
+title:    V47.2 — حكمُ البوابة يُكتَب في المستودع نفسِه ويُقرأ بـgit وحدَه، وسقفُ الملف في الطبقة السريعة
+event:    push  (the push gate: fast layer + real browser + rules + full list)
+on main:  no
+when:     2026-11-14T01:46:46.884Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/43541903535
+jobs:     fast=success · real=success · shards=success · promote=failure · chain=skipped
+passed:   fast browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     —
+missing:  —
