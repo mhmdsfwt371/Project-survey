@@ -1,0 +1,12 @@
+verdict:  GREEN
+commit:   b31f8ee35c54074533bdfcba07ec400da5d39e58
+version:  V47.2
+title:    V47.2 — مفتاحُ الترقية يُسأل أوّلًا: المنتهي يُقال باسمه، والقريبُ من نهايته يُنبَّه له قبل أسبوعين
+event:    push  (the push gate: fast layer + real browser + rules + full list)
+on main:  no
+when:     2026-11-14T02:07:26.616Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/43543620818
+jobs:     fast=success · real=success · shards=success · promote=success · chain=skipped
+passed:   fast browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     —
+missing:  —
