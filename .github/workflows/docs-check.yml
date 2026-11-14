@@ -709,3 +709,32 @@ jobs:
         run: |
           npm i --no-save --no-audit --no-fund nodemailer@^6 >/dev/null 2>&1 || true
           node scripts/chain-alert.mjs "${STOP_AT:-الترقية}" "${STOP:-تعطّلت خطوةٌ في السلسلة}" /tmp/chain-stop-detail.txt || true
+
+  # ═══ (V47.2) دفترُ البوابة في المستودع نفسِه ═══
+  # The verdict used to live only in GitHub's API (commit status, comments, logs): a session that pushes with git but
+  # cannot reach the API could not tell whether the gate was green or what fell. The last job writes it to the orphan
+  # branch gate-log — one file per commit and event — so `node scripts/gate-read.mjs` reads it with git alone.
+  # It never fails the run, and the branch triggers no workflow.
+  ledger:
+    needs: [fast, real, shards, promote, chain]
+    if: ${{ always() && github.ref == 'refs/heads/staging' && github.event_name != 'schedule' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+      - uses: actions/download-artifact@v7
+        continue-on-error: true
+        with:
+          pattern: gate-*
+          path: gates
+          merge-multiple: true
+      - name: حكمُ البوابة يُكتَب في الفرع gate-log — يُقرأ بـgit وحدَه
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NEEDS: ${{ toJSON(needs) }}
+        run: node scripts/gate-ledger.mjs || true
