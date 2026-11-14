@@ -722,6 +722,8 @@ jobs:
     timeout-minutes: 5
     permissions:
       contents: write
+      actions: read     # the failed job's step names
+      checks: read      # and what the runner said about them
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5

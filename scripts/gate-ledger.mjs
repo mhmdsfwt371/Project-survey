@@ -54,8 +54,21 @@ if (process.argv[1] && process.argv[1].endsWith('gate-ledger.mjs')){
     let version = ''; try { version = (readFileSync('sw.js', 'utf8').match(/nusuk-survey-v([0-9.]+)/) || [])[1] || ''; } catch (e){ version = ''; }
     let title = ''; try { title = sh('git', ['log', '-1', '--format=%s', sha]); } catch (e){ title = ''; }
     const when = new Date().toISOString();
+    /* a job can fall outside every gate (checkout, a token, the promotion itself): name its failed steps and what the runner said */
+    let steps = '';
+    try {
+      const jobs = JSON.parse(sh('gh', ['api', `repos/${repo}/actions/runs/${process.env.GITHUB_RUN_ID}/jobs?per_page=100`])).jobs || [];
+      jobs.filter(j => j.conclusion === 'failure').forEach(j => {
+        steps += '\n── job «' + j.name + '» failed at: ' + ((j.steps || []).filter(x => x.conclusion === 'failure').map(x => x.name).join(' | ') || '(before its first step)') + '\n';
+        try {
+          const ann = JSON.parse(sh('gh', ['api', `repos/${repo}/check-runs/${j.id}/annotations?per_page=30`]));
+          ann.filter(x => x.annotation_level === 'failure').slice(0, 8).forEach(x => { steps += '   ' + String(x.message || '').replace(/\s+/g, ' ').slice(0, 400) + '\n'; });
+        } catch (x){ /* annotations are a bonus: the step name alone already says where */ }
+      });
+    } catch (x){ steps = ''; }
     const e = entry({ sha, event, gates, needs, onMain, version: version && 'V' + version, title, when,
       run: process.env.GITHUB_SERVER_URL && repo ? `${process.env.GITHUB_SERVER_URL}/${repo}/actions/runs/${process.env.GITHUB_RUN_ID}` : '' });
+    if (steps){ e.text += steps; if (e.verdict === 'GREEN') e.verdict = 'RED'; }
     console.log(e.text);
     if (!repo || !tok){ console.log('::warning::gate ledger: no repository or token — printed only'); process.exit(0); }
     const dir = join(tmpdir(), 'gate-log-' + Date.now()); mkdirSync(dir, { recursive:true });
