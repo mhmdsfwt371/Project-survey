@@ -1,12 +1,12 @@
 {
  "ok": true,
- "at": "2026-11-14T09:16:27.138Z",
+ "at": "2026-11-15T09:46:20.829Z",
  "collections": [
   "accounts: 70",
   "att: 4",
   "bugs: 4",
   "coreqs: 5",
-  "events: 40922",
+  "events: 41303",
   "fixreqs: 3",
   "ghcfg: 1",
   "hb: 1",
@@ -14,7 +14,7 @@
   "integ: 4",
   "inventory: 3",
   "iotlive: 1",
-  "msgs: 5",
+  "msgs: 6",
   "newsites: 270",
   "photos: 5041",
   "presence: 18",
@@ -23,13 +23,13 @@
   "settings: 47",
   "sites: 1851",
   "srvorders: 1",
-  "stats: 68",
+  "stats: 70",
   "steps: 2177",
   "tasks: 16",
   "teams: 2",
   "users: 33",
   "workreqs: 1"
  ],
- "totalDocs": 47686,
+ "totalDocs": 48070,
  "note": "البياناتُ مشفَّرةٌ على الدرايف (backup-full.enc) — هذا الملفُّ أعدادٌ فقط."
 }
