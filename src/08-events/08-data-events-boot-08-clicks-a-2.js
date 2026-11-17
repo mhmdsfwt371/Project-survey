@@ -322,6 +322,9 @@ function clickAPart5(e){
   var aqa = e.target.closest('[data-aqact]'); if (aqa){ if (typeof aqActClick === 'function') aqActClick(aqa.getAttribute('data-aqact')); return true; }   /* (V43.16) the assistant's action buttons */
   var aqg = e.target.closest('[data-aqgo]'); if (aqg){ aqGoTo(aqg.getAttribute('data-aqgo')); return true; }   /* (V38.14) مساعدُ البيانات */
   var aqs = e.target.closest('[data-aqsel]'); if (aqs){ aqSelGo(aqs.getAttribute('data-aqsel')); return true; }   /* (V47.6) the brain's answer selects its points for bulk work */
+  if (e.target.closest('[data-aqteach]')){ aqTeachSave(); return true; }   /* (V47.7) the office teaches the brain */
+  var aqtd = e.target.closest('[data-aqteachdel]'); if (aqtd){ aqTeachDel(aqtd.getAttribute('data-aqteachdel')); return true; }
+  var aqtq = e.target.closest('[data-aqteachq]'); if (aqtq){ ASSIST_Q = aqtq.getAttribute('data-aqteachq'); ASSIST_OPEN = true; render(); return true; }
   if (e.target.closest('[data-aqxls]')){ assistQXls(); return true; }   /* (V38.16) */
   var aqr = e.target.closest('[data-aqrep]'); if (aqr){ aqRepExport(aqr.getAttribute('data-aqrep')); return true; }   /* (V38.17) */
   if (e.target.closest('[data-cted]')){ contCard.ed = 1; render(1); return true; }   /* (V38.8) */

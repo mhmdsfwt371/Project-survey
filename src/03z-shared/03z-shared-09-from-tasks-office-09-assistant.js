@@ -99,7 +99,7 @@ function aqAnswerBase(q){   /* (V47.5) wrapped by aqAnswer (02-definitions-10): 
   /* (V47.4) the router decides which section answers — the first known word no longer wins (aqRoute) */
   var RT = aqRoute(q);
   if (!RT.list.length) return RT.win === 'ask' ? aqAskCard(RT.ask) : '';
-  var goL = PV.AQ_INTENTS.filter(function(I){ return I.go && RT.list.indexOf(I.id) > -1; });
+  var goL = PV.AQ_INTENTS.filter(function(I){ return I.go && RT.list.indexOf(I.id) > -1; }).concat(RT.ti ? [RT.ti] : []);   /* (V47.7) a page the office taught */
   if (goL.length === RT.list.length) return goL.map(function(I){ return aqGoCard(I, AQC); }).join('');
   /* ٢ · إشارةُ القرّاء */
   if (aqOn('reader') && typeof extStatusRows === 'function'){   /* (V38.15) «شغال» كلمةً لا داخل «إشغال» */

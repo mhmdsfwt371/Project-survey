@@ -5,7 +5,7 @@
              («intent») declares its strong words (enough to answer) and weak words (hints only). The intent
              with the highest score answers; weak words alone never answer — they ask «تقصد ايه؟» instead.
              Intents with a `go` lead to the page that answers them until a data answer is written (phase 2).
-   DEFINES : aqRoute, aqOn, aqIntentCount, aqGoCard, aqAskCard
+   DEFINES : aqRoute, aqOn, aqIntentCount, aqGoCard, aqAskCard, aqTaught
    GLOBALS : PV.AQ_INTENTS, PV.AQ_R, PV.AQ_LAST
    PREFIX  : aq   (every function here starts with it — scripts/audit-names.mjs)
    NOTE    : The root of the owner's report (17 Nov 2026): «أول كلمة يعرفها تكسب» answered 9 of 30 real
@@ -61,6 +61,16 @@ function aqIntentCount(I, n){
    sections of aqAnswer to read, and on PV.AQ_LAST for the question-bank audit. */
 function aqRoute(q){
   var n = ' ' + aqNorm(q) + ' ', S = [], weakOnly = [], sc = aqScope(n);
+  /* (V47.7) what the office taught the assistant comes first: the longest taught phrase in the question decides */
+  var TT = aqTaught().filter(function(o){ return n.replace(/[؟?!.,،]/g, ' ').replace(/\s+/g, ' ').indexOf(' ' + o.p + ' ') > -1; }).sort(function(a, b){ return b.p.length - a.p.length; })[0];
+  if (TT){
+    var to = String(TT.to).split(':'), I0 = to[0] === 'intent' ? PV.AQ_INTENTS.filter(function(I){ return I.id === to[1]; })[0] : null;
+    if (I0 && (!I0.go || typeof seesPage !== 'function' || seesPage(I0.go.split('|')[1]))){ PV.AQ_R = { win:I0.id, list:[I0.id], ask:[], score:999, taught:TT.p }; PV.AQ_LAST = I0.id; return PV.AQ_R; }
+    if (to[0] === 'page' && typeof seesPage === 'function' && seesPage(to[1])){
+      var mT = typeof pageMeta === 'function' ? pageMeta(to[1]) : null;
+      PV.AQ_R = { win:'taught', list:['taught'], ask:[], score:999, taught:TT.p, ti:{ id:'taught', go:'page|' + to[1], lbl:mT ? mT.t : to[1] } }; PV.AQ_LAST = 'taught'; return PV.AQ_R;
+    }
+  }
   if (!sc.zone && !sc.type && typeof aqPlace === 'function') sc.type = aqPlace(n);   /* any scope makes a count a progress question */   /* (V47.5) a place named in the registry is a scope too */
   PV.AQ_INTENTS.forEach(function(I){
     if (I.go && typeof seesPage === 'function' && !seesPage(I.go.split('|')[1])) return;   /* never offer a page the role cannot open */
@@ -81,6 +91,12 @@ function aqRoute(q){
 }
 
 function aqOn(id){ return !!(PV.AQ_R && PV.AQ_R.list.indexOf(id) > -1); }
+
+/* (V47.7) the office's lessons: CFG.lists.aqTeach — JSON strings { p: the question's words (normalized), to: 'intent:<id>' | 'page:<id>', by, at } */
+function aqTaught(){
+  var L = (typeof CFG === 'object' && CFG.lists && CFG.lists.aqTeach) || [];
+  return L.map(function(s){ try { return JSON.parse(s); } catch (e){ return null; } }).filter(function(o){ return o && o.p && o.to; });
+}
 
 /* a domain intent: its numbers when this device has them (aqAns, V47.5), else where it is answered */
 function aqGoCard(I, c){

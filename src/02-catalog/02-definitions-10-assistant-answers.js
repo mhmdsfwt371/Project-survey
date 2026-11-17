@@ -7,7 +7,7 @@
              STATE.recs/inss, presenceRows, mfuCompanies, PV.BK_STATE) — and the page that holds the rest.
              Also: place names read from the registry itself (aqPlace: «نمرة», «الشعيبين») and a link to any
              page or tab whose title the question names (aqTitleLinks).
-   DEFINES : aqAnswer, aqFollow, aqFollowAct, aqListBtn, aqSelBtn, aqSelGo, aqActBtns, aqAns, aqPlace, aqTitleLinks, aqWho, aqTop
+   DEFINES : aqAnswer, aqFollow, aqFollowAct, aqListBtn, aqSelBtn, aqSelGo, aqActBtns, aqAns, aqPlace, aqTitleLinks, aqWho, aqTop, aqTeachBox, aqTeachList, aqTeachPut, aqTeachSave, aqTeachDel
    GLOBALS : PV.AQ_NAMES, PV.AQ_CTX (the last question, for follow-ups), PV.AQ_POOL, PV.AQ_SELS
    PREFIX  : aq   (every function here starts with it — scripts/audit-names.mjs)
    NOTE    : An answer that has nothing to count says so and links the page — it never invents a number.
@@ -253,3 +253,60 @@ aqAns.backup = function(c, go){
   if (typeof bkCard !== 'function') return '';
   return bkCard() + '<div class="actions" style="margin:-4px 0 10px">' + go + '</div>';
 };
+
+/* ═══ (V47.7) Phase 4: the office teaches the brain ═══
+   A question the brain could not answer (or answered with «تقصد ايه؟») shows the engineer a small box: the words
+   that mark the question, and where its answer is — one of the brain's answers or any page or tab. Saved once in
+   CFG.lists.aqTeach (settings/points, synced to every device), the router reads it first (aqTaught in aqRoute). */
+function aqTeachBox(q){
+  if (typeof may !== 'function' || !may('settings')) return '';
+  var opts = PV.AQ_INTENTS.filter(function(I){ return !I.go || seesPage(I.go.split('|')[1]); }).map(function(I){ return ['intent:' + I.id, '\u{1F4CA} ' + t(I.lbl)]; });
+  var seen = {};
+  (typeof pageIds === 'function' ? pageIds() : []).forEach(function(id){
+    if (seen[id]) return; seen[id] = 1; var m = pageMeta(id); if (!m || !m.t || !seesPage(id)) return;
+    opts.push(['page:' + id, '\u{1F4C4} ' + t(m.t) + (m.sub ? ' ‹ ' + t(m.sub) : '')]);
+  });
+  return '<details class="ds-more-d" id="aqTeachBox" style="margin:0 0 10px"><summary>\u{1F393} ' + esc(t('علّم المساعد جواب هذا السؤال')) + '</summary>'
+    + '<p class="hint" style="margin:6px 0">' + esc(t('اكتب الكلمات التي تميّز السؤال، واختر أين جوابه — يتعلّمه المساعد للفريق كله.')) + '</p>'
+    + '<input type="text" id="aqTeachP" dir="auto" style="width:100%;margin:0 0 6px" value="' + esc(String(q || '').replace(/[؟?]/g, '').trim()) + '" aria-label="' + esc(t('كلمات السؤال')) + '">'
+    + '<select id="aqTeachTo" style="width:100%;margin:0 0 8px" aria-label="' + esc(t('جوابه')) + '">' + opts.map(function(o){ return '<option value="' + esc(o[0]) + '">' + esc(o[1]) + '</option>'; }).join('') + '</select>'
+    + '<button type="button" class="btn btn-primary btn-sm" data-aqteach="1">' + esc(t('احفظ — يتعلّمه الفريق كله')) + '</button>'
+    + aqTeachList() + '</details>';
+}
+
+/* what the office has taught so far, each with a delete */
+function aqTeachList(){
+  var L = aqTaught(); if (!L.length) return '';
+  return '<div class="pid" style="margin:10px 0 4px">' + esc(t('ما تعلّمه المساعد')) + ' · ' + nm(L.length) + '</div>'
+    + L.slice().sort(function(a, b){ return (b.at || 0) - (a.at || 0); }).slice(0, 30).map(function(o){
+        var to = String(o.to).split(':'), lb = to[0] === 'page' ? ((pageMeta(to[1]) || {}).t || to[1]) : ((PV.AQ_INTENTS.filter(function(I){ return I.id === to[1]; })[0] || {}).lbl || to[1]);
+        return '<div class="kk-zl" style="margin:3px 0;align-items:center"><span><bdi>' + esc(o.p) + '</bdi> ← ' + esc(t(lb)) + '</span>'
+          + '<button type="button" class="btn btn-quiet btn-sm" data-aqteachdel="' + esc(o.p) + '" aria-label="' + esc(t('احذف')) + '">✕</button></div>';
+      }).join('');
+}
+
+function aqTeachPut(L){
+  CFG.lists = CFG.lists || {}; CFG.lists.aqTeach = L.map(function(o){ return JSON.stringify(o); });
+  cfgPushSoon('lists'); CFG_VER = (typeof CFG_VER === 'number' ? CFG_VER : 0) + 1;
+  var r = document.getElementById('assistRes'); if (r && typeof assistResHtml === 'function') r.innerHTML = assistResHtml();
+}
+
+function aqTeachSave(){
+  if (typeof may !== 'function' || !may('settings')){ toast(t('تعليمُ المساعد للمهندس فما فوق')); return false; }
+  var pe = document.getElementById('aqTeachP'), te = document.getElementById('aqTeachTo');
+  var p = aqNorm(pe ? pe.value : '').replace(/[؟?!.,،]/g, ' ').replace(/\s+/g, ' ').trim(), to = te ? te.value : '';
+  if (p.length < 3 || !/^(intent|page):/.test(to)){ toast(t('اكتب كلمات السؤال واختر جوابه')); return false; }
+  var L = aqTaught().filter(function(o){ return o.p !== p; });
+  L.push({ p:p, to:to, by:STATE.meta.name || '', at:Date.now() });
+  aqTeachPut(L);
+  logEvent('تعليمُ المساعد — ' + p + ' ← ' + to);
+  toast(t('تعلّمه المساعد — يجيبه الآن للفريق كله'));
+  return true;
+}
+
+function aqTeachDel(p){
+  if (typeof may !== 'function' || !may('settings')) return false;
+  aqTeachPut(aqTaught().filter(function(o){ return o.p !== p; }));
+  logEvent('حذفُ درسٍ من المساعد — ' + p);
+  return true;
+}

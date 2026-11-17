@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V47.6",
+  "app_version": "V47.7",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2443,7 +2443,8 @@
   "V47.3": "V47.3 — assistant: «ايه/فين/مين النقاط اللي …» read as a list; bare «كوبري»/«نفق» and the full «بدون إطار معدني للتثبيت» map to the «موقع النقطة» options; location answers link to the challenges tab; guide index carries every location option. No schema change.",
   "V47.4": "V47.4 — assistant router (aqRoute/PV.AQ_INTENTS): scored intents with strong/weak words, clarification chips, go-to-page intents, tafweej gates inventory answer. No schema change.",
   "V47.5": "V47.5 — assistant phase 2: aqAns data answers (sensors, shipments, vehicles, pace, people, yesterday, EXPO, versions, companies, backup, gates), aqPlace registry place scope, aqTitleLinks, whole-title ranking in helpSearch. No schema change.",
-  "V47.6": "V47.6 — assistant phase 3: follow-ups (aqFollow, PV.AQ_CTX), act on the last answer (صدّرهم/حدّدهم), aqActBtns list and selection buttons on data cards, data-aqsel handler. No schema change."
+  "V47.6": "V47.6 — assistant phase 3: follow-ups (aqFollow, PV.AQ_CTX), act on the last answer (صدّرهم/حدّدهم), aqActBtns list and selection buttons on data cards, data-aqsel handler. No schema change.",
+  "V47.7": "V47.7: the assistant learns from the team — engineer lessons in settings/lists.aqTeach ({p,to,by,at}); taught phrases route before scoring; glossary term for the brain."
   },
   "map_and_geolocation": {
     "tile_layers": {

@@ -257,8 +257,14 @@ console.log('\n══ ٩ · وضعُ الشمس على مقاس هاتف: أهد
   await page.setViewportSize({ width:390, height:844 });
   await page.evaluate(() => { sunSet(true); goPage('mywork'); render(1); });
   await page.waitForTimeout(300);
-  const small = await page.evaluate(() => [...document.querySelectorAll('#content .btn-primary, #content .btn-secondary')].filter(b => b.offsetParent && b.getBoundingClientRect().height < 48).map(b => b.textContent.trim().slice(0, 20)));
-  T(small.length === 0, 'أزرارُ الفعل في وضع الشمس ≥ ٤٨ بكسل' + (small.length ? ' — أقصر: ' + small.slice(0, 3).join(' | ') : ''));
+  /* (V47.7) V47.6 fell here in the cloud on buttons that are exactly 48 px: the first page after sign-in plays the
+     welcome animation (#content slides up), and a rect read mid-translate comes back as 47.9999 px (float rounding —
+     about one position in fifty). So the targets are measured once the page has settled, to a hundredth of a pixel,
+     and a real shortfall names its height and whether sun mode was on. */
+  await page.waitForFunction(() => !document.getAnimations().some(a => a.playState === 'running' && isFinite((a.effect && a.effect.getComputedTiming().endTime) || Infinity) && a.effect.target && a.effect.target.contains && a.effect.target.contains(document.querySelector('#content .btn'))), null, { timeout:3000 }).catch(() => {});
+  const small = await page.evaluate(() => [...document.querySelectorAll('#content .btn-primary, #content .btn-secondary')].filter(b => b.offsetParent && b.getBoundingClientRect().height < 47.99).map(b => b.textContent.trim().slice(0, 20) + ' (' + b.getBoundingClientRect().height.toFixed(2) + ')'));
+  const sunOn = await page.evaluate(() => document.documentElement.getAttribute('data-sun') === '1');
+  T(small.length === 0, 'أزرارُ الفعل في وضع الشمس ≥ ٤٨ بكسل' + (small.length ? ' — أقصر: ' + small.slice(0, 3).join(' | ') + (sunOn ? '' : ' — ووضعُ الشمس غيرُ مفعَّل') : ''));
   const over = [];
   for (const p of ['mywork', 'sites', 'site', 'forms']){
     await page.evaluate(i => { goPage(i); render(1); }, p); await page.waitForTimeout(150);

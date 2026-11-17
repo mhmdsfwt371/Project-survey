@@ -31,6 +31,8 @@ function assistResHtml(){
   if (ASSIST_Q){ assistLog(ASSIST_Q, !!(answered || results.length || gl.length)); }   /* (V37.30) */
   /* (V47.5) a question a known issue or an intent answered still reaches the page it names by its title */
   if (ASSIST_Q && answered && !dq && typeof aqTitleLinks === 'function') dq = aqTitleLinks(' ' + aqNorm(ASSIST_Q) + ' ', '');
+  /* (V47.7) unanswered, or answered with «تقصد ايه؟»: the office teaches the answer once, for the whole team */
+  if (ASSIST_Q && typeof aqTeachBox === 'function' && (!dq || (PV.AQ_R && PV.AQ_R.win === 'ask'))) dq += aqTeachBox(ASSIST_Q);
   return dq + assistDiagCard(ASSIST_Q)   /* (V37.23) التشخيص · (V46.8) the answer first, the diagnosis after it */
     + (!ASSIST_Q
         ? brainBriefHtml() + '<details class="ds-more-d"><summary>' + esc(t('المزيد — الأدلّة والتقارير والأسئلة')) + '</summary>' + assistHomeHtml() + '</details>'   /* (V46.8) the help, the report builder and the long question list behind «المزيد» */
