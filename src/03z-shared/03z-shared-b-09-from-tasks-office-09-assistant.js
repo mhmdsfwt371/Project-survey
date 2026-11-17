@@ -162,6 +162,9 @@ function helpSearch(q, minScore){   /* (V37.37) minScore: المساعدُ لا 
       'اريد':1, 'أريد':1, 'كيف':1, 'مع':1, 'او':1, 'أو':1, 'عندي':1, 'بس':1, 'خالص':1, 'لسه':1, 'كده':1, 'جديد':1, 'جديده':1, 'مشكله':1, 'مشكلة':1, 'غريبه':1, 'غريبة':1, 'فاهم':1, 'فاهمها':1, 'حاجه':1, 'حاجة':1 };   /* (V37.37) حشوٌ عربيٌّ وعاميّ */
     var real = toks.filter(function(tok){ return !STOP[tok] && tok.length > 2; });   /* (V37.37) «مش» كانت تطابق «المشروع» */
     var score = 0;
+    /* (V47.5) the page named by its whole title wins: «فين المحادثات» is «المحادثات», not «سجل المحادثات» first */
+    var bare = function(x){ return ' ' + String(x).split(' ').map(function(w){ return w.replace(/^ال/, ''); }).join(' ') + ' '; };   /* arNorm drops «ال» of the first word only */
+    var tN = arNorm(e.t); if (tN && bare(q).indexOf(bare(tN)) > -1) score += 60 + tN.length;
     if (ttl.indexOf(q) > -1) score += 40;
     if (hay.indexOf(q) > -1) score += 10;
     real.forEach(function(tok){

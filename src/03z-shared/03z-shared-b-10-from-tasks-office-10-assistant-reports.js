@@ -29,6 +29,8 @@ function assistResHtml(){
   var answered = !!(ASSIST_Q && (dq || assistIntent(ASSIST_Q) || knownHits(ASSIST_Q).length));   /* (V37.37) بلاغُ المالك: «الحاجات اللي تحت بتشوّش على اللي بدوّر عليه» */
   var results = ASSIST_Q && !answered ? helpSearch(ASSIST_Q, 12) : [], gl = ASSIST_Q && !answered ? glossaryHits(ASSIST_Q) : [];
   if (ASSIST_Q){ assistLog(ASSIST_Q, !!(answered || results.length || gl.length)); }   /* (V37.30) */
+  /* (V47.5) a question a known issue or an intent answered still reaches the page it names by its title */
+  if (ASSIST_Q && answered && !dq && typeof aqTitleLinks === 'function') dq = aqTitleLinks(' ' + aqNorm(ASSIST_Q) + ' ', '');
   return dq + assistDiagCard(ASSIST_Q)   /* (V37.23) التشخيص · (V46.8) the answer first, the diagnosis after it */
     + (!ASSIST_Q
         ? brainBriefHtml() + '<details class="ds-more-d"><summary>' + esc(t('المزيد — الأدلّة والتقارير والأسئلة')) + '</summary>' + assistHomeHtml() + '</details>'   /* (V46.8) the help, the report builder and the long question list behind «المزيد» */

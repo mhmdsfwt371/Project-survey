@@ -44,7 +44,8 @@ PV.AQ_INTENTS = [
   { id:'perf',     s:/(اكتر|افضل|احسن|اقل|اضعف|ترتيب|اشطر)\s+(مشرف|فني|فريق|طاقم|واحد)|اداء|انتاجيه/, go:'page|perf', lbl:'الفرق والأداء' },
   { id:'expo',     s:/اكسبو|expo/, go:'page|expo', lbl:'الإكسبو' },
   { id:'yday',     s:/(اتعمل|حصل|اتنفذ|انجزنا|عملنا|اشتغلنا)[\s\S]*(امبارح|امس|النهارده|اليوم)|(امبارح|امس)/, go:'page|now', lbl:'أمس · الآن · غدًا' },
-  { id:'version',  s:/اخر نسخه|النسخه الحاليه|رقم النسخه|اصدار|ايه الجديد/, go:'page|vers', lbl:'نسخ الأجهزة' }
+  { id:'version',  s:/اخر نسخه|النسخه الحاليه|رقم النسخه|اصدار|ايه الجديد|اخر تحديث/, go:'page|vers', lbl:'نسخ الأجهزة' },
+  { id:'backup',   s:/نسخ(ه)? (ال)?احتياطي|باك ?اب|backup|الدرايف/, go:'page|retain', lbl:'النسخ الاحتياطي' }
 ];
 
 function aqIntentCount(I, n){
@@ -60,6 +61,7 @@ function aqIntentCount(I, n){
    sections of aqAnswer to read, and on PV.AQ_LAST for the question-bank audit. */
 function aqRoute(q){
   var n = ' ' + aqNorm(q) + ' ', S = [], weakOnly = [], sc = aqScope(n);
+  if (!sc.zone && !sc.type && typeof aqPlace === 'function') sc.type = aqPlace(n);   /* (V47.5) a place named in the registry is a scope too */
   PV.AQ_INTENTS.forEach(function(I){
     if (I.go && typeof seesPage === 'function' && !seesPage(I.go.split('|')[1])) return;   /* never offer a page the role cannot open */
     var s = aqIntentCount(I, n), w = I.w ? (n.match(new RegExp(I.w.source, 'g')) || []).length : 0;
@@ -80,8 +82,9 @@ function aqRoute(q){
 
 function aqOn(id){ return !!(PV.AQ_R && PV.AQ_R.list.indexOf(id) > -1); }
 
-/* a domain without a data answer yet: say where it is answered, with the page's own words */
-function aqGoCard(I){
+/* a domain intent: its numbers when this device has them (aqAns, V47.5), else where it is answered */
+function aqGoCard(I, c){
+  var A = c && typeof aqAns === 'function' ? aqAns(I, c) : ''; if (A) return A;
   var id = I.go.split('|')[1], m = typeof pageMeta === 'function' ? pageMeta(id) : null;
   return aqCard(t('مكانها') + ': ' + t(m ? m.t : I.lbl) + (m && m.sub ? ' \u2039 ' + t(m.sub) : ''),
     m && m.l ? '<p class="hint" style="margin:0">' + esc(t(m.l)) + '</p>' : '', aqGo('افتح', I.go));

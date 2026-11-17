@@ -2,7 +2,7 @@
    FILE    : src/03z-shared/03z-shared-09-from-tasks-office-09-assistant.js
    DOMAIN  : Shared core — definitions the core needs before the deferrable domains load
    PURPOSE : Definitions moved verbatim from src/04-office/04-tasks-office-09-assistant.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.
-   DEFINES : assistDiag, aqNorm, aqTypes, aqScope, aqGo, aqCard, aqRow, aqPoint, aqAnswer
+   DEFINES : assistDiag, aqNorm, aqTypes, aqScope, aqGo, aqCard, aqRow, aqPoint, aqAnswerBase
    NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.
    ============================================================================ */
 /* ═══ (V37.23) طلبُ المالك: «المساعد يقدر الشخص يكلّمه ويحدّدله المشكلة ويحلّهاله لو ممكن أو يقوله حلّها إزاي» ═══
@@ -75,7 +75,7 @@ function aqPoint(x){
   return aqCard((x.name || x.id) + ' \u00b7 ' + x.id, body, aqGo('افتح النقطة', 'site|' + x.id) + (L.by || L.reader ? ' <button type="button" class="btn btn-quiet btn-sm" data-ovopen="' + esc(x.id) + '">\u{1F441} ' + esc(t('النظرة العامة')) + '</button>' : ''));
 }
 
-function aqAnswer(q){
+function aqAnswerBase(q){   /* (V47.5) wrapped by aqAnswer (02-definitions-10): title links, and the context of the last question */
   var n = aqNorm(q), out = '';
   /* (V38.17) تقريرٌ بالكلام أوّلًا: «إكسل/PDF للنقاط اللي …» */
   var RP = aqRepParse(q); if (RP.isRep && (RP.conds.length || RP.group)) return aqRepCard(q, aqRepData(q));
@@ -89,15 +89,18 @@ function aqAnswer(q){
     var L = (STATE.sites || []).filter(function(x){ return x && x.sign && String(x.sign).replace(/\s+/g, '') === code && (!sc.zone || x.zone === sc.zone); });
     /* (V47.4) «حالة الجيتواي في 38/56»: the point, and the page that answers the rest of the question */
     var RTp = aqRoute(q), goP = PV.AQ_INTENTS.filter(function(I){ return I.go && RTp.list.indexOf(I.id) > -1; });
-    if (L.length) return L.slice(0, 3).map(aqPoint).join('') + (L.length > 3 ? '<p class="hint">' + esc(t('والباقي')) + ' ' + nm(L.length - 3) + '</p>' : '') + goP.map(aqGoCard).join('');
+    if (L.length) return L.slice(0, 3).map(aqPoint).join('') + (L.length > 3 ? '<p class="hint">' + esc(t('والباقي')) + ' ' + nm(L.length - 3) + '</p>' : '') + goP.map(function(I){ return aqGoCard(I); }).join('');
   }
-  var sc2 = aqScope(n), scopeTxt = [sc2.zone, sc2.type].filter(Boolean).join(' \u00b7 ');
-  var pool = (STATE.sites || []).filter(function(x){ return x && (!sc2.zone || x.zone === sc2.zone) && (!sc2.type || x.type === sc2.type); });
+  var sc2 = aqScope(n); sc2.place = (!sc2.zone && !sc2.type && typeof aqPlace === 'function') ? aqPlace(' ' + n + ' ') : '';   /* (V47.5) «نمرة»: a place named in the registry */
+  var plTxt = sc2.place ? (String(q).split(/\s+/).filter(function(w){ return aqNorm(w).replace(/^ال/, '') === sc2.place; })[0] || sc2.place) : '';   /* shown as the question wrote it */
+  var scopeTxt = [sc2.zone, sc2.type, plTxt].filter(Boolean).join(' \u00b7 ');
+  var pool = (STATE.sites || []).filter(function(x){ return x && (!sc2.zone || x.zone === sc2.zone) && (!sc2.type || x.type === sc2.type) && (!sc2.place || aqNorm(x.name || '').indexOf(sc2.place) > -1); });
+  var AQC = { q:q, n:' ' + n + ' ', sc:sc2, pool:pool };
   /* (V47.4) the router decides which section answers — the first known word no longer wins (aqRoute) */
   var RT = aqRoute(q);
   if (!RT.list.length) return RT.win === 'ask' ? aqAskCard(RT.ask) : '';
   var goL = PV.AQ_INTENTS.filter(function(I){ return I.go && RT.list.indexOf(I.id) > -1; });
-  if (goL.length === RT.list.length) return goL.map(aqGoCard).join('');
+  if (goL.length === RT.list.length) return goL.map(function(I){ return aqGoCard(I, AQC); }).join('');
   /* ٢ · إشارةُ القرّاء */
   if (aqOn('reader') && typeof extStatusRows === 'function'){   /* (V38.15) «شغال» كلمةً لا داخل «إشغال» */
     var R = extStatusRows();
@@ -201,13 +204,7 @@ function aqAnswer(q){
       aqGo('المخيمات المركزية', 'page|mcamps|ov'));
   }
   /* ٥ · ما ينقص للجاهزية */
-  /* (V47.4) the tafweej gates inventory — the same count as the summary card (tardBarStats) */
-  if (aqOn('gates') && typeof tardBarStats === 'function'){
-    var TB = tardBarStats(sc2.zone || undefined);
-    out += aqCard(t('حصر بوابات التفويج') + (sc2.zone ? ' \u00b7 ' + sc2.zone : ' \u00b7 ' + t('كلُّ المشاعر')),
-      aqRow('مخيمات ترددي', nm(TB.conf)) + aqRow('بوابات التفويج', nm(TB.bars)) + aqRow('ترددي بلا عدد بوابات بعد', nm(TB.noCount)),
-      aqGo('متابعة الوزارة', 'page|mfu'));
-  }
+  if (aqOn('gates')) out += aqAns.gates(AQC);   /* (V47.4) the tafweej gates inventory — moved to aqAns (V47.5) */
   if (aqOn('ready')){
     var items = [], zeroW = itemsList().filter(function(i){ return i.name && !itPts(i.code); }).length;
     if (zeroW) items.push([t('أصنافٌ بلا وزن نقاط'), nm(zeroW), 'page|install']);
@@ -221,5 +218,5 @@ function aqAnswer(q){
     out += aqCard(t('ما ينقص للجاهزية'), items.length ? items.map(function(it){ return '<div class="kk-zl" style="margin:4px 0;align-items:center"><span>' + esc(it[0]) + '</span><span><b class="num">' + esc(String(it[1])) + '</b> <button type="button" class="btn btn-quiet btn-sm" data-aqgo="' + esc(it[2]) + '">\u2190</button></span></div>'; }).join('')
       : '<p style="margin:0">' + esc(t('لا شيءَ معلَّقٌ ممّا يُقاس هنا')) + ' \u2713</p>');
   }
-  return out + goL.map(aqGoCard).join('');   /* (V47.4) a tie with a page: the data first, then where the rest is */
+  return out + goL.map(function(I){ return aqGoCard(I, AQC); }).join('');   /* (V47.4) a tie with a page: the data first, then where the rest is */
 }
