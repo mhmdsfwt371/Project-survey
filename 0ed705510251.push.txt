@@ -1,0 +1,12 @@
+verdict:  GREEN
+commit:   0ed7055102516eacd1551f88f611ce0820bb6a27
+version:  V47.3
+title:    V47.3 — المساعدُ يفهم «ايه النقاط اللي تحت كوبري أو عند نفق» ويقود إلى لوحة «حسب الموقع»
+event:    push  (the push gate: fast layer + real browser + rules + full list)
+on main:  no
+when:     2026-11-17T12:11:05.007Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/44079467667
+jobs:     fast=success · real=success · shards=success · promote=success · chain=skipped
+passed:   fast browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     —
+missing:  —
