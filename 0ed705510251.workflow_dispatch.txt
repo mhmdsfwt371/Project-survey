@@ -1,0 +1,12 @@
+verdict:  GREEN
+commit:   0ed7055102516eacd1551f88f611ce0820bb6a27
+version:  V47.3
+title:    V47.3 — المساعدُ يفهم «ايه النقاط اللي تحت كوبري أو عند نفق» ويقود إلى لوحة «حسب الموقع»
+event:    workflow_dispatch  (the full list, then promotion to main)
+on main:  no
+when:     2026-11-17T12:18:25.950Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/44080692388
+jobs:     fast=skipped · real=success · shards=success · promote=skipped · chain=success
+passed:   browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     —
+missing:  —
