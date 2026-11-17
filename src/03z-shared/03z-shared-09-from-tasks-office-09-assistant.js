@@ -37,12 +37,12 @@ function aqNorm(q){
   (PV.AQ_SYN || []).forEach(function(r){ s = s.replace(r[0], r[1]); });
   s = s.replace(/\s+/g, ' ').trim();
   /* a question about what waits on the tafweej management is that card, whatever else it says */
-  if (/التفويج/.test(s) && /بانتظار|متاخر|كم/.test(s) && !/رفض|اعتمد/.test(s)) s = 'النقاط بانتظار التفويج';
+  if (/التفويج/.test(s) && /بانتظار|متاخر|كم/.test(s) && !/رفض|اعتمد/.test(s) && !/بوابه|بوابات|ترددي|حاجز/.test(s)) s = 'النقاط بانتظار التفويج';   /* (V47.4) the tafweej gates inventory is another question */
   return s;
 }
 
 function aqTypes(){
-  return [['مخيم', /مخيم/], ['ممر', /ممر/], ['كاميرا', /كامير/], ['جسر', /جسر|جسور/], ['محطة', /محطه|محطات|قطار/], ['بوابة', /بوابه|بوابات/], ['مبنى', /مبني|مباني/]];
+  return [['مخيم', /مخيم/], ['ممر', /ممر/], ['كاميرا', /كامير/], ['جسر', /جسر|جسور/], ['بوابة', /بوابه|بوابات/], ['محطة', /محطه|محطات|قطار/], ['مبنى', /مبني|مباني/]];
 }
 
 function aqScope(n){
@@ -87,12 +87,19 @@ function aqAnswer(q){
   if (sgm){
     var code = sgm[1] + '/' + sgm[2], sc = aqScope(n);
     var L = (STATE.sites || []).filter(function(x){ return x && x.sign && String(x.sign).replace(/\s+/g, '') === code && (!sc.zone || x.zone === sc.zone); });
-    if (L.length) return L.slice(0, 3).map(aqPoint).join('') + (L.length > 3 ? '<p class="hint">' + esc(t('والباقي')) + ' ' + nm(L.length - 3) + '</p>' : '');
+    /* (V47.4) «حالة الجيتواي في 38/56»: the point, and the page that answers the rest of the question */
+    var RTp = aqRoute(q), goP = PV.AQ_INTENTS.filter(function(I){ return I.go && RTp.list.indexOf(I.id) > -1; });
+    if (L.length) return L.slice(0, 3).map(aqPoint).join('') + (L.length > 3 ? '<p class="hint">' + esc(t('والباقي')) + ' ' + nm(L.length - 3) + '</p>' : '') + goP.map(aqGoCard).join('');
   }
   var sc2 = aqScope(n), scopeTxt = [sc2.zone, sc2.type].filter(Boolean).join(' \u00b7 ');
   var pool = (STATE.sites || []).filter(function(x){ return x && (!sc2.zone || x.zone === sc2.zone) && (!sc2.type || x.type === sc2.type); });
+  /* (V47.4) the router decides which section answers — the first known word no longer wins (aqRoute) */
+  var RT = aqRoute(q);
+  if (!RT.list.length) return RT.win === 'ask' ? aqAskCard(RT.ask) : '';
+  var goL = PV.AQ_INTENTS.filter(function(I){ return I.go && RT.list.indexOf(I.id) > -1; });
+  if (goL.length === RT.list.length) return goL.map(aqGoCard).join('');
   /* ٢ · إشارةُ القرّاء */
-  if (/ترسل|بترسل|بيبعت|بتبعت|اشاره|اونلاين|اوفلاين|online|offline|مقطوع|(^|\s)شغال|القراء|قارئ/.test(n) && typeof extStatusRows === 'function'){   /* (V38.15) «شغال» كلمةً لا داخل «إشغال» */
+  if (aqOn('reader') && typeof extStatusRows === 'function'){   /* (V38.15) «شغال» كلمةً لا داخل «إشغال» */
     var R = extStatusRows();
     if (!R) out += aqCard(t('إشارة القرّاء'), '<p class="hint" style="margin:0">' + esc(t('لا جسرَ بعد — شغّل الجسر من المخيمات المركزية')) + '</p>', aqGo('المخيمات المركزية', 'page|mcamps'));
     else {
@@ -106,7 +113,7 @@ function aqAnswer(q){
     }
   }
   /* ٣ · رصيدُ صنفٍ في المخزن */
-  if (/رصيد|مخزن|مخزون|عهده|متاح|فاضل/.test(n) && typeof stockBalance === 'function'){
+  if (aqOn('stock') && typeof stockBalance === 'function'){
     var B = stockBalance(), hit = B.filter(function(b){ var k = aqNorm(b.item); return k.split(/\s+/).some(function(w){ return w.length > 3 && n.indexOf(w) > -1; }); });
     /* (V38.15) صنفٌ في الكتالوج بلا حركاتٍ بعد يُجاب بأصفاره لا بـ«أكبر الأرصدة» */
     if (!hit.length){
@@ -122,7 +129,7 @@ function aqAnswer(q){
      Both read the lifecycle itself (lifeOf) — the same states the map and the brain count. The Ministry sees counts only: no names, no «returned». */
   var aqMin = typeof ROLE !== 'undefined' && ROLE === 'viewer';
   var aqList = function(key, title, ids, lbl){ return (ids.length && typeof MFU !== 'undefined') ? '<button type="button" class="btn btn-primary btn-sm" data-svlist="' + esc(dsList(key, title, ids)) + '">' + esc(t(lbl)) + '</button>' : aqGo('الخريطة', 'page|map'); };
-  if (/تحتاج زياره|زياره تقنيه|زياره اخري|زياره تانيه|اعاده زياره|اعاده الزياره/.test(n)){
+  if (aqOn('techvis')){
     var tv = { tech:[], stuck:[], revisit:[] };
     pool.forEach(function(x){ var k = lifeOf(x); if (tv[k]) tv[k].push(x.id); });
     var tvAll = tv.tech.concat(tv.stuck, aqMin ? [] : tv.revisit);
@@ -131,7 +138,7 @@ function aqAnswer(q){
       + (aqMin ? '' : aqRow('أعادها المهندس لزيارة أخرى', nm(tv.revisit.length))),
       aqList('aq|tech', 'نقاط تحتاج زيارة أخرى', tvAll, 'اعرض النقاط'));
   }
-  if (/متاخر|تاخير/.test(n) && /زياره|زيارات|مسح/.test(n)){
+  if (aqOn('latevis')){
     var lv = {}, lvIds = [], lvUn = 0, lvNow = Date.now();
     pool.forEach(function(x){
       var k = lifeOf(x);
@@ -149,7 +156,7 @@ function aqAnswer(q){
       aqList('aq|latevis', 'الزيارات المتأخرة', lvIds, 'اعرض النقاط'));
   }
   /* ٤ · أعدادُ التركيب والمسح */
-  if (/تركيب|اتركب|مركب|ركبنا|اتمسح|مسح|زياره|زيارات|زرنا|اعتماد|معتمد|انجاز|نسبه|كام|كم|عدد|قد ايه|اد ايه/.test(n) && !out && !/الوزاره|تحدي|معوق|اشغال|مهام|متاخر/.test(n)){
+  if (aqOn('progress') && !out){
     var tot = pool.length, inst = pool.filter(function(x){ var i = STATE.inss[x.id]; return i && i.status === 'مُركّب'; }).length;
     var appr = pool.filter(function(x){ var i = STATE.inss[x.id]; return i && i.status === 'مُركّب' && i.approved; }).length;
     var vis = pool.filter(function(x){ return svVisited(STATE.recs[x.id]); }).length, reach = pool.filter(function(x){ var r = STATE.recs[x.id]; return svVisited(r) && r.access === 'تم الوصول'; }).length;
@@ -161,7 +168,7 @@ function aqAnswer(q){
       aqGo('المسح الميداني', 'page|msurv') + ' ' + aqGo('حالة التركيبات', 'page|minst'));
   }
   /* ٦ · (V38.15) المهامُّ الأسبوعية المتأخرة */
-  if (/متاخر|تاخير|تأخير|المهام|مهام|مين متاخر/.test(n) && typeof wtRows === 'function' && !(/زياره|زيارات|مسح/.test(n) && !/مهام/.test(n))){   /* (V47.2) late visits have their own card above */
+  if (aqOn('tasks') && typeof wtRows === 'function'){   /* (V47.2) late visits have their own card above */
     var W = wtRows().filter(function(r){ return r && r.st !== 'مكتمل'; }), late = W.filter(wtLate).sort(function(a, b){ return wtDue(a) - wtDue(b); });
     var byWho = {}; late.forEach(function(r){ var k = r.who || t('بلا مسؤول'); byWho[k] = (byWho[k] || 0) + 1; });
     out += aqCard(t('المهام الأسبوعية'), aqRow('مفتوحة', nm(W.length)) + aqRow('متأخرة', nm(late.length))
@@ -170,7 +177,7 @@ function aqAnswer(q){
       aqGo('المهام الأسبوعية', 'page|mweek'));
   }
   /* ٧ · (V38.15) التحدياتُ والمعوقات من زيارات المسح */
-  if (/تحدي|تحديات|معوق|معوقات|عائق|عوائق|مشاكل|مشكله/.test(n)){
+  if (aqOn('chal')){
     var cc = {}, hasC = 0;
     pool.forEach(function(x){ var r = STATE.recs[x.id]; var L2 = (r && r.chals || []).filter(function(c){ return c && c !== 'لا توجد تحديات'; }); if (L2.length){ hasC++; L2.forEach(function(c){ cc[c] = (cc[c] || 0) + 1; }); } });
     var top = Object.keys(cc).sort(function(a, b){ return cc[b] - cc[a]; }).slice(0, 6);
@@ -178,14 +185,14 @@ function aqAnswer(q){
       + (!top.length ? '<p class="hint" style="margin:0">' + esc(t('لا تحدياتِ مسجّلة في هذا النطاق')) + '</p>' : ''), aqGo('التحديات والمعوقات', 'page|mobs'));
   }
   /* ٨ · (V38.15) اعتمادُ الوزارة */
-  if (/الوزاره|اعتماد الوزاره|مراجعه الوزاره|الوزارة|التفويج/.test(n) && !/تقرير|ملف/.test(n)){   /* (V45.1) QA: counts the tafweej management's decisions, not the retired ministry approval */
+  if (aqOn('taf') && !/تقرير|ملف/.test(n)){   /* (V45.1) QA: counts the tafweej management's decisions, not the retired ministry approval */
     var mp = 0, ma = 0, mr = 0;
     pool.forEach(function(x){ if (!tafInScope(x.id)) return; var dd = tafDecision(x.id); if (dd === 'ok') ma++; else if (dd === 'no') mr++; else mp++; });
     out += aqCard(t('اعتماد إدارة التفويج') + (scopeTxt ? ' \u00b7 ' + scopeTxt : ''), aqRow('بانتظار اعتماد إدارة التفويج', nm(mp)) + aqRow('اعتمدتها إدارة التفويج', nm(ma)) + aqRow('رفضتها إدارة التفويج', nm(mr)),
       aqGo('اعتمادات إدارة التفويج', 'page|mfu'));
   }
   /* ٩ · (V38.15) الإشغالُ الأعلى من آخر جسر */
-  if (/اشغال|زحمه|ازدحام|مليان|ممتلي|ممتلئ|اعلي اشغال/.test(n) && typeof extStatusRows === 'function'){
+  if (aqOn('occ') && typeof extStatusRows === 'function'){
     var R3 = (extStatusRows() || []).filter(function(r){ return r.ov && r.pct != null && (!sc2.zone || r.x.zone === sc2.zone); }).sort(function(a, b){ return b.pct - a.pct; });
     out += aqCard(t('الإشغال') + (scopeTxt ? ' \u00b7 ' + scopeTxt : ''),
       (R3.length ? R3.slice(0, 6).map(function(r){ return aqRow(r.code || r.x.id, nm(r.pct) + '% \u00b7 ' + nm(r.tot) + '/' + nm(r.cap)); }).join('')
@@ -194,7 +201,14 @@ function aqAnswer(q){
       aqGo('المخيمات المركزية', 'page|mcamps|ov'));
   }
   /* ٥ · ما ينقص للجاهزية */
-  if (/ناقص|جاهز|نجهز|معلق|المطلوب|الجاي|اعمل ايه|نعمل ايه/.test(n)){
+  /* (V47.4) the tafweej gates inventory — the same count as the summary card (tardBarStats) */
+  if (aqOn('gates') && typeof tardBarStats === 'function'){
+    var TB = tardBarStats(sc2.zone || undefined);
+    out += aqCard(t('حصر بوابات التفويج') + (sc2.zone ? ' \u00b7 ' + sc2.zone : ' \u00b7 ' + t('كلُّ المشاعر')),
+      aqRow('مخيمات ترددي', nm(TB.conf)) + aqRow('بوابات التفويج', nm(TB.bars)) + aqRow('ترددي بلا عدد بوابات بعد', nm(TB.noCount)),
+      aqGo('متابعة الوزارة', 'page|mfu'));
+  }
+  if (aqOn('ready')){
     var items = [], zeroW = itemsList().filter(function(i){ return i.name && !itPts(i.code); }).length;
     if (zeroW) items.push([t('أصنافٌ بلا وزن نقاط'), nm(zeroW), 'page|install']);
     var B2 = EXT.bridge; if (!B2 || Date.now() - B2.at > 12 * 3600000) items.push([t('جسرُ نظام البطاقات'), B2 ? pilotAgo(B2.at) : t('لم يُشغَّل'), 'page|mcamps']);
@@ -207,5 +221,5 @@ function aqAnswer(q){
     out += aqCard(t('ما ينقص للجاهزية'), items.length ? items.map(function(it){ return '<div class="kk-zl" style="margin:4px 0;align-items:center"><span>' + esc(it[0]) + '</span><span><b class="num">' + esc(String(it[1])) + '</b> <button type="button" class="btn btn-quiet btn-sm" data-aqgo="' + esc(it[2]) + '">\u2190</button></span></div>'; }).join('')
       : '<p style="margin:0">' + esc(t('لا شيءَ معلَّقٌ ممّا يُقاس هنا')) + ' \u2713</p>');
   }
-  return out;
+  return out + goL.map(aqGoCard).join('');   /* (V47.4) a tie with a page: the data first, then where the rest is */
 }
