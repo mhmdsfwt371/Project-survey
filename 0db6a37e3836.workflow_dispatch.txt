@@ -1,0 +1,12 @@
+verdict:  GREEN
+commit:   0db6a37e3836cc8c20c81802894504cef0030e49
+version:  V47.9
+title:    V47.9 — جردُ «أمس» على ساعة مكة: سقطت بوابةُ V47.8 في السحابة ٢١:١٠ UTC لأن الجرد زرع الأيام بساعة الجهاز
+event:    workflow_dispatch  (the full list, then promotion to main)
+on main:  yes — promoted
+when:     2026-11-17T21:40:35.173Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/44181000376
+jobs:     fast=skipped · real=success · shards=success · promote=skipped · chain=success
+passed:   browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     —
+missing:  —
