@@ -42,8 +42,11 @@ T(txt(A('العربيات فين')).indexOf('مُسندة ' + w.nm(1)) > -1 && t
 
 console.log('\n══ ٣ · من عمل أكثر، وأمس ══');
 const ids = S.slice(0, 5).map(x => x.id), keep = ids.map(id => w.STATE.recs[id]), keepI = ids.map(id => w.STATE.inss[id]);
-const yNoon = (() => { const t0 = new Date(); t0.setDate(t0.getDate() - 1); t0.setHours(12, 0, 0, 0); return t0.getTime(); })();
-ids.slice(0, 3).forEach((id, i) => { w.STATE.recs[id] = { by:'سعيد', at:i === 0 ? yNoon : now - 3600e3, access:'تم الوصول', chals:['لا توجد تحديات'] }; });
+/* (V47.9) the app counts days on the Mecca clock (dayKey: UTC+3), so «yesterday at noon» and «earlier today» are built on that clock —
+   on the machine's clock the two disagreed from 21:00 to 24:00 UTC, and the cloud gate fell on V47.8 at 21:10 */
+const yNoon = Date.parse(w.dayKey(now - 864e5) + 'T09:00:00Z');   /* 12:00 in Mecca, yesterday */
+const tEarly = Math.max(Date.parse(w.dayKey(now) + 'T00:01:00+03:00'), now - 3600e3);   /* earlier today, in Mecca */
+ids.slice(0, 3).forEach((id, i) => { w.STATE.recs[id] = { by:'سعيد', at:i === 0 ? yNoon : tEarly, access:'تم الوصول', chals:['لا توجد تحديات'] }; });
 w.STATE.inss[ids[3]] = { by:'خالد', at:yNoon, status:'مُركّب', approved:true };
 bump();
 const pf = txt(A('مين اكتر مشرف شغال الاسبوع ده'));
