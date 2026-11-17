@@ -1,0 +1,12 @@
+verdict:  GREEN
+commit:   4f6ec71c6e52b4b11af1dacaeba4063ee380a453
+version:  V47.7
+title:    V47.7 — عقل النظام يتعلّم من الفريق: المهندس يعلّمه السؤال مرة فيعرفه الجميع
+event:    workflow_dispatch  (the full list, then promotion to main)
+on main:  yes — promoted
+when:     2026-11-17T17:20:42.877Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/44134504241
+jobs:     fast=skipped · real=success · shards=success · promote=skipped · chain=success
+passed:   browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     —
+missing:  —
