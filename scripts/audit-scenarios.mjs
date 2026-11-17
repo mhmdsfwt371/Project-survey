@@ -226,9 +226,11 @@ console.log('\n══ ٩ · مساعد البيانات ══');
   const tk = plain(ans('مين متأخر في المهام؟'));
   T(tk.indexOf('مهمة سيناريو متأخرة') > -1 && tk.indexOf('مهمة سيناريو مكتملة') < 0, 'المهامُّ: المتأخرةُ تظهر والمكتملةُ لا');
   /* التحديات في منى = عدٌّ مستقلّ */
-  { const zc = w.STATE.sites.find(z => z && z.zone === 'منى' && z.type === 'مخيم' && !w.STATE.recs[z.id]); w.STATE.recs[zc.id] = { id:zc.id, access:'تم الوصول', at:Date.now(), by:'فني', chals:['عائق إنشائي'] }; w.statBump(); }   /* تحدٍّ واحدٌ على الأقل — لا يمرّ الفحصُ بصفرٍ على صفر */
-  const chMina = w.STATE.sites.filter(z => z && z.zone === 'منى' && ((w.STATE.recs[z.id] || {}).chals || []).some(c => c && c !== 'لا توجد تحديات')).length;
-  T(has(ans('التحديات في منى'), 'نقاطٌ فيها تحدٍّ', chMina), 'التحدياتُ في منى: ' + chMina + ' كما في الزيارات');
+  { const zc = w.STATE.sites.find(z => z && z.zone === 'منى' && z.type === 'مخيم' && !w.STATE.recs[z.id] && !w.insDone(z.id) && z.fstat !== 'مُركّب');   /* (V47.8) an installed point is no obstacle on the tab */ w.STATE.recs[zc.id] = { id:zc.id, access:'تم الوصول', at:Date.now(), by:'فني', chals:['عائق إنشائي'] }; w.statBump(); }   /* تحدٍّ واحدٌ على الأقل — لا يمرّ الفحصُ بصفرٍ على صفر */
+  /* (V47.8) the obstacles tab's own definition (mtGrpOf: visited, reached, not installed, with a primary reason) — the brain no longer
+     counts «any challenge label» of its own, which gave the tab and the answer two different numbers */
+  const chMina = w.STATE.sites.filter(z => z && z.zone === 'منى' && !z.hidden && !z.deleted && (g => !!g && g !== 'access')(w.mtGrpOf(z.id))).length;
+  T(chMina > 0 && has(ans('التحديات في منى'), 'نقطة عليها تحدي', chMina), 'التحدياتُ في منى: ' + chMina + ' كما في تبويب «التحديات والمعوقات»');
   /* «أعلى إشغال» لا يخلطه بـ«شغّال» */
   const oc = plain(ans('أعلى إشغال'));
   T(/الإشغال/.test(oc) && !/إشارة القرّاء/.test(oc), '«أعلى إشغال» يجيب بالإشغال وحدَه — لا «إشارة القرّاء»');

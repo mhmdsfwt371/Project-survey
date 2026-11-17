@@ -7,10 +7,12 @@
              STATE.recs/inss, presenceRows, mfuCompanies, PV.BK_STATE) — and the page that holds the rest.
              Also: place names read from the registry itself (aqPlace: «نمرة», «الشعيبين») and a link to any
              page or tab whose title the question names (aqTitleLinks).
-   DEFINES : aqAnswer, aqFollow, aqFollowAct, aqListBtn, aqSelBtn, aqSelGo, aqActBtns, aqAns, aqPlace, aqTitleLinks, aqWho, aqTop, aqTeachBox, aqTeachList, aqTeachPut, aqTeachSave, aqTeachDel
+   DEFINES : aqAnswer, aqFollow, aqFollowAct, aqListBtn, aqSelBtn, aqSelGo, aqActBtns, aqAns, aqPlace, aqTitleLinks, aqWho, aqTop, aqTeachBox, aqTeachList, aqTeachPut, aqTeachSave, aqTeachDel,
+             aqLocWords, aqLocOf, aqLocHas, aqLocBreak, aqPct, aqInst, aqChalSet
    GLOBALS : PV.AQ_NAMES, PV.AQ_CTX (the last question, for follow-ups), PV.AQ_POOL, PV.AQ_SELS
    PREFIX  : aq   (every function here starts with it — scripts/audit-names.mjs)
    NOTE    : An answer that has nothing to count says so and links the page — it never invents a number.
+             (V47.8) Every number here comes from the definition its page uses — scripts/audit-brain-truth.mjs.
    ============================================================================ */
 
 /* the assistant's answer: the router's cards, then a link to any page the question names by its title.
@@ -37,10 +39,12 @@ function aqFollow(q){
   if (act) return W.length <= 5 ? { act:act } : null;
   var lead = /^ (و|طب|طيب|بالنسبه|كمان)/.test(n) || W.length <= 3;
   if (!lead) return null;
-  var sc = aqScope(n), pl = !sc.zone ? aqPlace(n) : '';
-  if (!sc.zone && !sc.type && !pl) return null;
+  var sc = aqScope(n), pl = !sc.zone ? aqPlace(n) : '', lo = sc.loc && sc.loc.length ? aqLocOf(n) : null;   /* (V47.8) «طب مدخل نفق» */
+  if (!sc.zone && !sc.type && !pl && !lo) return null;
+  var locW = lo ? (' ' + n + ' ').split(' ').filter(function(w0){ return w0 && lo.strip.indexOf(' ' + w0 + ' ') < 0; }) : [];
   /* a follow-up says nothing but its new place: every other word is a particle — «فين المخيمات المركزية» is a question */
   var rest = W.filter(function(w0){ var b0 = w0.replace(/^و/, ''); if (/^(و|طب|طيب|بالنسبه|كمان|في|فى|عن|ل|لل|بتاع|بتاعه|بتاعت|يا|ب|بس|برضه|نفس|الكلام|السؤال)$/.test(b0) || !b0) return false;
+    if (locW.indexOf(aqNorm(w0)) > -1 || locW.indexOf(aqNorm(b0)) > -1) return false;
     var s0 = aqScope(' ' + b0 + ' '); return !(s0.zone || s0.type || (pl && b0.replace(/^ال/, '') === pl) || (pl && b0 === pl)); });
   if (rest.length) return null;
   var toks = String(C.q).split(/\s+/), mine = String(q).replace(/[؟?]/g, ' ').split(/\s+/).filter(Boolean);
@@ -52,6 +56,14 @@ function aqFollow(q){
   mine.forEach(function(tk){ var k = ' ' + aqNorm(tk.replace(/^و/, '')) + ' ', s2 = aqScope(k), w0 = tk.replace(/^و(?=ال)/, '');
     if (s2.zone) swap('z', w0); else if (s2.type) swap('y', w0); else if (pl && aqNorm(w0).replace(/^ال/, '') === pl) swap('p', w0); });
   var eff = toks.join(' ').replace(/\s+/g, ' ').trim();
+  if (lo){   /* the last question's location gives way to the new one, said as the dashboard says it */
+    var en = ' ' + aqNorm(eff) + ' ', bare = aqLocOf(en), gone = bare.L.length ? en.trim().split(' ').filter(function(w0){ return bare.strip.indexOf(' ' + w0 + ' ') < 0; }) : [];
+    var T0 = eff.split(/\s+/).filter(Boolean), at = -1, kept = [];   /* the new location takes the old one's place: «كم نقطة مدخل نفق في منى» */
+    T0.forEach(function(tk){ if (gone.indexOf(aqNorm(tk)) > -1){ if (at < 0) at = kept.length; } else kept.push(tk); });
+    if (at < 0){ if (/^(في|فى)$/.test(kept[kept.length - 1] || '')) kept.pop(); at = kept.length; }
+    kept.splice(at, 0, lo.labels.join(' أو '));
+    eff = kept.join(' ');
+  }
   return eff && eff !== C.q ? { eff:eff } : null;
 }
 
@@ -88,11 +100,11 @@ function aqActBtns(kind, c){
   var P = c.pool || [], ttl = c.ttl || t('كلُّ المشاعر'), h = '';
   if (kind === 'progress'){
     var todo = P.filter(function(x){ return !svVisited(STATE.recs[x.id]); }).map(function(x){ return x.id; });
-    var ins = P.filter(function(x){ var i = STATE.inss[x.id]; return i && i.status === 'مُركّب'; }).map(function(x){ return x.id; });
+    var ins = P.filter(aqInst).map(function(x){ return x.id; });   /* (V47.8) installed as the summary counts it */
     h = aqListBtn('pall', ttl, P.map(function(x){ return x.id; }), 'كل النقاط') + aqListBtn('ptodo', t('لم تُزَر') + ' · ' + ttl, todo, 'لم تُزَر') + aqListBtn('pins', t('مُركّبة') + ' · ' + ttl, ins, 'مُركّبة') + aqSelBtn('ptodo', todo);
   } else if (kind === 'chal'){
-    var ch = P.filter(function(x){ var r = STATE.recs[x.id]; return (r && r.chals || []).some(function(k){ return k && k !== 'لا توجد تحديات'; }); }).map(function(x){ return x.id; });
-    h = aqListBtn('chal', t('نقاطٌ فيها تحدٍّ') + ' · ' + ttl, ch, 'نقاطٌ فيها تحدٍّ') + aqSelBtn('chal', ch);
+    var ch = aqChalSet(P).ids;   /* (V47.8) the obstacles tab's own count */
+    h = aqListBtn('chal', t('نقطة عليها تحدي') + ' · ' + ttl, ch, 'نقطة عليها تحدي') + aqSelBtn('chal', ch);
   } else if (kind === 'taf' && typeof tafInScope === 'function'){
     var pend = P.filter(function(x){ return tafInScope(x.id) && !tafDecision(x.id); }).map(function(x){ return x.id; });
     h = aqListBtn('taf', t('بانتظار اعتماد إدارة التفويج'), pend, 'بانتظار اعتماد إدارة التفويج');
@@ -116,7 +128,7 @@ function aqPlace(n){
   var S = STATE.sites || [];
   if (!PV.AQ_NAMES || PV.AQ_NAMES.n !== S.length) PV.AQ_NAMES = { n:S.length, v:S.map(function(x){ return ' ' + aqNorm((x && x.name) || '') + ' '; }) };
   var STOP = /^(كام|كم|عدد|ايه|اي|ما|ماهي|مين|اين|فين|امتي|ازاي|كيف|هل|عندنا|فيه|فيها|في|من|علي|الي|اللي|الي|التي|النقاط|النقط|نقطه|نقاط|المواقع|موقع|حاله|عايز|عاوز|اعرف|دلوقتي|النهارده|امبارح|الاسبوع|كل|بتاع|بتاعه|بتاعت|بس|لسه|خلاص|اتعمل|حصل)$/;
-  var toks = String(n).split(' ').filter(function(w){ return w.length >= 4 && !STOP.test(w); });
+  var toks = aqLocOf(' ' + n + ' ').strip.split(' ').filter(function(w){ return w.length >= 4 && !STOP.test(w); });   /* (V47.8) location words are a scope of their own */
   for (var i = 0; i < toks.length; i++){
     var w = toks[i], bare = w.replace(/^ال/, '');
     if (bare.length < 3) continue;
@@ -150,6 +162,110 @@ function aqAns(I, c){
   var go = aqGo('افتح', I.go), A = aqAns[I.id];
   return A ? (A(c, go) || '') : '';
 }
+
+/* ── (V47.8) accuracy: the brain counts with the pages' own definitions ──────────────────────────────────────
+   The owner's report (17 Nov 2026, three screenshots): «كم نقطة تحت كبرى» got the progress of all 2,028 points —
+   the location words were dropped without a word — and «(100%)» stood beside «لم تزر ٢». The cards also counted by
+   rules of their own («وُصل إليها» by the access field alone, installed without the registry's mark, a challenge by
+   any label) where each page has one definition. Now a location is a scope like an area (aqLocOf → obsLocTags over
+   mtSites — the «حسب الموقع» dashboard itself), the progress card counts with svVisited/svDone/svStuck/svApproved and
+   the summary's installed rule, the challenges card is the obstacles tab's own count (mtGrpOf, svPrimWhy), yesterday
+   is dayDone, and a share never reads 100% before the last point nor 0% after the first. Held by audit-brain-truth. */
+
+/* «where the point sits»: the words each option of the location dashboard is asked by — one list for the
+   report-by-words (aqRepParse) and for the scope of every count (aqScope) */
+function aqLocWords(){
+  return [[/(تحت\s*)?(ال)?(كوبري|كبري|كباري)/, 'bridge', 'تحت كوبري'], [/مدخل\s*(ال)?نفق/, 'tin', 'مدخل نفق'], [/مخرج\s*(ال)?نفق/, 'tout', 'مخرج نفق'],
+          [/(لوحه|لوحات)\s*(ال)?(استرشاد|ارشاد)[^\s]*/, 'sign', 'لوحة استرشادية'],
+          [/(بدون|بلا|من غير)\s*(ال)?(اطار|هيكل)[^\s]*(\s*معدني)?(\s*(لل|ل)?تثبيت)?/, 'nomount', 'بدون إطار معدني للتثبيت'],
+          [/(علي|فوق)\s*(ال)?(مظله|مظلات)/, 'canopy', 'على مظلة']];
+}
+
+/* the options a normalized question names: { L, keys, labels, strip: the question without their words } */
+function aqLocOf(n){
+  var L = aqLocWords().filter(function(m){ return m[0].test(n); });
+  /* (V47.3) a bare «نفق» is any tunnel — only an entry or an exit already named makes it redundant */
+  if (!L.some(function(m){ return m[1] === 'tin' || m[1] === 'tout'; }) && /(^|\s)(ال)?(نفق|انفاق)(\s|$)/.test(n)) L.push([/(ال)?(نفق|انفاق)/, 'tany', 'نفق']);
+  var strip = ' ' + n + ' ';
+  L.forEach(function(m){ strip = strip.replace(new RegExp('[^\\s]*(' + m[0].source + ')[^\\s]*', 'g'), ' '); });
+  return { L:L, keys:L.map(function(m){ return m[1]; }), labels:L.map(function(m){ return m[2]; }), strip:strip.replace(/\s+/g, ' ') };
+}
+
+/* does point x sit where the keys say — the dashboard's own tags, never a second reading */
+function aqLocHas(x, keys){
+  var tg = typeof obsLocTags === 'function' ? obsLocTags(x) : null; if (!tg) return false;
+  return keys.some(function(k){ return k === 'tany' ? !!(tg.tin || tg.tout || tg.tgen) : !!tg[k]; });
+}
+
+/* the pool by area and kind, as the location dashboard draws it: «منى — ممرات ١٣ · الجمرات ٢» */
+function aqLocBreak(P){
+  var G = typeof obsLocGroups === 'function' ? obsLocGroups() : [], Z = {};
+  P.forEach(function(x){ var z = taxOf(x).g || x.zone || '—', g = typeof obsLocGrp === 'function' ? obsLocGrp(x) : 'o', o = Z[z] = Z[z] || {}; o[g] = (o[g] || 0) + 1; });
+  var TG = typeof TAX_G !== 'undefined' ? TAX_G : [], order = TG.filter(function(z){ return Z[z]; }).concat(Object.keys(Z).filter(function(z){ return TG.indexOf(z) < 0; }));
+  return order.map(function(z){ return aqRow(z, G.filter(function(g){ return Z[z][g[0]]; }).map(function(g){ return esc(t(g[2])) + ' ' + nm(Z[z][g[0]]); }).join(' · ')); }).join('');
+}
+
+/* a share, honest at both ends: 2,026 of 2,028 is 99.9% — never 100% while a point is left — and 1 of 2,028 is under 0.1%, never 0%.
+   raw: plain digits, for a table that also goes to Excel */
+function aqPct(a, b, raw){
+  if (!b) return '—';
+  var p = a / b * 100, r = Math.round(p), f0 = raw ? String : nm;
+  if ((r === 100 && a < b) || (r === 0 && a > 0)){ var f = Math.floor(p * 10) / 10; return f > 0 ? f0(f) + '%' : '<' + f0(0.1) + '%'; }
+  return f0(r) + '%';
+}
+
+/* installed, as the summary counts it (siteStats · siteKeyStats): the installation record, or the registry's own mark */
+function aqInst(x){ var st = (STATE.inss[x.id] || {}).status; return st === 'مُركّب' || x.fstat === 'مُركّب'; }
+
+/* the obstacles tab's own count (mtObs): a point with a challenge is visited, reached, not installed and has a primary
+   reason (mtGrpOf) — each point once, by its most important challenge (svPrimWhy) */
+function aqChalSet(P){
+  var o = { vis:0, n:0, ids:[], gc:{}, wc:{} };
+  P.forEach(function(x){
+    if (!x || x.hidden || x.deleted) return;
+    var r = STATE.recs[x.id]; if (r && svVisited(r)) o.vis++;
+    var g = typeof mtGrpOf === 'function' ? mtGrpOf(x.id) : ''; if (!g) return;
+    o.gc[g] = (o.gc[g] || 0) + 1;
+    if (g !== 'access'){ o.n++; o.ids.push(x.id); var pw = typeof svPrimWhy === 'function' ? svPrimWhy(r) : -1; if (pw > -1) o.wc[pw] = (o.wc[pw] || 0) + 1; }   /* the office part brings it */
+  });
+  return o;
+}
+
+/* the progress of the pool — the survey screen's split and the summary's installed rule */
+aqAns.progress = function(c){
+  var P = c.pool || [], N = P.length, rec = function(x){ return STATE.recs[x.id]; }, cnt = function(f){ return P.filter(f).length; };
+  var vis = cnt(function(x){ return svVisited(rec(x)); }), done = cnt(function(x){ return svDone(rec(x)); }), stuck = cnt(function(x){ return svStuck(rec(x)); });
+  var rev = cnt(function(x){ var r = rec(x); return svReached(r) && r.review === 'revisit'; });
+  var svA = typeof svApproved === 'function' ? cnt(function(x){ return svApproved(rec(x)); }) : -1;   /* the office part brings it — until then «—», never a guess */
+  var ins = cnt(aqInst), insA = cnt(function(x){ var i = STATE.inss[x.id]; return !!(i && i.approved); });
+  var min = typeof ROLE !== 'undefined' && ROLE === 'viewer', loc = !!(c.sc && c.sc.loc && c.sc.loc.length), svAt = svA < 0 ? '\u2014' : nm(svA);
+  /* a location is recorded on a visit, so its points are all visited: the count, where they are, and how far installation got */
+  var body = loc
+    ? aqRow('النقاط', nm(N)) + (stuck ? aqRow('تحتاج زيارة أخرى', nm(stuck)) : '') + (rev && !min ? aqRow('أعادها المهندس', nm(rev)) : '')
+      + aqRow('مسحٌ معتمد', svAt) + aqRow('مُركّبة', nm(ins) + ' (' + aqPct(ins, N) + ')') + aqRow('تركيبٌ معتمد', nm(insA))
+      + (N ? '<div class="pid" style="margin:8px 0 4px">' + esc(t('حسب الموقع — في كل منطقة')) + '</div>' + aqLocBreak(P)
+           : '<p class="hint" style="margin:6px 0 0">' + esc(t('لا نقاطَ تنطبق عليها الشروط')) + '</p>')
+      + '<p class="hint" style="margin:4px 0 0">' + esc(t('موقع النقطة من زيارة المسح، بأرقام «حسب الموقع» نفسها')) + '</p>'
+    : aqRow('النقاط', nm(N)) + aqRow('تمت الزيارة', nm(vis) + ' (' + aqPct(vis, N) + ')')
+      + (min ? '' : aqRow('تم الوصول', nm(done))) + aqRow('تحتاج زيارة أخرى', nm(stuck)) + (min ? '' : aqRow('أعادها المهندس', nm(rev)))
+      + aqRow('مسحٌ معتمد', svAt) + aqRow('مُركّبة', nm(ins) + ' (' + aqPct(ins, N) + ')') + aqRow('تركيبٌ معتمد', nm(insA));
+  return aqCard(t('التقدّم') + ' \u00b7 ' + (c.ttl || t('كلُّ المشاعر')), body,
+    aqGo('المسح الميداني', 'page|msurv') + ' ' + aqGo('حالة التركيبات', 'page|minst')
+    + (loc && typeof seesPage === 'function' && seesPage('mobs') ? ' ' + aqGo('لوحة حسب الموقع', 'page|mobs') : '') + aqActBtns('progress', c));
+};
+
+/* the challenges of the pool — the obstacles tab's own headline, groups and reasons */
+aqAns.chal = function(c){
+  var o = aqChalSet(c.pool || []), G = (PV.MT_GRP || []).filter(function(g){ return o.gc[g.k]; });
+  var why = Object.keys(o.wc).map(Number).sort(function(a, b){ return o.wc[b] - o.wc[a]; }).slice(0, 6), ttl = c.ttl || t('كلُّ المشاعر');
+  return aqCard(t('التحديات والمعوقات') + ' · ' + ttl,
+    aqRow('نقطة عليها تحدي', nm(o.n) + ' (' + aqPct(o.n, o.vis) + ' ' + esc(t('من')) + ' ' + nm(o.vis) + ' ' + esc(t('اتزارت')) + ')')
+    + (G.length ? '<div class="pid" style="margin:8px 0 4px">' + esc(t('مين يعالجها؟')) + '</div>' + G.map(function(g){ return aqRow(g.n, nm(o.gc[g.k])); }).join('') : '')
+    + (why.length ? '<div class="pid" style="margin:8px 0 4px">' + esc(t('التحدي')) + '</div>' + why.map(function(wi){ return aqRow(PV.SV_WHY[wi].n, nm(o.wc[wi])); }).join('')
+      + '<p class="hint" style="margin:4px 0 0">' + esc(t('كلُّ نقطةٍ محسوبةٌ مرةً بأهمِّ تحدٍّ فيها')) + '</p>' : '')
+    + (!o.n && !G.length ? '<p class="hint" style="margin:0">' + esc(t('لا تحدياتِ مسجّلة في هذا النطاق')) + '</p>' : ''),
+    aqGo('التحديات والمعوقات', 'page|mobs') + aqListBtn('chal', t('نقطة عليها تحدي') + ' · ' + ttl, o.ids, 'نقطة عليها تحدي') + aqSelBtn('chal', o.ids));
+};
 
 aqAns.sensor = function(c, go){
   var R = typeof iotDashHtml === 'function' && iotDashHtml.rows ? iotDashHtml.rows() : null;
@@ -209,13 +325,16 @@ aqAns.perf = function(c, go){
 };
 
 aqAns.yday = function(c, go){
-  var today = /النهارده|اليوم/.test(c.n) && !/امبارح|امس/.test(c.n), d = new Date(); if (!today) d.setDate(d.getDate() - 1);
-  var day = dayKey(d.getTime()), sv = 0, ins = 0, appr = 0, by = {};
-  Object.keys(STATE.recs || {}).forEach(function(id){ var r = STATE.recs[id]; if (r && !r.deleted && r.at && dayKey(+r.at) === day && svVisited(r)){ sv++; var w = aqWho(r.by); if (w) by[w] = (by[w] || 0) + 1; } });
-  Object.keys(STATE.inss || {}).forEach(function(id){ var i = STATE.inss[id]; if (i && !i.deleted && i.at && dayKey(+i.at) === day && i.status === 'مُركّب'){ ins++; var w = aqWho(i.by); if (w) by[w] = (by[w] || 0) + 1; if (i.approved) appr++; } });
+  /* (V47.8) the totals are the «أمس · الآن · غدًا» page's own (dayDone: the day's snapshot, else the records it counts) */
+  var today = /النهارده|اليوم/.test(c.n) && !/امبارح|امس/.test(c.n), day = dayKey(today ? Date.now() : Date.now() - 864e5);
+  var sv = 0, ins = 0, appr = 0, by = {};
+  Object.keys(STATE.recs || {}).forEach(function(id){ var r = STATE.recs[id]; if (r && dayKey(r.at || r._at) === day && svVisited(r) && siteFind(id)){ sv++; var w = aqWho(r.by); if (w) by[w] = (by[w] || 0) + 1; } });
+  Object.keys(STATE.inss || {}).forEach(function(id){ var i = STATE.inss[id]; if (i && dayKey(i.at || i._at) === day && i.status === 'مُركّب'){ ins++; var w = aqWho(i.by); if (w) by[w] = (by[w] || 0) + 1; if (i.approved) appr++; } });
+  var D = typeof dayDone === 'function' ? dayDone(day) : { sv:sv, ins:ins, dis:0 };
   return aqCard(t(today ? 'اليوم' : 'أمس') + ' · ' + day,
-    aqRow('زيارات المسح', nm(sv)) + aqRow('تركيبات', nm(ins)) + aqRow('منها معتمدة', nm(appr))
-    + (Object.keys(by).length ? '<div class="pid" style="margin:8px 0 4px">' + esc(t('من عمل')) + '</div>' + aqTop(by, 4) : ''), go);
+    aqRow('زيارات المسح', nm(D.sv)) + aqRow('تركيبات', nm(D.ins)) + aqRow('منها معتمدة', nm(appr)) + (D.dis ? aqRow('فك', nm(D.dis)) : '')
+    + (Object.keys(by).length ? '<div class="pid" style="margin:8px 0 4px">' + esc(t('من عمل')) + '</div>' + aqTop(by, 4)
+      + (D.sv !== sv || D.ins !== ins ? '<p class="hint" style="margin:4px 0 0">' + esc(t('الأسماء من السجلات كما هي الآن')) + '</p>' : '') : ''), go);
 };
 
 aqAns.expo = function(c, go){

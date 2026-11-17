@@ -49,7 +49,8 @@ function aqScope(n){
   var zs = {}; (STATE.sites || []).forEach(function(x){ if (x && x.zone) zs[x.zone] = 1; });
   var zone = Object.keys(zs).filter(function(z){ var k = aqNorm(z).replace(/^ال/, ''); return k.length > 2 && n.indexOf(k) > -1; })[0] || '';
   var ty = aqTypes().filter(function(p){ return p[1].test(n); })[0];
-  return { zone:zone, type:ty ? ty[0] : '' };
+  var lo = typeof aqLocOf === 'function' ? aqLocOf(n) : { keys:[], labels:[] };   /* (V47.8) «تحت كوبري» is a scope like «منى» — it was dropped */
+  return { zone:zone, type:ty ? ty[0] : '', loc:lo.keys, locL:lo.labels };
 }
 
 function aqGo(lbl, target){ return '<button type="button" class="btn btn-primary btn-sm" data-aqgo="' + esc(target) + '">' + esc(t(lbl)) + ' \u2190</button>'; }
@@ -93,8 +94,9 @@ function aqAnswerBase(q){   /* (V47.5) wrapped by aqAnswer (02-definitions-10): 
   }
   var sc2 = aqScope(n); sc2.place = (!sc2.zone && typeof aqPlace === 'function') ? aqPlace(' ' + n + ' ') : '';   /* (V47.6) with a kind too: «ممرات نمرة» */   /* (V47.5) «نمرة»: a place named in the registry */
   var plTxt = sc2.place ? (String(q).split(/\s+/).filter(function(w){ return aqNorm(w).replace(/^ال/, '') === sc2.place; })[0] || sc2.place) : '';   /* shown as the question wrote it */
-  var scopeTxt = [sc2.zone, sc2.type, plTxt].filter(Boolean).join(' \u00b7 ');
-  var pool = (STATE.sites || []).filter(function(x){ return x && (!sc2.zone || x.zone === sc2.zone) && (!sc2.type || x.type === sc2.type) && (!sc2.place || aqNorm(x.name || '').indexOf(sc2.place) > -1); });
+  var LQ = sc2.loc && sc2.loc.length ? sc2.loc : null;   /* (V47.8) a location counts over the dashboard's own points and tags */
+  var scopeTxt = [LQ ? sc2.locL.join(' ' + t('أو') + ' ') : '', sc2.zone, sc2.type, plTxt].filter(Boolean).join(' \u00b7 ');
+  var pool = (LQ && typeof mtSites === 'function' ? mtSites() : (STATE.sites || [])).filter(function(x){ return x && (!sc2.zone || x.zone === sc2.zone) && (!sc2.type || x.type === sc2.type) && (!sc2.place || aqNorm(x.name || '').indexOf(sc2.place) > -1) && (!LQ || aqLocHas(x, LQ)); });
   var AQC = { q:q, n:' ' + n + ' ', sc:sc2, pool:pool, ttl:scopeTxt }; PV.AQ_POOL = pool;   /* (V47.6) the scope a follow-up («صدّرهم») acts on */
   /* (V47.4) the router decides which section answers — the first known word no longer wins (aqRoute) */
   var RT = aqRoute(q);
@@ -159,17 +161,7 @@ function aqAnswerBase(q){   /* (V47.5) wrapped by aqAnswer (02-definitions-10): 
       aqList('aq|latevis', 'الزيارات المتأخرة', lvIds, 'اعرض النقاط'));
   }
   /* ٤ · أعدادُ التركيب والمسح */
-  if (aqOn('progress') && !out){
-    var tot = pool.length, inst = pool.filter(function(x){ var i = STATE.inss[x.id]; return i && i.status === 'مُركّب'; }).length;
-    var appr = pool.filter(function(x){ var i = STATE.inss[x.id]; return i && i.status === 'مُركّب' && i.approved; }).length;
-    var vis = pool.filter(function(x){ return svVisited(STATE.recs[x.id]); }).length, reach = pool.filter(function(x){ var r = STATE.recs[x.id]; return svVisited(r) && r.access === 'تم الوصول'; }).length;
-    var svA = pool.filter(function(x){ var r = STATE.recs[x.id]; return r && r.review === 'approved'; }).length;
-    var pc = function(a){ return tot ? Math.round(a / tot * 100) + '%' : '\u2014'; };
-    out += aqCard(t('التقدّم') + (scopeTxt ? ' \u00b7 ' + scopeTxt : ' \u00b7 ' + t('كلُّ المشاعر')),
-      aqRow('النقاط', nm(tot)) + aqRow('زيارات المسح', nm(vis) + ' (' + pc(vis) + ')') + aqRow('وُصل إليها', nm(reach)) + aqRow('مسحٌ معتمد', nm(svA))
-      + aqRow('مُركّبة', nm(inst) + ' (' + pc(inst) + ')') + aqRow('تركيبٌ معتمد', nm(appr)),
-      aqGo('المسح الميداني', 'page|msurv') + ' ' + aqGo('حالة التركيبات', 'page|minst') + aqActBtns('progress', AQC));   /* (V47.6) act from the answer */
-  }
+  if (aqOn('progress') && !out) out += aqAns.progress(AQC);   /* (V47.8) the survey screen's split and the summary's installed rule — 02-definitions-10 */
   /* ٦ · (V38.15) المهامُّ الأسبوعية المتأخرة */
   if (aqOn('tasks') && typeof wtRows === 'function'){   /* (V47.2) late visits have their own card above */
     var W = wtRows().filter(function(r){ return r && r.st !== 'مكتمل'; }), late = W.filter(wtLate).sort(function(a, b){ return wtDue(a) - wtDue(b); });
@@ -180,13 +172,7 @@ function aqAnswerBase(q){   /* (V47.5) wrapped by aqAnswer (02-definitions-10): 
       aqGo('المهام الأسبوعية', 'page|mweek'));
   }
   /* ٧ · (V38.15) التحدياتُ والمعوقات من زيارات المسح */
-  if (aqOn('chal')){
-    var cc = {}, hasC = 0;
-    pool.forEach(function(x){ var r = STATE.recs[x.id]; var L2 = (r && r.chals || []).filter(function(c){ return c && c !== 'لا توجد تحديات'; }); if (L2.length){ hasC++; L2.forEach(function(c){ cc[c] = (cc[c] || 0) + 1; }); } });
-    var top = Object.keys(cc).sort(function(a, b){ return cc[b] - cc[a]; }).slice(0, 6);
-    out += aqCard(t('التحديات والمعوقات') + (scopeTxt ? ' \u00b7 ' + scopeTxt : ''), aqRow('نقاطٌ فيها تحدٍّ', nm(hasC)) + top.map(function(c){ return aqRow(c, nm(cc[c])); }).join('')
-      + (!top.length ? '<p class="hint" style="margin:0">' + esc(t('لا تحدياتِ مسجّلة في هذا النطاق')) + '</p>' : ''), aqGo('التحديات والمعوقات', 'page|mobs') + aqActBtns('chal', AQC));
-  }
+  if (aqOn('chal')) out += aqAns.chal(AQC);   /* (V47.8) the obstacles tab's own count — 02-definitions-10 */
   /* ٨ · (V38.15) اعتمادُ الوزارة */
   if (aqOn('taf') && !/تقرير|ملف/.test(n)){   /* (V45.1) QA: counts the tafweej management's decisions, not the retired ministry approval */
     var mp = 0, ma = 0, mr = 0;

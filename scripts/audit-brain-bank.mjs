@@ -78,6 +78,8 @@ const B = [
   ['انتاجية الطواقم', 'perf'], ['مين احسن فريق', 'perf'], ['عملنا ايه امبارح', 'yday'], ['ايه اللي حصل النهارده', 'yday'],
   ['الشحنة بتاعت الهوائيات وصلت؟', 'ship'], ['التوريد اتأخر', 'ship'], ['عربية 4821 مع مين', 'veh'],
   ['كام نقطة في نمرة', 'progress'], ['نسبة الانجاز في عرفات', 'progress'],
+  /* (V47.8) the owner's screenshot: a location is a scope of the count, never dropped — audit-brain-truth holds the numbers */
+  ['كم نقطة تحت كبرى', 'progress'], ['كام لوحة استرشادية', 'progress'], ['عدد النقاط على مظلة', 'progress'], ['كم نقطة في مدخل نفق في منى', 'progress'], ['كام نقطة بدون اطار معدني', 'progress'],
   ['فين سجل المخاطر', 'nav:risks'], ['فين دفتر الحركة', 'nav:invmv'], ['فين المحادثات', 'nav:chat'], ['فين التكلفة', 'nav:fleetCost'],
   ['فين الميزانية والاعتماد', 'nav:budget'], ['شاشة القاعة', 'nav:kiosk'],
   ['شغال؟', 'ask'], ['عندنا كام؟', 'ask'],

@@ -107,19 +107,14 @@ function aqRepParse(q){
   }
   /* (V38.27) «موقع النقطة» — تحت كوبري · مدخل/مخرج نفق · لوحة استرشادية · بدون إطار · على مظلة — من الاختيار الصريح (ومن كلام الزيارات الأقدم) */
   /* (V47.3) «كوبري» alone means the same place as «تحت كوبري» — it was left as an unknown word */
-  var LM = [[/(تحت\s*)?(ال)?(كوبري|كبري|كباري)/, 'bridge', 'تحت كوبري'], [/مدخل\s*(ال)?نفق/, 'tin', 'مدخل نفق'], [/مخرج\s*(ال)?نفق/, 'tout', 'مخرج نفق'],
-            [/(لوحه|لوحات)\s*(ال)?(استرشاد|ارشاد)[^\s]*/, 'sign', 'لوحة استرشادية'], [/(بدون|بلا|من غير)\s*(ال)?(اطار|هيكل)[^\s]*(\s*معدني)?(\s*(لل|ل)?تثبيت)?/, 'nomount', 'بدون إطار معدني للتثبيت'],
-            [/(علي|فوق)\s*(ال)?(مظله|مظلات)/, 'canopy', 'على مظلة']];
-  var locHit = LM.filter(function(m){ return m[0].test(n); });
-  /* (V47.3) a bare «نفق» counts beside a bridge too («نفق او كوبري») — only an entry/exit already named makes it redundant */
-  if (!locHit.some(function(m){ return m[1] === 'tin' || m[1] === 'tout'; }) && /(^|\s)(ال)?(نفق|انفاق)(\s|$)/.test(n)) locHit.push([/(ال)?(نفق|انفاق)/, 'tany', 'نفق']);
+  /* (V47.8) the words come from one list (aqLocWords) — the scope of every count reads the same one */
+  var locHit = aqLocOf(n).L;
   /* «فيها تركيب نفق» names where the point sits, not the installation state */
   if (locHit.length) use(/تركيب(?=\s+((في|عند|علي|تحت)\s+)?(ال)?(نفق|انفاق|كوبري|كبري|كباري|مدخل|مخرج))/);
   if (locHit.length && typeof obsLocTags === 'function'){
     locHit.forEach(function(m){ use(new RegExp('[^\\s]*(' + m[0].source + ')[^\\s]*')); });
     var lk = locHit.map(function(m){ return m[1]; });
-    add('loc', locHit.map(function(m){ return m[2]; }).join(' أو '), function(x){ var tg = obsLocTags(x); if (!tg) return false;
-      return lk.some(function(k){ return k === 'tany' ? !!(tg.tin || tg.tout || tg.tgen) : !!tg[k]; }); });
+    add('loc', locHit.map(function(m){ return m[2]; }).join(' أو '), function(x){ return aqLocHas(x, lk); });
   }
   /* التحديات: تحدٍّ بعينه أو أيُّ تحدٍّ */
   var labels = [], seenL = {};
@@ -169,8 +164,7 @@ function aqRepGroup(D){
   });
   var L = Object.keys(G).map(function(k){ return G[k]; }).sort(function(a, b){ return b.n - a.n; });
   var T0 = L.reduce(function(a, o){ a.n += o.n; a.sv += o.sv; a.ins += o.ins; a.lnk += o.lnk; a.on += o.on; return a; }, { k:t('الإجمالي'), n:0, sv:0, ins:0, lnk:0, on:0 });
-  var pc = function(a, b){ return b ? Math.round(a / b * 100) : 0; };
-  var row = function(o){ return [o.k, o.n, o.sv, pc(o.sv, o.n) + '%', o.ins, pc(o.ins, o.n) + '%', o.lnk, o.on]; };
+  var row = function(o){ return [o.k, o.n, o.sv, aqPct(o.sv, o.n, 1), o.ins, aqPct(o.ins, o.n, 1), o.lnk, o.on]; };   /* (V47.8) never 100% before the last point — plain digits, it goes to Excel too */
   return { label:g.label, cols:[g.label, 'النقاط', 'زيرت', 'نسبة الزيارة', 'مُركّبة', 'نسبة التركيب', 'مربوطة', 'ترسل'], rows:L.map(row), total:row(T0) };
 }
 
