@@ -1,0 +1,12 @@
+verdict:  GREEN
+commit:   f083b36e01b8ab613e32b889fb8b7c05a8624b7f
+version:  V47.5
+title:    V47.5 — عقلُ النظام يجيب بالأرقام: الحساسات والشحنات والسيارات والوتيرة والأداء وأمس، والأماكنُ من السجلّ، وكلُّ صفحةٍ تُبلَغ باسمها
+event:    push  (the push gate: fast layer + real browser + rules + full list)
+on main:  no
+when:     2026-11-17T16:16:16.292Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/44122439498
+jobs:     fast=success · real=success · shards=success · promote=success · chain=skipped
+passed:   fast browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     —
+missing:  —
