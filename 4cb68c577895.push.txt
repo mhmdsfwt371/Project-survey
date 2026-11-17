@@ -1,0 +1,12 @@
+verdict:  GREEN
+commit:   4cb68c57789536bec4fea591b029ce2c5188c3a0
+version:  V47.4
+title:    V47.4 — عقلُ النظام يقرّر قبل أن يجيب: موجِّهٌ بالكلمات القوية والضعيفة، و«تقصد ايه؟» بدل البطاقة الخاطئة
+event:    push  (the push gate: fast layer + real browser + rules + full list)
+on main:  no
+when:     2026-11-17T15:18:22.859Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/44111445370
+jobs:     fast=success · real=success · shards=success · promote=success · chain=skipped
+passed:   fast browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     —
+missing:  —
