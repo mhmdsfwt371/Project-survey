@@ -52,7 +52,7 @@ function aqIntentCount(I, n){
   var c = (n.match(new RegExp(I.s.source, 'g')) || []).length;
   if (I.item && /(^|\s)(كام|كم|عدد)(\s|$)|عندنا|متاح|فاضل|رصيد|باقي/.test(n)){   /* a catalog word alone («شاشة القاعة») is not a stock question — only with a quantity */
     /* an item named in the question is as strong as «رصيد»: «كام راوتر عندنا» */
-    (typeof itemsList === 'function' ? itemsList() : []).forEach(function(it){ var k = aqNorm(it.name || ''); if (k.split(/\s+/).some(function(w){ if (w.length < 4 || n.indexOf(' ' + w) < 0) return false; var sw = aqScope(' ' + w + ' '); return !sw.zone && !sw.type && !/^(ال)?(كاميرا|قارئ|منظومه)$/.test(w); })) c++; });   /* catalog names, not only items that moved — a word that is also a holy site or a point kind does not count («بوابة مخيم» is not «مخيم») */
+    (typeof itemsList === 'function' ? itemsList() : []).forEach(function(it){ var k = aqNorm(it.name || ''); if (k.split(/\s+/).some(function(w){ if (w.length < 4 || n.indexOf(' ' + w) < 0 || PV.AQ_INTENTS.some(function(J){ return J.id !== 'stock' && J.s.test(' ' + w + ' '); })) return false;   /* «حساس» is the sensors' word before it is an item's */ var sw = aqScope(' ' + w + ' '); return !sw.zone && !sw.type && !/^(ال)?(كاميرا|قارئ|منظومه)$/.test(w); })) c++; });   /* catalog names, not only items that moved — a word that is also a holy site or a point kind does not count («بوابة مخيم» is not «مخيم») */
   }
   return c;
 }
@@ -61,7 +61,7 @@ function aqIntentCount(I, n){
    sections of aqAnswer to read, and on PV.AQ_LAST for the question-bank audit. */
 function aqRoute(q){
   var n = ' ' + aqNorm(q) + ' ', S = [], weakOnly = [], sc = aqScope(n);
-  if (!sc.zone && !sc.type && typeof aqPlace === 'function') sc.type = aqPlace(n);   /* (V47.5) a place named in the registry is a scope too */
+  if (!sc.zone && !sc.type && typeof aqPlace === 'function') sc.type = aqPlace(n);   /* any scope makes a count a progress question */   /* (V47.5) a place named in the registry is a scope too */
   PV.AQ_INTENTS.forEach(function(I){
     if (I.go && typeof seesPage === 'function' && !seesPage(I.go.split('|')[1])) return;   /* never offer a page the role cannot open */
     var s = aqIntentCount(I, n), w = I.w ? (n.match(new RegExp(I.w.source, 'g')) || []).length : 0;

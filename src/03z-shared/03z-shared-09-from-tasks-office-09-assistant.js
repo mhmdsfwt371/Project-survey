@@ -91,11 +91,11 @@ function aqAnswerBase(q){   /* (V47.5) wrapped by aqAnswer (02-definitions-10): 
     var RTp = aqRoute(q), goP = PV.AQ_INTENTS.filter(function(I){ return I.go && RTp.list.indexOf(I.id) > -1; });
     if (L.length) return L.slice(0, 3).map(aqPoint).join('') + (L.length > 3 ? '<p class="hint">' + esc(t('والباقي')) + ' ' + nm(L.length - 3) + '</p>' : '') + goP.map(function(I){ return aqGoCard(I); }).join('');
   }
-  var sc2 = aqScope(n); sc2.place = (!sc2.zone && !sc2.type && typeof aqPlace === 'function') ? aqPlace(' ' + n + ' ') : '';   /* (V47.5) «نمرة»: a place named in the registry */
+  var sc2 = aqScope(n); sc2.place = (!sc2.zone && typeof aqPlace === 'function') ? aqPlace(' ' + n + ' ') : '';   /* (V47.6) with a kind too: «ممرات نمرة» */   /* (V47.5) «نمرة»: a place named in the registry */
   var plTxt = sc2.place ? (String(q).split(/\s+/).filter(function(w){ return aqNorm(w).replace(/^ال/, '') === sc2.place; })[0] || sc2.place) : '';   /* shown as the question wrote it */
   var scopeTxt = [sc2.zone, sc2.type, plTxt].filter(Boolean).join(' \u00b7 ');
   var pool = (STATE.sites || []).filter(function(x){ return x && (!sc2.zone || x.zone === sc2.zone) && (!sc2.type || x.type === sc2.type) && (!sc2.place || aqNorm(x.name || '').indexOf(sc2.place) > -1); });
-  var AQC = { q:q, n:' ' + n + ' ', sc:sc2, pool:pool };
+  var AQC = { q:q, n:' ' + n + ' ', sc:sc2, pool:pool, ttl:scopeTxt }; PV.AQ_POOL = pool;   /* (V47.6) the scope a follow-up («صدّرهم») acts on */
   /* (V47.4) the router decides which section answers — the first known word no longer wins (aqRoute) */
   var RT = aqRoute(q);
   if (!RT.list.length) return RT.win === 'ask' ? aqAskCard(RT.ask) : '';
@@ -168,7 +168,7 @@ function aqAnswerBase(q){   /* (V47.5) wrapped by aqAnswer (02-definitions-10): 
     out += aqCard(t('التقدّم') + (scopeTxt ? ' \u00b7 ' + scopeTxt : ' \u00b7 ' + t('كلُّ المشاعر')),
       aqRow('النقاط', nm(tot)) + aqRow('زيارات المسح', nm(vis) + ' (' + pc(vis) + ')') + aqRow('وُصل إليها', nm(reach)) + aqRow('مسحٌ معتمد', nm(svA))
       + aqRow('مُركّبة', nm(inst) + ' (' + pc(inst) + ')') + aqRow('تركيبٌ معتمد', nm(appr)),
-      aqGo('المسح الميداني', 'page|msurv') + ' ' + aqGo('حالة التركيبات', 'page|minst'));
+      aqGo('المسح الميداني', 'page|msurv') + ' ' + aqGo('حالة التركيبات', 'page|minst') + aqActBtns('progress', AQC));   /* (V47.6) act from the answer */
   }
   /* ٦ · (V38.15) المهامُّ الأسبوعية المتأخرة */
   if (aqOn('tasks') && typeof wtRows === 'function'){   /* (V47.2) late visits have their own card above */
@@ -185,14 +185,14 @@ function aqAnswerBase(q){   /* (V47.5) wrapped by aqAnswer (02-definitions-10): 
     pool.forEach(function(x){ var r = STATE.recs[x.id]; var L2 = (r && r.chals || []).filter(function(c){ return c && c !== 'لا توجد تحديات'; }); if (L2.length){ hasC++; L2.forEach(function(c){ cc[c] = (cc[c] || 0) + 1; }); } });
     var top = Object.keys(cc).sort(function(a, b){ return cc[b] - cc[a]; }).slice(0, 6);
     out += aqCard(t('التحديات والمعوقات') + (scopeTxt ? ' \u00b7 ' + scopeTxt : ''), aqRow('نقاطٌ فيها تحدٍّ', nm(hasC)) + top.map(function(c){ return aqRow(c, nm(cc[c])); }).join('')
-      + (!top.length ? '<p class="hint" style="margin:0">' + esc(t('لا تحدياتِ مسجّلة في هذا النطاق')) + '</p>' : ''), aqGo('التحديات والمعوقات', 'page|mobs'));
+      + (!top.length ? '<p class="hint" style="margin:0">' + esc(t('لا تحدياتِ مسجّلة في هذا النطاق')) + '</p>' : ''), aqGo('التحديات والمعوقات', 'page|mobs') + aqActBtns('chal', AQC));
   }
   /* ٨ · (V38.15) اعتمادُ الوزارة */
   if (aqOn('taf') && !/تقرير|ملف/.test(n)){   /* (V45.1) QA: counts the tafweej management's decisions, not the retired ministry approval */
     var mp = 0, ma = 0, mr = 0;
     pool.forEach(function(x){ if (!tafInScope(x.id)) return; var dd = tafDecision(x.id); if (dd === 'ok') ma++; else if (dd === 'no') mr++; else mp++; });
     out += aqCard(t('اعتماد إدارة التفويج') + (scopeTxt ? ' \u00b7 ' + scopeTxt : ''), aqRow('بانتظار اعتماد إدارة التفويج', nm(mp)) + aqRow('اعتمدتها إدارة التفويج', nm(ma)) + aqRow('رفضتها إدارة التفويج', nm(mr)),
-      aqGo('اعتمادات إدارة التفويج', 'page|mfu'));
+      aqGo('اعتمادات إدارة التفويج', 'page|mfu') + aqActBtns('taf', AQC));
   }
   /* ٩ · (V38.15) الإشغالُ الأعلى من آخر جسر */
   if (aqOn('occ') && typeof extStatusRows === 'function'){

@@ -27,6 +27,7 @@ await wait(1500);
 
 /* what the brain did with a question */
 const ran = q => {
+  w.PV.AQ_CTX = null;   /* each bank question stands alone — follow-ups are audit-brain-talk's */
   w.PV.AQ_R = null;
   const h = w.aqAnswer(q) || '';
   const R = w.PV.AQ_R;

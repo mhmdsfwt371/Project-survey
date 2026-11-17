@@ -7,16 +7,97 @@
              STATE.recs/inss, presenceRows, mfuCompanies, PV.BK_STATE) — and the page that holds the rest.
              Also: place names read from the registry itself (aqPlace: «نمرة», «الشعيبين») and a link to any
              page or tab whose title the question names (aqTitleLinks).
-   DEFINES : aqAnswer, aqAns, aqPlace, aqTitleLinks, aqWho, aqTop
-   GLOBALS : PV.AQ_NAMES
+   DEFINES : aqAnswer, aqFollow, aqFollowAct, aqListBtn, aqSelBtn, aqSelGo, aqActBtns, aqAns, aqPlace, aqTitleLinks, aqWho, aqTop
+   GLOBALS : PV.AQ_NAMES, PV.AQ_CTX (the last question, for follow-ups), PV.AQ_POOL, PV.AQ_SELS
    PREFIX  : aq   (every function here starts with it — scripts/audit-names.mjs)
    NOTE    : An answer that has nothing to count says so and links the page — it never invents a number.
    ============================================================================ */
 
-/* the assistant's answer: the router's cards, then a link to any page the question names by its title */
+/* the assistant's answer: the router's cards, then a link to any page the question names by its title.
+   (V47.6) A short follow-up («وفي عرفات؟», «والممرات», «طب نمرة», «صدّرهم») continues the last question. */
 function aqAnswer(q){
-  var h = aqAnswerBase(q);
-  return h ? h + aqTitleLinks(' ' + aqNorm(q) + ' ', h) : '';
+  var F = aqFollow(q);
+  if (F && F.act) return aqFollowAct(F);
+  var qq = F ? F.eff : q, h = aqAnswerBase(qq);
+  if (!h) return '';
+  var n = ' ' + aqNorm(qq) + ' ', sc = aqScope(n);
+  if (!sc.zone) sc.place = aqPlace(n);
+  PV.AQ_CTX = { q:qq, sc:sc, ids:(PV.AQ_POOL || []).map(function(x){ return x.id; }), ttl:qq, at:Date.now() };
+  return (F ? '<p class="hint" style="margin:0 0 8px">↪ ' + esc(t('فهمت')) + ': <bdi>' + esc(qq) + '</bdi></p>' : '') + h + aqTitleLinks(n, h);
+}
+
+/* Is this question a follow-up of the last one? Only when it has no question of its own (the router finds no
+   intent), the last answer is recent, and it brings a new scope or an action. Returns { eff } — the last question
+   with its place swapped — or { act } — what to do with the last answer's points — or null. */
+function aqFollow(q){
+  var C = PV.AQ_CTX; if (!C || Date.now() - C.at > 15 * 60000) return null;
+  var n = ' ' + aqNorm(q) + ' ', W = n.trim().split(' ');
+  if (aqRoute(q).list.length) return null;
+  var act = /صدر|اكسل|excel|xlsx|طلعهم|نزلهم|ملف|pdf/.test(n) ? 'xls' : /حددهم|حددها|علمهم|اسندهم|وزعهم/.test(n) ? 'sel' : '';
+  if (act) return W.length <= 5 ? { act:act } : null;
+  var lead = /^ (و|طب|طيب|بالنسبه|كمان)/.test(n) || W.length <= 3;
+  if (!lead) return null;
+  var sc = aqScope(n), pl = !sc.zone ? aqPlace(n) : '';
+  if (!sc.zone && !sc.type && !pl) return null;
+  /* a follow-up says nothing but its new place: every other word is a particle — «فين المخيمات المركزية» is a question */
+  var rest = W.filter(function(w0){ var b0 = w0.replace(/^و/, ''); if (/^(و|طب|طيب|بالنسبه|كمان|في|فى|عن|ل|لل|بتاع|بتاعه|بتاعت|يا|ب|بس|برضه|نفس|الكلام|السؤال)$/.test(b0) || !b0) return false;
+    var s0 = aqScope(' ' + b0 + ' '); return !(s0.zone || s0.type || (pl && b0.replace(/^ال/, '') === pl) || (pl && b0 === pl)); });
+  if (rest.length) return null;
+  var toks = String(C.q).split(/\s+/), mine = String(q).replace(/[؟?]/g, ' ').split(/\s+/).filter(Boolean);
+  var kind = function(tok){ var k = ' ' + aqNorm(tok) + ' ', s2 = aqScope(k); return s2.zone ? 'z' : s2.type ? 'y' : (C.sc.place && aqNorm(tok).replace(/^ال/, '') === C.sc.place) ? 'p' : ''; };
+  var swap = function(want, word){
+    var at = -1; toks.forEach(function(tk, i){ if (at < 0 && (kind(tk) === want || (want !== 'y' && kind(tk) && kind(tk) !== 'y'))) at = i; });
+    if (at > -1) toks[at] = word; else toks.push(want === 'y' ? word : (/^في$/.test(toks[toks.length - 1]) ? word : 'في ' + word));
+  };
+  mine.forEach(function(tk){ var k = ' ' + aqNorm(tk.replace(/^و/, '')) + ' ', s2 = aqScope(k), w0 = tk.replace(/^و(?=ال)/, '');
+    if (s2.zone) swap('z', w0); else if (s2.type) swap('y', w0); else if (pl && aqNorm(w0).replace(/^ال/, '') === pl) swap('p', w0); });
+  var eff = toks.join(' ').replace(/\s+/g, ' ').trim();
+  return eff && eff !== C.q ? { eff:eff } : null;
+}
+
+/* «صدّرهم» / «حدّدهم» after an answer: the points that answer was about, as a list (with Excel) or a selection */
+function aqFollowAct(F){
+  var C = PV.AQ_CTX, ids = (C && C.ids) || [];
+  if (!ids.length) return aqCard(t('لا نقاطَ في الجواب السابق'), '', '');
+  return aqCard(t('نقاط الجواب السابق') + ' · ' + nm(ids.length), '<p class="hint" style="margin:0">↪ <bdi>' + esc(C.q) + '</bdi></p>',
+    aqListBtn('fu', C.q, ids, 'اعرض وصدّر إكسل') + (F.act === 'sel' ? aqSelBtn('fu', ids) : ''));
+}
+
+/* a list button: the Ministry dashboards' list, which carries its own Excel */
+function aqListBtn(key, title, ids, lbl){
+  if (!ids.length || typeof dsList !== 'function') return '';
+  return ' <button type="button" class="btn btn-secondary btn-sm" data-svlist="' + esc(dsList('aq|' + key, title, ids)) + '">' + esc(t(lbl)) + ' <b class="num">' + nm(ids.length) + '</b></button>';
+}
+
+/* a selection button — the office's bulk work («المحدَّد»); never for the Ministry or the field */
+function aqSelBtn(key, ids){
+  if (!ids.length || typeof may !== 'function' || !may('settings') || typeof selClear !== 'function') return '';
+  PV.AQ_SELS = PV.AQ_SELS || {}; PV.AQ_SELS[key] = ids.slice();
+  return ' <button type="button" class="btn btn-quiet btn-sm" data-aqsel="' + esc(key) + '">☑ ' + esc(t('حدّدها للعمل الجماعي')) + ' <b class="num">' + nm(ids.length) + '</b></button>';
+}
+
+function aqSelGo(key){
+  var ids = (PV.AQ_SELS || {})[key] || []; if (!ids.length) return;
+  selClear(); ids.forEach(function(id){ if (!SEL[id]){ SEL[id] = 1; SEL_N++; } });
+  ASSIST_OPEN = false; if (typeof navPush === 'function') navPush(CUR); goPage('sel'); render();
+  toast(t('حُدّدت') + ' ' + nm(ids.length));
+}
+
+/* the act buttons under a data card: the points behind each number */
+function aqActBtns(kind, c){
+  var P = c.pool || [], ttl = c.ttl || t('كلُّ المشاعر'), h = '';
+  if (kind === 'progress'){
+    var todo = P.filter(function(x){ return !svVisited(STATE.recs[x.id]); }).map(function(x){ return x.id; });
+    var ins = P.filter(function(x){ var i = STATE.inss[x.id]; return i && i.status === 'مُركّب'; }).map(function(x){ return x.id; });
+    h = aqListBtn('pall', ttl, P.map(function(x){ return x.id; }), 'كل النقاط') + aqListBtn('ptodo', t('لم تُزَر') + ' · ' + ttl, todo, 'لم تُزَر') + aqListBtn('pins', t('مُركّبة') + ' · ' + ttl, ins, 'مُركّبة') + aqSelBtn('ptodo', todo);
+  } else if (kind === 'chal'){
+    var ch = P.filter(function(x){ var r = STATE.recs[x.id]; return (r && r.chals || []).some(function(k){ return k && k !== 'لا توجد تحديات'; }); }).map(function(x){ return x.id; });
+    h = aqListBtn('chal', t('نقاطٌ فيها تحدٍّ') + ' · ' + ttl, ch, 'نقاطٌ فيها تحدٍّ') + aqSelBtn('chal', ch);
+  } else if (kind === 'taf' && typeof tafInScope === 'function'){
+    var pend = P.filter(function(x){ return tafInScope(x.id) && !tafDecision(x.id); }).map(function(x){ return x.id; });
+    h = aqListBtn('taf', t('بانتظار اعتماد إدارة التفويج'), pend, 'بانتظار اعتماد إدارة التفويج');
+  }
+  return h;
 }
 
 /* top-k rows of a { name: count } map, as aqRow lines */
