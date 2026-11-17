@@ -1,0 +1,16 @@
+verdict:  RED
+commit:   01d02fd0e78356cffdad229e284b31fcf8e04437
+version:  V47.6
+title:    V47.6 — عقلُ النظام في المحادثة: «وفي عرفات؟» تكمل السؤالَ السابق، و«صدّرهم/حدّدهم» تعمل على نقاطه
+event:    push  (the push gate: fast layer + real browser + rules + full list)
+on main:  no
+when:     2026-11-17T16:38:35.376Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/44126628805
+jobs:     fast=success · real=success · shards=success · promote=success · chain=skipped
+passed:   fast rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     browser
+missing:  —
+
+── browser
+✗ أزرارُ الفعل في وضع الشمس ≥ ٤٨ بكسل — أقصر: ؟ | تصدير | ⬇
+اختبارُ المتصفّح الحقيقي فشل ✗ (1)
