@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V47.2",
+  "app_version": "V47.3",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2439,7 +2439,8 @@
   "V46.9": "assistBadgeSync draws .ds-brainbtn with .ds-bmark 🧠 (hue-rotated to the theme green, breathing halo), aria-label/title «عقلُ النظام». siteIndex adds every short string/number field, the id's digit runs with and without zeros, PV.TAF1447 file numbers, and SITE_HAY[i] (srchNorm-normalised haystack); siteSearch matches multi-word / non-exact queries word-by-word against the haystack. brainBriefHtml adds a «تنظيم البيانات» <details> for engineer/admin: no company, ?-square/sign, identical coordinates. Scenario 142.",
   "V47.0": "mapTopFold: group chips (.ds-mgrp, .open/.has) only in the row; the open group's items render in .ds-msheet (title + purpose from GT, ✕ data-mtop=\"\", .ds-msh-b grid with ✓ on .on) — handlers unchanged; PV.MTOP='*' shows one panel with every group under a heading. The one-time tip says «جديد: عقلُ النظام». Scenario 143.",
   "V47.1": "Core: a click capture closes the panel after a choice in one-choice groups (not layers); a pointerdown capture closes it on any press outside .ds-msheet / .ds-mgrp / [data-mtop] (the map swallows clicks). touch-action:manipulation on the panel's buttons. Scenario 144.",
-  "V47.2": "V47.2 — QA pass: nskCopy (awaited clipboard + legacy fallback), one notice per burst of failed pulls, page-Excel arrow only where tables/lists exist, assistant cards for technical/late visits, technician directives, contrast and tap-target stylesheet. No schema change."
+  "V47.2": "V47.2 — QA pass: nskCopy (awaited clipboard + legacy fallback), one notice per burst of failed pulls, page-Excel arrow only where tables/lists exist, assistant cards for technical/late visits, technician directives, contrast and tap-target stylesheet. No schema change.",
+  "V47.3": "V47.3 — assistant: «ايه/فين/مين النقاط اللي …» read as a list; bare «كوبري»/«نفق» and the full «بدون إطار معدني للتثبيت» map to the «موقع النقطة» options; location answers link to the challenges tab; guide index carries every location option. No schema change."
   },
   "map_and_geolocation": {
     "tile_layers": {

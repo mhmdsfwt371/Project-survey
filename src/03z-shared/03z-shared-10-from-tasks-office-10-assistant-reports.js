@@ -20,7 +20,10 @@ function aqRepParse(q){
   var n = ' ' + aqNorm(q).replace(/[؟?!,،.:;()«»"']/g, ' ').replace(/\s+/g, ' ') + ' ';
   var used = [], conds = [], add = function(k, label, fn){ conds.push({ k:k, label:label, fn:fn }); };
   var use = function(re){ var m = n.match(new RegExp(re.source, 'g')); if (m){ m.forEach(function(x){ x.trim().split(/\s+/).forEach(function(w){ used.push(w); }); }); return true; } return false; };
-  var isRep = /اكسل|excel|xlsx|pdf|بي دي اف|ملف|تقرير|قائمه|قايمه|ليست|\blist\b|طلعلي|هاتلي/.test(n) || /^ *(النقاط|النقط|المواقع|المخيمات|الممرات|الكاميرات|البوابات)\s+(اللي|الي|اللى)/.test(n);
+  /* (V47.3) «ايه/فين/مين النقاط اللي …» is the same list as «النقاط اللي …» — a leading question word sent it to the general progress card */
+  var lead = /^ *((ايه|ايش|اي|ما|ماهي|مين|اين|وريني|عرفني|قولي)\s+)?((هي|هما)\s+)?(النقاط|النقط|المواقع|المخيمات|الممرات|الكاميرات|البوابات)\s+(اللي|الي|اللى|التي)/.exec(n);
+  if (lead){ [lead[2], lead[4]].forEach(function(w){ if (w) used.push(w); }); }
+  var isRep = /اكسل|excel|xlsx|pdf|بي دي اف|ملف|تقرير|قائمه|قايمه|ليست|\blist\b|طلعلي|هاتلي/.test(n) || !!lead;
   var fmt = /pdf|بي دي اف/.test(n) ? 'pdf' : (/اكسل|excel|xlsx/.test(n) ? 'xls' : '');
   /* (V38.19) «حسب …» = تحليل: عدٌّ مجمَّعٌ بالبُعد المطلوب مع نسب الزيارة والتركيب والربط والإشارة */
   var GM = [[/حسب\s+(ال)?(مشعر|مشاعر)/, 'zone', 'المشعر'], [/حسب\s+(ال)?(نوع|انواع)/, 'type', 'النوع'], [/حسب\s+(ال)?(شركه|شركات)/, 'co', 'الشركة'],
@@ -103,11 +106,15 @@ function aqRepParse(q){
     add('e47', no47 ? 'بلا بيانات ١٤٤٧' : 'لها بيانات ١٤٤٧', function(x){ return no47 ? !x.ex47 : !!x.ex47; });
   }
   /* (V38.27) «موقع النقطة» — تحت كوبري · مدخل/مخرج نفق · لوحة استرشادية · بدون إطار · على مظلة — من الاختيار الصريح (ومن كلام الزيارات الأقدم) */
-  var LM = [[/تحت\s*(ال)?(كوبري|كبري)/, 'bridge', 'تحت كوبري'], [/مدخل\s*(ال)?نفق/, 'tin', 'مدخل نفق'], [/مخرج\s*(ال)?نفق/, 'tout', 'مخرج نفق'],
-            [/(لوحه|لوحات)\s*(ال)?(استرشاد|ارشاد)[^\s]*/, 'sign', 'لوحة استرشادية'], [/(بدون|بلا|من غير)\s*(ال)?(اطار|هيكل)[^\s]*(\s*معدني)?/, 'nomount', 'بدون إطار معدني للتثبيت'],
+  /* (V47.3) «كوبري» alone means the same place as «تحت كوبري» — it was left as an unknown word */
+  var LM = [[/(تحت\s*)?(ال)?(كوبري|كبري|كباري)/, 'bridge', 'تحت كوبري'], [/مدخل\s*(ال)?نفق/, 'tin', 'مدخل نفق'], [/مخرج\s*(ال)?نفق/, 'tout', 'مخرج نفق'],
+            [/(لوحه|لوحات)\s*(ال)?(استرشاد|ارشاد)[^\s]*/, 'sign', 'لوحة استرشادية'], [/(بدون|بلا|من غير)\s*(ال)?(اطار|هيكل)[^\s]*(\s*معدني)?(\s*(لل|ل)?تثبيت)?/, 'nomount', 'بدون إطار معدني للتثبيت'],
             [/(علي|فوق)\s*(ال)?(مظله|مظلات)/, 'canopy', 'على مظلة']];
   var locHit = LM.filter(function(m){ return m[0].test(n); });
-  if (!locHit.length && /(^|\s)(ال)?(نفق|انفاق)(\s|$)/.test(n)) locHit = [[/(ال)?(نفق|انفاق)/, 'tany', 'نفق']];
+  /* (V47.3) a bare «نفق» counts beside a bridge too («نفق او كوبري») — only an entry/exit already named makes it redundant */
+  if (!locHit.some(function(m){ return m[1] === 'tin' || m[1] === 'tout'; }) && /(^|\s)(ال)?(نفق|انفاق)(\s|$)/.test(n)) locHit.push([/(ال)?(نفق|انفاق)/, 'tany', 'نفق']);
+  /* «فيها تركيب نفق» names where the point sits, not the installation state */
+  if (locHit.length) use(/تركيب(?=\s+((في|عند|علي|تحت)\s+)?(ال)?(نفق|انفاق|كوبري|كبري|كباري|مدخل|مخرج))/);
   if (locHit.length && typeof obsLocTags === 'function'){
     locHit.forEach(function(m){ use(new RegExp('[^\\s]*(' + m[0].source + ')[^\\s]*')); });
     var lk = locHit.map(function(m){ return m[1]; });
@@ -194,5 +201,7 @@ function aqRepCard(q, D){
     + (GR ? '' : D.rows.length ? prev + (D.rows.length > 10 ? '<p class="hint" style="margin:4px 0 0">' + esc(t('والباقي في الملف')) + ' (' + nm(D.rows.length - 10) + ')</p>' : '')
                      : '<p class="hint" style="margin:0">' + esc(t('لا نقاطَ تنطبق عليها الشروط')) + '</p>')
     + (GR && !D.rows.length ? '<p class="hint" style="margin:0">' + esc(t('لا نقاطَ تنطبق عليها الشروط')) + '</p>' : ''),
-    D.rows.length ? '<button type="button" class="btn btn-primary btn-sm" data-aqrep="xls">\u2B07 ' + esc(t('إكسل')) + '</button> <button type="button" class="btn btn-secondary btn-sm" data-aqrep="pdf">\u2B07 PDF</button>' : '');
+    (D.rows.length ? '<button type="button" class="btn btn-primary btn-sm" data-aqrep="xls">\u2B07 ' + esc(t('إكسل')) + '</button> <button type="button" class="btn btn-secondary btn-sm" data-aqrep="pdf">\u2B07 PDF</button>' : '')
+    /* (V47.3) a question about where points sit leads to the dashboard that answers it by area */
+    + (P.conds.some(function(c){ return c.k === 'loc'; }) && typeof seesPage === 'function' && seesPage('mobs') ? ' ' + aqGo('لوحة حسب الموقع', 'page|mobs') : ''));
 }
