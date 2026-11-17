@@ -1,0 +1,12 @@
+verdict:  GREEN
+commit:   f083b36e01b8ab613e32b889fb8b7c05a8624b7f
+version:  V47.5
+title:    V47.5 — عقلُ النظام يجيب بالأرقام: الحساسات والشحنات والسيارات والوتيرة والأداء وأمس، والأماكنُ من السجلّ، وكلُّ صفحةٍ تُبلَغ باسمها
+event:    workflow_dispatch  (the full list, then promotion to main)
+on main:  yes — promoted
+when:     2026-11-17T16:22:50.425Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/44123750892
+jobs:     fast=skipped · real=success · shards=success · promote=skipped · chain=success
+passed:   browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     —
+missing:  —
