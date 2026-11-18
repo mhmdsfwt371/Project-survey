@@ -1,0 +1,12 @@
+verdict:  GREEN
+commit:   eec58be9bcc548b20baa6984bda32589afde3b64
+version:  V47.10
+title:    V47.10 — صفحةُ الحساسات: المترُ «على الخريطة» لا من الإشارة، والإكسلُ يحمل قوةَ الإشارة والمسافة
+event:    push  (the push gate: fast layer + real browser + rules + full list)
+on main:  no
+when:     2026-11-18T15:24:22.392Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/44333895283
+jobs:     fast=success · real=success · shards=success · promote=success · chain=skipped
+passed:   fast browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     —
+missing:  —
