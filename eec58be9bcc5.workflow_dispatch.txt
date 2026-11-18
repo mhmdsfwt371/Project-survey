@@ -1,0 +1,12 @@
+verdict:  GREEN
+commit:   eec58be9bcc548b20baa6984bda32589afde3b64
+version:  V47.10
+title:    V47.10 — صفحةُ الحساسات: المترُ «على الخريطة» لا من الإشارة، والإكسلُ يحمل قوةَ الإشارة والمسافة
+event:    workflow_dispatch  (the full list, then promotion to main)
+on main:  yes — promoted
+when:     2026-11-18T15:31:09.929Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/44335193541
+jobs:     fast=skipped · real=success · shards=success · promote=skipped · chain=success
+passed:   browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     —
+missing:  —
