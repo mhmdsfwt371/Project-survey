@@ -1,0 +1,12 @@
+verdict:  GREEN
+commit:   41192516293346c47f124bd5c317f526922230f7
+version:  V47.11
+title:    V47.11 — صفحةُ الحساسات: منحنى منى من القراءات نفسِها، والحساسُ الأضعف من مسافته
+event:    workflow_dispatch  (the full list, then promotion to main)
+on main:  yes — promoted
+when:     2026-11-19T10:56:56.510Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/44509011267
+jobs:     fast=skipped · real=success · shards=success · promote=skipped · chain=success
+passed:   browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     —
+missing:  —
