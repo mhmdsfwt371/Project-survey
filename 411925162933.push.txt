@@ -1,0 +1,12 @@
+verdict:  GREEN
+commit:   41192516293346c47f124bd5c317f526922230f7
+version:  V47.11
+title:    V47.11 — صفحةُ الحساسات: منحنى منى من القراءات نفسِها، والحساسُ الأضعف من مسافته
+event:    push  (the push gate: fast layer + real browser + rules + full list)
+on main:  no
+when:     2026-11-19T10:48:33.252Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/44508011914
+jobs:     fast=success · real=success · shards=success · promote=success · chain=skipped
+passed:   fast browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     —
+missing:  —
