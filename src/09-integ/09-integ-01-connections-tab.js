@@ -377,8 +377,10 @@ iotDashHtml.devHtml = function(list, F){
   var cnt = { all:list.length, bad:0, ok:0, late:0, off:0, nor:0, nof:0, nos:0 }; list.forEach(function(r){ cnt[r.st]++; if (iotDashHtml.bad(r.st)) cnt.bad++; });
   var LB = iotDashHtml.LAB, chip = function(k, ic, lab){ return '<button class="btn btn-sm ' + (F.st === k ? 'btn-primary' : 'btn-secondary') + '" data-iotd="st:' + k + '">' + ic + ' ' + esc(t(lab)) + ' <b class="num">' + nm(cnt[k] || 0) + '</b></button>'; };
   var weakSig = function(r){ var G = iotDashHtml.sig(r); return r.kind === 's' && (G.rs === 'y' || G.rs === 'r' || G.sn === 'r'); };
+  var CV = iotDashHtml.fit();   /* (V47.11) the curve first — every grade below reads it */
   cnt.sig = list.filter(weakSig).length; cnt.cw = list.filter(function(r){ return iotDashHtml.sig(r).flag === 'cw'; }).length;   /* (V41.2) */
-  var rows = list.filter(function(r){ if (F.st === 'sig') return weakSig(r); if (F.st === 'cw') return iotDashHtml.sig(r).flag === 'cw';
+  cnt.wx = list.filter(function(r){ return iotDashHtml.sig(r).wx; }).length;
+  var rows = list.filter(function(r){ if (F.st === 'sig') return weakSig(r); if (F.st === 'cw') return iotDashHtml.sig(r).flag === 'cw'; if (F.st === 'wx') return iotDashHtml.sig(r).wx;
     /* (V43.2) the board's tiles: a signal grade, a battery band, a weak external battery */
     if (/^sig:/.test(F.st)) return r.kind === 's' && iotDashHtml.sig(r).rs === F.st.slice(4);
     if (/^bat:/.test(F.st)){ var b = r.v && r.v.bat; if (r.kind !== 's' || b == null) return false; return F.st === 'bat:hi' ? b >= 50 : F.st === 'bat:mid' ? (b > 20 && b < 50) : b <= 20; }
@@ -389,10 +391,11 @@ iotDashHtml.devHtml = function(list, F){
   rows.sort(F.sort === 'name' ? function(a, b){ return a.pn < b.pn ? -1 : a.pn > b.pn ? 1 : (a.did < b.did ? -1 : 1); } : function(a, b){ return (rank[a.st] - rank[b.st]) || ((a.at || 0) - (b.at || 0)); });
   var tr = rows.slice(0, F.n).map(function(r){
     return '<tr data-iotd="pop:dev:' + esc(r.camp) + ':' + r.kind + ':' + r.i + '" style="cursor:pointer"><td>' + esc(r.pn) + '</td><td dir="ltr">' + esc(r.did) + (r.room ? ' <span class="hint" style="margin:0">' + esc(r.room) + '</span>' : '') + '</td>'
-      + '<td dir="ltr">' + (r.ser ? esc(r.ser) : '\u2014') + '</td><td>' + (r.at ? iotDashHtml.age(Date.now() - r.at) : '\u2014') + '</td><td>' + (esc(iotDashHtml.val(r)) || '\u2014') + '</td><td>' + iotDashHtml.sigCell(r) + '</td><td class="num">' + (r.dist != null ? nm(r.dist) + ' ' + esc(t('م')) : '\u2014') + '</td><td>' + LB[r.st][0] + ' ' + esc(t(LB[r.st][1])) + '</td></tr>'; }).join('');
+      + '<td dir="ltr">' + (r.ser ? esc(r.ser) : '\u2014') + '</td><td>' + (r.at ? iotDashHtml.age(Date.now() - r.at) : '\u2014') + '</td><td>' + (esc(iotDashHtml.val(r)) || '\u2014') + '</td><td>' + iotDashHtml.sigCell(r) + '</td><td class="num">' + (r.dist != null ? nm(r.dist) + ' ' + esc(t('م')) : '\u2014') + '</td><td class="num">' + iotDashHtml.gapCell(r) + '</td><td>' + LB[r.st][0] + ' ' + esc(t(LB[r.st][1])) + '</td></tr>'; }).join('');
   return '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px">' + chip('all', '\u{1F4CB}', 'الكل') + chip('bad', '\u26A0\uFE0F', 'محتاج تدخّل') + (cnt.sig ? chip('sig', '\u{1F4F6}', 'إشارة ضعيفة') : '') + chip('ok', '\u{1F7E2}', 'محدّث') + chip('late', '\u{1F7E1}', 'متأخر') + chip('off', '\u{1F534}', 'منقطع')
-    + chip('nof', '\u26AB', 'السيريال مش على المنصة') + chip('nor', '\u26AA', 'على المنصة بلا قراءة') + chip('nos', '\u25FB', 'بلا سيريال') + (cnt.cw ? chip('cw', '\u26A0\uFE0F', 'قريب وضعيف') : '') + '</div>' + iotDashHtml.legend()
-    + (rows.length ? '<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>' + [t('المخيم'), t('الجهاز'), t('السيريال'), t('آخر تحديث'), t('القراءة الحالية'), t('الإشارة'), t('المسافة على الخريطة'), t('الحالة')].map(esc).join('</th><th>') + '</th></tr></thead><tbody>' + tr + '</tbody></table></div>'
+    + chip('nof', '\u26AB', 'السيريال مش على المنصة') + chip('nor', '\u26AA', 'على المنصة بلا قراءة') + chip('nos', '\u25FB', 'بلا سيريال') + (cnt.cw ? chip('cw', '\u26A0\uFE0F', 'قريب وضعيف') : '') + (cnt.wx ? chip('wx', '\u{1F4C9}', 'أضعف من المتوقع') : '') + '</div>'
+    + (list.some(function(r){ return r.kind === 's'; }) ? iotDashHtml.curveCard(CV) : '') + iotDashHtml.legend()
+    + (rows.length ? '<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>' + [t('المخيم'), t('الجهاز'), t('السيريال'), t('آخر تحديث'), t('القراءة الحالية'), t('الإشارة'), t('المسافة على الخريطة'), t('الفرق عن المتوقع'), t('الحالة')].map(esc).join('</th><th>') + '</th></tr></thead><tbody>' + tr + '</tbody></table></div>'
       + iotDashHtml.more(rows.length, F) : '<div class="hint">' + esc(t('مفيش أجهزة بالفلتر ده')) + '</div>');
 };
 iotDashHtml.more = function(n, F){ return '<div class="hint" style="margin:6px 0 0">' + esc(t('معروض')) + ' ' + nm(Math.min(F.n, n)) + ' ' + esc(t('من')) + ' ' + nm(n) + (n > F.n ? ' ' + btn(t('اعرض ١٠٠ كمان'), 'btn-secondary btn-sm', ' data-iotd="more"') : '') + '</div>'; };
@@ -467,10 +470,10 @@ iotDashHtml.xls = function(){
   var lab = { ok:'محدّث', late:'متأخر', off:'منقطع', nor:'على المنصة بلا قراءة', nof:'السيريال مش على المنصة', nos:'بلا سيريال' };
   var gr = { g:'كويسة', y:'على الحافة', r:'ضعيفة' }, fl = { cw:'قريب وضعيف', fs:'بعيد وقوي' }, val = function(x){ return x != null ? x : ''; };
   return { head:['النقطة', 'رقم المخيم', 'المنطقة', 'رقم الجهاز', 'النوع', 'الغرفة', 'السيريال', 'الاسم على المنصة', 'آخر تحديث', 'درجة الحرارة', 'الرطوبة', 'البطارية', 'بطارية خارجية', 'بطارية داخلية',
-      'قوة الإشارة RSSI (dBm)', 'جودة الإشارة', 'نسبة الإشارة للتشويش SNR (dB)', 'المسافة على الخريطة (م)', 'ملاحظة الإشارة', 'الحالة'],
-    rows:iotDashHtml.rows().map(function(r){ var w = r.v || {}, G = iotDashHtml.sig(r);
+      'قوة الإشارة RSSI (dBm)', 'جودة الإشارة', 'نسبة الإشارة للتشويش SNR (dB)', 'المسافة على الخريطة (م)', 'الإشارة المتوقعة (dBm)', 'الفرق عن المتوقع (dB)', 'ملاحظة الإشارة', 'الحالة'],
+    rows:(function(){ var R0 = iotDashHtml.rows(); iotDashHtml.fit(R0); return R0; })().map(function(r){ var w = r.v || {}, G = iotDashHtml.sig(r);
       return [r.pn, r.camp, r.zone, r.did, t(r.kind === 's' ? 'حساس' : 'جيت واي'), r.room, r.ser, r.pnm, r.at ? fmtDT(r.at) : '', val(w.temp), val(w.hum), val(w.bat), val(w.ext_bat), val(w.int_bat),
-        val(w.rssi), G.rs ? t(gr[G.rs]) : '', val(w.snr), r.kind === 's' ? val(r.dist) : '', G.flag ? t(fl[G.flag]) : '', t(lab[r.st])]; }) };
+        val(w.rssi), G.rs ? t(gr[G.rs]) : '', val(w.snr), r.kind === 's' ? val(r.dist) : '', G.gap != null ? w.rssi - G.gap : '', val(G.gap), [G.flag ? t(fl[G.flag]) : '', G.wx ? t('أضعف من المتوقع') : ''].filter(Boolean).join(' \u00b7 '), t(lab[r.st])]; }) };
 };
 /* the device popup's «احفظ»: the same plan the map editor writes (iotPersist), one device's fields changed */
 iotDashHtml.save = function(v){
@@ -517,11 +520,61 @@ integNusukHtml.test = function(){
    Our units report rssi but no snr today (diagnosis, 28 Oct) — the SNR grade shows the day it arrives. And signal against
    distance: within 50 m of its gateway yet yellow/red = «close but weak» (inside metal, behind equipment, or not where planned);
    beyond 150 m yet green = «far but strong» (the 150 m rule may be conservative there). */
+/* (V47.11) the owner, after the antenna report and the first export with RSSI (19 Nov 2026): «ازاي أبيّن ده على النظام؟» — sixteen live
+   sensors gave RSSI = -37 - 18·log10(m) with ±6.5 dB around it, so distance explains a third of the signal and RSSI cannot be turned
+   into metres; what it can do is point at the sensor that is weaker than its distance explains. The curve is fitted from the live
+   readings themselves (least squares on log10 of the map distance; eight sensors with a 2:1 spread of distances at least, and only a
+   curve that falls with distance), each sensor carries its gap against it, eight dB under it is «أضعف من المتوقع», and a card draws the
+   points, the curve and four numbers: mean, weakest, margin to the SF12 limit, and the signal expected at the plan's farthest sensor. */
+iotDashHtml.fit = function(R){
+  var P = [], far = 0, o = { n:0, ok:false, far:0, P:P };
+  (R || iotDashHtml.rows()).forEach(function(r){ if (r.kind !== 's') return; if (r.dist != null && r.dist > far) far = r.dist;
+    var v = r.v || {}; if (v.rssi != null && isFinite(+v.rssi) && r.dist != null && r.dist >= 1) P.push({ x:Math.log10(r.dist), y:+v.rssi, d:r.dist, r:r }); });
+  var n = o.n = P.length; o.far = far; iotDashHtml.fit.c = o; if (!n) return o;
+  var mx = 0, my = 0, lo = Infinity, hi = 0, wk = 0; P.forEach(function(p){ mx += p.x; my += p.y; lo = Math.min(lo, p.d); hi = Math.max(hi, p.d); if (p.y < P[wk].y) wk = P.indexOf(p); });
+  mx /= n; my /= n; o.mean = my; o.weak = P[wk].y; o.lo = lo; o.hi = hi;
+  var sxx = 0, sxy = 0; P.forEach(function(p){ sxx += (p.x - mx) * (p.x - mx); sxy += (p.x - mx) * (p.y - my); });
+  if (n < 8 || hi < lo * 2 || !(sxx > 0)) return o;
+  var b = sxy / sxx, a = my - b * mx, ss = 0; if (!(b < 0)) return o;
+  P.forEach(function(p){ var e = p.y - (a + b * p.x); ss += e * e; });
+  o.a = a; o.b = b; o.s = Math.sqrt(ss / (n - 2)); o.ok = true;
+  return o;
+};
+/* a sensor's signal against the curve at its own distance: dB above (+) or under (−); null while there is no curve or no reading */
+iotDashHtml.gap = function(r){
+  var C = iotDashHtml.fit.c, v = r.v || {};
+  if (!C || !C.ok || r.kind !== 's' || v.rssi == null || r.dist == null || r.dist < 1) return null;
+  return Math.round(+v.rssi - (C.a + C.b * Math.log10(r.dist)));
+};
+iotDashHtml.gapCell = function(r){
+  var g = iotDashHtml.gap(r); if (g == null) return '—';
+  return (g <= -8 ? '\u{1F4C9} ' : '') + '<span dir="ltr"' + (g <= -8 ? ' style="color:#EF4444;font-weight:700"' : '') + '>' + (g > 0 ? '+' : '') + g + ' dB</span>';
+};
+iotDashHtml.curveCard = function(C){
+  if (!C || !C.n) return '';
+  var tile = function(l, v, more){ return '<div class="kk-zl" style="margin:3px 0"><span>' + esc(t(l)) + (more || '') + '</span><b class="num"><span dir="ltr">' + v + '</span></b></div>'; };
+  var h = '<div class="card" id="iotCurve" style="margin:0 0 10px"><h4 style="margin:2px 0 6px">\u{1F4C8} ' + esc(t('الإشارة والمسافة')) + '</h4>'
+    + tile('متوسط الإشارة', Math.round(C.mean * 10) / 10 + ' dBm') + tile('أضعف حساس', C.weak + ' dBm') + tile('الهامش لحد الاستقبال', Math.round(C.weak + 137) + ' dB')
+    + (C.ok && C.far >= 1 ? tile('المتوقع عند أبعد حساس في الخطة', Math.round(C.a + C.b * Math.log10(C.far)) + ' dBm', ' (' + nm(C.far) + ' ' + esc(t('م')) + ')') : '');
+  if (!C.ok) return h + '<p class="hint" style="margin:6px 0 0">' + esc(t('المنحنى يظهر لما ٨ حساسات على الأقل يبعتوا إشارتهم من مسافات مختلفة')) + '</p></div>';
+  var W = 320, H = 150, L = 34, B = 20, x1 = Math.max(C.hi * 1.1, 10), y0 = Math.floor((Math.min(C.weak, C.a + C.b * Math.log10(x1)) - 4) / 5) * 5, y1 = Math.ceil((Math.max.apply(null, C.P.map(function(p){ return p.y; })) + 4) / 5) * 5;
+  var X = function(d){ return L + (W - L - 6) * d / x1; }, Y = function(v){ return 6 + (H - B - 6) * (y1 - v) / (y1 - y0); }, line = [], k;
+  for (k = 0; k <= 24; k++){ var d = Math.max(1, C.lo * 0.8) + (x1 - Math.max(1, C.lo * 0.8)) * k / 24; line.push(X(d).toFixed(1) + ',' + Y(C.a + C.b * Math.log10(d)).toFixed(1)); }
+  var tx = function(x, y, s, an){ return '<text x="' + x + '" y="' + y + '" font-size="9" fill="currentColor" opacity=".7" text-anchor="' + an + '">' + s + '</text>'; };
+  return h + '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(t('الإشارة والمسافة')) + '" style="width:100%;max-width:520px;height:auto;margin:6px 0 0;direction:ltr">'
+    + '<line x1="' + L + '" y1="' + (H - B) + '" x2="' + (W - 6) + '" y2="' + (H - B) + '" stroke="currentColor" opacity=".3"/><line x1="' + L + '" y1="6" x2="' + L + '" y2="' + (H - B) + '" stroke="currentColor" opacity=".3"/>'
+    + tx(L - 4, Y(y1) + 6, y1, 'end') + tx(L - 4, Y(y0), y0, 'end') + tx(L, H - 6, '0', 'middle') + tx(W - 6, H - 6, Math.round(x1) + ' m', 'end') + tx(L + 4, 14, 'dBm', 'start')
+    + '<polyline points="' + line.join(' ') + '" fill="none" stroke="#38BDF8" stroke-width="1.5"/>'
+    + C.P.map(function(p){ var w = Math.round(p.y - (C.a + C.b * p.x)) <= -8;   /* the same rounding as the column */ return '<circle cx="' + X(p.d).toFixed(1) + '" cy="' + Y(p.y).toFixed(1) + '" r="3" fill="' + (w ? '#EF4444' : '#22C55E') + '"/>'; }).join('') + '</svg>'
+    + '<p class="hint" style="margin:4px 0 0">' + (C.n < 50 ? '<b>' + esc(t('مبدئي')) + '</b> · ' : '') + esc(t('من')) + ' ' + nm(C.n) + ' ' + esc(t('حساس')) + ' · ' + esc(t('التبعثر حوالين المنحنى')) + ' ±' + nm(Math.round(C.s * 10) / 10) + ' dB — '
+    + esc(t('عشان كده الإشارة ما تتحوّلش لمتر، بس بتبيّن الحساس الأضعف من اللي على نفس مسافته')) + '</p></div>';
+};
 iotDashHtml.sig = function(r){
   var v = r.v || {}, g = function(x, a, b){ return x == null ? '' : x >= a ? 'g' : x >= b ? 'y' : 'r'; };
   var rs = g(v.rssi, -115, -125), sn = g(v.snr, 0, -15);
   var flag = r.kind === 's' && r.dist != null && v.rssi != null ? (r.dist <= 50 && rs !== 'g' ? 'cw' : r.dist > 150 && rs === 'g' ? 'fs' : '') : '';
-  return { rs:rs, sn:sn, flag:flag };
+  var gap = iotDashHtml.gap(r);   /* (V47.11) against Mina's own curve */
+  return { rs:rs, sn:sn, flag:flag, gap:gap, wx:gap != null && gap <= -8 };
 };
 iotDashHtml.dot = function(c){ return c ? '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + ({ g:'#22C55E', y:'#EAB308', r:'#EF4444' })[c] + ';vertical-align:middle"></span> ' : ''; };
 iotDashHtml.sigCell = function(r){
@@ -538,6 +591,7 @@ iotDashHtml.legend = function(){
     + iotDashHtml.dot('g') + esc(t('أخضر: صفر وأعلى')) + ' \u00b7 ' + iotDashHtml.dot('y') + esc(t('أصفر: من ‎-15 لصفر')) + ' \u00b7 ' + iotDashHtml.dot('r') + esc(t('أحمر: أقل من ‎-15')) + '<br>'
     + esc(t('RSSI كويس مع SNR وحش = تشويش في المكان (أبراج اتصالات مثلًا) مش بُعد. والـSNR مش بيوصل من أفاقي برو حاليًا — هيظهر أول ما يوصل.')) + '<br>'
     + '\u26A0\uFE0F <b>' + esc(t('قريب وضعيف')) + '</b>: ' + esc(t('على بعد ٥٠ متر أو أقل من الجيت واي وإشارته صفرا أو حمرا — غالبًا جوه معدن أو ورا جهاز أو مش في مكانه المخطط')) + '<br>'
+    + '\u{1F4C9} <b>' + esc(t('أضعف من المتوقع')) + '</b>: ' + esc(t('إشارته أضعف من متوسط الحساسات اللي على نفس مسافته بـ٨ ديسيبل أو أكتر — غالبًا عائق أو تثبيت أو مكانه على الخريطة مش مكانه الفعلي')) + '<br>'
     + '\u2139\uFE0F <b>' + esc(t('بعيد وقوي')) + '</b>: ' + esc(t('أبعد من ١٥٠ متر وإشارته خضرا — يعني حد الـ١٥٠ متر ممكن يتوسّع هناك')) + '<br>'
     + '<span style="opacity:.8">' + esc(t('المراجع: أسئلة لورا الشائعة عند Semtech، ومنتدى The Things Network')) + '</span></div></details>';
 };

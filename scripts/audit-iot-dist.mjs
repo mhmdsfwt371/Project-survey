@@ -61,5 +61,35 @@ T(['النقطة', 'السيريال', 'آخر تحديث', 'درجة الحرا
   T(e[col(need[3])] === M(1) && e[col(need[0])] === '' && e[col(need[1])] === '', 'والحساسُ بلا قراءة: مسافتُه مكتوبة وإشارتُه فارغة — لا صفر'); }
 T(String(w.iotDashHtml.act).indexOf('iotDashHtml.xls()') > -1, 'وزرُّ الإكسل يكتب هذه الأعمدة نفسَها');
 
+console.log('\n══ ٣ · (V47.11) منحنى منى من القراءات نفسِها، والحساسُ الأضعف من مسافته ══');
+{
+  /* the sixteen readings of camp 38/56 on 19 Nov 2026 (metres on the map, dBm) — the fit worked out by hand: -37.1 - 17.9·log10(m), ±6.5 dB */
+  const REAL = [[19, -54], [17, -52], [70, -62], [66, -63], [27, -67], [41, -70], [46, -66], [45, -59], [39, -75], [33, -68], [47, -75], [45, -74], [10, -58], [42, -63], [16, -53], [28, -69]];
+  const lat = m => 21.41 + m / (6371000 * Math.PI / 180), set = (L, farM) => {
+    const sens = L.map(p => [lat(p[0]), 39.89]), sm = L.map((p, i) => ({ serial:'R' + i })), U = {}; L.forEach((p, i) => { U['r' + i] = { t:now, v:{ rssi:p[1], temp:30 } }; });
+    if (farM){ sens.push([lat(farM), 39.89]); sm.push({}); }
+    w.IOT.data = { camps:{ 'TST-9':{ gw:G, gws:[], sensors:sens, gm:[{}], sm:sm } } }; w.IOT.live = { at:now, busy:false, v:{ at:now, units:U } };
+    w.iotDashHtml.F = { tab:'s', st:'all', zone:'all', q:'tst-9', n:100, sort:'name', pop:null }; };
+  set(REAL, 139);
+  const rowsOf = () => w.iotDashHtml.rows().filter(r => r.camp === 'TST-9' && r.kind === 's'), C = w.iotDashHtml.fit(rowsOf());
+  T(C.ok && C.n === 16 && Math.abs(C.a + 37.1) < 0.6 && Math.abs(C.b + 17.9) < 0.6 && Math.abs(C.s - 6.5) < 0.3, 'المنحنى من ١٦ قراءة: ' + C.a.toFixed(1) + ' ' + C.b.toFixed(1) + '·log10(م) ± ' + C.s.toFixed(1) + ' — كحساب اليد');
+  T(Math.abs(C.mean + 64.25) < 0.01 && C.weak === -75 && C.far === 139, 'المتوسط ‎-64.25 والأضعف ‎-75 وأبعدُ حساسٍ في الخطة 139 م (ولو بلا قراءة)');
+  const R = rowsOf(), g = (m, v) => w.iotDashHtml.sig(R.find(r => r.dist === m && r.v && r.v.rssi === v));
+  T(g(39, -75).wx && g(39, -75).gap === -9 && !g(70, -62).wx && g(70, -62).gap === 8, 'حساسُ الـ39 م بـ‎-75 أضعفُ من المتوقع بـ9 · وحساسُ الـ70 م بـ‎-62 أقوى بـ8');
+  const wxN = R.filter(r => w.iotDashHtml.sig(r).wx).length;
+  T(wxN >= 1 && wxN <= 3 && R.filter(r => w.iotDashHtml.sig(r).gap != null).length === 16 && w.iotDashHtml.sig(R.find(r => !r.ser)).gap === null, '«أضعف من المتوقع» قلّةٌ (' + wxN + ' من ١٦)، وبلا قراءةٍ بلا فرق');
+  const h = w.iotDashHtml(), card = (h.split('id="iotCurve"')[1] || '').split('</div>\n')[0];
+  T(/الإشارة والمسافة/.test(card) && /-64\.2 dBm/.test(card) && /-75 dBm/.test(card) && />62 dB</.test(card) && /-76 dBm/.test(card) && card.indexOf('(' + w.nm(139) + ' ') > -1, 'الكارت: المتوسط والأضعف والهامش ٦٢ والمتوقعُ عند ١٣٩ م');
+  T((card.match(/<circle/g) || []).length === 16 && (card.split('</svg>')[0].match(/#EF4444/g) || []).length === wxN && /<polyline/.test(card) && /<b>مبدئي<\/b>/.test(card) && /ما تتحوّلش لمتر/.test(card), 'ورسمتُه: ١٦ نقطة، الحمراءُ منها الأضعف، والمنحنى، و«مبدئي» ما دام العددُ قليلًا');
+  T(h.indexOf('الفرق عن المتوقع') > -1 && /data-iotd="st:wx"/.test(h) && /-9 dB/.test(h), 'وفي الجدول عمودُ «الفرق عن المتوقع»، وشريحةُ «أضعف من المتوقع»');
+  w.iotDashHtml.act('st:wx'); { const tb = (w.iotDashHtml().split('<tbody>')[1] || '').split('</tbody>')[0]; T((tb.match(/<tr /g) || []).length === wxN, 'والشريحةُ تُبقي الأضعفَ وحدَه (' + wxN + ')'); } w.iotDashHtml.act('st:all');
+  const X2 = w.iotDashHtml.xls(), c2 = n => X2.head.indexOf(n), r9 = X2.rows.find(r => r[c2('المسافة على الخريطة (م)')] === 39 && r[c2('قوة الإشارة RSSI (dBm)')] === -75);
+  T(c2('الإشارة المتوقعة (dBm)') > -1 && r9[c2('الفرق عن المتوقع (dB)')] === -9 && r9[c2('الإشارة المتوقعة (dBm)')] === -66 && /أضعف من المتوقع/.test(r9[c2('ملاحظة الإشارة')]), 'والإكسل: المتوقعُ ‎-66 والفرقُ ‎-9 و«أضعف من المتوقع» في الملاحظة');
+  set(REAL.slice(0, 7)); { const C7 = w.iotDashHtml.fit(rowsOf()), h7 = w.iotDashHtml();
+    T(!C7.ok && C7.n === 7 && rowsOf().every(r => w.iotDashHtml.sig(r).gap === null) && /المنحنى يظهر لما ٨ حساسات/.test(h7) && !/<polyline/.test(h7), 'سبعةُ حساسات: لا منحنى ولا فرق — والكارتُ يقول ما ينقص'); }
+  set(REAL.map(p => [40, p[1]])); T(!w.iotDashHtml.fit(rowsOf()).ok, 'والكلُّ على مسافةٍ واحدة: لا منحنى');
+  set(REAL.map((p, i) => [10 + i * 5, -90 + i])); T(!w.iotDashHtml.fit(rowsOf()).ok, 'ومنحنًى يصعد مع البُعد مرفوض — لا يُبنى عليه حكم');
+}
+
 console.log(fails.length ? '\nمسافةُ الحساسات وإكسلها: فشل ✗ (' + fails.length + ')' : '\n✓ ' + pass + ' فحصًا — المتر من الخريطة، والإشارةُ في الإكسل');
 process.exit(fails.length ? 1 : 0);
