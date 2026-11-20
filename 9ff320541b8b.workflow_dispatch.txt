@@ -1,0 +1,12 @@
+verdict:  GREEN
+commit:   9ff320541b8b75bb0573a931ebb5f86d3f884465
+version:  V47.15
+title:    V47.15 — ردود أفاقي على خطة رصد التفويج
+event:    workflow_dispatch  (the full list, then promotion to main)
+on main:  yes — promoted
+when:     2026-11-20T22:19:32.332Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/44826713575
+jobs:     fast=skipped · real=success · shards=success · promote=skipped · chain=success
+passed:   browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     —
+missing:  —
