@@ -175,10 +175,18 @@ function aqAnswerBase(q){   /* (V47.5) wrapped by aqAnswer (02-definitions-10): 
   if (aqOn('chal')) out += aqAns.chal(AQC);   /* (V47.8) the obstacles tab's own count — 02-definitions-10 */
   /* ٨ · (V38.15) اعتمادُ الوزارة */
   if (aqOn('taf') && !/تقرير|ملف/.test(n)){   /* (V45.1) QA: counts the tafweej management's decisions, not the retired ministry approval */
+    if (tafPlanMeta() && typeof tafPlanCount === 'function'){   /* (V47.12) the plan's phases stand where the approvals stood */
+      /* the sheet calls every corridor point a gate («بوّابة»): the word is not a kind to filter by here — only the holy site narrows the plan */
+      var PC = tafPlanCount((STATE.sites || []).filter(function(x){ return x && (tafInScope(x.id) || tafPlan(x.id)) && (!sc2.zone || x.zone === sc2.zone); }).map(function(x){ return { x:x }; }));
+      out += aqCard(t('خطة رصد التفويج') + (sc2.zone ? ' \u00b7 ' + t(sc2.zone) : ''), PV.TAF_PH.map(function(g){ return aqRow(g[1], nm(PC[g[0]])); }).join('')
+        + aqRow('أطقم المرحلة الأولى', nm(PC.kr.p1) + ' (' + t('موجود') + ' ' + nm(PC.kn.p1) + ')') + aqRow('أطقم المرحلة الثانية', nm(PC.kr.p2) + ' (' + t('موجود') + ' ' + nm(PC.kn.p2) + ')'),
+        aqGo('اعتمادات إدارة التفويج', 'page|mfu') + aqActBtns('taf', AQC));
+    } else {
     var mp = 0, ma = 0, mr = 0;
     pool.forEach(function(x){ if (!tafInScope(x.id)) return; var dd = tafDecision(x.id); if (dd === 'ok') ma++; else if (dd === 'no') mr++; else mp++; });
     out += aqCard(t('اعتماد إدارة التفويج') + (scopeTxt ? ' \u00b7 ' + scopeTxt : ''), aqRow('بانتظار اعتماد إدارة التفويج', nm(mp)) + aqRow('اعتمدتها إدارة التفويج', nm(ma)) + aqRow('رفضتها إدارة التفويج', nm(mr)),
       aqGo('اعتمادات إدارة التفويج', 'page|mfu') + aqActBtns('taf', AQC));
+    }
   }
   /* ٩ · (V38.15) الإشغالُ الأعلى من آخر جسر */
   if (aqOn('occ') && typeof extStatusRows === 'function'){

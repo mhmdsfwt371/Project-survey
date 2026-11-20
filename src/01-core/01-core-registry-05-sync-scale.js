@@ -210,7 +210,7 @@ var CORE = {
       if (v.notifAt) STATE.meta.notifAt = v.notifAt;
       if (v.epoch) STATE.meta.epoch = v.epoch;
       if (v.wbs && Array.isArray(v.wbs.rows)) STATE.wbs = v.wbs;
-      if (v.taf && typeof v.taf === 'object') STATE.taf = v.taf;   /* (V45.1) */
+      if (v.taf && typeof v.taf === 'object'){ STATE.taf = v.taf; if (typeof tafLifeSync === 'function') tafLifeSync(); }   /* (V45.1) */
       if (v.wtask && Array.isArray(v.wtask.rows)) STATE.wtask = v.wtask;
       if (v.trials && Array.isArray(v.trials.rows)) STATE.trials = v.trials;
       if (v.bugs && typeof v.bugs === 'object') STATE.bugs = v.bugs;

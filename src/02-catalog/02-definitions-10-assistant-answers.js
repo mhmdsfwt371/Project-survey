@@ -107,6 +107,9 @@ function aqActBtns(kind, c){
     h = aqListBtn('chal', t('نقطة عليها تحدي') + ' · ' + ttl, ch, 'نقطة عليها تحدي') + aqSelBtn('chal', ch);
   } else if (kind === 'taf' && typeof tafInScope === 'function'){
     var pend = P.filter(function(x){ return tafInScope(x.id) && !tafDecision(x.id); }).map(function(x){ return x.id; });
+    if (typeof tafPlanMeta === 'function' && tafPlanMeta()){   /* (V47.12) one list per phase of the plan */
+      h = PV.TAF_PH.map(function(g){ var L = P.filter(function(x){ return (tafInScope(x.id) || tafPlan(x.id)) && tafPhase(x.id) === g[0]; }).map(function(x){ return x.id; }); return aqListBtn('taf' + (g[0] || 'none'), t(g[1]) + ' · ' + ttl, L, g[1]); }).join('');
+    } else
     h = aqListBtn('taf', t('بانتظار اعتماد إدارة التفويج'), pend, 'بانتظار اعتماد إدارة التفويج');
   }
   return h;

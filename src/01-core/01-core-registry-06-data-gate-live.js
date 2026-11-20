@@ -228,6 +228,7 @@ function liveSmall(){
         });
       }
       PV.TAF_SEEN = 1;
+      if (typeof tafLifeSync === 'function') tafLifeSync();   /* (V47.12) the waiting state is named by the plan once a sheet is in */
       if (DB.memo) DB.memo.life = null;
       CORE.saveSoon();
       if (!document.querySelector('#content input:focus, #content textarea:focus') && ['map', 'mfu', 'survey', 'site'].indexOf(CUR) > -1) render(1);

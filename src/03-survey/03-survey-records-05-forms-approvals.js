@@ -113,7 +113,31 @@ function tafInScope(id){ return tafScopeOk(typeof siteFind === 'function' ? site
 PV.TAF47_C = '#FF2BD6';
 function taf47(x){ return !!x && x.zone === 'منى' && x.type === 'ممر' && x.work === 'إعادة تركيب ١٤٤٧'; }
 function tafOf(id){ return ((STATE.taf || {})[id]) || null; }
-function tafDecision(id){ var o = tafOf(id); return o && (o.d === 'ok' || o.d === 'no') ? o.d : ''; }
+/* (V47.12) the owner, on the tafweej management's final feedback (20 Nov 2026 — «هندسة رصد التفويج», third issue, with its sheet of
+   every gate): «حتة اعتماد أو مفيش اعتماد دي شيلها وحط مكانها حالات الشيت … وأي حاجة بكومنتات حطها بكومنتات». Once the sheet is
+   imported (tafPlanImport) the plan is the decision: each gate carries its phase — «مرحلة أولى», «مرحلة ثانية», «خارج الحاجة الرصدية» —
+   with its rank, section, corridor width, kits there and kits required, and the sheet's comments. The first phase is what goes to
+   installation; the rest waits for its turn, and nothing is «rejected». It lives in the same live document (settings/tafappr), inside
+   m: m.__plan = { v, name, at, by } and m[<site id>].pl = { p, k, s, w, n, r, a, c, v } — an entry of another issue (v) is not read,
+   so a new sheet replaces the old one whole. Until a sheet is imported the old approvals stand, so nothing changes by itself. */
+PV.TAF_PH = [['p1', 'مرحلة أولى', '#22C55E'], ['p2', 'مرحلة ثانية', '#3B82F6'], ['out', 'خارج الحاجة الرصدية', '#94A3B8'], ['', 'غير مصنفة', '#F2B134']];
+function tafPlanMeta(){ var M = (STATE.taf || {}).__plan; return M && M.v ? M : null; }
+function tafPlan(id){ var M = tafPlanMeta(), o = tafOf(id); return M && o && o.pl && o.pl.v === M.v ? o.pl : null; }
+function tafPhase(id){ var p = tafPlan(id); return p ? (p.p || '') : ''; }
+function tafPhaseDef(k){ return PV.TAF_PH.filter(function(g){ return g[0] === (k || ''); })[0] || PV.TAF_PH[3]; }
+/* what a point waiting on the tafweej management is called — by the plan once there is one */
+function tafWaitLbl(){ return tafPlanMeta() ? 'خارج المرحلة الأولى في خطة الرصد' : 'بانتظار اعتماد إدارة التفويج'; }
+/* the lifecycle's own name for the waiting state, and its list on the Ministry follow-up, follow the plan */
+function tafLifeSync(){
+  var on = !!tafPlanMeta(), n = tafWaitLbl();
+  if (typeof LIFE !== 'undefined' && LIFE.minwait){ LIFE.minwait.n = n;
+    LIFE.minwait.d = on ? 'نقطةُ ممرٍّ في منى أو عرفات خارج المرحلة الأولى في خطة رصد التفويج — تنتظر مرحلتَها قبل أن تُجدوَل للتركيب.' : 'نقطةُ ممرٍّ في منى أو عرفات تنتظر قرارَ إدارة التفويج قبل أن تُجدوَل للتركيب.'; }
+  if (typeof SV_LISTS !== 'undefined' && SV_LISTS.minwait) SV_LISTS.minwait[0] = n;
+}
+function tafDecision(id){
+  if (tafPlanMeta()) return tafPhase(id) === 'p1' ? 'ok' : '';   /* the first phase goes on; no gate is rejected by the plan */
+  var o = tafOf(id); return o && (o.d === 'ok' || o.d === 'no') ? o.d : '';
+}
 function tafMay(){ var r = effRole(ROLE); return may('tafapprove') || r === 'tafweej' || rankOf(r) >= rankOf('engineer'); }
 function minState(r){
   if (!r || svReview(r) !== 'approved') return '';

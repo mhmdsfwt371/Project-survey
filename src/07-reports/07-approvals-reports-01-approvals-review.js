@@ -132,7 +132,7 @@ function idleStep(id){
   var r = STATE.recs[id] || {}, ms = minState(r), so = solutionOf(id), tk = taskKindOf(id, 'install');
   if (svReview(r) !== 'approved') return { why:'بانتظار الاعتماد التقني', go:'svappr', lbl:'افتح الاعتماد التقني', cap:'approve' };
   if (ms === 'returned')          return { why:'رفضتها إدارة التفويج — تحتاج بديلًا أو تراجعًا', go:'mfu', lbl:'افتح اعتمادات إدارة التفويج', cap:'approve' };   /* (V45.1) */
-  if (ms !== 'approved')          return { why:'بانتظار اعتماد إدارة التفويج', go:'mfu', lbl:'افتح اعتمادات إدارة التفويج', cap:'approve' };
+  if (ms !== 'approved')          return { why:tafWaitLbl(), go:'mfu', lbl:'افتح اعتمادات إدارة التفويج', cap:'approve' };
   if (!so)                        return { why:'لا حلَّ مقترحًا بعد', go:'solution', lbl:'اقترح الحل', cap:'approve' };
   if (so.status !== 'معتمد')      return { why:'الحلُّ مقترحٌ ولم يُعتمَد', go:'solution', lbl:'اعتمد الحل', cap:'approve' };
   if (tk)                         return { why:'مجدولة للتركيب — تنتظر الفريق', go:'req', lbl:'افتح الطلبات', cap:'approve' };
@@ -144,6 +144,7 @@ function stuckPanel(x){
     var st = idleStep(id);
     var m2 = [['أين وقفت', t(st.why)], ['المشرف / الفني', dispName(r.by) || '—'], ['تاريخ الزيارة', r.at ? fmtDT(r.at) : '—'],
               ['الاعتماد التقني', r.reviewBy ? dispName(r.reviewBy) + ' \u00b7 ' + (r.reviewAt ? dayKey(r.reviewAt) : '') : '—'],
+              tafPlanMeta() ? ['مرحلة الرصد', !tafInScope(id) ? t('لا يلزم') : t(tafPhaseDef(tafPhase(id))[1])] :   /* (V47.12) the plan's phase once a sheet is in */
               ['اعتماد إدارة التفويج', (function(){ var tf = tafOf(id); return !tafInScope(id) ? t('لا يلزم') : tf && tf.d === 'ok' ? (dispName(tf.by || '') + ' \u00b7 ' + (tf.at ? dayKey(tf.at) : '')) : tf && tf.d === 'no' ? t('رفضتها') + ' \u2014 ' + (tf.why || '') + (tf.note ? ' \u00b7 ' + tf.note : '') : '—'; })()],   /* (V45.1) */
               ['المشعر / المربع', (site.zone || '—') + (site.sq ? ' \u00b7 ' + site.sq : '')], ['الشاخص', site.sign || '—'], ['الشركة', site.co || '—'],
               ['الملاحظات', r.note || '—']];

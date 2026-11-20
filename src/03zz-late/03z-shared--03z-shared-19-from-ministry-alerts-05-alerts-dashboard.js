@@ -222,7 +222,7 @@ function svCtGates(rows){
 function svSubLabel(){ if (!SV_SUB) return ''; var p = SV_SUB.split(':');
   if (p[0] === 'st'){ var o = PV.SV_ST.filter(function(x){ return x.k === p[1]; })[0]; return o ? o.n : ''; }
   if (p[0] === 'neww') return 'تحتاج تنسيق مع الجهة المالكة — جديدة هذا الأسبوع';
-  if (p[0] === 'life') return p[1] === 'minwait' ? 'بانتظار اعتماد إدارة التفويج' : ((LIFE[p[1]] || {}).n || p[1]);
+  if (p[0] === 'life') return p[1] === 'minwait' ? tafWaitLbl() : ((LIFE[p[1]] || {}).n || p[1]);
   if (p[0] === 'type') return (PV.TAX_DEF[p[1]] || { l:p[1] }).l; if (p[0] === 'co') return SV_SUB.slice(3);
   if (p[0] === 'ct'){ var ct = PV.SV_CT.filter(function(o){ return o.k === p[1]; })[0]; return ct ? ct.n : ''; }   /* (V43.0) */
   if (p[0] === 'cob'){ var b = PV.MT_COB.filter(function(x){ return x.k === p[1]; })[0]; return b ? t('شركات') + ' — ' + t(b.n) : ''; }
