@@ -1,0 +1,12 @@
+verdict:  GREEN
+commit:   3a2a9bf08e356ab2fde21c5366e3937fd96e44a6
+version:  V47.12
+title:    V47.12 — خطةُ رصد التفويج في مكان الاعتماد والرفض
+event:    push  (the push gate: fast layer + real browser + rules + full list)
+on main:  no
+when:     2026-11-20T16:07:25.363Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/44768902462
+jobs:     fast=success · real=success · shards=success · promote=success · chain=skipped
+passed:   fast browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     —
+missing:  —
