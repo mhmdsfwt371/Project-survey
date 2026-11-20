@@ -1,0 +1,12 @@
+verdict:  GREEN
+commit:   4ac582bad10f68554540f1d5cc35f94ef249ed15
+version:  V47.14
+title:    V47.14 — مرحلةُ خطة الرصد مرشِّحًا على الخريطة
+event:    push  (the push gate: fast layer + real browser + rules + full list)
+on main:  no
+when:     2026-11-20T17:10:42.281Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/44779492910
+jobs:     fast=success · real=success · shards=success · promote=success · chain=skipped
+passed:   fast browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     —
+missing:  —
