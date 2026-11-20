@@ -117,7 +117,7 @@ function tafCritHtml(x){
 }
 /* the card's approval block — the status for everyone, the two buttons for whoever may decide */
 function tafPopHtml(s){
-  if (s && tafPlanMeta() && (tafInScope(s.id) || tafPlan(s.id))) return tafPlanPop(s) + (tafInScope(s.id) ? tafCritHtml(s) : '');
+  if (s && tafPlanMeta() && (tafInScope(s.id) || tafPlan(s.id))) return tafPlanPop(s) + (typeof tafReplyPop === 'function' ? tafReplyPop(s) : '') + (tafInScope(s.id) ? tafCritHtml(s) : '');   /* (V47.15) AFAQY's reply under the plan */
   if (!s || !tafInScope(s.id)) return '';   /* (V47.12) the sheet's phase and comments stand where approve / reject stood */
   var o = tafOf(s.id) || {}, d = tafDecision(s.id), me = tafMay(), id = esc(s.id);
   var head = d === 'ok' ? '<span class="pill ok">\u2713 ' + esc(t('معتمدة من إدارة التفويج')) + '</span>'
@@ -300,12 +300,14 @@ function tafPlanParse(wb){
     if (!out.name){ var mt = /الإصدار\s*([٠-٩0-9]+)/.exec(String((A[0] || [])[0] || '')); if (mt) out.name = 'الإصدار ' + mt[1]; }
     var ph = PV.TAF_PLAN_TABS.filter(function(g){ return g[0].test(sn); })[0]; if (!ph) return;
     var H = (A[0] || []).map(function(h){ return String(h).trim(); }), c = function(n){ return H.indexOf(n); }, I = c('المعرّف'); if (I < 0) return;
+    var cf = function(rx){ for (var i = 0; i < H.length; i++) if (rx.test(H[i])) return i; return -1; }, iSt = cf(/^الشارع$/), iPk = cf(/^ذروة/);   /* (V47.15) the reply's reasons */
     A.slice(1).forEach(function(r){
       var id = String(r[I] || '').trim(); if (!id) return;
       var g = function(n){ var i = c(n); return i < 0 ? '' : r[i]; };
       var o = { p:ph[1], k:num(g('الترتيب')), s:num(g('المقطع')), w:num(g('العرض م')), n:num(g('أطقم الآن')), r:num(g('أطقم مطلوبة')), a:String(g('الاعتماد') || '').trim(),
                 c:[g('سبب الإدراج'), g('التحدّيات')].join(' \u00b7 ').split(/\s*\u00b7\s*/).map(function(x){ return String(x || '').trim(); })
                   .filter(function(x, i, a){ return x && !/^أخرى\s*\u2014/.test(x) && a.indexOf(x) === i; }).join(' \u00b7 ').slice(0, 300) };   /* «أخرى — اذكرها…» is the form's empty choice, not a comment */
+      o.t = iSt < 0 ? '' : String(r[iSt] || '').trim().slice(0, 60); o.q = iPk < 0 ? null : num(r[iPk]); if (!o.q) delete o.q;
       Object.keys(o).forEach(function(k0){ if (o[k0] == null || o[k0] === '') delete o[k0]; });
       o.p = ph[1]; out.m[id] = o; out.n[ph[1]]++;
     });
@@ -328,7 +330,7 @@ function tafPlanImport(file){
 function tafPlanApply(P){
   var ids = Object.keys(P.m).filter(function(id){ var x = siteFind(id); return !!x && !!PV.TAF_SCOPE.zones[x.zone]; }); P.miss = Object.keys(P.m).length - ids.length;
   if (!ids.length){ toast(t('لم أجد في الملف بوّاباتٍ من نقاط الممرات — الأعمدة: المعرّف، أطقم مطلوبة، وتبويبٌ لكلِّ مرحلة')); return false; }
-  var patch = { __plan:{ v:P.v, name:P.name || '', at:Date.now(), by:STATE.meta.name || '', n:ids.length, miss:P.miss } };
+  var patch = { __plan:{ v:P.v, name:P.name || '', at:Date.now(), by:STATE.meta.name || '', n:ids.length, miss:P.miss, f:2 } };   /* f:2 — street and peak are in (V47.15) */
   ids.forEach(function(id){ patch[id] = Object.assign({}, tafOf(id) || {}, { pl:Object.assign({ v:P.v }, P.m[id]) }); });
   var pend = tafPending(); Object.keys(pend).forEach(function(k){ if (!patch[k]) patch[k] = pend[k]; });
   STATE.taf = Object.assign({}, STATE.taf || {}, patch); tafLifeSync(); if (DB.memo) DB.memo.life = null;

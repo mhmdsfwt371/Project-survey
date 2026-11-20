@@ -163,5 +163,79 @@ console.log('\n══ ١٠ · المرحلةُ مرشِّحًا على الخر�
   const keep = w.STATE.taf.__plan; delete w.STATE.taf.__plan; w.FILT.type = 'ممرات'; w.FILT.taf = '';
   T(!/data-ftaf=/.test(w.catBar(0)), 'وبلا خطةٍ مستوردة لا يظهر الصف'); w.STATE.taf.__plan = keep; clr(); }
 
+console.log('\n══ ١١ · ردود أفاقي — لكل بوابة رد، والفئات من الشيت نفسه (V47.15) ══');
+{ const HEAD5 = HEAD.concat(['ذروة ١٠د حاجّ/س']);
+  const rowS = (k, sec, x, st, pk) => [k, sec, x.name || '', x.id, 'نقطة', 'قائم', st, '', 1, 1, 1, '', '', pk];
+  const book5 = tabs => { const wb = w.XLSX.utils.book_new(); w.XLSX.utils.book_append_sheet(wb, w.XLSX.utils.aoa_to_sheet([['هندسة رصد التفويج — الإصدار ٥']]), 'الملخّص');
+    Object.keys(tabs).forEach(n => w.XLSX.utils.book_append_sheet(wb, w.XLSX.utils.aoa_to_sheet([HEAD5].concat(tabs[n])), n)); return w.XLSX.read(w.XLSX.write(wb, { type:'array', bookType:'xlsx' }), { type:'array' }); };
+  const T47 = (w.PV.TAF1447 || {}).m || {}, is47 = x => x.work === 'إعادة تركيب ١٤٤٧' || !!(T47[x.id] && T47[x.id][1] === 'd');
+  const R47 = SC.filter(x => x.zone === 'منى' && is47(x)), RN = SC.filter(x => x.zone === 'منى' && !is47(x) && !/الرحمة|المعيصم/.test(x.name || ''));
+  const RAH = { id:'NSK-MIN-RDR-N990TT', name:'منى-ممر-شارع الرحمة-من الحرم الى الجمرات-1', zone:'منى', type:'ممر', lat:21.42, lng:39.87, work:'' };
+  const MUA = { id:'NSK-MIN-RDR-N991TT', name:'نفق المعيصم - طريق مشاة 15', zone:'منى', type:'ممر', lat:21.41, lng:39.88, work:'' };
+  w.STATE.sites.push(RAH, MUA); w.SITE_IX = null;
+  const WB5 = book5({
+    'منى — المرحلة ١': [rowS(1, 10, RN[0], 'S1', 30000), rowS(2, 11, JM[0], '', 50000)],
+    'منى — المرحلة ٢': [rowS(5, 12, RN[1], 'S1', 20000)],
+    'منى — خارج الحاجة': [rowS(50, 30, R47[0], 'S1', 42096), rowS(51, 31, RN[2], 'S1', 15000), rowS(52, 32, RN[3], 'S2', 12000), rowS(53, 33, RN[4], '', 0), rowS(54, 34, RAH, '', 0), rowS(55, 35, MUA, 'S1', 0)],
+    'عرفات — خارج الحاجة': [rowS(60, 40, arf[3], 'A1', 0), rowS(61, 41, arf[4], 'S1', 9000)] });
+  T(w.tafPlanApply(w.tafPlanParse(WB5)) === true && w.tafPlanMeta().f === 2 && w.tafPlan(RN[0].id).t === 'S1' && w.tafPlan(RN[0].id).q === 30000 && !('t' in w.tafPlan(RN[4].id)) && !('q' in w.tafPlan(RN[4].id)), 'الشيت يحمل الشارع والذروة لكل بوابة، والخطة معلّمة بالصيغة الجديدة');
+  const I = w.tafRpIndex(), K = x => (w.tafRpOf(x, I) || {}).k;
+  T(K(RN[0]) === 'match' && K(JM[0]) === 'match' && K(RN[1]) === 'match', 'بوابات المرحلتين «مطابق» — ومنها بوابة الجمرات');
+  T(K(R47[0]) === 'y47' && K(RN[2]) === 'acc' && K(RN[3]) === 'cov' && K(RN[4]) === 'den' && K(RAH) === 'unm' && K(MUA) === 'unm', 'خارج الحاجة: نقطة ١٤٤٧ رئيسية، وثانية على مسار المرحلتين دقة، وممر بلا بوابات تغطية، وبلا شارع كثافة، والرحمة والمعيصم تدفقات لم تقسها الدراسة');
+  T(K(MUA) === 'unm' && K(arf[4]) === 'cov' && K(arf[3]) === 'cov', 'الأولوية: نفق المعيصم على مسار المرحلتين يبقى «تدفق لم تقسه الدراسة» — والشارع نفسه في عرفات لا يحسب على بوابات منى');
+  const A = w.tafRpAll(), S = w.tafRpStats(A);
+  T(S.n === 11 && S.match.n === 3 && S.y47.n === 1 && S.acc.n === 1 && S.cov.n === 3 && S.den.n === 1 && S.unm.n === 2 && S.none === SC.length - 8, 'كل بوابة في فئة واحدة: ٣ + ١ + ١ + ٣ + ١ + ٢ = ١١، وما لم يشمله الشيت يعد وحده');
+  T(S.match.p1 === 2 && S.match.p2 === 1 && Object.keys(S.acc.st).length === 1 && Object.keys(S.cov.st).length === 3 && S.unm.rah === 1 && S.unm.mua === 1 && S.y47.max === 42096, 'وأرقام الفئات: المرحلتان ٢ و١، ومسار واحد للدقة، و٣ ممرات فرعية، والذروة من الشيت');
+  { const L = x => w.tafRpLine(x, w.tafRpOf(x, I), false);
+    T(/^ركبت في موسم ١٤٤٧ وكانت من نقاط الرصد الرئيسية/.test(L(R47[0])) && L(R47[0]).indexOf('تقع على S1 مع ٢ بوابات من المرحلتين.') > -1 && L(R47[0]).indexOf('٤٢٬٠٩٦') > -1, 'سطر نقطة ١٤٤٧: رئيسية، وعلى أي مسار مع كم بوابة، وذروتها من الدراسة');
+    T(/فتضيف قراءة ثانية/.test(L(RN[2])) && /ولا تمر به بوابات المرحلتين/.test(L(RN[3])) && /تقيس الكثافة بكاميرتها/.test(L(RN[4])) && /شارع الرحمة نحو الحرم/.test(L(RAH)) && /نفق المعيصم/.test(L(MUA)) && L(RN[0]) === 'متفق على إدراجها في المرحلة الأولى.', 'لكل فئة سبب مكتوب، بلا شرط ولا «إعادة تقييم»');
+    T(!A.some(a => /بشرط|إعادة تقييم|مرفوض/.test(w.tafRpLine(a.x, a.R, false) + w.PV.TAF_RP[a.R.k].s)), 'ولا كلمة «بشرط» أو «إعادة تقييم» أو «مرفوض» في أي رد');
+    T(w.tafRpTags(w.tafRpOf(R47[0], I)).join('|') === 'سجل قراءات ١٤٤٧|قراءة ثانية على المسار|قياس الكثافة' && w.tafRpTags(w.tafRpOf(RN[0], I)).length === 0, 'وسوم القيمة على نقطة ١٤٤٧ — ولا وسوم على المطابق'); }
+  const was = w.ROLE;
+  { const h = w.tafReplyDash();
+    T((h.match(/data-svlist="tafr_/g) || []).length === 6 && /id="tafRpHero"/.test(h) && /id="tafRpPub"/.test(h) && /data-tafrst="taf"/.test(h) && /مسودة — لا تظهر خارج أفاقي/.test(h), 'تبويب «ردود أفاقي» للمهندس: الشريط والفئات الست وحالة الرد مسودة بزر إظهارها');
+    T(/id="tafRpJmr"/.test(h) && h.indexOf('(٣ نقاط)') > -1 && /data-tafrxl/.test(h), 'وملاحظة مخارج الدور الثاني بالجمرات (٣ نقاط في النظام) — وزر الإكسل'); }
+  { w.tafRpListReg(); const L = w.MFU.lists['tafr_acc'], H = L.head, r = L.rows();
+    T(r.length === 1 && H.indexOf('مرحلة الرصد') > -1 && H.indexOf('رد أفاقي') > -1 && r[0][H.indexOf('مرحلة الرصد')] === 'خارج الحاجة الرصدية' && r[0][H.indexOf('الشارع')] === 'S1' && /قراءة ثانية/.test(r[0][H.indexOf('السبب')]) && H[H.length - 1] === 'الحالة', 'نافذة الفئة: تصنيف الخطة ورد أفاقي في الصف نفسه، والحالة آخر عمود للوحة');
+    w.SV_POP = 'tafr_acc'; const pop = w.svListPop(); w.SV_POP = ''; T(/class="svpop"/.test(pop) && pop.indexOf('داعمة للرصد — دقة البيانات') > -1 && /data-svpopxls="tafr_acc"/.test(pop), 'وتفتح لوحة وقائمة وإكسل كباقي نوافذ متابعة الوزارة'); }
+    { const note = k => { w.SV_POP = 'tafr_' + k; const h = w.svListPop(); w.SV_VIEW = 'list'; const hl = w.svListPop(); w.SV_VIEW = ''; w.SV_POP = ''; return [h, hl]; };
+      const [a, al] = note('acc'), [m] = note('match');
+      T(/id="tafRpPopNote"/.test(a) && /id="tafRpPopNote"/.test(al) && a.indexOf('تصنيف الخطة') > -1 && a.indexOf('خارج الحاجة الرصدية') > -1 && a.indexOf('داعمة للرصد — دقة البيانات') > -1 && /قراءة ثانية/.test(a)
+        && m.indexOf('مرحلة أولى') > -1 && m.indexOf('مرحلة ثانية') > -1 && m.indexOf('متفق على تصنيفها') > -1, 'نافذة كل فئة تفتح بالجانبين: تصنيف الخطة ورد أفاقي بسببه — في اللوحة والقائمة'); }
+  { const c = w.tafPopHtml(R47[0]);
+    T(/id="tafPlanCard"/.test(c) && /id="tafRpCard"/.test(c) && c.indexOf('رئيسية في رصد ١٤٤٧') > -1 && /data-tafrnsave=/.test(c) && /مسودة · لا تظهر خارج أفاقي قبل الاعتماد/.test(c) && c.indexOf('<bdi>S1</bdi>') > -1, 'كارت النقطة: رد أفاقي تحت الخطة، والشارع معزول، وللمهندس ملاحظته'); }
+  const tabs = () => w.tabsOf('mfu').map(tb => tb[0]);
+  T(tabs().indexOf('mtafr') > -1, 'التبويب ظاهر داخل أفاقي');
+  w.ROLE = 'viewer'; T(tabs().indexOf('mtafr') < 0 && w.tafReplyPop(R47[0]) === '' && /لا رد بعد/.test(w.tafReplyDash()), 'المسودة لا تظهر للوزارة: لا تبويب ولا سطر في الكارت');
+  w.ROLE = 'tafweej'; T(tabs().indexOf('mtafr') < 0 && w.tafReplyPub('taf') === false, 'ولا لإدارة التفويج، ولا تملك إظهارها');
+  w.ROLE = was; const Q0 = w.STATE.queue.length;
+  d.body.insertAdjacentHTML('beforeend', '<div id="rpT"><button data-tafrst="taf">x</button></div>'); d.querySelector('#rpT button').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); d.getElementById('rpT').remove();
+  { const q = w.STATE.queue.filter(x => x.kind === 'cfg' && x.id === 'tafappr').pop();
+    T(w.tafReplySt() === 'taf' && w.STATE.queue.length >= Q0 && q && q.v.m.__reply && q.v.m.__reply.st === 'taf', 'زر «إظهار لإدارة التفويج» يكتب الحالة في الوثيقة الحية نفسها'); }
+  w.ROLE = 'tafweej'; T(tabs().indexOf('mtafr') > -1 && /id="tafRpCard"/.test(w.tafPopHtml(R47[0])) && !/data-tafrnsave/.test(w.tafPopHtml(R47[0])), 'إدارة التفويج ترى التبويب والرد في الكارت — بلا تعديل');
+  w.ROLE = 'viewer'; T(tabs().indexOf('mtafr') < 0, 'والوزارة لا تراه بعد');
+  w.ROLE = was; T(w.tafReplyPub('all') === true && w.tafReplySt() === 'all', 'المهندس يظهره للوزارة أيضا');
+  w.ROLE = 'viewer'; { const h = w.tafReplyDash(), c = w.tafPopHtml(R47[0]);
+    T(tabs().indexOf('mtafr') > -1 && (h.match(/data-svlist="tafr_/g) || []).length === 6 && !/data-tafrst|id="tafRpPub"/.test(h) && /id="tafRpCard"/.test(c) && !/data-tafrnsave|مسودة/.test(c), 'الوزارة تقرأ: الفئات والنوافذ والكارت — بلا أزرار حالة ولا ملاحظات ولا كلمة مسودة');
+    T(w.tafReplyPub('draft') === false && w.tafReplySt() === 'all', 'ولا تملك إرجاعه'); }
+  w.ROLE = was;
+  T(w.tafReplyNote(R47[0].id, 'نقطة مرجعية في القياس') === true && w.tafOf(R47[0].id).rn === 'نقطة مرجعية في القياس' && w.tafPopHtml(R47[0]).indexOf('نقطة مرجعية في القياس') > -1, 'ملاحظة أفاقي على نقطة بعينها تظهر في كارتها');
+  w.tafPlanApply(w.tafPlanParse(WB5)); T(w.tafOf(R47[0].id).rn === 'نقطة مرجعية في القياس' && w.tafReplySt() === 'all', 'وتبقى مع إعادة استيراد الشيت، وتبقى حالة الرد');
+  T(w.tafReplyNote(R47[0].id, '') === true && w.tafOf(R47[0].id).rn === '' && !/ملاحظة أفاقي:/.test(w.tafPopHtml(R47[0])), 'ومسحها يكتب فراغا (الخادم يدمج فلا يحذف المفتاح)');
+  { let cap = null; const keep = w.mtXlsx; w.mtXlsx = (n, hd, rows) => { cap = { n, hd, rows }; return true; }; w.tafReplyXlsx(); w.mtXlsx = keep;
+    T(cap && cap.n === 'ردود أفاقي على خطة رصد التفويج' && cap.rows.length === 11 && ['مرحلة الرصد', 'رد أفاقي', 'الفئة', 'السبب', 'ملاحظة أفاقي', 'ذروة الدراسة (حاج في الساعة)'].every(c => cap.hd.indexOf(c) > -1), 'إكسل ردود أفاقي: كل بوابة بتصنيف الخطة وردنا وسببه'); }
+  { const M = w.tafPlanMeta(), f0 = M.f; delete M.f; const h = w.tafReplyDash();
+    T(/أعد استيراد شيت الخطة/.test(h) && !/data-tafrst/.test(h) && w.tafReplyPub('taf') === false, 'خطة مستوردة قبل هذه النسخة: تنبيه بإعادة الاستيراد، ولا إظهار حتى تظهر الأسباب كاملة');
+    M.f = f0; }
+  w.tafReplyPub('draft');
+  /* before any plan: AFAQY sees the tab with the hint to import one; the tafweej management and the Ministry do not */
+  { const keepT = w.STATE.taf; w.STATE.taf = {}; const keepR = w.ROLE;
+    w.ROLE = 'engineer'; const h = w.tafReplyDash(), inT = tabs().indexOf('mtafr') > -1;
+    w.ROLE = 'tafweej'; const tT = tabs().indexOf('mtafr') < 0;
+    w.ROLE = 'viewer'; const vT = tabs().indexOf('mtafr') < 0;
+    w.ROLE = keepR; w.STATE.taf = keepT;
+    T(inT && /id="tafRpNoPlan"/.test(h) && /استورد خطة رصد التفويج/.test(h) && !/data-tafrst|tafRpHero/.test(h) && tT && vT, 'بلا خطة: التبويب لأفاقي بتنبيه الاستيراد، ولا يظهر لإدارة التفويج ولا للوزارة'); }
+}
+
 console.log(fails.length ? '\nخطةُ رصد التفويج: فشل ✗ (' + fails.length + ')' : '\n✓ ' + pass + ' فحصًا — حالاتُ الشيت في مكان الاعتماد والرفض');
 process.exit(fails.length ? 1 : 0);

@@ -126,6 +126,18 @@ function tafPlan(id){ var M = tafPlanMeta(), o = tafOf(id); return M && o && o.p
 function tafPhase(id){ var p = tafPlan(id); return p ? (p.p || '') : ''; }
 function tafPhaseDef(k){ return PV.TAF_PH.filter(function(g){ return g[0] === (k || ''); })[0] || PV.TAF_PH[3]; }
 /* what a point waiting on the tafweej management is called — by the plan once there is one */
+/* (V47.15) «ردود أفاقي»: the reply is one more key of the same live document, m.__reply = { st, at, by }. A draft is seen
+   inside AFAQY only; the engineer opens it to the tafweej management ('taf'), then to the Ministry too ('all'). */
+function tafReplySt(){ var R = (STATE.taf || {}).__reply; return R && (R.st === 'taf' || R.st === 'all') ? R.st : 'draft'; }
+/* Inside AFAQY the tab is a workspace: it shows even before a plan is imported (with the hint to import it), so the
+   team knows where the reply lives. The tafweej management and the Ministry see it only once a plan exists and the reply
+   has been opened to them. */
+function tafReplySees(){
+  var r = effRole(ROLE), st = tafReplySt();
+  if (r === 'viewer') return !!tafPlanMeta() && st === 'all';
+  if (r === 'tafweej') return !!tafPlanMeta() && st !== 'draft';
+  return true;
+}
 function tafWaitLbl(){ return tafPlanMeta() ? 'خارج المرحلة الأولى في خطة الرصد' : 'بانتظار اعتماد إدارة التفويج'; }
 /* the lifecycle's own name for the waiting state, and its list on the Ministry follow-up, follow the plan */
 function tafLifeSync(){

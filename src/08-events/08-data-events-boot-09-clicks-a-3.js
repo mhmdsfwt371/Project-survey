@@ -269,6 +269,7 @@ function clickAPart7B(e){
     return true;
   }
   if (typeof clickTafweej === 'function' && clickTafweej(e)) return true;
+  if (typeof clickTafReply === 'function' && clickTafReply(e)) return true;   /* (V47.15) */
   if (typeof clickExpo === 'function' && clickExpo(e)) return true;   /* (V45.3) */   /* (V44.2) اعتماد إدارة التفويج */
   var acs = e.target.closest('[data-actspan]'); if (acs){ PV.ACT.span = acs.getAttribute('data-actspan'); render(1); return true; }   /* (V44.0) */
   if (e.target.closest('[data-actfetch]')){ actFetch(); return true; }

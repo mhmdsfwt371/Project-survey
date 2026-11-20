@@ -90,6 +90,7 @@ function svListPop(){
       + btn('\u2715 ' + t('إغلاق'), 'btn-quiet btn-sm', ' data-svpopclose="1"') + '</div></div>'
     + (PV.SV_STACK.length ? '<div class="actions" style="margin:8px 0 0">' + btn('\u2192 ' + t('رجوع'), 'btn-secondary', ' data-svback="1" title="' + esc(t('للشاشة السابقة')) + '"') + '</div>' : '')   /* (V37.59) رجوعٌ حقيقيٌّ للشاشة السابقة */
     + (zonesAll.length > 1 ? '<div class="chips" style="margin:8px 0 0">' + [['', 'كل المشاعر']].concat(zonesAll.map(function(z){ return [z, z]; })).map(function(z){ return '<button type="button" class="chip' + (SV_ZF === z[0] ? ' on' : '') + '" data-svzf="' + esc(z[0]) + '">' + esc(t(z[1])) + '</button>'; }).join('') + '</div>' : '')
+    + (MFU.lists[SV_POP] && typeof MFU.lists[SV_POP].note === 'function' ? MFU.lists[SV_POP].note() : '')   /* (V47.15) a list may open on what it is about, above its board and its table */
     + (SV_POP === 'nophoto' ? '<p class="hint" style="margin:6px 0">' + esc(t('وجِّه الشبابَ لهذه النقاط لإضافة الصور من «تعديل المسح» — «التُقطت ولم تُرفع» تعني أن الصور على جهاز صاحب الزيارة: يفتح التطبيقَ على الشبكة.')) + '</p>' : '')
     /* (V37.6) طلبُ المالك: «عاوز هنا الصور — أقدر أفتح صور المخيم ده في كل التحديات وأسباب عدم المسح». عمودُ «الصور» في النافذة وحدَها (لا في الإكسل) */
     + (asDash && rows.length ? svDashHtml(SV_POP, rows, head) + svPeopleHtml(rows, head) : '')

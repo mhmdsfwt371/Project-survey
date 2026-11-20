@@ -478,6 +478,7 @@ var TABS = {
     ['mreq','طلبات الوزارة','📨','ما طلبته الوزارةُ وآخرُ إفادةٍ فيه والدعمُ المطلوب.', '', 'hidden'],
     ['mdaily','ملخص العمل اليومي','📈','الزياراتُ والتركيبُ والفكُّ وما تحتاج زيارةً أخرى تقنيًا — يومًا بيوم.'],
     ['mtaf','اعتمادات إدارة التفويج','🧭','نقاطُ الممرات في منى وعرفات: ما اعتُمد وما رُفض بسببه وما بقي — بالمشعر، بقوائمَ وتصدير.'],   /* (V44.2) */
+    ['mtafr','ردود أفاقي','\u{1F4AC}','رد أفاقي على كل بوابة في خطة رصد التفويج: ما يطابق الخطة، وما كان رئيسيا في رصد ١٤٤٧، وما يدعم الرصد ولماذا — بقوائم وتصدير.', 'tafreply'],   /* (V47.15) */
     ['mtafcat','تصنيف نقاط الممرات','🗂','نقاطُ الممرات بحسب أصلها: ما تمّ من ملف إدارة التفويج ١٤٤٧، وما بقي منه، وما أُضيف بالمسح الميداني ١٤٤٨ — بحالة كلٍّ الآن.'],   /* (V44.4) */
     ['pace','الوتيرة والهدف','⏱','هنلحق؟ — المتبقّي والموعد والمطلوب يوميًّا، ومعدّلُ آخر سبعة أيام، وتاريخُ الانتهاء المتوقّع.'],   /* (V43.18) from the overview */
     /* (V43.18) the overview's remaining tabs — hidden, reachable by key for exports and old links */
@@ -619,6 +620,8 @@ var PARENT = {};
 var TAB_SEE = {
   /* (V43.18) «تصحيح البيانات» — the engineer's work: engineers and above */
   eng: function(pid){ return seesRaw(pid) && rankOf(effRole(ROLE)) >= rankOf('engineer'); },
+  /* (V47.15) «ردود أفاقي» — whoever sees the tafweej tab, once the reply is open to them */
+  tafreply: function(){ return seesRaw('mtaf') && typeof tafReplySees === 'function' && tafReplySees(); },
   /* (V38.67) the chat history: the project's management (admin and above) */
   chatmgr: function(pid){ return seesRaw(pid) && rankOf(effRole(ROLE)) >= rankOf('admin'); },
   /* «مهامي» و«أدائي» لمن له مهامُّ ونقاط — لا للإدارة العليا التي ترى لا تعمل */
