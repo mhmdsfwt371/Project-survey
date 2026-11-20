@@ -119,6 +119,7 @@ document.addEventListener('change', function(e){
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-wbsfile')){ if (t0.files && t0.files[0]) wbsImport(t0.files[0]); return; }
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-ex47')){ if (t0.files && t0.files[0]) ex47Import(t0.files[0]); return; }   /* (V37.88) */
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-brfile')){ if (t0.files && t0.files[0]) extFileImport(t0.files[0]); return; }
+  if (t0 && t0.hasAttribute && t0.hasAttribute('data-tafreffile')){ if (t0.files && t0.files[0] && typeof tafRefImport === 'function') tafRefImport(t0.files[0]); return; }   /* (V47.13) */
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-tafplanfile')){ if (t0.files && t0.files[0] && typeof tafPlanImport === 'function') tafPlanImport(t0.files[0]); return; }   /* (V47.12) */
   /* (V38.30) استيرادُ ملفِّ انتظارٍ من جهازٍ آخر — للمهندس فما فوق */
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-qimport')){

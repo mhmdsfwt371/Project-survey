@@ -194,7 +194,7 @@
 | `08-events--08-data-events-boot-06-long-lists-storage-clicks.js` | 198 | 3 | Moved verbatim from src/08-events/08-data-events-boot-06-long-lists-storage-clicks.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or t |
 | `08-events--08-data-events-boot-13-toast-wheel-ios-boot.js` | 12 | 2 | Moved verbatim from src/08-events/08-data-events-boot-13-toast-wheel-ios-boot.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the of |
 
-## `04-office/` — المكتب — الصور والحوكمة والمساعد والتقارير بالكلام والرسم على الخريطة  (25 ملفات · 4144 سطر · 185 دالة)
+## `04-office/` — المكتب — الصور والحوكمة والمساعد والتقارير بالكلام والرسم على الخريطة  (25 ملفات · 4225 سطر · 191 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -219,7 +219,7 @@
 | `04-tasks-office-19-twin-engine.js` | 250 | 17 | (V39.24) owner: «الديجيتال توين حاجة دايناميك: أدخل بالماوس جوّه المكان، أشوف الأجهزة المتركّبة بمواقعها |
 | `04-tasks-office-20-map3d-overview.js` | 83 | 6 | (V39.29) the second step of the GIS review. From afar a monitoring map shows groups, not dust: below zoom |
 | `04-tasks-office-21-assistant-act.js` | 287 | 16 | The engineer's «تصحيح البيانات» page (V43.18) and the assistant that acts (V43.16): «what do I do» questions — duplicate points, a point that does not show, who |
-| `04-tasks-office-23-tafweej.js` | 541 | 34 | The tafweej management approves or rejects the corridor points of Mina and Arafat from the point's card on the |
+| `04-tasks-office-23-tafweej.js` | 622 | 40 | The tafweej management approves or rejects the corridor points of Mina and Arafat from the point's card on the |
 | `04-tasks-office-24-tafweej-1447.js` | 12 | 0 | The basis of the Mina corridor points: the KMZ «point_of_path_update_23-3-2026 ALL_POINTS» that the tafweej |
 | `04-tasks-office-25-expo.js` | 123 | 6 | The EXPO command center link and the EXPO devices (type, name, VPN address, serial), each address a direct link, editable by the office |
 | `04-tasks-office-26-pipeline.js` | 101 | 6 | Where every point stands now, as one line of stages: a node per stage with its count, flowing dashed green |
@@ -250,7 +250,7 @@
 | `05-lifecycle-map-21-move-devices.js` | 127 | 11 | (V39.31) owner: «عاوز أي نقطة، من أقل نقطة، أقدر أحرّكها: كاميرا وأنتنات وريدر وحساسات وجيت واي وخلافه». A point |
 | `05-lifecycle-map-30-kmz-detailed.js` | 100 | 5 | A detailed KMZ for Google Earth: every planned point, once per app filter as folders, with a full balloon. |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (14 ملفات · 4763 سطر · 168 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (14 ملفات · 4765 سطر · 168 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -264,7 +264,7 @@
 | `06-ministry-alerts-08-pptx-template.js` | 1110 | 33 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 252 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 1477 | 2 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 1479 | 2 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-11b-password-change.js` | 68 | 2 | The forced password change after a temporary password. Moved verbatim out of 11-whats-new.js (V47.2): |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
@@ -286,7 +286,7 @@
 | `07-approvals-reports-11-import-roles-perms.js` | 322 | 10 | Import via downloaded template, roles (who sees and does what), the owner is never locked out, database permissions matrix, custom roles, ranks, org tree and me |
 | `07-approvals-reports-12-activity-report.js` | 229 | 15 | What each person did in a period, counted two ways — how many times, and how many DIFFERENT points — split by the kind |
 
-## `08-events/` — البياناتُ والأحداث — الإعدادات والمستخدمون والنقرات والإقلاع  (14 ملفات · 5364 سطر · 141 دالة)
+## `08-events/` — البياناتُ والأحداث — الإعدادات والمستخدمون والنقرات والإقلاع  (14 ملفات · 5365 سطر · 141 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -302,7 +302,7 @@
 | `08-data-events-boot-10-clicks-doc-1.js` | 363 | 5 | Document-level click handlers part 1 (onDocClick and parts 1–3): settings, constants, survey edit, pending file, E-GATE verification. |
 | `08-data-events-boot-11-clicks-doc-2.js` | 539 | 7 | Document-level click handlers part 2 (parts 4–7). |
 | `08-data-events-boot-12-clicks-doc-3.js` | 262 | 3 | Document-level click handlers part 3 (parts 8–9). |
-| `08-data-events-boot-13-toast-wheel-ios-boot.js` | 849 | 10 | Toast, label cells, mouse wheel never types numbers, iOS viewport stability, assistant scroll fix, file-input change handlers and the boot sequence. |
+| `08-data-events-boot-13-toast-wheel-ios-boot.js` | 850 | 10 | Toast, label cells, mouse wheel never types numbers, iOS viewport stability, assistant scroll fix, file-input change handlers and the boot sequence. |
 | `08-data-events-boot-14-view-as.js` | 97 | 8 | «View as user» for the admin: see the app with another person's role and name — nothing is saved meanwhile. |
 
 ## `09-integ/` —   (1 ملفات · 731 سطر · 22 دالة)
@@ -317,4 +317,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 250 ملفًّا · 52299 سطر · 2419 دالة.
+**الإجمالي:** 250 ملفًّا · 52383 سطر · 2425 دالة.

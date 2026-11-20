@@ -6,7 +6,7 @@
              all in «متابعة الوزارة ← اعتمادات إدارة التفويج». Every corridor point's card says WHY the point is there: for Mina,
              its place in the tafweej management's 1447 file (PV.TAF1447) or that it completes those paths this season; for
              Arafat, the paths to Namirah Mosque, Jabal al-Rahma and the train, with the purpose chosen per point.
-   DEFINES : tafCatReg, tafListReg, tafNearLines, PV.TAF_PAIR_M, tafPending, PV.TAF_DOCS, PV.TAF_METHOD, PV.TAF_SPECS, tafSpecsHtml, PV.TAF_STAGE, tafStage, tafPlanParse, tafPlanImport, tafPlanSet, tafPlanPop, tafPlanDash, tafPlanCount, tafPlanListReg, tafPlanBar, tafPlanXlsx, tafCats, tafStageBar, tafCatDash, tafCatXlsx, tafSave, tafSites, tafCrit, tafCritHtml, tafPopHtml, tafDash, tafXlsx, tafLayerToggle, tafLayerSync, clickTafweej
+   DEFINES : tafCatReg, tafListReg, tafNearLines, PV.TAF_PAIR_M, tafPending, PV.TAF_DOCS, PV.TAF_METHOD, PV.TAF_SPECS, tafSpecsHtml, PV.TAF_STAGE, tafStage, tafRefMay, tafRefParse, tafRefImport, tafRefApply, tafRefLoad, tafRefHtml, tafPlanParse, tafPlanImport, tafPlanSet, tafPlanPop, tafPlanDash, tafPlanCount, tafPlanListReg, tafPlanBar, tafPlanXlsx, tafCats, tafStageBar, tafCatDash, tafCatXlsx, tafSave, tafSites, tafCrit, tafCritHtml, tafPopHtml, tafDash, tafXlsx, tafLayerToggle, tafLayerSync, clickTafweej
    NOTE    : The scope, the decision and the gate are in core (03-survey-records-05: PV.TAF_SCOPE, tafInScope, tafOf,
              tafDecision, tafMay, minState). Decisions live in settings/tafappr (one live document).
    ============================================================================ */
@@ -207,6 +207,87 @@ function tafXlsx(){
   });
   logEvent('تصدير اعتمادات إدارة التفويج \u2014 ' + rows.length);
   return mtXlsx('اعتمادات إدارة التفويج', ['الرقم', 'الاسم', 'المشعر', 'القرار', 'سبب الرفض', 'التعليق', 'بواسطة', 'التاريخ', 'معيار النقطة', 'رقمها في ملف ١٤٤٧', 'حالتها في ملف ١٤٤٧', 'الغرض', 'البديل', 'خط العرض', 'خط الطول'], rows);
+}
+
+/* ═══ (V47.13) the study behind the plan, kept beside it as a reference ═══
+   Owner: «اعمله مكان في السيستم عشان يبقى كل حاجة موجودة كمرجع». The Word study («هندسة رصد التفويج») is read in the
+   browser — headings, paragraphs and tables; its figures stay in the file — and kept in its own document, settings/tafref,
+   fetched only when the board is opened. It never enters the public repository. The Ministry's read-only role does not see it. */
+function tafRefMay(){ return effRole(ROLE) !== 'viewer'; }
+function tafRefParse(xml){
+  var doc = new DOMParser().parseFromString(String(xml || ''), 'application/xml'), body = doc.getElementsByTagName('w:body')[0], B = [], title = '';
+  var txt = function(el){ var s = '', N = el.getElementsByTagName('*'), i, nn;
+    for (i = 0; i < N.length; i++){ nn = N[i].nodeName; if (nn === 'w:t') s += N[i].textContent; else if (nn === 'w:tab' || nn === 'w:br' || nn === 'w:p') s += ' '; }
+    return s.replace(/\s+/g, ' ').trim(); };
+  for (var k = body ? body.firstChild : null; k; k = k.nextSibling){
+    if (k.nodeName === 'w:p'){
+      var st = k.getElementsByTagName('w:pStyle')[0], sv = st ? String(st.getAttribute('w:val') || '') : '', x = txt(k), m = /^heading\s*([1-3])$/i.exec(sv);
+      if (!x || /^toc/i.test(sv) || /^(المحتويات|Contents)$/.test(x)) continue;
+      if (/^title$/i.test(sv) && !title){ title = x; continue; }
+      B.push([m ? 'h' + m[1] : (k.getElementsByTagName('w:numPr').length ? 'li' : 'p'), x]);
+    } else if (k.nodeName === 'w:tbl'){
+      var R = [], TR = k.getElementsByTagName('w:tr'), r, c, TC, row;
+      for (r = 0; r < TR.length && r < 80; r++){ TC = TR[r].getElementsByTagName('w:tc'); row = []; for (c = 0; c < TC.length && c < 14; c++) row.push(txt(TC[c])); R.push(row); }
+      if (R.length) B.push(['t', R]);
+    }
+  }
+  return { title:title, b:B };
+}
+function tafRefImport(file){
+  if (!file || !(rankOf(effRole(ROLE)) >= rankOf('engineer'))){ toast(t('رفعُ الدراسة للمهندس')); return; }
+  jszipLoad().then(function(ok){
+    if (!ok){ toast(t('تعذّرت قراءةُ الملف')); return; }
+    var fr = new FileReader();
+    fr.onload = function(){
+      JSZip.loadAsync(fr.result).then(function(z){ var f = z.file('word/document.xml'); if (!f) throw new Error('not a docx'); return f.async('string'); })
+        .then(function(xml){ tafRefApply(tafRefParse(xml), file.name); })
+        .catch(function(e){ softErr('دراسة التفويج', e, ''); toast(t('تعذّرت قراءةُ الملف')); });
+    };
+    fr.readAsArrayBuffer(file);
+  });
+}
+function tafRefApply(P, name){
+  var j = JSON.stringify((P && P.b) || []);
+  if (!P || !P.b || !P.b.length){ toast(t('لم أجد نصًّا في الملف — المطلوب ملفُّ وورد (docx)')); return false; }
+  if (j.length > 600000){ toast(t('الملفُّ أكبرُ من أن يُحفَظ مرجعًا')); return false; }
+  var d = { name:String(name || '').slice(0, 120), title:String(P.title || '').slice(0, 160), n:P.b.length, j:j, at:Date.now(), by:STATE.meta.name || '' };
+  tafRefLoad.d = d; tafRefLoad.b = null; lsSet('nsk14.tafref', JSON.stringify(d));
+  CORE.set('cfg', 'tafref', d);
+  logEvent('رفع دراسة رصد التفويج — ' + d.name + ' · ' + d.n);
+  toast(t('حُفظت الدراسةُ مرجعًا')); render(1); return true;
+}
+/* the local copy first (the field opens it offline), then the server's when it is newer */
+function tafRefLoad(){
+  if (!tafRefLoad.d){ try { tafRefLoad.d = JSON.parse(lsGet('nsk14.tafref') || 'null'); } catch (e){ LS_ERR = e; } }
+  if (!FB.ready || !FB.db || (tafRefLoad.at && Date.now() - tafRefLoad.at < 60000)) return;
+  tafRefLoad.at = Date.now();
+  DB.col('settings').doc('tafref').get().then(function(doc){
+    var d = doc && doc.exists ? doc.data() : null; if (!d || !d.j || (tafRefLoad.d && tafRefLoad.d.at >= d.at)) return;
+    tafRefLoad.d = d; tafRefLoad.b = null; lsSet('nsk14.tafref', JSON.stringify(d)); if (CUR === 'mfu') render(1);
+  }).catch(function(e){ softErr('دراسة التفويج', e, ''); });
+}
+function tafRefHtml(){
+  if (!tafRefMay()) return '';
+  tafRefLoad();
+  var d = tafRefLoad.d, eng = rankOf(effRole(ROLE)) >= rankOf('engineer');
+  var up = eng ? '<label class="btn btn-secondary btn-sm" style="cursor:pointer">⬆ ' + esc(t(d && d.j ? 'رفع إصدار أحدث (Word)' : 'رفع الدراسة (Word)')) + '<input type="file" accept=".docx" data-tafreffile="1" style="display:none"></label>' : '';
+  var head = '<div class="card" id="tafRefCard" style="margin:0 0 10px"><h4 style="margin:0 0 8px">\u{1F4D8} ' + esc(t('دراسة هندسة رصد التفويج')) + '</h4>';
+  if (!d || !d.j) return head + '<p class="hint" style="margin:0 0 8px">' + esc(t('لم تُرفَع الدراسةُ بعد.')) + '</p>' + up + '</div>';
+  if (!tafRefLoad.b){ try { tafRefLoad.b = JSON.parse(d.j); } catch (e){ LS_ERR = e; tafRefLoad.b = []; } }
+  var G = [], cur = null, cell = 'border:1px solid var(--line, #e2e2e2);padding:4px 6px;text-align:start;vertical-align:top';
+  tafRefLoad.b.forEach(function(b){
+    if (b[0] === 'h1' || !cur){ cur = { h:b[0] === 'h1' ? b[1] : t('مقدمة'), x:[] }; G.push(cur); if (b[0] === 'h1') return; }
+    cur.x.push(b[0] === 't'
+      ? '<div style="overflow-x:auto;margin:6px 0"><table style="border-collapse:collapse;font-size:12.5px;min-width:100%">' + b[1].map(function(r, i){
+          return '<tr>' + r.map(function(c){ return '<' + (i ? 'td' : 'th') + ' style="' + cell + '">' + esc(c) + '</' + (i ? 'td' : 'th') + '>'; }).join('') + '</tr>'; }).join('') + '</table></div>'
+      : b[0] === 'p' ? '<p style="margin:0 0 6px;line-height:1.8">' + esc(b[1]) + '</p>'
+      : b[0] === 'li' ? '<p style="margin:0 0 4px;line-height:1.8">• ' + esc(b[1]) + '</p>'
+      : '<p style="margin:8px 0 4px;font-weight:700">' + esc(b[1]) + '</p>');
+  });
+  return head + (d.title ? '<div style="font-weight:700;margin:0 0 4px">' + esc(d.title) + '</div>' : '')
+    + '<div class="hint" style="margin:0 0 8px"><bdi>' + esc(d.name || '') + '</bdi> · ' + esc(dayKey(d.at || Date.now())) + (d.by ? ' · ' + esc(d.by) : '') + ' · ' + esc(t('النصُّ والجداول هنا، والأشكالُ في الملف الأصلي')) + '</div>'
+    + G.map(function(g){ return '<details style="border-top:1px solid var(--line, #e2e2e2);padding:6px 0"><summary style="cursor:pointer;font-weight:700;padding:4px 0">' + esc(g.h) + '</summary><div style="padding:6px 0 0">' + g.x.join('') + '</div></details>'; }).join('')
+    + (up ? '<div style="margin:8px 0 0">' + up + '</div>' : '') + '</div>';
 }
 
 /* ═══ (V47.12) «خطة رصد التفويج» — the tafweej management's sheet in the place of approve / reject ═══
@@ -522,7 +603,7 @@ PV.TAF_DOCS = [
   ['دليل المستخدم — إدارة التفويج', 'Guide_Tafweej_1448.pdf', 'الاعتماد والرفض من الخريطة، وإضافة النقاط، ولوحة الاعتمادات والتصنيف — بالصور']
 ];
 function tafSpecsHtml(){
-  return '<div class="card" style="margin:0 0 10px"><h4 style="margin:0 0 8px">\u{1F4DA} ' + esc(t('ملفات إدارة التفويج')) + '</h4>'
+  return tafRefHtml() + '<div class="card" style="margin:0 0 10px"><h4 style="margin:0 0 8px">\u{1F4DA} ' + esc(t('ملفات إدارة التفويج')) + '</h4>'
     + PV.TAF_DOCS.map(function(d){
         return '<div style="border-top:1px solid var(--line, #e2e2e2);padding:8px 0;display:flex;gap:10px;flex-wrap:wrap;align-items:center">'
           + '<div style="flex:1 1 220px;min-width:0"><b>' + esc(t(d[0])) + '</b><div class="hint" style="margin:2px 0 0">' + esc(t(d[2])) + '</div></div>'

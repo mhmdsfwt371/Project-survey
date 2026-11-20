@@ -119,5 +119,30 @@ console.log('\n══ ٨ · شيتٌ أحدث يحلّ محلَّ القديم �
   T(w.tafPlanMeta().name === 'الإصدار ٤' && w.tafPhase(mina[4].id) === 'p1' && w.tafPhase(mina[1].id) === '' && w.tafPhase(arf[0].id) === '', 'الإصدار ٤: ما خرج من الشيت عاد «غير مصنفة» — لا يبقى على مرحلته القديمة');
   T(w.lifeOf(mina[4]) === 'ready' && w.tafPlanCount(w.tafSites('')).p1 === 2, 'والدورةُ والأعدادُ تتبعان الشيتَ الجديد'); }
 
+console.log('\n══ ٩ · الدراسةُ نفسُها مرجعًا بجوار الخطة (V47.13) ══');
+{ const W = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"';
+  const par = (tx, st, num) => '<w:p><w:pPr>' + (st ? '<w:pStyle w:val="' + st + '"/>' : '') + (num ? '<w:numPr><w:ilvl w:val="0"/></w:numPr>' : '') + '</w:pPr><w:r><w:t>' + tx + '</w:t></w:r></w:p>';
+  const tc = x => '<w:tc><w:p><w:r><w:t>' + x + '</w:t></w:r></w:p></w:tc>';
+  const XML = '<?xml version="1.0"?><w:document ' + W + '><w:body>' + par('لصالح: إدارة التفويج') + par('المحتويات') + par('١. الخلاصة التنفيذية3', 'TOC1')
+    + par('١. الخلاصة التنفيذية', 'Heading1') + par('البوّابة تُقاس بما تُخبر به مركزَ التفويج.') + par('المرحلة ١ — منى', 'Heading2') + par('توصيةٌ أولى', '', 1)
+    + '<w:tbl><w:tr>' + tc('المشعر') + tc('أطقم') + '</w:tr><w:tr>' + tc('منى') + tc('٥٤') + '</w:tr></w:tbl>' + par('٢. المنهج والبيانات', 'Heading1') + par('فقرةُ المنهج.') + '</w:body></w:document>';
+  w.localStorage.removeItem('nsk14.tafref'); w.tafRefLoad.d = null; w.tafRefLoad.b = null;
+  const h0 = w.tafSpecsHtml();
+  T(/id="tafRefCard"/.test(h0) && /لم تُرفَع الدراسةُ بعد/.test(h0) && /data-tafreffile/.test(h0), 'قبل الرفع: البطاقةُ تقول «لم تُرفع بعد» وللمهندس زرُّ الرفع');
+  const R = w.tafRefParse(XML), kinds = R.b.map(b => b[0]).join(',');
+  T(kinds === 'p,h1,p,h2,li,t,h1,p' && R.b[5][1].length === 2 && R.b[5][1][1][1] === '٥٤', 'قراءةُ الوورد: العناوينُ والفقراتُ والبنودُ والجدول — وفهرسُ المحتويات لا يُكرَّر');
+  const Q1 = w.STATE.queue.length; T(w.tafRefApply(R, 'هندسة رصد التفويج 3.docx') === true, 'حُفظت الدراسة');
+  { const q = w.STATE.queue.filter(x => x.kind === 'cfg' && x.id === 'tafref').pop();
+    T(w.STATE.queue.length > Q1 && q && typeof q.v.j === 'string' && q.v.n === 8 && q.v.name === 'هندسة رصد التفويج 3.docx' && Object.keys(q.v).every(k => typeof q.v[k] !== 'object'), 'في وثيقتها settings/tafref: نصٌّ واحدٌ بلا مصفوفاتٍ متداخلة (القاعدةُ ترفضها)');
+    T(!!w.localStorage.getItem('nsk14.tafref'), 'ونسخةٌ على الجهاز تُفتح بلا شبكة'); }
+  const h = w.tafSpecsHtml();
+  T((h.match(/<details/g) || []).length === 3 && /<summary[^>]*>١\. الخلاصة التنفيذية<\/summary>/.test(h) && /<th [^>]*>المشعر<\/th>/.test(h) && /<td [^>]*>٥٤<\/td>/.test(h) && /• توصيةٌ أولى/.test(h), 'البطاقة: قسمٌ يُطوى لكلِّ عنوان، والجدولُ جدولًا، والبنودُ بنودًا');
+  T(/الأشكالُ في الملف الأصلي/.test(h) && /رفع إصدار أحدث/.test(h) && h.indexOf('tafRefCard') < h.indexOf('ملفات إدارة التفويج'), 'وتقول إن الأشكالَ في الملف الأصلي — وهي فوق ملفات إدارة التفويج');
+  T(w.tafRefApply({ b:[] }, 'x.docx') === false && w.tafRefLoad.d.n === 8, 'ملفٌّ بلا نصٍّ لا يمحو المرجعَ القائم');
+  const was = w.ROLE; w.ROLE = 'viewer'; const hv = w.tafSpecsHtml();
+  T(!/tafRefCard|data-tafreffile/.test(hv) && /ملفات إدارة التفويج/.test(hv), 'دورُ الوزارة للقراءة لا يرى الدراسة — وباقي الملفات في مكانها');
+  w.ROLE = 'tafweej'; const ht = w.tafSpecsHtml(); T(/tafRefCard/.test(ht) && /<details/.test(ht) && !/data-tafreffile/.test(ht), 'إدارةُ التفويج تقرؤها بلا زرِّ رفع');
+  w.ROLE = was; }
+
 console.log(fails.length ? '\nخطةُ رصد التفويج: فشل ✗ (' + fails.length + ')' : '\n✓ ' + pass + ' فحصًا — حالاتُ الشيت في مكان الاعتماد والرفض');
 process.exit(fails.length ? 1 : 0);
