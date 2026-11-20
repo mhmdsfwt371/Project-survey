@@ -144,5 +144,24 @@ console.log('\n══ ٩ · الدراسةُ نفسُها مرجعًا بجوا�
   w.ROLE = 'tafweej'; const ht = w.tafSpecsHtml(); T(/tafRefCard/.test(ht) && /<details/.test(ht) && !/data-tafreffile/.test(ht), 'إدارةُ التفويج تقرؤها بلا زرِّ رفع');
   w.ROLE = was; }
 
+console.log('\n══ ١٠ · المرحلةُ مرشِّحًا على الخريطة بعد اختيار الممرات (V47.14) ══');
+{ const clr = () => { ['zone', 'type', 'work', 'life', 'route', 'floor', 'exec', 'ccg', 'taf'].forEach(k => w.FILT[k] = ''); };
+  clr(); T(!/data-ftaf=/.test(w.catBar(0)), 'بلا اختيار نوع: لا صفَّ لخطة الرصد');
+  w.FILT.type = 'مخيمات'; T(!/data-ftaf=/.test(w.catBar(0)), 'ومع «مخيمات» كذلك');
+  w.FILT.type = 'ممرات'; const cb = w.catBar(0), nCor = SC.filter(x => w.taxOf(x).t === 'ممرات');
+  T(/fsec-taf open/.test(cb) && /data-ftaf=""/.test(cb) && /data-ftaf="p1"/.test(cb) && /data-ftaf="none"/.test(cb) && !/data-ftaf="p2"/.test(cb), 'بعد اختيار «ممرات»: صفُّ «خطة رصد التفويج» مفتوحٌ بمراحله التي فيها نقاط');
+  const n1 = nCor.filter(x => w.tafPhase(x.id) === 'p1').length, m1 = new RegExp('data-ftaf="p1"[^>]*>.*?<span class="n">' + w.nm(n1) + '</span>').test(cb);
+  T(m1, 'وعددُ كلِّ مرحلةٍ بجوارها — مرحلة أولى ' + n1);
+  clr(); w.FILT.taf = 'p1'; const f1 = w.filtered().map(x => x.id).sort();
+  T(w.filtOn() && f1.join() === [mina[0].id, mina[4].id].sort().join(), 'المرشِّح «مرحلة أولى»: بوّابتاها وحدَهما على الخريطة');
+  w.FILT.taf = 'none'; const fn = w.filtered();
+  T(fn.length === SC.length - 2 && fn.every(x => w.tafScopeOk(x) && !w.tafPhase(x.id)), '«غير مصنفة»: ممراتُ النطاق التي لم يسمِّها الشيت — ولا مخيمَ ولا كاميرا');
+  w.FILT.taf = 'p2'; T(w.filtered().length === 0, 'ومرحلةٌ بلا نقاط لا تُظهر شيئًا');
+  w.FILT.taf = 'p1'; const cb2 = w.catBar(0); T(/data-fclr="taf"/.test(cb2) && /data-ftaf="p1"/.test(cb2), 'المرشِّحُ الفعّالُ شريحةٌ تُزال بضغطة، وصفُّه يبقى ظاهرًا بلا نوع');
+  d.body.insertAdjacentHTML('beforeend', '<div id="tfT"><button data-ftaf="out">x</button></div>'); d.querySelector('#tfT button').dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
+  T(w.FILT.taf === 'out', 'والضغطُ على مرحلةٍ يختارها'); d.getElementById('tfT').remove();
+  const keep = w.STATE.taf.__plan; delete w.STATE.taf.__plan; w.FILT.type = 'ممرات'; w.FILT.taf = '';
+  T(!/data-ftaf=/.test(w.catBar(0)), 'وبلا خطةٍ مستوردة لا يظهر الصف'); w.STATE.taf.__plan = keep; clr(); }
+
 console.log(fails.length ? '\nخطةُ رصد التفويج: فشل ✗ (' + fails.length + ')' : '\n✓ ' + pass + ' فحصًا — حالاتُ الشيت في مكان الاعتماد والرفض');
 process.exit(fails.length ? 1 : 0);

@@ -199,10 +199,16 @@ function ctSrc(r, key){
 function ctypeSrc(x){ return x ? ctSrc((STATE.recs || {})[x.id], 'ctype') : null; }
 function siteTard(x){ if (!x) return false; var cs = ctypeSrc(x); return !!(cs && cs.field && cs.v === 'ترددي'); }
 function siteTbar(x){ if (!siteTard(x)) return 0; var ts = ctSrc((STATE.recs || {})[x.id], 'tbar'); return ts && ts.field ? (+ts.v || 0) : 0; }
-function filtOn(){ return !!(FILT.zone || FILT.type || FILT.work || FILT.life || FILT.stg || FILT.exec || FILT.ccg || FILT.route || (FILT.floor !== '' && FILT.floor != null) || PV.CO_SEL.length); }
+function filtOn(){ return !!(FILT.zone || FILT.type || FILT.work || FILT.life || FILT.stg || FILT.exec || FILT.ccg || FILT.taf || FILT.route || (FILT.floor !== '' && FILT.floor != null) || PV.CO_SEL.length); }
 /* (V39.29) the stage of a point in the installation or dismantling legend — the same rule the legend counts by */
 function modeStageOf(x, mode){ return (mode === 'dis' ? disDone(x.id) : insDone(x.id)) ? 'done' : (asnOf(x.id) ? 'asn' : 'wait'); }
 
+/* (V47.14) owner: «مضطر أفتح كل نقطة عشان أعرف حالة التفويج» — the plan's phase as a map filter. A point outside the plan's
+   board (not a corridor in scope, not named by the sheet) passes none of its phases; 'none' is a corridor the sheet does not name. */
+function filtTafIs(x, k){
+  if (typeof tafPhase !== 'function' || !tafPlanMeta() || !(tafScopeOk(x) || tafPlan(x.id))) return false;
+  return (tafPhase(x.id) || 'none') === k;
+}
 function filtPass(x){
   if (FILT.zone && taxOf(x).g !== FILT.zone) return false;   /* (V27.2) بتصنيف المالك */
   if (FILT.type && taxOf(x).t !== FILT.type) return false;
@@ -215,6 +221,7 @@ function filtPass(x){
   if (FILT.stg){ var sp = String(FILT.stg).split(':'); if (sp[0] === FIELD_MODE && modeStageOf(x, sp[0]) !== sp[1]) return false; }   /* (V39.29) from the legend */
   if (FILT.exec && typeof execStatusMemo === 'function'){ var exL = execLabelOf(execStatusMemo(x)); if (FILT.exec === '*' ? execIsNone(exL) : exL !== FILT.exec) return false; }   /* (V39.69) «الكل» = every point with a real challenge */   /* (V37.52→V37.53) بالتسمية الظاهرة */
   if (FILT.ccg && typeof ccGroupsOfSite === 'function'){ var cgs = ccGroupsOfSite(x); if (FILT.ccg === '*' ? !cgs.length : cgs.indexOf(FILT.ccg) < 0) return false; }   /* (V39.69) «الكل» = every point in any handling group */
+  if (FILT.taf && !filtTafIs(x, FILT.taf)) return false;   /* (V47.14) by the phase of the tafweej monitoring plan */
   /* الشركةُ ترشيحٌ لا تلوينٌ فحسب: من اختار شركةً أراد نقاطَها وحدها */
   if (PV.CO_SEL.length && PV.CO_SEL.indexOf(x.co) < 0) return false;
   return true;
@@ -506,17 +513,31 @@ function catBar(withWork){
         return '<button type="button" class="cat' + (on ? ' on' : '') + '" data-fl="' + esc(k) + '" style="border-color:' + L.c + (on ? ';background:' + L.c + '22;color:' + L.c : '') + '"><span style="display:inline-block;width:8px;height:8px;border-radius:99px;background:' + L.c + ';margin-inline-end:4px"></span>' + esc(t(L.n)) + ' <span class="n">' + nm(lc[k]) + '</span></button>'; }).join('') + '</div>';
       lifeSel = FILT.life && LIFE[FILT.life] ? '<span style="display:inline-block;width:8px;height:8px;border-radius:99px;background:' + LIFE[FILT.life].c + ';margin-inline-end:4px"></span>' + esc(t(LIFE[FILT.life].n)) + (lc[FILT.life] ? ' <b>' + nm(lc[FILT.life]) + '</b>' : '') : ''; }
   }
+  /* ─ (V47.14) مرحلةُ خطة رصد التفويج: تظهر بعد اختيار «ممرات» (أو منشأة الجمرات) حين تكون الخطةُ مستوردة ─ */
+  var tafRow = '', tafSel = '';
+  if (typeof tafPlanMeta === 'function' && tafPlanMeta() && (FILT.taf || FILT.type === 'ممرات' || FILT.type === 'منشأة الجمرات')){
+    var tc = {}, tAny = 0;
+    STATE.sites.forEach(function(x){ if (FILT.zone && taxOf(x).g !== FILT.zone) return; if (FILT.type && taxOf(x).t !== FILT.type) return; if (!(tafScopeOk(x) || tafPlan(x.id))) return;
+      var k = tafPhase(x.id) || 'none'; tc[k] = (tc[k] || 0) + 1; tAny++; });
+    var tDefs = PV.TAF_PH.map(function(g){ return [g[0] || 'none', g[1], g[2]]; }).filter(function(g){ return tc[g[0]] || FILT.taf === g[0]; });
+    if (tAny){ tafRow = '<div class="catrow"><button type="button" class="cat' + (FILT.taf ? '' : ' on') + '" data-ftaf="">' + esc(t('كل المراحل')) + ' <span class="n">' + nm(tAny) + '</span></button>'
+      + tDefs.map(function(g){ var on = FILT.taf === g[0];
+          return '<button type="button" class="cat' + (on ? ' on' : '') + '" data-ftaf="' + g[0] + '" style="border-color:' + g[2] + (on ? ';background:' + g[2] + '22;color:' + g[2] : '') + '"><span style="display:inline-block;width:8px;height:8px;border-radius:99px;background:' + g[2] + ';margin-inline-end:4px"></span>' + esc(t(g[1])) + ' <span class="n">' + nm(tc[g[0]] || 0) + '</span></button>'; }).join('') + '</div>';
+      var tD = tDefs.filter(function(g){ return g[0] === FILT.taf; })[0]; tafSel = tD ? esc(t(tD[1])) + ' <b>' + nm(tc[tD[0]] || 0) + '</b>' : ''; }
+  }
   /* ─ «المختار» فوق: كلُّ مرشِّحٍ فعّالٍ بشريحةٍ تُزال بضغطة، وعددُ ما يمرّ ─ */
   var act = [];
   if (FILT.zone) act.push(['zone', esc(FILT.zone)]); if (FILT.type) act.push(['type', typeSel]); if (FILT.route) act.push(['route', routeSel]);
   if (FILT.floor !== '' && FILT.floor != null) act.push(['floor', floorSel]); if (FILT.work) act.push(['work', workSel]);
   if (FILT.life) act.push(['life', esc(t((LIFE[FILT.life] || { n:FILT.life }).n))]); if (FILT.exec) act.push(['exec', esc(t(FILT.exec))]); if (FILT.ccg) act.push(['ccg', grpSel.replace(/ <b>.*$/, '')]);
+  if (FILT.taf) act.push(['taf', tafSel.replace(/ <b>.*$/, '') || esc(t('خطة رصد التفويج'))]);
   var passN = act.length ? STATE.sites.filter(function(x){ return filtPass(x); }).length : S.total;
   var sum = act.length ? '<div class="fsum"><span class="hint" style="margin:0">' + esc(t('المختار')) + '</span>'
     + act.map(function(a){ return '<button type="button" class="chip on fsum-x" data-fclr="' + a[0] + '" title="' + esc(t('أزل هذا المرشّح')) + '">' + a[1] + ' \u2715</button>'; }).join('')
     + '<span class="pill acc">' + nm(passN) + ' ' + esc(t('نقطة')) + '</span>' + btn(t('امسح الكل'), 'btn-quiet btn-sm', ' data-fclr="all"') + '</div>' : '';
   return '<div class="catbar">' + sum + zoneRow
     + fsec('type', 'نوع النقطة', typeSel, typeRow, !!FILT.type)   /* (V39.57) owner: «اعمل واحدة اسمها نوع النقطة» */
+    + fsec('taf', 'خطة رصد التفويج', tafSel, tafRow, true)   /* (V47.14) right under the kind it follows, always open */
     + fsec('life', 'الحالة', lifeSel, lifeRow, !!FILT.life)
     /* (V37.55) تسمياتُ المالك: «التحديات» و«معالجة التحديات» و«أدوار منشأة الجمرات» */
     + fsec('exec', 'التحديات', execSel, execRow, !!FILT.exec)
@@ -532,7 +553,7 @@ function catBar(withWork){
 var FILT_CACHE = null, FILT_KEY = '';
 
 function filtered(){
-  var k = FILT.zone + '|' + FILT.type + '|' + FILT.work + '|' + FILT.life + '|' + (FILT.stg ? FILT.stg + '@' + FIELD_MODE : '') + '|' + FILT.route + '|' + FILT.floor + '|' + STAT_VER
+  var k = FILT.zone + '|' + FILT.type + '|' + FILT.work + '|' + FILT.life + '|' + (FILT.stg ? FILT.stg + '@' + FIELD_MODE : '') + '|' + FILT.route + '|' + FILT.floor + '|' + (FILT.taf ? FILT.taf + '@' + ((STATE.taf || {}).__plan || {}).v : '') + '|' + STAT_VER
         + '|' + PV.CO_SEL.join(',');
   /* (V38.70) the cache follows the registry list too — a replaced or grown list is filtered anew (as siteIndex) */
   if (FILT_CACHE && FILT_KEY === k && filtered.of === STATE.sites && filtered.n === STATE.sites.length) return FILT_CACHE;

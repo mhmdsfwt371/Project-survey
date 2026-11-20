@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V47.13",
+  "app_version": "V47.14",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2450,7 +2450,8 @@
   "V47.10": "V47.10: sensors page — the distance column is named «on the map» (plan distance, never from RSSI) with a visible note; the sensors export (iotDashHtml.xls) adds RSSI, grade, SNR, map distance and signal note.",
   "V47.11": "V47.11: sensors page — live RSSI-vs-map-distance curve (iotDashHtml.fit), per-sensor gap and «weaker than expected» (≤ -8 dB), the «signal and distance» card, and two more export columns.",
   "V47.12": "V47.12: the tafweej monitoring plan replaces approve / reject — settings/tafappr carries m.__plan { v, name, at, by, n, miss } and m[<id>].pl { v, p:p1|p2|out, k, s, w, n, r, a, c }; phase 1 goes to installation, nothing is rejected; imported from the management sheet by the engineer.",
-  "V47.13": "V47.13: the tafweej study as a reference — settings/tafref { name, title, n, j (blocks as one JSON string), at, by }, read on demand; parsed in the browser from the Word file by the engineer."
+  "V47.13": "V47.13: the tafweej study as a reference — settings/tafref { name, title, n, j (blocks as one JSON string), at, by }, read on demand; parsed in the browser from the Word file by the engineer.",
+  "V47.14": "V47.14: map filter by the tafweej plan phase (FILT.taf = p1|p2|out|none), shown in the filter panel once corridors are chosen."
   },
   "map_and_geolocation": {
     "tile_layers": {
