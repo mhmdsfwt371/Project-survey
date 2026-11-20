@@ -1,0 +1,12 @@
+verdict:  GREEN
+commit:   3a2a9bf08e356ab2fde21c5366e3937fd96e44a6
+version:  V47.12
+title:    V47.12 — خطةُ رصد التفويج في مكان الاعتماد والرفض
+event:    workflow_dispatch  (the full list, then promotion to main)
+on main:  yes — promoted
+when:     2026-11-20T16:14:09.386Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/44770113344
+jobs:     fast=skipped · real=success · shards=success · promote=skipped · chain=success
+passed:   browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     —
+missing:  —
