@@ -1,0 +1,12 @@
+verdict:  GREEN
+commit:   4ac582bad10f68554540f1d5cc35f94ef249ed15
+version:  V47.14
+title:    V47.14 — مرحلةُ خطة الرصد مرشِّحًا على الخريطة
+event:    workflow_dispatch  (the full list, then promotion to main)
+on main:  yes — promoted
+when:     2026-11-20T17:19:13.698Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/44780680769
+jobs:     fast=skipped · real=success · shards=success · promote=skipped · chain=success
+passed:   browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     —
+missing:  —
