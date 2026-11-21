@@ -1,0 +1,12 @@
+verdict:  GREEN
+commit:   43e00a94b505be96fe4b97b0e5b61a15c2b8788b
+version:  V47.18
+title:    V47.18 — تاريخُ البيانات ليس موعدًا حاكمًا، وبطاقاتُ المواعيد بترتيب التاريخ
+event:    push  (the push gate: fast layer + real browser + rules + full list)
+on main:  no
+when:     2026-11-21T11:07:49.203Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/44896968330
+jobs:     fast=success · real=success · shards=success · promote=success · chain=skipped
+passed:   fast browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     —
+missing:  —
