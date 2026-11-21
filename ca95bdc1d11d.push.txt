@@ -1,0 +1,12 @@
+verdict:  GREEN
+commit:   ca95bdc1d11d2137fd2c0d25a925936393d1817a
+version:  V47.16
+title:    V47.16 — سجلُّ المخاطر الداخلي، ومواعيدُ الخطة ومعالمُها
+event:    push  (the push gate: fast layer + real browser + rules + full list)
+on main:  no
+when:     2026-11-21T00:45:44.858Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/44845173254
+jobs:     fast=success · real=success · shards=success · promote=success · chain=skipped
+passed:   fast browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     —
+missing:  —
