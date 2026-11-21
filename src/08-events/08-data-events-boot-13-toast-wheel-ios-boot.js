@@ -117,6 +117,7 @@ document.addEventListener('change', function(e){
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-wtst')){ wtSet(t0.getAttribute('data-wtst'), { st:t0.value }); toast(t(t0.value)); return; }
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-wtfile')){ if (t0.files && t0.files[0]) wtImport(t0.files[0]); return; }
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-wbsfile')){ if (t0.files && t0.files[0]) wbsImport(t0.files[0]); return; }
+  if (t0 && t0.hasAttribute && t0.hasAttribute('data-rkfile')){ if (t0.files && t0.files[0] && typeof riskImport === 'function') riskImport(t0.files[0]); t0.value = ''; return; }   /* (V47.16) the internal register from Excel */
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-ex47')){ if (t0.files && t0.files[0]) ex47Import(t0.files[0]); return; }   /* (V37.88) */
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-brfile')){ if (t0.files && t0.files[0]) extFileImport(t0.files[0]); return; }
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-tafreffile')){ if (t0.files && t0.files[0] && typeof tafRefImport === 'function') tafRefImport(t0.files[0]); return; }   /* (V47.13) */

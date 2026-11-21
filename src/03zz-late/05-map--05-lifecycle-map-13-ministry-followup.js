@@ -94,7 +94,9 @@ function mfuBriefCard(){
 
 /* (V33.0) «ما ينتظر الوزارة» (mfuMinistryCard) حُذفت بقرار المالك: لا تصاريحَ ولا «متعذّر» في عرض الوزارة — السببُ الحقيقيُّ في سجلّ النقطة وسير العمل */
 function mfuMilesCard(){
-  var today = dayKey(), L = mileList().map(function(m){ var d = mileDateOf(m); return { n:m.n, d:d ? dayKey(d) : '', p:Math.round(mileDone(m) * 100), late:mileLate(m) }; });
+  /* (V47.16) mileDateOf gives a day key ('2027-03-31'); dayKey() of that text read it as no time at all and gave today —
+     every upcoming milestone showed today's date. A number (a time) still goes through dayKey. */
+  var today = dayKey(), L = mileList().map(function(m){ var d = mileDateOf(m); return { n:m.n, d:d ? (typeof d === 'number' ? dayKey(d) : String(d).slice(0, 10)) : '', p:Math.round(mileDone(m) * 100), late:mileLate(m) }; });
   var up = L.filter(function(x){ return x.d && x.p < 100; }).sort(function(a, b){ return a.d < b.d ? -1 : 1; }).slice(0, 4);
   if (!up.length) return card('\u{1F3C1} ' + t('المعالم القادمة'), '<p class="hint" style="margin:0">' + esc(t('لا مواعيدَ للمعالم بعد — تُحدَّد من «التخطيط ← المعالم»')) + '</p>');
   return card('\u{1F3C1} ' + t('المعالم القادمة'), table(['المعلَم', 'الموعد', 'بقي', 'الإنجاز'], up.map(function(x){
@@ -221,7 +223,9 @@ function mfuHeroHtml(){
   if (f && f.eta) fc = t(z0) + ' ' + t('يكتمل نحو') + ' ' + dayKey(f.eta) + (f.due ? ' (' + (f.due >= f.eta ? t('قبل الموعد بـ') + ' ' + nm(Math.round((f.due - f.eta) / 864e5)) : t('بعد الموعد بـ') + ' ' + nm(Math.round((f.eta - f.due) / 864e5))) + ' ' + t('يومًا') + ')' : '');
   else if (f && f.stalled) fc = t(z0) + ' ' + t('بلا وتيرةٍ منذ أسبوعين');
   /* أقربُ معلَمٍ قادم */
-  var next = null; try { (mileList() || []).forEach(function(m){ var d = mileDateOf(m); if (d && d >= now && (!next || d < next.d)) next = { d:d, n:m.n || m.name || m.t || '' }; }); } catch (e){ LS_ERR = e; }
+  /* (V47.16) a milestone's date is a day key: compared with today's day key (against the clock's number it never matched,
+     so «أقرب معلَم» never showed) */
+  var next = null; try { (mileList() || []).forEach(function(m){ var d = mileDateOf(m); d = d ? (typeof d === 'number' ? dayKey(d) : String(d).slice(0, 10)) : ''; if (d && d >= today && (!next || d < next.d)) next = { d:d, n:m.n || m.name || m.t || '' }; }); } catch (e){ LS_ERR = e; }
   var dd = dayDone(today); dd.hand = 0;   /* (V34.3) التسليمُ اليوم من محضر التسليم في سجلّ التركيب */
   Object.keys(STATE.inss || {}).forEach(function(k){ var h = STATE.inss[k] && STATE.inss[k].hand; if (h && dayKey(h.at || h.ts || 0) === today) dd.hand++; });
   /* أبرزُ ثلاثة تحديات */
@@ -229,7 +233,7 @@ function mfuHeroHtml(){
   return '<div class="mfu-hero">'
     + '<div class="mfu-hero-band"><div><div class="mfu-hero-t">' + esc(t('موجز الموسم')) + '</div><div class="hint" style="margin:0">' + esc(hijriToday()) + ' \u00b7 ' + esc(today) + '</div></div>'
     +   '<div class="mfu-hero-today"><span>' + esc(t('اليوم')) + '</span> <b>' + nm(dd.sv) + '</b> ' + esc(t('مسح')) + ' \u00b7 <b>' + nm(dd.ins) + '</b> ' + esc(t('تركيب')) + ' \u00b7 <b>' + nm(dd.hand) + '</b> ' + esc(t('تسليم')) + ' \u00b7 <b>' + nm(dd.dis) + '</b> ' + esc(t('فك'))   /* (V34.3) الأربعةُ يومًا بيوم */
-    +     (next ? ' \u00b7 <span title="' + esc(next.n) + '">' + esc(t('أقرب معلَم')) + ' <b>' + nm(Math.max(0, Math.round((next.d - now) / 864e5))) + '</b> ' + esc(t('يومًا')) + '</span>' : '') + '</div></div>'
+    +     (next ? ' \u00b7 <span title="' + esc(next.n) + '">' + esc(t('أقرب معلَم')) + ' <b>' + nm(Math.max(0, Math.round((Date.parse(next.d) - Date.parse(today)) / 864e5))) + '</b> ' + esc(t('يومًا')) + '</span>' : '') + '</div></div>'
     + (typeof dsBento === 'function' ? dsBento(SC) : '')   /* (V46.4) the bento summary */
     + '<div class="kk kk-mini"><div class="kk-rings">'
     +   stageRings(SC)   /* (V37.0) خمسُ مراحل: الزيارة والمسح والتركيب والتسليم والفك */

@@ -62,6 +62,7 @@ export const HOSTILE = {
   'settings/bridge':   { str:DENY3, ina:DENY3, tec:'ADD' },
   'settings/sysreport':{ str:DENY3, ina:DENY3, tec:'DDD' },
   'settings/pmo':      { str:DENY3, ina:DENY3, tec:'DDD' },
+  'settings/risks':    { str:DENY3, ina:DENY3, tec:'DDD' },   /* (V47.16) سجلُّ المخاطر الداخلي — للمهندس والمدير والإدارة العليا وحدَهم */
   'settings/extApi':   { str:DENY3, ina:DENY3, tec:'DDD' },   /* (V37.80) توكنُ نظام البطاقات — للمكتب وحده */
   'settings/integPub': { str:DENY3, ina:DENY3, tec:'DDD' },   /* (V39.74) اسمُ مستخدم حساب الربط وحده — يقرؤه المكتب */
   'settings/cost':     { str:DENY3, ina:DENY3, tec:'DDD' },   /* (V38.80) تكلفةُ قاعدة البيانات — يكتبها الخادم، ويقرؤها المكتبُ والإدارةُ العليا */

@@ -119,90 +119,7 @@ PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
   body:function(){
     var head = tabHead('plan'), cur = tabCur('plan');
     if (cur === 'wplan') return head + wplanBody();   /* (V21.2) */
-    if (cur === 'risks') return head + (function(){
-    var RL = risksList();
-    var open = RL.filter(function(r){ return r.st === 'مفتوح'; });
-    var crit = open.filter(function(r){ return riskScore(r) >= 15; });
-    var high = open.filter(function(r){ return riskScore(r) >= 9 && riskScore(r) < 15; });
-    var sorted = RL.slice().sort(function(a,b){ return (a.st === 'مغلق') - (b.st === 'مغلق') || riskScore(b) - riskScore(a); });
-    var sig = riskSignals();
-
-    return stats([['مخاطر مفتوحة', N(open.length), open.length?'wrn':'ok'],
-                  ['حرجة', N(crit.length), crit.length?'bad':'ok'],
-                  ['عالية', N(high.length), high.length?'wrn':''],
-                  ['مغلقة', N(RL.length - open.length), 'ok']])
-
-      /* ما تقوله الأرقامُ الآن — لا ما كُتب في اجتماع */
-      + card('\u{1F6A8} ' + t('مؤشرات خطرٍ حيّة — من البيانات نفسِها'),
-          '<div class="list">' + sig.map(function(x){
-            return '<div class="list-item"><div class="li-main"><div class="li-t">'
-              + pill(x[0] === 'ok' ? 'سليم' : (x[0] === 'bad' ? 'حرج' : 'انتبه'), x[0] === 'ok' ? 'ok' : (x[0] === 'bad' ? 'off' : 'warn'))
-              + ' ' + esc(x[1]) + '</div></div>'
-              + (x[2] && seesPage(PARENT[x[2]] || x[2]) ? '<div class="li-end">' + btn('\u{1F4CD}','btn-quiet btn-sm',' data-p="' + esc(x[2]) + '"') + '</div>' : '')
-              + '</div>';
-          }).join('') + '</div>'
-          + '<p class="hint" style="margin:8px 0 0">' + esc(t('تُحسَب كلَّ رسمةٍ من الجدول والكلفة والزيارات والبلاغات والمهام — الخطرُ يُرى قبل أن يُكتَب.')) + '</p>')
-
-      + cardFlush(t('السجل') + ' — ' + nm(RL.length),
-          table(['#','الخطر','الفئة','احتمال','أثر','الدرجة','الاستجابة','المالك','الحالة'],
-            sorted.map(function(r){
-              var sc = riskScore(r), L = riskLevel(sc), ed = may('settings');
-              return ['<span class="num">' + esc(r.id) + '</span>',
-                      '<strong>' + esc(t(r.t)) + '</strong><br>'
-                        + '<span class="hint" style="margin:0">' + esc(t(r.plan || '')) + '</span>',
-                      esc(t(r.cat)),
-                      ed ? '<input type="number" min="1" max="5" value="' + esc(String(cfgN(r.p))) + '" data-rkp="' + esc(r.id) + '" style="width:58px">' : N(r.p),
-                      ed ? '<input type="number" min="1" max="5" value="' + esc(String(cfgN(r.i))) + '" data-rki="' + esc(r.id) + '" style="width:58px">' : N(r.i),
-                      '<span class="pill ' + L.c + '">' + nm(sc) + ' · ' + esc(t(L.t)) + '</span>',
-                      esc(t(r.resp)),
-                      ed ? '<input value="' + esc(r.own || '') + '" data-rko="' + esc(r.id) + '" dir="auto" style="width:110px">' : esc(t(r.own)),
-                      (ed ? btn('🗑','btn-quiet btn-sm',' data-rkdel="' + esc(r.id) + '" aria-label="' + esc(t('حذف')) + '"') : '')
-                      + (ed ? '<select data-rkst="' + esc(r.id) + '"><option value="مفتوح"' + (r.st === 'مفتوح' ? ' selected' : '') + '>' + esc(t('مفتوح')) + '</option><option value="مغلق"' + (r.st === 'مغلق' ? ' selected' : '') + '>' + esc(t('مغلق')) + '</option></select>'
-                         : pill(r.st, r.st === 'مغلق' ? 'ok' : 'warn'))];
-            })),
-          btn('⬇ إكسل — سجل المخاطر','btn-secondary btn-sm',' data-xls="risks"'))
-
-      + (may('settings')
-        ? card('إضافة خطر',
-            '<div class="grid cols-3">'
-            + '<div class="field"><label>' + esc(t('الخطر')) + ' <span class="req">*</span></label><input id="rkT" dir="auto"></div>'
-            + '<div class="field"><label>' + esc(t('الفئة')) + '</label><select id="rkC">'
-            +   ['ميداني','فني','مشتريات','موارد','مالي','جهات خارجية','سلامة'].map(function(c){ return '<option value="' + esc(c) + '">' + esc(t(c)) + '</option>'; }).join('') + '</select></div>'
-            + '<div class="field"><label>' + esc(t('الاستجابة')) + '</label><select id="rkR">'
-            +   ['تخفيف','تجنّب','نقل','قبول'].map(function(c){ return '<option value="' + esc(c) + '">' + esc(t(c)) + '</option>'; }).join('') + '</select></div>'
-            + '<div class="field"><label>' + esc(t('احتمال')) + ' (' + nm(1) + '–' + nm(5) + ')</label><input type="number" id="rkP" min="1" max="5" value="3"></div>'
-            + '<div class="field"><label>' + esc(t('أثر')) + ' (' + nm(1) + '–' + nm(5) + ')</label><input type="number" id="rkI" min="1" max="5" value="3"></div>'
-            + '<div class="field"><label>' + esc(t('المالك')) + '</label><input id="rkO" dir="auto"></div>'
-            + '<div class="field" style="grid-column:1/-1"><label>' + esc(t('خطة الاستجابة')) + '</label><input id="rkPl" dir="auto"></div>'
-            + '</div>',
-            btn('➕ ' + t('سجِّل الخطر'),'btn-primary btn-sm',' data-rkadd="1"'))
-        : '')
-
-      + card('مصفوفة الاحتمال والأثر',
-          (function(){
-            var rows = [];
-            for (var p = 5; p >= 1; p--){
-              var cells = ['<b>' + nm(p) + '</b>'];
-              for (var i = 1; i <= 5; i++){
-                var sc = p * i, L = riskLevel(sc);
-                var here = risksList().filter(function(r){ return r.p === p && r.i === i && r.st === 'مفتوح'; });
-                cells.push('<span class="pill ' + L.c + '">' + nm(sc)
-                  + (here.length ? ' · ' + here.map(function(r){ return r.id; }).join(' ') : '') + '</span>');
-              }
-              rows.push(cells);
-            }
-            return table(['احتمال ↓ / أثر →','١','٢','٣','٤','٥'], rows);
-          })()
-          + '<p class="hint">' + esc(t('الدرجةُ حاصلُ ضربهما: خمسةَ عشرَ فأكثرُ حرجٌ يُرفع للإدارة، وتسعةٌ فأكثرُ عالٍ يُتابَع أسبوعيًّا.')) + '</p>')
-
-      + card('توزيع الاستجابات',
-          table(['الاستجابة','عددها','ما تعنيه'], [
-            ['تجنّب', N(risksList().filter(function(r){ return r.resp==='تجنّب'; }).length), 'يُغيَّر الخطُّ فلا يقع'],
-            ['تخفيف', N(risksList().filter(function(r){ return r.resp==='تخفيف'; }).length), 'يُقلَّل احتمالُه أو أثرُه'],
-            ['نقل',   N(risksList().filter(function(r){ return r.resp==='نقل'; }).length),   'يُحمَّل طرفًا آخر'],
-            ['قبول',  N(risksList().filter(function(r){ return r.resp==='قبول'; }).length),  'يُحتمَل ويُرصَد له احتياطي']
-          ]));
-  })();
+    if (cur === 'risks') return head + rkBody();   /* (V47.16) the register as the internal register reads — 04-tasks-office-28-risk-register.js */
     if (cur === 'chg') return head + (function(){
     var pend = CHANGES.filter(function(c){ return c.st === 'مقدَّم'; });
     return stats([['طلبات قائمة', N(CHANGES.length)],
@@ -351,7 +268,7 @@ PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
           /* الوزنُ والتبعيةُ تخطيطٌ داخليّ: يراهما من يضبط الخطة وحدَه.
              سبعةُ أعمدةٍ على هاتف الوزارة تُقرأ بالتمرير الأفقيّ ولا تُقرأ. */
           (function(){
-            var full = may('settings');
+            var full = may('settings'), fromPlan = mileList().some(function(m){ return m.plan; });   /* (V47.16) the plan's milestones are read here, edited in the plan */
             var head = full ? ['#','المعلَم','الوزن ٪','يعتمد على','الموعد المستهدف','الإنجاز','الحالة']
                             : ['المعلَم','الموعد المستهدف','الإنجاز','الحالة'];
             var rows = mileList().map(function(m){
@@ -359,7 +276,8 @@ PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
               var manual = mileDates().some(function(x){ return x.id === m.id && x.d; });
               var nameCell = '<strong>' + esc(t(m.n)) + '</strong>'
                 + (full ? '' : '<br><span class="hint num" style="margin:0">' + esc(m.id) + '</span>');
-              var dateCell = full
+              var dateCell = (full && m.plan) ? (dt ? '<span class="num">' + esc(dt) + '</span>' : '—')
+                : full
                 ? '<input type="date" value="' + esc(dt) + '" data-mld="' + esc(m.id) + '" style="width:150px">'
                   + (dt && !manual ? '<div class="hint" style="margin:2px 0 0">' + esc(t('مشتقٌّ من المواعيد')) + '</div>' : '')
                 : (dt ? '<span class="num">' + esc(dt) + '</span>' : '—');
@@ -378,6 +296,7 @@ PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
                         btn('\u{1F4BE} ' + t('حفظ'),'btn-primary btn-sm',' data-mlsave="' + esc(m.id) + '"') + ' '
                         + btn(t('إلغاء'),'btn-quiet btn-sm',' data-mlcancel="1"')];
               }
+              if (full && m.plan) return ['<span class="num">' + esc(m.id) + '</span>', nameCell, nm(Math.round(m.w * 10) / 10), '—', dateCell, pc, stCell];
               return full
                 ? ['<span class="num">' + esc(m.id) + '</span>', nameCell, N(m.w),
                    m.dep ? '<span class="num">' + esc(m.dep) + '</span>' : '—', dateCell, pc,
@@ -385,13 +304,14 @@ PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
                    + btn('\u{1F5D1}','btn-quiet btn-sm',' data-mldel="' + esc(m.id) + '" aria-label="' + esc(t('حذف')) + '"')]
                 : [nameCell, dateCell, pc, stCell];
             });
-            var foot = full ? ['','<b>' + t('الإجمالي') + '</b>', N(tot), '', '', '<b>' + nm(Math.round(earned)) + '٪</b>', '']
+            var foot = full ? ['','<b>' + t('الإجمالي') + '</b>', N(Math.round(tot)), '', '', '<b>' + nm(Math.round(earned)) + '٪</b>', '']
                             : ['<b>' + t('الإجمالي') + '</b>', '', '<b>' + nm(Math.round(earned)) + '٪</b>', ''];
-            return table(head, rows, foot);
+            return (fromPlan ? '<p class="hint" id="mlFromPlan" style="margin:8px 12px">' + esc(t('المعالم من الخطة التفصيلية بتواريخها، وتتحدث مع كل استيراد للخطة.')) + '</p>' : '')
+              + table(head, rows, foot);
           })(),
           btn('⬇ إكسل — المعالم','btn-secondary btn-sm',' data-xls="miles"')
-          + (may('settings') ? ' ' + btn('\u2795 ' + t('معلَم جديد'),'btn-primary btn-sm',' data-mlnew="1"') : ''))
-      + (may('settings') && PV.MILE_NEW
+          + (may('settings') && !mileList().some(function(m){ return m.plan; }) ? ' ' + btn('\u2795 ' + t('معلَم جديد'),'btn-primary btn-sm',' data-mlnew="1"') : ''))
+      + (may('settings') && PV.MILE_NEW && !mileList().some(function(m){ return m.plan; })
           ? card(t('معلَم جديد'),
               '<div class="grid cols-2">'
               + '<div class="field"><label>' + esc(t('المعلَم')) + '</label><input id="mlnN" dir="auto"></div>'

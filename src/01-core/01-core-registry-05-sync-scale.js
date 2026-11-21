@@ -1083,10 +1083,13 @@ var FB = {
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists){ var w = doc.data() || {}; if (Array.isArray(w.rows)) STATE.wbs = { rows:w.rows, keys:w.keys || [], at:w.at, by:w.by }; }
       }, function(e){ softErr('سحب جدول المتابعة', e, ''); });
-      FB.sdoc('risks', function(doc){
+      /* (V47.16) the register is internal to AFAQY: only the roles firestore.rules lets read settings/risks ask for it
+         (engineers, admins, executives) — it never reaches the Ministry's device */
+      if (riskSees()) FB.sdoc('risks', function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
-        if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.risks = arr; }
+        if (doc && doc.exists){ var dv = doc.data() || {}, arr = arrFromDoc(dv); if (typeof dv._len === 'number') arr = arr.slice(0, dv._len); if (arr.length) STATE.risks = arr; }   /* (V47.16) the saved length, not the merged tail */
       }, function(e){ softErr('سحب سجل المخاطر', e, 'تعذّر سحبُ سجل المخاطر — قد يظهر بالبذرة'); });
+      else STATE.risks = [];
       FB.sdoc('handSeq', function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists){ var v = doc.data();

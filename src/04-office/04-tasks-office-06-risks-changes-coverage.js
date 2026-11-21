@@ -263,14 +263,17 @@ PAGE.exec = { m:'المتابعة', t:'التقارير التنفيذية',
     var S = siteStats(), v = (typeof evm === 'function') ? evm() : null;
     var SC = scores();
     var pay = SC.list.reduce(function(a,e){ return a + e.money; }, 0);
-    var open = (typeof PV.RISKS !== 'undefined')
-      ? PV.RISKS.filter(function(r){ return r.st === 'مفتوح' && riskScore(r) >= 12; }) : [];
+    /* (V47.16) from the live register, not the seed — what needs management now: the critical risks (a decision within a
+       week) and those that have happened (escalation). Only for roles that read the register: the accountant sees this
+       page and does not. */
+    var rkOn = riskSees();
+    var open = rkOn ? risksList().filter(function(r){ var k = riskLv(r).t; return k === 'حرج' || k === 'وقع فعلًا'; }) : [];
 
     return stats([['الإنجاز', nm(S.total ? Math.round(S.surveyed / S.total * 100) : 0) + '٪',
                    'acc'],
                   ['أداء الجدول', v ? nm(v.SPI) : '—', v && v.SPI < 0.95 ? 'bad' : 'ok'],
                   ['أداء الكلفة', v ? nm(v.CPI) : '—', v && v.CPI < 0.95 ? 'bad' : 'ok'],
-                  ['مخاطر حرجة', N(open.length), open.length ? 'bad' : 'ok']])
+                  rkOn ? ['مخاطر حرجة', N(open.length), open.length ? 'bad' : 'ok'] : null].filter(Boolean))
 
       + card('الموقف في سطر',
           v
@@ -292,13 +295,13 @@ PAGE.exec = { m:'المتابعة', t:'التقارير التنفيذية',
               ? nm(Math.round(buysSpent() / cfgGet('budCap') * 100)) + '٪ من السقف' : '']
           ]))
 
-      + (open.length
+      + (!rkOn ? '' : open.length
         ? cardFlush('ما يحتاج قرارَك',
-            table(['الخطر','الدرجة','المالك','الاستجابة'],
+            table(['الخطر','المستوى','طريقة الإدارة','المسؤول','الموعد'],
               open.map(function(r){
-                var L = riskLevel(riskScore(r));
-                return [esc(r.t), '<span class="pill ' + L.c + '">' + nm(riskScore(r)) + '</span>',
-                        esc(r.own), esc(r.resp)];
+                var L = riskLv(r);
+                return ['<span>' + esc(r.t || '') + '</span>', '<span class="pill ' + L.c + '">' + esc(t(L.t)) + '</span>',
+                        '<span>' + esc(t(riskMethod(L.t))) + '</span>', r.own ? '<span>' + esc(r.own) + '</span>' : '—', rkDueShow(r.due)];
               })),
             btn('السجل كاملًا','btn-secondary btn-sm',' data-p="risks"'))
         : card('', alertBox('success','لا مخاطرَ حرجةً مفتوحةً الآن.')));

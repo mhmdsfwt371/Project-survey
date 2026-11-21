@@ -2,7 +2,7 @@
    FILE    : src/03zz-late/03z-shared--03z-shared-b-06-from-tasks-office-06-risks-changes-coverage.js
    DOMAIN  : Late core — functions the core alone never reaches, shipped with app-office.js
    PURPOSE : Moved verbatim from src/03z-shared/03z-shared-b-06-from-tasks-office-06-risks-changes-coverage.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk call them, so they arrive a few seconds after the login screen instead of in the field's first payload. A click that needs one before the chunk lands is replayed when it does.
-   DEFINES : riskDel, riskAdd, riskSignals, chgAdd, chgApply, chgDecide, hseAdd
+   DEFINES : riskDel, riskAdd, riskImportWb, riskImport, riskImportApply, riskSignals, chgAdd, chgApply, chgDecide, hseAdd
    NOTE    : Edit these functions here. audit-core-alone.mjs fails if code the core runs alone starts calling one without checking typeof first.
    ============================================================================ */
 /* الخطرُ المسجَّلُ بالخطأ يُحذَف — والمغلقُ يبقى في السجل شاهدًا */
@@ -24,15 +24,57 @@ function riskAdd(){
   var tt = g('rkT');
   if (!tt){ toast(t('اكتب وصفَ الخطر')); return; }
   var L = risksList();
-  var n = L.length + 1, id = 'R' + n;
-  while (L.some(function(x){ return x.id === id; })) id = 'R' + (++n);
-  L.push({ id:id, t:tt, cat:g('rkC') || 'ميداني', p:cfgN(g('rkP')) || 3, i:cfgN(g('rkI')) || 3,
-           resp:g('rkR') || 'تخفيف', plan:g('rkPl'), own:g('rkO') || (STATE.meta.name || ''),
-           st:'مفتوح', at:Date.now(), by:STATE.meta.name || '' });
+  /* (V47.16) the register's fields; the id goes on in the register's own pattern (خ-١٧ after خ-١٦), and the category
+     and response stay optional — the internal register does not use them */
+  var id = riskNextId(L), x = { id:id, t:tt, ctx:g('rkX'), p:riskNum(g('rkP')) || 3, i:riskNum(g('rkI')) || 3,
+           st:riskSt({ st:g('rkS') }), plan:g('rkPl'), own:g('rkO') || (STATE.meta.name || ''), due:riskDueIso(g('rkD')), ref:g('rkRf'),
+           at:Date.now(), by:STATE.meta.name || '' };
+  if (g('rkC')) x.cat = g('rkC');
+  if (g('rkR')) x.resp = g('rkR');
+  L.push(x);
   riskSave();
   logEvent('خطر جديد — ' + id + ' \u00b7 ' + tt, id);
   toast(id + ' \u00b7 ' + t('سُجِّل الخطر'));
   render(1);
+}
+
+/* ═══ (V47.16) the internal register comes in from its Excel file ═══
+   The owner keeps the register in a workbook (register v6). Its sheet «سجل المخاطر» is read by column names, checked
+   whole, and held until the engineer confirms — the same two-step as «امسح الجدول وابدأ من جديد» — because it replaces
+   the register entirely. Ids stay as the file has them (خ-٠١…). */
+function riskImportWb(wb){
+  var sn = (wb && wb.SheetNames || []).filter(function(n){ return String(n).replace(/\s+/g, ' ').trim() === 'سجل المخاطر'; })[0];
+  if (!sn) return { err:'لا ورقة باسم «سجل المخاطر» في الملف' };
+  return riskFromAoa(XLSX.utils.sheet_to_json(wb.Sheets[sn], { header:1, raw:true, defval:'' }));
+}
+function riskImport(file){
+  if (!may('settings')){ toast(t('سجلُّ المخاطر للمهندس وحده')); return; }
+  if (!file) return;
+  xlsxLoad().then(function(ok){
+    if (!ok){ toast(t('تعذّر تحميلُ مكتبة إكسل')); return; }
+    var fr = new FileReader();
+    fr.onload = function(){
+      try {
+        var R = riskImportWb(XLSX.read(new Uint8Array(fr.result), { type:'array', cellDates:true }));
+        if (R.err){ toast(t(R.err)); PV.RISK_IMP = null; render(1); return; }
+        PV.RISK_IMP = { list:R.list, name:String(file.name || '') };
+        render(1);
+      } catch (e){ softErr('استيراد سجل المخاطر', e, 'تعذّرت قراءةُ الملف'); }
+    };
+    fr.readAsArrayBuffer(file);
+  });
+}
+function riskImportApply(){
+  if (!may('settings')){ toast(t('سجلُّ المخاطر للمهندس وحده')); return false; }
+  var P = PV.RISK_IMP; PV.RISK_IMP = null;
+  if (!P || !P.list || !P.list.length){ render(1); return false; }
+  var now = Date.now(), by = STATE.meta.name || '';
+  STATE.risks = P.list.map(function(x){ return Object.assign({}, x, { at:now, by:by }); });
+  riskSave();
+  logEvent('استيراد سجل المخاطر — ' + P.list.length + ' خطرًا');
+  toast(t('استُورد سجل المخاطر') + ': ' + nm(P.list.length));
+  render(1);
+  return true;
 }
 
 /* مؤشراتٌ حيّةٌ — من الأرقام لا من الذاكرة */

@@ -56,7 +56,7 @@ function mfuReport0(){
     tasks:(wtRows().length ? mfuWeekRows().map(function(x){ var r = x.r;
             var link = r.chal ? (r.st === 'مكتمل' ? '✓ تحدٍّ حُلّ: ' : '⚠ تحدٍّ: ') + String(r.chal).replace(/^[FMT]:/, '') : r.req ? (r.st === 'مكتمل' ? '✓ طلبٌ نُفّذ' : '📨 طلب الوزارة') : '';
             return [r.n, r.track || '', r.who || '', x.late && r.st !== 'مكتمل' ? r.st + ' (متأخرة)' : r.st, r.due || '', String(x.upd).slice(0, 120), link]; })
-          : mileList().map(function(m){ var p = Math.round(mileDone(m) * 100), d = mileDateOf(m); return [m.n, 'المعالم', '', p >= 100 ? 'مكتمل' : mileLate(m) ? 'متأخر' : p > 0 ? 'جارٍ' : 'لم يبدأ', d ? dayKey(d) : '', p + '٪', '']; })),
+          : mileList().map(function(m){ var p = Math.round(mileDone(m) * 100), d = mileDateOf(m); return [m.n, 'المعالم', '', p >= 100 ? 'مكتمل' : mileLate(m) ? 'متأخر' : p > 0 ? 'جارٍ' : 'لم يبدأ', d ? (typeof d === 'number' ? dayKey(d) : String(d).slice(0, 10)) : '', p + '٪', '']; })),   /* (V47.16) a day key as it is — dayKey() of the text gave today */
     inst:Object.keys(Z).map(function(k){ return Z[k]; }).sort(function(a, b){ return a.z < b.z ? -1 : a.z > b.z ? 1 : b.n - a.n; })
           .map(function(o){ return [o.z, (CAT_DEF[o.ty] || {}).l || o.ty, o.n, o.i, (o.n ? Math.round(o.i / o.n * 100) : 0) + '٪']; }),
     cos:(function(){ var C = mfuCompanies(), ph = C.some(function(c){ return c.ins > 0; });   /* (V29.1) المرحلة: لا تركيبَ بعد ⇒ لا تصنيفَ بالتركيب */

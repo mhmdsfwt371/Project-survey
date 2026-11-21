@@ -321,6 +321,13 @@ await ok  ('ويقرؤها',                                         getDoc(doc(
 await deny('ولا يقرؤها الفنيّ',                              getDoc(doc(as('tec'), 'settings/pmo')));
 await deny('ولا الوزارة',                                    getDoc(doc(as('vwr'), 'settings/pmo')));
 await deny('ولا يكتبها الفنيّ',                              setDoc(doc(as('tec'), 'settings/pmo'), { lessons:{ L2:{ t:'x' } } }, { merge:true }));
+/* (V47.16) سجلُّ المخاطر الداخلي: لا يصل الوزارةَ ولا الميدانَ */
+await ok  ('سجلُّ المخاطر يكتبه المهندس',                    setDoc(doc(as('eng'), 'settings/risks'), { 0:{ id:'خ-٠١', t:'خطر', p:5, i:5, st:'قائم' }, _len:1 }, { merge:true }));
+await ok  ('ويقرؤه',                                          getDoc(doc(as('eng'), 'settings/risks')));
+await ok  ('وتقرؤه الإدارةُ العليا',                          getDoc(doc(as('exe'), 'settings/risks')));
+await deny('ولا تقرؤه الوزارة',                               getDoc(doc(as('vwr'), 'settings/risks')));
+await deny('ولا الفنيّ',                                     getDoc(doc(as('tec'), 'settings/risks')));
+await deny('ولا تكتبه الإدارةُ العليا',                       setDoc(doc(as('exe'), 'settings/risks'), { _len:0 }, { merge:true }));
 await deny('ولا يكتبه إلا الخادم',                          setDoc(doc(as('tec'), 'settings/bridge'), { at:1 }, { merge:true }));
 await ok  ('ويقرؤها المهندسُ ليصلحها',                    getDoc(doc(as('eng'), 'bugs/b1')));
 await ok  ('ويغلقها',                                    setDoc(doc(as('eng'), 'bugs/b1'), Object.assign({}, BUG, { status:'مغلق' })));

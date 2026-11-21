@@ -51,7 +51,15 @@ function mileDates(){
    بمعرِّفاتٍ خاصة. والمضمَّنةُ تبقى أساسًا يُحسَب إنجازُها من الميدان. */
 function mileOv(id){ return mileDates().filter(function(x){ return x.id === id; })[0] || {}; }
 
+/* ═══ (V47.16) the plan's milestones ═══
+   The owner: the eight milestones written in the code, dated by spreading the survey and installation deadlines, are not
+   the fifteen of the approved plan the Ministry reviews. With a plan loaded, the milestones are the plan's items of type
+   «معلم», dated from its schedule and measured as the plan screen measures them (wbsPct). The plan gives milestones no
+   weight, so each counts equally; they are edited in the plan, not here. Without a plan the built-in eight remain. */
 function mileList(){
+  var P = (typeof wbsRows === 'function' ? wbsRows() : []).filter(function(r){ return r && r.type === 'معلم'; });
+  if (P.length) return P.map(function(r, k){ return { id:String(r.id), n:String(r.n || r.id), w:100 / P.length, dep:'', d:r.e || r.s || '', plan:true, k:k }; })
+    .sort(function(a, b){ return (a.d || '9999') < (b.d || '9999') ? -1 : (a.d || '9999') > (b.d || '9999') ? 1 : a.k - b.k; });   /* in date order: the path as it will be walked */
   var out = [];
   MILES.forEach(function(m){
     var o = mileOv(m.id); if (o.hidden) return;
@@ -62,6 +70,7 @@ function mileList(){
 }
 
 function mileDateOf(m){
+  if (m && m.plan) return m.d || '';   /* (V47.16) the plan's own date */
   var manual = mileDates().filter(function(x){ return x.id === m.id; })[0];
   if (manual && manual.d) return manual.d;
   var dS = cfgGet('dueSurvey'), dI = cfgGet('dueInstall');
@@ -80,6 +89,7 @@ function mileDateOf(m){
 
 function mileDone(m){
   /* إنجازٌ يدويٌّ كُتب من المكتب يغلب الاشتقاق — وللمعالم الجديدة لا مصدرَ غيرُه */
+  if (m && m.plan){ var pr = typeof wbsRow === 'function' ? wbsRow(m.id) : null; return pr ? Math.max(0, Math.min(1, wbsPct(pr) / 100)) : 0; }   /* (V47.16) as the plan screen measures it */
   var o = mileOv(m.id);
   if (o.prog != null && o.prog !== '') return Math.max(0, Math.min(1, (+o.prog || 0) / 100));
   if (m.custom || o.custom) return 0;

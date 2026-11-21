@@ -308,6 +308,8 @@ service cloud.firestore {
     match /settings/sysreport { allow read: if mgr() || (ok() && role() == 'exec'); allow write: if false; }
     // سجلاتُ الإدارة (V19.3): الدروسُ المستفادة والمراجعاتُ وأصحابُ المصلحة — للمكتب والإدارة العليا قراءةً، والمكتبُ كتابةً
     match /settings/pmo { allow read: if mgr() || (ok() && role() == 'exec'); allow write: if pm('settings', 'w', mgr()); }
+    // (V47.16) سجلُّ المخاطر الداخلي — للمهندس والمدير والإدارة العليا وحدَهم؛ لا يصل الوزارةَ ولا غيرَها
+    match /settings/risks { allow read: if mgr() || (ok() && role() == 'exec'); allow write: if pm('settings', 'w', mgr()); }
     match /settings/contacts { allow read: if !viewer() && pm('phones', 'r', canW()); allow write: if pm('phones', 'w', mgr()); }
     match /settings/cotel    { allow read: if !viewer() && pm('phones', 'r', canW()); allow write: if pm('phones', 'w', mgr()); }
     // المصفوفةُ نفسُها: يقرؤها كلُّ فعّالٍ (التطبيقُ يعرض بها) ويكتبها المهندسُ فما فوق
@@ -329,8 +331,8 @@ service cloud.firestore {
     match /settings/{id} {
       // الكتلُ المتطابقةُ تُجمَع بـ«أو»: ما لوثيقةٍ بعينها قاعدةٌ أضيقُ يُستثنى هنا
       // صراحةً وإلا فتحته هذه — كما استُثنيت الجوالات، ويُستثنى التقرير (V17.94)
-      allow read: if ok() && id != 'contacts' && id != 'cotel' && id != 'sysreport' && id != 'pmo' && id != 'extApi' && id != 'cost' && id != 'integPub' && id != 'expo';
-      allow write: if pm('settings', 'w', mgr()) && id != 'sysreport' && id != 'expo' && id != 'cost' && id != 'pmo';   // (V45.3) expo has its own rule with fixed fields
+      allow read: if ok() && id != 'contacts' && id != 'cotel' && id != 'sysreport' && id != 'pmo' && id != 'extApi' && id != 'cost' && id != 'integPub' && id != 'expo' && id != 'risks';
+      allow write: if pm('settings', 'w', mgr()) && id != 'sysreport' && id != 'expo' && id != 'cost' && id != 'risks' && id != 'pmo';   // (V45.3) expo has its own rule with fixed fields
     }
 
     // القائمة الموحّدة للشركات: المدير يضيف ويعتمد — المشرف طلبات فقط

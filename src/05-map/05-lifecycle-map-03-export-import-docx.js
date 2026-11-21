@@ -251,10 +251,11 @@ var SHEETS = {
     return out;
   },
   miles: function(){
-    var out = [['المعرّف','المعلَم','الوزن ٪','يعتمد على','الإنجاز ٪','الحالة']];
+    /* (V47.16) with the target date — the plan's milestones are read by their dates */
+    var out = [['المعرّف','المعلَم','الوزن ٪','يعتمد على','الموعد المستهدف','الإنجاز ٪','الحالة']];
     mileList().forEach(function(m){
       var p = Math.round(mileDone(m) * 100);
-      out.push([m.id, m.n, m.w, m.dep || '', p, p>=100?'بلغ':(p>0?'جارٍ':'لم يبدأ')]);
+      out.push([m.id, m.n, Math.round(m.w * 10) / 10, m.dep || '', mileDateOf(m) || '', p, p>=100?'بلغ':((typeof mileLate === 'function' && mileLate(m))?'متأخّر':(p>0?'جارٍ':'لم يبدأ'))]);
     });
     return out;
   },
@@ -394,13 +395,10 @@ var SHEETS = {
     hoSigners().forEach(function(g, i){ out.push([i + 1, g.n || '', g.role || '', g.org || '', '']); });
     return out;
   },
+  /* (V47.16) the internal register's own sheet — same columns as the import, in the register's order, so the file goes
+     back in unchanged; internal to AFAQY, so nothing for a role that does not read the register */
   risks: function(){
-    var out = [['المعرّف','الخطر','الفئة','الاحتمال','الأثر','الدرجة','المستوى','الاستجابة','الخطة','المالك','الحالة']];
-    risksList().slice().sort(function(a,b){ return riskScore(b) - riskScore(a); }).forEach(function(r){
-      out.push([r.id, r.t, r.cat, r.p, r.i, riskScore(r), riskLevel(riskScore(r)).t,
-                r.resp, r.plan, r.own, r.st]);
-    });
-    return out;
+    return riskSees() ? riskXlsRows(risksList()) : [];
   },
   budm: function(){
     var byCat = {}, out = [['الباب','المبلغ','النسبة']];

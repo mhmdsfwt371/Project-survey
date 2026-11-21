@@ -217,6 +217,23 @@ function wbsDate(v){
   else { var m = /(\d{4})-(\d{2})-(\d{2})/.exec(String(v)); iso = m ? m[1] + '-' + m[2] + '-' + m[3] : ''; }
   return (iso && iso >= '2000-01-01') ? iso : '';
 }
+/* ═══ (V47.16) the plan's key dates from its sheet «المواعيد» ═══
+   The named form (the plan from version 2 on) keeps its key dates on a sheet of their own: the name in column B, the date
+   in column C — in version 3 two tables (rows 5–21, and 29–33 under «مواعيد التوريد الجوي على دفعات…») and the report-date
+   row (23). A title row, a header, a note, or a row whose C is not a date is passed over. Read cell by cell, so the columns
+   are B and C whatever the sheet's range. */
+function wbsKeysFromWb(wb){
+  var sn = ((wb && wb.SheetNames) || []).filter(function(n){ return String(n).replace(/\s+/g, ' ').trim() === 'المواعيد'; })[0];
+  var ws = sn ? wb.Sheets[sn] : null; if (!ws || !ws['!ref']) return [];
+  var R = XLSX.utils.decode_range(ws['!ref']), out = [];
+  for (var r = R.s.r; r <= R.e.r; r++){
+    var b = ws[XLSX.utils.encode_cell({ r:r, c:1 })], c = ws[XLSX.utils.encode_cell({ r:r, c:2 })];
+    var n = b ? String(b.v == null ? '' : b.v).replace(/[\u200f\u200e]/g, '').replace(/\s+/g, ' ').trim() : '';
+    var d = c ? wbsDate(c.v) : '';
+    if (n && d) out.push({ n:n, d:d });
+  }
+  return out;
+}
 function wbsImport(file){
   if (!may('settings')){ toast(t('جدولُ المتابعة للمهندس فما فوق')); return; }
   xlsxLoad().then(function(ok){
@@ -238,8 +255,15 @@ function wbsImport(file){
           for (var r2 = v2 + 1; r2 < A.length; r2++){ var row2 = A[r2]; if (!row2 || !row2[ci.n]) continue; var id2 = String(row2[ci.id] || '').replace(/[\u200f\u200e\s]/g, ''); if (!id2 || !/^\d/.test(id2)) continue;
             rows2.push({ id:id2, n:String(row2[ci.n]).trim(), s:wbsDate(row2[ci.s]), e:wbsDate(row2[ci.e]), dur:+row2[ci.dur] || 0, pct:Math.max(0, Math.min(100, +row2[ci.pct] || 0)), type:String(row2[ci.type] || 'مهمة').trim(), resp:String(row2[ci.resp] || '').trim(), party:String(row2[ci.party] || '').trim(), w:+row2[ci.w] || 0, ms:String(row2[ci.ms] || '').trim() }); }
           if (!rows2.length){ toast(t('لا صفوفَ في الملف')); return; }
-          STATE.wbs = { rows:rows2, keys:(STATE.wbs && STATE.wbs.keys) || [] };
-          if (wbsSave()){ logEvent('استيرادُ الخطة التفصيلية (الإصدار ٢) — ' + rows2.length + ' بندًا'); toast(nm(rows2.length) + ' ' + t('بندًا استُورد من الإصدار ٢')); render(1); }
+          /* (V47.16) the key dates come with the plan: from its sheet «المواعيد» when it has one — they replace the cards whole;
+             a file without that sheet leaves the earlier dates as they were */
+          var keys2 = wbsKeysFromWb(wb), keys0 = (STATE.wbs && STATE.wbs.keys) || [];
+          STATE.wbs = { rows:rows2, keys:keys2.length ? keys2 : keys0 };
+          if (wbsSave()){
+            logEvent('استيرادُ الخطة التفصيلية — ' + rows2.length + ' بندًا' + (keys2.length ? ' · ' + keys2.length + ' موعدًا حاكمًا' : ''));
+            toast(nm(rows2.length) + ' ' + t('بندًا استُورد') + ' \u00b7 ' + (keys2.length ? nm(keys2.length) + ' ' + t('موعدًا حاكمًا') : t('المواعيد الحاكمة كما هي')));
+            render(1);
+          }
           return;
         }
         for (var i = 0; i < A.length; i++){

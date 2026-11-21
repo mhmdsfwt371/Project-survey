@@ -70,6 +70,9 @@ function onDocClickPart4(e){
     WR_EDIT = ''; render(1); return;
   }
   if (e.target.closest('[data-rkadd]')){ riskAdd(); return; }
+  /* (V47.16) the register read from Excel replaces the register only on the second word */
+  if (e.target.closest('[data-rkimpok]')){ if (typeof riskImportApply === 'function') riskImportApply(); return; }
+  if (e.target.closest('[data-rkimpx]')){ PV.RISK_IMP = null; render(1); return; }
   if (e.target.closest('[data-hogo]')){
     var hs = (document.getElementById('hoSite') || {}).value;
     var ht = (document.getElementById('hoTo') || {}).value;

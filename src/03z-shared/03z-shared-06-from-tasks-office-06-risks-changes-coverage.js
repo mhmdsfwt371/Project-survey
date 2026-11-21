@@ -19,7 +19,10 @@ function risksList(){
   return STATE.risks;
 }
 
-function riskSave(){ CORE.set('cfg', 'risks', risksList().slice()); }
+/* (V47.16) A list travels to settings/risks as numbered fields, and the server merges every write — so a shorter register
+   (an import of 16 over 20, a deletion) used to leave the old tail on the server, and it came back on the next read.
+   The length travels with the list and the reader keeps only that many (sync: settings/risks). */
+function riskSave(){ var L = risksList().slice(); CORE.set('cfg', 'risks', Object.assign({}, L, { _len:L.length })); }
 
 PV.RISKS = [
   { id:'R1', t:'تأخّر توريد القطع عن الموعد', cat:'مشتريات', p:3, i:4,
@@ -40,12 +43,19 @@ PV.RISKS = [
     resp:'تجنّب', plan:'إنهاءُ التركيب قبل بدء الموسم بشهر', own:'مدير المشروع', st:'مفتوح' }
 ];
 
-function riskScore(r){ return r.p * r.i; }
+function riskScore(r){ return (+r.p || 0) * (+r.i || 0); }
 
-function riskLevel(n){
-  if (n >= 15) return { t:'حرج', c:'bad' };
-  if (n >= 9)  return { t:'عالٍ', c:'wrn' };
-  if (n >= 4)  return { t:'متوسط', c:'' };
+/* (V47.16) The internal register's rule, so the matrix, the stats and every table read one way: 20 and above critical,
+   12–19 high, 6–11 medium, below 6 low. Given a status, «وقع فعلًا» is a level of its own (a live issue, escalated)
+   and a closed risk reads «مغلق» — as the register's own formula writes it. Called with a score alone (the matrix
+   cells), it bands the score. */
+function riskLevel(n, st){
+  var s = st == null ? '' : riskSt({ st:st });
+  if (s === 'مغلق') return { t:'مغلق', c:'ok' };
+  if (s === 'وقع فعلًا') return { t:'وقع فعلًا', c:'bad' };
+  if (n >= 20) return { t:'حرج', c:'bad' };
+  if (n >= 12) return { t:'مرتفع', c:'wrn' };
+  if (n >= 6)  return { t:'متوسط', c:'' };
   return { t:'منخفض', c:'ok' };
 }
 

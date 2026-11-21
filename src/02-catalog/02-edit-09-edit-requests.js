@@ -19,7 +19,8 @@
 var GED = null;   /* العنصرُ المفتوحُ للتعديل: { k:نوعُ القائمة, id:مفتاحُه } */
 var GED_REG = {
   rk:  { t:'خطر',           del:'rkdel',  list:function(){ return risksList(); },  key:'id',  save:function(){ riskSave(); }, may:'settings',
-         f:[['t','وصف الخطر'], ['cat','الفئة'], ['p','الاحتمال (١–٥)','n'], ['i','الأثر (١–٥)','n'], ['resp','الاستجابة'], ['plan','الخطة'], ['own','المالك'], ['st','الحالة']] },
+         /* (V47.16) the internal register's fields; the status changes from its own list in the table, the due date is a date */
+         f:[['t','الخطر'], ['ctx','الوضع الآن'], ['p','الاحتمال (١–٥)','n'], ['i','الأثر (١–٥)','n'], ['plan','الإجراء'], ['own','المسؤول'], ['due','الموعد','d'], ['ref','المرجع'], ['cat','الفئة'], ['resp','الاستجابة']] },
   ls:  { t:'درس مستفاد',     del:'lsdel',  list:function(){ return lessList(); },   key:'#',   save:function(){ lessSave(); }, may:'settings',
          f:[['p','المرحلة'], ['w','ما وقع'], ['a','ما نفعله بعده']] },
   es:  { t:'قاعدة تصعيد',    del:'esdel',  list:function(){ return escList(); },    key:'#',   save:function(){ escSave(); }, may:'settings',
@@ -89,7 +90,7 @@ function gedHtml(){
   var val = function(f){ return f[0] === '=' ? F.x : (F.x[f[0]] == null ? '' : F.x[f[0]]); };
   return '<div class="pop" id="gedPop" style="width:min(460px,94vw)"><div class="pop-head"><div><h3>\u270E ' + esc(t('تعديل')) + ' — ' + esc(t(R.t)) + '</h3></div>'
     + '<button type="button" class="btn btn-quiet btn-sm" data-gedx="0" aria-label="' + esc(t('إغلاق')) + '">\u2715</button></div>'
-    + '<div class="pop-body">' + R.f.map(function(f, n){ return '<div class="field"><label class="mini">' + esc(t(f[1])) + '</label><input id="gedF' + n + '" dir="auto"' + (f[2] === 'n' ? ' type="number"' : '') + ' value="' + esc(val(f)) + '"></div>'; }).join('') + '</div>'
+    + '<div class="pop-body">' + R.f.map(function(f, n){ return '<div class="field"><label class="mini">' + esc(t(f[1])) + '</label><input id="gedF' + n + '" dir="auto"' + (f[2] === 'n' ? ' type="number"' : (f[2] === 'd' ? ' type="date"' : '')) + ' value="' + esc(val(f)) + '"></div>'; }).join('') + '</div>'
     + '<div class="pop-foot actions"><button type="button" class="btn btn-primary btn-sm" data-gedsave="1">\u{1F4BE} ' + esc(t('احفظ')) + '</button>'
     + '<button type="button" class="btn btn-quiet btn-sm" data-gedx="0">' + esc(t('إلغاء')) + '</button></div></div>';
 }
