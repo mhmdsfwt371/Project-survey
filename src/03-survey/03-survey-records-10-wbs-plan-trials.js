@@ -14,7 +14,47 @@
    حالتُه وموقفُه الزمنيُّ من تاريخ اليوم لا من خليةٍ مكتوبة، ويراه الجميعُ —
    والوزارةُ قراءةً — لحظةً بلحظة. الآباءُ يُجمَّع إنجازُهم من أبنائهم. */
 function wbsRows(){ return (STATE.wbs && Array.isArray(STATE.wbs.rows)) ? STATE.wbs.rows : []; }
-function wbsKeys(){ return (STATE.wbs && Array.isArray(STATE.wbs.keys)) ? STATE.wbs.keys : []; }
+function wbsKeys(){
+  var K = (STATE.wbs && Array.isArray(STATE.wbs.keys)) ? STATE.wbs.keys : [];
+  /* (V47.18) a plan imported by V47.16–V47.17 kept its data date among the governing dates — it is read as the data date */
+  return K.some(wbsIsRptKey) ? K.filter(function(k){ return !wbsIsRptKey(k); }) : K;
+}
+/* ═══ (V47.18) the data date is not a governing date ═══
+   Plan version 3 names one cell RPT ('المواعيد'!$C$23, «تاريخ البيانات (تاريخ التقرير)»): the day its actual progress was
+   entered — the workbook counts every «days left» from it. Unlike the 22 governing dates it has no serial number in column «م».
+   V47.16 read every label-and-date row of the sheet, so it became a 23rd card: «مضى ٥٥ يوم» in red, on a page the Ministry
+   reads, as if a deadline had passed. It is found by the name RPT, else by its label (the old form's «تاريخ اليوم» was already
+   skipped the same way), kept as STATE.wbs.rpt and shown as one line above the cards. */
+PV.WBS_RPT_RE = /^(تاريخ البيانات|تاريخ التقرير|تاريخ اليوم)/;
+function wbsIsRptKey(k){ return !!(k && PV.WBS_RPT_RE.test(String(k.n || '').trim())); }
+function wbsRpt(){
+  var w = STATE.wbs || {}; if (w.rpt) return w.rpt;
+  var k = (Array.isArray(w.keys) ? w.keys : []).filter(wbsIsRptKey)[0];
+  return k ? k.d : '';
+}
+/* (V47.18) the Umm al-Qura date under each governing date, written as the plan's own sheet writes it («٩ ذو الحجة ١٤٤٨هـ») */
+function wbsHijri(iso){
+  var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso || '')); if (!m) return '';
+  var lang = (typeof LANG === 'string' && LANG) || 'ar';
+  try {
+    var F = new Intl.DateTimeFormat((lang === 'ar' ? 'ar-SA' : lang === 'ur' ? 'ur-PK' : 'en-GB') + '-u-ca-islamic-umalqura', { day:'numeric', month:'long', year:'numeric', timeZone:'UTC' });
+    var at = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
+    if (lang !== 'ar') return F.format(at);
+    var P = F.formatToParts(at), g = function(k){ var x = P.filter(function(q){ return q.type === k; })[0]; return x ? x.value : ''; };
+    return g('day') && g('month') && g('year') ? g('day') + ' ' + g('month') + ' ' + g('year') + 'هـ' : '';
+  } catch (e){ return ''; }
+}
+/* (V47.18) «بقي ٩ يوم» → «بقي ٩ أيام»: in Arabic the counted noun agrees with the number (يوم واحد · يومان · ٣–١٠ أيام ·
+   ١١–٩٩ يوما · مئة يوم), without diacritics as on the Ministry's screens; the translated boards keep their wording */
+function wbsLeftTxt(n){
+  if (!n) return t('اليوم');
+  var a = Math.abs(n), pre = t(n < 0 ? 'مضى' : 'بقي');
+  if (LANG !== 'ar') return pre + ' ' + nm(a) + ' ' + t('يوم');
+  if (a === 1) return pre + ' يوم واحد';
+  if (a === 2) return pre + ' يومان';
+  var r = a % 100;
+  return pre + ' ' + nm(a) + ' ' + (r >= 3 && r <= 10 ? 'أيام' : r >= 11 ? 'يوما' : 'يوم');
+}
 function wbsDepth(id){ return String(id || '').split('.').length; }
 function wbsChildren(id){ var p = String(id) + '.'; return wbsRows().filter(function(r){ return String(r.id).indexOf(p) === 0 && wbsDepth(r.id) === wbsDepth(id) + 1; }); }
 function wbsPct(r){
@@ -106,8 +146,11 @@ function wbsFiltered(){
 function wbsSave(){
   if (!may('settings')){ toast(t('جدولُ المتابعة للمهندس فما فوق')); return false; }
   STATE.wbs = STATE.wbs || { rows:[], keys:[] };
+  /* (V47.18) a plan saved by V47.16–V47.17 carried its data date among the keys: the next save moves it to its own field */
+  var K0 = Array.isArray(STATE.wbs.keys) ? STATE.wbs.keys : [];
+  if (K0.some(wbsIsRptKey)){ STATE.wbs.rpt = STATE.wbs.rpt || K0.filter(wbsIsRptKey)[0].d; STATE.wbs.keys = K0.filter(function(k){ return !wbsIsRptKey(k); }); }
   STATE.wbs.at = Date.now(); STATE.wbs.by = STATE.meta.name || '';
-  CORE.set('cfg', 'wbs', { rows:STATE.wbs.rows, keys:STATE.wbs.keys, at:STATE.wbs.at, by:STATE.wbs.by });
+  CORE.set('cfg', 'wbs', { rows:STATE.wbs.rows, keys:STATE.wbs.keys, rpt:STATE.wbs.rpt || '', at:STATE.wbs.at, by:STATE.wbs.by });
   CORE.saveSoon(); return true;
 }
 /* ═══ ملفُّ البند (V17.11) ═══
@@ -222,15 +265,41 @@ function wbsDate(v){
    in column C — in version 3 two tables (rows 5–21, and 29–33 under «مواعيد التوريد الجوي على دفعات…») and the report-date
    row (23). A title row, a header, a note, or a row whose C is not a date is passed over. Read cell by cell, so the columns
    are B and C whatever the sheet's range. */
-function wbsKeysFromWb(wb){
+/* (V47.18) the sheet «المواعيد», and the cell the workbook names RPT — wherever it is */
+function wbsKeySheet(wb){
   var sn = ((wb && wb.SheetNames) || []).filter(function(n){ return String(n).replace(/\s+/g, ' ').trim() === 'المواعيد'; })[0];
-  var ws = sn ? wb.Sheets[sn] : null; if (!ws || !ws['!ref']) return [];
-  var R = XLSX.utils.decode_range(ws['!ref']), out = [];
+  var ws = sn ? wb.Sheets[sn] : null;
+  return (ws && ws['!ref']) ? { sn:sn, ws:ws } : null;
+}
+function wbsRptRef(wb){
+  var N = (wb && wb.Workbook && wb.Workbook.Names) || [], x = N.filter(function(o){ return o && String(o.Name || '').toUpperCase() === 'RPT'; })[0];
+  var m = x && /^'?(.*?)'?!\$?([A-Z]{1,3})\$?(\d+)$/.exec(String(x.Ref || '')); if (!m) return null;
+  var want = m[1].replace(/''/g, "'").replace(/\s+/g, ' ').trim();
+  var sn = ((wb && wb.SheetNames) || []).filter(function(n){ return String(n).replace(/\s+/g, ' ').trim() === want; })[0];
+  if (!sn || !wb.Sheets[sn]) return null;
+  var a = XLSX.utils.decode_cell(m[2] + m[3]); return { sn:sn, r:a.r, c:a.c };
+}
+function wbsRptFromWb(wb){
+  var at = wbsRptRef(wb), cell = at ? wb.Sheets[at.sn][XLSX.utils.encode_cell({ r:at.r, c:at.c })] : null, d = cell ? wbsDate(cell.v) : '';
+  if (d) return d;
+  var S = wbsKeySheet(wb); if (!S) return '';
+  var R = XLSX.utils.decode_range(S.ws['!ref']);
   for (var r = R.s.r; r <= R.e.r; r++){
+    var b = S.ws[XLSX.utils.encode_cell({ r:r, c:1 })], c = S.ws[XLSX.utils.encode_cell({ r:r, c:2 })];
+    var n = b ? String(b.v == null ? '' : b.v).replace(/[\u200f\u200e]/g, '').trim() : '', dc = c ? wbsDate(c.v) : '';
+    if (n && dc && PV.WBS_RPT_RE.test(n)) return dc;
+  }
+  return '';
+}
+function wbsKeysFromWb(wb){
+  var S = wbsKeySheet(wb); if (!S) return [];
+  var ws = S.ws, R = XLSX.utils.decode_range(ws['!ref']), out = [], at = wbsRptRef(wb);
+  for (var r = R.s.r; r <= R.e.r; r++){
+    if (at && at.sn === S.sn && at.r === r) continue;   /* (V47.18) the data date's row */
     var b = ws[XLSX.utils.encode_cell({ r:r, c:1 })], c = ws[XLSX.utils.encode_cell({ r:r, c:2 })];
     var n = b ? String(b.v == null ? '' : b.v).replace(/[\u200f\u200e]/g, '').replace(/\s+/g, ' ').trim() : '';
     var d = c ? wbsDate(c.v) : '';
-    if (n && d) out.push({ n:n, d:d });
+    if (n && d && !PV.WBS_RPT_RE.test(n)) out.push({ n:n, d:d });
   }
   return out;
 }
@@ -257,11 +326,13 @@ function wbsImport(file){
           if (!rows2.length){ toast(t('لا صفوفَ في الملف')); return; }
           /* (V47.16) the key dates come with the plan: from its sheet «المواعيد» when it has one — they replace the cards whole;
              a file without that sheet leaves the earlier dates as they were */
-          var keys2 = wbsKeysFromWb(wb), keys0 = (STATE.wbs && STATE.wbs.keys) || [];
-          STATE.wbs = { rows:rows2, keys:keys2.length ? keys2 : keys0 };
+          var keys2 = wbsKeysFromWb(wb), keys0 = (STATE.wbs && STATE.wbs.keys) || [], rpt0 = wbsRpt(), rpt2 = wbsRptFromWb(wb);
+          /* (V47.18) the data date travels with the dates: the file's own when it brings «المواعيد», else the earlier one */
+          STATE.wbs = { rows:rows2, keys:keys2.length ? keys2 : keys0, rpt:rpt2 || (keys2.length ? '' : rpt0) };
           if (wbsSave()){
             logEvent('استيرادُ الخطة التفصيلية — ' + rows2.length + ' بندًا' + (keys2.length ? ' · ' + keys2.length + ' موعدًا حاكمًا' : ''));
-            toast(nm(rows2.length) + ' ' + t('بندًا استُورد') + ' \u00b7 ' + (keys2.length ? nm(keys2.length) + ' ' + t('موعدًا حاكمًا') : t('المواعيد الحاكمة كما هي')));
+            toast(nm(rows2.length) + ' ' + t('بندًا استُورد') + ' \u00b7 ' + (keys2.length ? nm(keys2.length) + ' ' + t('موعدًا حاكمًا') : t('المواعيد الحاكمة كما هي'))
+              + (STATE.wbs.rpt ? ' \u00b7 ' + t('تاريخ البيانات') + ' ' + STATE.wbs.rpt : ''));
             render(1);
           }
           return;
@@ -404,12 +475,19 @@ PAGE.wbs = { m:'التخطيط', t:'متابعة الخطة التفصيلية',
     if (!R.length) return head + card('', '<p class="hint" style="text-align:center;margin:0">'
       + esc(t(may('settings') ? 'لا جدولَ بعد — استورد ملفَ «متابعة مشروع قارئات أفاقي» من الزرِّ أعلاه.' : 'لا جدولَ بعد — يستورده المكتب.')) + '</p>');
     var today = dayKey(Date.now());
-    var strip = wbsKeys().length ? '<div class="grid cols-3" style="margin-bottom:10px">' + wbsKeys().map(function(k){
-      var left = Math.round((new Date(k.d) - new Date(today)) / 86400000);
+    /* (V47.18) the cards in date order (the sheet's order was its derivation order: يوم عرفة first, the dates built on it, then
+       التعميد and its own) · a passed date in grey — a governing date that has passed is not a delay · its Umm al-Qura date as
+       in the sheet · and the data date on its own line, not as a card */
+    var KS = wbsKeys().slice().sort(function(a, b){ return String(a.d).localeCompare(String(b.d)); }), rpt = wbsRpt();
+    var strip = (rpt ? '<p class="hint" id="wbsRpt" style="margin:0 0 8px">' + esc(t('تاريخ البيانات')) + ': <b class="num">' + esc(rpt) + '</b> \u2014 '
+          + esc(t('الإنجاز الفعلي في ملف الخطة مسجل حتى هذا التاريخ')) + '</p>' : '')
+      + (KS.length ? '<div class="grid cols-3" id="wbsKeyStrip" style="margin-bottom:10px">' + KS.map(function(k){
+      var left = Math.round((new Date(k.d) - new Date(today)) / 86400000), hj = wbsHijri(k.d);
       return '<div class="card" style="padding:10px 12px"><div class="hint" style="margin:0">' + esc(k.n) + '</div>'
         + '<div class="num" style="font-size:15px;font-weight:700">' + esc(k.d) + '</div>'
-        + '<div>' + (left < 0 ? pill(t('مضى') + ' ' + nm(-left) + ' ' + t('يوم'), 'off') : pill(t('بقي') + ' ' + nm(left) + ' ' + t('يوم'), left <= 14 ? 'warn' : 'ok')) + '</div></div>';
-    }).join('') + '</div>' : '';
+        + (hj ? '<div class="hint" style="margin:0 0 4px;font-size:12px">' + esc(hj) + '</div>' : '')
+        + '<div>' + pill(wbsLeftTxt(left), left < 0 ? '' : left <= 14 ? 'warn' : 'ok') + '</div></div>';
+    }).join('') + '</div>' : '');
     var leaves = R.filter(function(r){ return !wbsChildren(r.id).length; });
     var c = { done:0, run:0, todo:0, late:0, ms:0 };
     leaves.forEach(function(r){ var st = wbsStatus(r), tm = wbsTiming(r); if (st === 'مكتملة') c.done++; else if (st === 'قيد التنفيذ') c.run++; else c.todo++; if (tm === 'متأخر') c.late++; if (r.type === 'معلم') c.ms++; });

@@ -64,7 +64,7 @@ function wbsExcel(){
     ws.getCell('A1').font = { bold:true, size:14, color:{ argb:GREEN } };
     ws.getCell('A2').value = t('المواعيد الحاكمة'); ws.getCell('A2').font = { bold:true };
     ws.getCell('A3').value = t('التاريخ'); ws.getCell('A4').value = t('المتبقي');
-    K.forEach(function(k, i){   /* (V47.16) every key date — version 3 of the plan has 23 (it was cut at 11) */
+    K.forEach(function(k, i){   /* (V47.16) every key date (it was cut at 11) — version 3 of the plan has 22; its data date is not one (V47.18) */
       var col = 2 + i, L = ws.getColumn(col).letter;
       ws.getCell(2, col).value = k.n;
       ws.getCell(2, col).font = { bold:true, size:10 };

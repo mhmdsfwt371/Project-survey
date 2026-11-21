@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   جردُ مواعيد الخطة ومعالمها — node scripts/audit-plan-keys.mjs   (V47.16 · V47.17)
+   جردُ مواعيد الخطة ومعالمها — node scripts/audit-plan-keys.mjs   (V47.16 · V47.17 · V47.18)
    ───────────────────────────────────────────────────────────────────────────
    طلبُ المالك: الخطةُ التفصيليةُ (الإصدار ٣) تحمل مواعيدَها الحاكمة في ورقة
    «المواعيد»، فيقرؤها الاستيرادُ ويحدّث البطاقات؛ والشكلُ القديمُ يبقى كما هو؛
@@ -59,7 +59,8 @@ const KEYS = [['المواعيد الحاكمة — تجربة'], ['تغيير �
   ['١٩', 'بداية إجازة المصانع', '2027-02-01', '', '', 127],
   ['٢٠', 'عددٌ لا تاريخ', 230, '', '', ''],
   ['٢٢', 'استئناف العمل بعد إجازة عيد الفطر', D('2027-03-18'), '', '', 172]];
-const WANT = [['يوم عرفة ١٤٤٨هـ', '2027-05-15'], ['التعميد وأوامر الشراء', '2026-12-15'], ['بداية العمل الميداني', '2026-12-22'], ['تاريخ البيانات (تاريخ التقرير)', '2026-09-27'],
+/* (V47.18) the data date («تاريخ البيانات») is not a governing date — V47.16 counted it as one */
+const WANT = [['يوم عرفة ١٤٤٨هـ', '2027-05-15'], ['التعميد وأوامر الشراء', '2026-12-15'], ['بداية العمل الميداني', '2026-12-22'],
   ['وصول الدفعة الأولى من التوريد الجديد جوًا', '2027-01-27'], ['بداية إجازة المصانع', '2027-02-01'], ['استئناف العمل بعد إجازة عيد الفطر', '2027-03-18']];
 
 console.log('\n══ ١ · الشكلُ المسمّى يقرأ مواعيدَه من ورقة «المواعيد» ══');
@@ -67,15 +68,16 @@ w.STATE.wbs = { rows:[], keys:[{ n:'موعدٌ قديم', d:'2026-10-15' }] };
 let tst = await run(fileOf([['الغلاف', [['غلاف']]], ['المواعيد', KEYS], ['الجدول الزمني الرئيسي', SCHED]]));
 const K = w.wbsKeys().map(k => [k.n, k.d]);
 T(w.wbsRows().length === 8, 'البنودُ الثمانيةُ من «الجدول الزمني الرئيسي»');
-T(JSON.stringify(K) === JSON.stringify(WANT), 'سبعةُ مواعيد بترتيب الورقة من جدوليها وصفِّ تاريخ البيانات — والعناوينُ والملاحظةُ والعددُ لا تُقرأ: ' + K.map(k => k[0]).join('، '));
+T(JSON.stringify(K) === JSON.stringify(WANT), 'ستةُ مواعيد من جدولَي الورقة — والعناوينُ والملاحظةُ والعددُ لا تُقرأ: ' + K.map(k => k[0]).join('، '));
+T(w.wbsRpt() === '2026-09-27' && w.STATE.wbs.rpt === '2026-09-27' && !K.some(k => /تاريخ البيانات/.test(k[0])), 'وتاريخُ البيانات يُقرأ وحده لا موعدًا حاكمًا (كان الموعدَ السابع فظهر «مضى» بالأحمر)');
 T(!K.some(k => k[0] === 'موعدٌ قديم'), 'وتستبدل المواعيدَ القديمةَ كلَّها');
-T(/٨/.test(tst) && /٧/.test(tst) && /بندًا استُورد/.test(tst) && /موعدًا حاكمًا/.test(tst) && evs.some(e => /استيرادُ الخطة التفصيلية — 8 بندًا · 7 موعدًا حاكمًا/.test(e)), 'والرسالةُ بعدد البنود وعدد المواعيد: ' + tst);
+T(/٨/.test(tst) && /٦/.test(tst) && /بندًا استُورد/.test(tst) && /موعدًا حاكمًا/.test(tst) && /تاريخ البيانات 2026-09-27/.test(tst) && evs.some(e => /استيرادُ الخطة التفصيلية — 8 بندًا · 6 موعدًا حاكمًا/.test(e)), 'والرسالةُ بعدد البنود وعدد المواعيد وتاريخ البيانات: ' + tst);
 let c = show('wbs');
 T(['التعميد وأوامر الشراء', 'بداية العمل الميداني', 'استئناف العمل بعد إجازة عيد الفطر'].every(n => c.textContent.indexOf(n) > -1) && c.textContent.indexOf('2026-12-15') > -1, 'وبطاقاتُ المواعيد فوق الجدول تتحدّث');
 
 console.log('\n══ ٢ · ملفٌّ بلا ورقة «المواعيد» يترك المواعيد كما هي ══');
 tst = await run(fileOf([['الجدول الزمني الرئيسي', SCHED]]));
-T(w.wbsRows().length === 8 && JSON.stringify(w.wbsKeys().map(k => [k.n, k.d])) === JSON.stringify(WANT) && /المواعيد الحاكمة كما هي/.test(tst), 'البنودُ تتحدّث والمواعيدُ السابقةُ باقية: ' + tst);
+T(w.wbsRows().length === 8 && JSON.stringify(w.wbsKeys().map(k => [k.n, k.d])) === JSON.stringify(WANT) && w.wbsRpt() === '2026-09-27' && /المواعيد الحاكمة كما هي/.test(tst), 'البنودُ تتحدّث والمواعيدُ وتاريخُ البيانات السابقة باقية: ' + tst);
 
 console.log('\n══ ٣ · الشكلُ القديم («هيكل تقسيم العمل») كما كان ══');
 w.STATE.wbs = { rows:[], keys:[] };
@@ -140,6 +142,38 @@ T(!w.mileList().some(m => m.id === '1.2') && w.wbsRows().some(r => r.id === '1.2
 w.wbsRemove('2.3');
 T(!w.wbsRows().some(r => r.id === '2.3') && !w.mileList().some(m => m.id === '2.3'), 'والحذفُ يمسحه من الخطة والمعالم');
 as('viewer'); c = show('wbs'); T(!c.querySelector('[data-wbsnew]'), 'والوزارةُ لا ترى زرَّ الإضافة'); as('engineer');
+
+console.log('\n══ ٧ · بطاقاتُ المواعيد: بالتاريخ، والماضي رمادي، والهجري، وتاريخُ البيانات سطرٌ وحده ══');
+{ /* the cell the workbook names RPT is the data date, whatever its label */
+  const wb = X.utils.book_new();
+  X.utils.book_append_sheet(wb, X.utils.aoa_to_sheet([['م', 'الموعد', 'التاريخ'], ['١', 'يوم عرفة ١٤٤٨هـ', D('2027-05-15')], ['٢', 'التعميد وأوامر الشراء', D('2026-12-15')], [], ['', 'آخر تحديث للفعلي', D('2026-11-15')]], { cellDates:true }), 'المواعيد');
+  X.utils.book_append_sheet(wb, X.utils.aoa_to_sheet(SCHED, { cellDates:true }), 'الجدول الزمني الرئيسي');
+  wb.Workbook = { Names:[{ Name:'RPT', Ref:"'المواعيد'!$C$5" }] };
+  w.STATE.wbs = { rows:[], keys:[] };
+  await run(new w.File([X.write(wb, { type:'array', bookType:'xlsx', cellDates:true })], 'rpt.xlsx'));
+  T(w.wbsKeys().map(k => k.n).join('،') === 'يوم عرفة ١٤٤٨هـ،التعميد وأوامر الشراء' && w.wbsRpt() === '2026-11-15', 'الخليةُ التي يسمّيها الملفُّ RPT هي تاريخُ البيانات ولو اختلف عنوانُها: ' + w.wbsKeys().length + ' · ' + w.wbsRpt()); }
+{ /* the plan as V47.16–V47.17 stored it on production: the data date among the keys, no field of its own */
+  w.STATE.wbs = { rows:w.wbsRows(), keys:[{ n:'يوم عرفة ١٤٤٨هـ', d:'2027-05-15' }, { n:'تاريخ البيانات (تاريخ التقرير)', d:'2026-09-27' }, { n:'التعميد وأوامر الشراء', d:'2026-12-15' }] };
+  const c7 = show('wbs'), line = d.getElementById('wbsRpt');
+  T(w.wbsKeys().length === 2 && c7.querySelectorAll('#wbsKeyStrip .card').length === 2 && line && /2026-09-27/.test(line.textContent), 'الخطةُ المحفوظةُ قبلُ تظهر بموعدين وسطرِ تاريخ البيانات — بلا استيرادٍ جديد');
+  w.wbsSave();
+  T(w.STATE.wbs.keys.length === 2 && w.STATE.wbs.rpt === '2026-09-27', 'وأولُ حفظٍ ينقل تاريخَ البيانات إلى حقله'); }
+{ /* date order, a passed date in grey, the Hijri date under each */
+  const day = n => w.dayKey(Date.now() + n * 86400000);
+  w.STATE.wbs = { rows:w.wbsRows(), keys:[{ n:'ج', d:day(40) }, { n:'أ', d:day(-10) }, { n:'د', d:'2027-05-15' }, { n:'ب', d:day(5) }], rpt:'2026-09-27' };
+  const c7 = show('wbs'), cards = [...c7.querySelectorAll('#wbsKeyStrip .card')], ds = cards.map(e => e.querySelector('.num').textContent);
+  T(JSON.stringify(ds) === JSON.stringify(ds.slice().sort()) && cards.map(e => e.querySelector('.hint').textContent).join('') === 'أبجد', 'البطاقاتُ بترتيب التاريخ لا بترتيب الورقة: ' + ds.join(' '));
+  const pillOf = n => cards.find(e => e.querySelector('.hint').textContent === n).querySelector('.pill');
+  T(!/\b(off|bad)\b/.test(pillOf('أ').className) && /مضى/.test(pillOf('أ').textContent) && /\bwarn\b/.test(pillOf('ب').className) && /\bok\b/.test(pillOf('ج').className), 'والموعدُ الذي مضى رماديٌّ لا أحمر، والقريبُ كهرمانيٌّ، والبعيدُ أخضر');
+  T(cards.find(e => e.querySelector('.hint').textContent === 'د').textContent.indexOf('٩ ذو الحجة ١٤٤٨هـ') > -1, 'وتحت كلِّ تاريخٍ موافقُه الهجريُّ كما في ورقة الخطة'); }
+{ const H = { '2027-05-15':'٩ ذو الحجة ١٤٤٨هـ', '2027-02-07':'٣٠ شعبان ١٤٤٨هـ', '2026-11-22':'١٢ جمادى الآخرة ١٤٤٨هـ', '2027-04-08':'١ ذو القعدة ١٤٤٨هـ', '2027-02-11':'٤ رمضان ١٤٤٨هـ', '2027-03-18':'١٠ شوال ١٤٤٨هـ', '2027-05-19':'١٣ ذو الحجة ١٤٤٨هـ' };
+  const off = Object.keys(H).filter(k => w.wbsHijri(k) !== H[k]);
+  T(!off.length, 'الهجريُّ بتقويم أم القرى يطابق عمودَ «الموافق هجريًا» في الخطة (رمضان وشوال وذو القعدة وذو الحجة ١٤٤٨هـ)' + (off.length ? ': ' + off.map(k => k + ' ' + w.wbsHijri(k)).join('، ') : '')); }
+{ const L = [[1, 'بقي يوم واحد'], [2, 'بقي يومان'], [9, 'بقي ٩ أيام'], [10, 'بقي ١٠ أيام'], [24, 'بقي ٢٤ يوما'], [-55, 'مضى ٥٥ يوما'], [100, 'بقي ١٠٠ يوم'], [103, 'بقي ١٠٣ أيام'], [175, 'بقي ١٧٥ يوما'], [0, 'اليوم']].filter(([n, s]) => w.wbsLeftTxt(n) !== s);
+  T(!L.length, 'والعددُ يطابق المعدود: «يوم واحد» و«يومان» و«٩ أيام» و«٢٤ يوما» — لا «٩ يوم»' + (L.length ? ': ' + L.map(([n]) => n + '→' + w.wbsLeftTxt(n)).join('، ') : '')); }
+as('viewer');
+{ const c7 = show('wbs'); T(!!d.getElementById('wbsRpt') && !c7.querySelector('#wbsKeyStrip .pill.off, #wbsKeyStrip .pill.bad'), 'والوزارةُ ترى تاريخَ البيانات سطرًا، ولا شارةَ حمراءَ في المواعيد'); }
+as('engineer');
 T(errs.length === 0, 'بلا أخطاء في الصفحة' + (errs.length ? ': ' + errs[0] : ''));
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

@@ -203,7 +203,7 @@ function liveSmall(){
       snapReads(doc);
       if (!doc || !doc.exists) return;
       var w = doc.data() || {}; if (!Array.isArray(w.rows)) return;
-      STATE.wbs = { rows:w.rows, keys:w.keys || [], at:w.at, by:w.by };
+      STATE.wbs = { rows:w.rows, keys:w.keys || [], rpt:w.rpt || '', at:w.at, by:w.by };
       CORE.saveSoon();
       if (CUR === 'wbs' && !document.querySelector('#content input:focus')) render(1);
     }, function(e){ softErr('إنصات جدول المتابعة', e, ''); }));

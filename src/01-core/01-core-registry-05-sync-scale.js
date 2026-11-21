@@ -1081,7 +1081,7 @@ var FB = {
       }, function(e){ softErr('سحب المهام الأسبوعية', e, ''); });
       FB.sdoc('wbs', function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
-        if (doc && doc.exists){ var w = doc.data() || {}; if (Array.isArray(w.rows)) STATE.wbs = { rows:w.rows, keys:w.keys || [], at:w.at, by:w.by }; }
+        if (doc && doc.exists){ var w = doc.data() || {}; if (Array.isArray(w.rows)) STATE.wbs = { rows:w.rows, keys:w.keys || [], rpt:w.rpt || '', at:w.at, by:w.by }; }
       }, function(e){ softErr('سحب جدول المتابعة', e, ''); });
       /* (V47.16) the register is internal to AFAQY: only the roles firestore.rules lets read settings/risks ask for it
          (engineers, admins, executives) — it never reaches the Ministry's device */
