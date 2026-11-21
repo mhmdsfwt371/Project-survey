@@ -262,7 +262,7 @@ PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
                   ['الإنجاز الموزون', nm(Math.round(earned)) + '٪', 'acc'],
                   ['المتبقّي', nm(Math.round(tot - earned)) + '٪']])
 
-      + card('', meter('الإنجاز الموزون بالمعالم', earned, tot))
+      + card('', meter('الإنجاز الموزون بالمعالم', Math.round(earned), Math.round(tot)))   /* (V47.17) the plan's milestones weigh 100/15 each — the bar read «٦٫٦٦٧ / ١٠٠» on the Ministry's screen */
 
       + cardFlush('المعالم',
           /* الوزنُ والتبعيةُ تخطيطٌ داخليّ: يراهما من يضبط الخطة وحدَه.

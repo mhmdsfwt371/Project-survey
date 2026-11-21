@@ -291,7 +291,7 @@ function wbsImport(file){
     fr.readAsArrayBuffer(file);
   });
 }
-PV.WBS_F = ''; PV.WBS_Q = ''; PV.WBS_T = 0; var WBS_OPEN = {}; PV.WBS_RESET = 0; var WBS_EDIT = '';
+PV.WBS_F = ''; PV.WBS_Q = ''; PV.WBS_T = 0; var WBS_OPEN = {}; PV.WBS_RESET = 0; var WBS_EDIT = ''; PV.WBS_NEW = 0;   /* (V47.17) the new-item form is open */
 /* الجذرُ مفتوحٌ أو مطويّ — والافتراضُ الطيُّ ليُقرأ الجدولُ من فوق */
 function wbsShown(id){
   var parts = String(id).split('.');
@@ -387,8 +387,19 @@ PAGE.wbs = { m:'التخطيط', t:'متابعة الخطة التفصيلية',
       ? card('', '<div class="actions" style="margin:0">'
           + '<label class="btn btn-secondary btn-sm" style="cursor:pointer">\u2B06 ' + esc(t('استيراد من إكسل'))
           + '<input type="file" accept=".xlsx,.xls" data-wbsfile="1" style="display:none"></label>'
+          + (wbsRows().length ? btn('\u2795 ' + t('بند جديد'), 'btn-secondary btn-sm', ' data-wbsnew="1"') : '')   /* (V47.17) */
           + (wbsRows().length ? btn('\u{1F5D1} ' + t(PV.WBS_RESET ? 'تأكيد المسح — يُمحى الجدولُ كلُّه' : 'امسح الجدول وابدأ من جديد'), PV.WBS_RESET ? 'btn-danger btn-sm' : 'btn-quiet btn-sm', ' data-wbsreset="1"') : '')
-          + '</div>') : '';
+          + '</div>'
+          /* (V47.17) a new item: its number places it under its parent; a «معلم» shows at once among the milestones */
+          + (PV.WBS_NEW ? '<div class="grid cols-3" id="wbsNewForm" style="margin:12px 0 0">'
+              + '<div class="field"><label>' + esc(t('رقم البند')) + ' <span class="req">*</span></label><input id="wbnId" dir="ltr" placeholder="2.5.6"></div>'
+              + '<div class="field" style="grid-column:span 2"><label>' + esc(t('اسم البند')) + ' <span class="req">*</span></label><input id="wbnN" dir="auto"></div>'
+              + '<div class="field"><label>' + esc(t('النوع')) + '</label><select id="wbnT">' + ['معلم', 'مهمة'].map(function(x){ return '<option value="' + esc(x) + '">' + esc(t(x)) + '</option>'; }).join('') + '</select></div>'
+              + '<div class="field"><label>' + esc(t('البداية')) + '</label><input type="date" id="wbnS"></div>'
+              + '<div class="field"><label>' + esc(t('النهاية')) + '</label><input type="date" id="wbnE"></div>'
+              + '<div class="field"><label>' + esc(t('المسؤول')) + '</label><input id="wbnR" dir="auto"></div>'
+              + '</div><div class="actions" style="margin:8px 0 0">' + btn('\u{1F4BE} ' + t('أضف البند'), 'btn-primary btn-sm', ' data-wbsnewsave="1"') + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-wbsnewx="1"') + '</div>'
+              + '<p class="hint" style="margin:8px 0 0">' + esc(t('البند يضاف إلى الخطة هنا فقط؛ أضفه في ملف الخطة أيضا قبل أي استيراد جديد، لأن الاستيراد يستبدل الخطة كلها.')) + '</p>' : '')) : '';
     var R = wbsRows();
     if (!R.length) return head + card('', '<p class="hint" style="text-align:center;margin:0">'
       + esc(t(may('settings') ? 'لا جدولَ بعد — استورد ملفَ «متابعة مشروع قارئات أفاقي» من الزرِّ أعلاه.' : 'لا جدولَ بعد — يستورده المكتب.')) + '</p>');

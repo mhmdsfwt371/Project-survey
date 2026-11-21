@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   جردُ مواعيد الخطة ومعالمها — node scripts/audit-plan-keys.mjs   (V47.16)
+   جردُ مواعيد الخطة ومعالمها — node scripts/audit-plan-keys.mjs   (V47.16 · V47.17)
    ───────────────────────────────────────────────────────────────────────────
    طلبُ المالك: الخطةُ التفصيليةُ (الإصدار ٣) تحمل مواعيدَها الحاكمة في ورقة
    «المواعيد»، فيقرؤها الاستيرادُ ويحدّث البطاقات؛ والشكلُ القديمُ يبقى كما هو؛
@@ -108,6 +108,9 @@ T(Math.round(ML.reduce((a, m) => a + m.w, 0)) === 100, 'وأوزانُها مت�
 c = show('plan', 'miles');
 T(!!d.getElementById('mlFromPlan') && c.textContent.indexOf('اكتمال تجربة المعلم') > -1 && c.textContent.indexOf('2027-03-31') > -1 && !c.querySelector('[data-mlnew]') && !c.querySelector('[data-mledit]') && !c.querySelector('[data-mld]'),
   'الشريحةُ تعرضها بتواريخها وتقول إنها من الخطة — ولا إضافةَ ولا تعديلَ هنا (تُعدَّل في الخطة)');
+{ const r22 = w.wbsRow('2.2'), p0 = r22.pct; r22.pct = 50; const cm = show('plan', 'miles'), mt = ((cm.querySelector('.meter') || {}).textContent || '').replace(/\s+/g, ' ').trim(); r22.pct = p0;   /* 100/3 × 50% = 16.67 */
+  T(mt && !/[0-9٠-٩][.,٫][0-9٠-٩]/.test(mt.split('·')[0]), 'وشريطُ الإنجاز الموزون بأعدادٍ صحيحة ولو كان الوزنُ كسرًا (١٠٠ ÷ ٣) — لا «١٦٫٦٦٧ / ١٠٠»: ' + mt); }
+c = show('plan', 'miles');
 as('viewer'); c = show('plan', 'miles');
 T(c.textContent.indexOf('صدور التخصيص التجريبي') > -1 && c.textContent.indexOf('2026-11-22') > -1 && c.textContent.indexOf('M1') < 0, 'والوزارةُ ترى معالمَ الخطة لا المعالمَ المضمَّنة');
 { const card = w.mfuMilesCard();
@@ -115,6 +118,28 @@ T(c.textContent.indexOf('صدور التخصيص التجريبي') > -1 && c.te
   const t = w.SHEETS.miles();
   T(t[0].indexOf('الموعد المستهدف') > -1 && t.slice(1).map(r => r[4]).join() === '2026-11-22,2026-11-30,2027-03-31', 'وإكسلُ المعالم يحمل الموعدَ المستهدف'); }
 as('engineer');
+
+console.log('\n══ ٦ · المعالمُ تُعدَّل وتُضاف وتُمسح من صفحة الخطة ══');
+w.STATE.wbs = { rows:[], keys:[] }; await run(fileOf([['المواعيد', KEYS], ['الجدول الزمني الرئيسي', SCHED]]));
+c = show('wbs');
+T(!!c.querySelector('[data-wbsnew]'), 'زرُّ «بند جديد» في صفحة الخطة');
+c.querySelector('[data-wbsnew]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(30);
+T(!!d.getElementById('wbsNewForm'), 'ويفتح نموذجَ البند');
+const put = (id, n, ty, e) => { d.getElementById('wbnId').value = id; d.getElementById('wbnN').value = n; d.getElementById('wbnT').value = ty; d.getElementById('wbnE').value = e || '';
+  toasts.length = 0; d.querySelector('[data-wbsnewsave]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); return toasts.slice(-1)[0] || ''; };
+const m1 = put('2.3', 'معلمٌ جديدٌ من البورتال', 'معلم', '2026-12-01'); await wait(30);
+const ids = w.wbsRows().map(r => r.id);
+T(/أُضيف البند/.test(m1) && ids.indexOf('2.3') === ids.indexOf('2.2') + 1 && w.mileList().some(m => m.id === '2.3' && w.mileDateOf(m) === '2026-12-01'), 'معلمٌ جديدٌ برقمه «2.3» في مكانه من الخطة، ويظهر في المعالم بتاريخه فورًا');
+show('wbs'); d.querySelector('[data-wbsnew]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(30);
+const e1 = put('2.3', 'مكرّر', 'معلم'), e2 = put('9.1', 'بلا أب', 'معلم'), e3 = put('ب-١', 'رقمٌ خطأ', 'معلم'), e4 = put('٣.٢', '', 'معلم');
+T(/موجود/.test(e1) && /الأب/.test(e2) && /أرقام/.test(e3) && /اسم البند/.test(e4) && w.wbsRows().length === 9, 'ويُرفَض الرقمُ المكرّر، والبندُ بلا أب، والرقمُ غيرُ الرقميّ، والبندُ بلا اسم');
+w.wbsEditSave('2.3', { e:'2026-12-20' });
+T(w.mileDateOf(w.mileList().find(m => m.id === '2.3')) === '2026-12-20', 'تعديلُ نهاية البند يغيّر تاريخَ المعلم');
+w.wbsEditSave('1.2', { type:'مهمة' });
+T(!w.mileList().some(m => m.id === '1.2') && w.wbsRows().some(r => r.id === '1.2'), 'وتغييرُ نوعه إلى «مهمة» يُخرجه من المعالم ويُبقيه في الخطة');
+w.wbsRemove('2.3');
+T(!w.wbsRows().some(r => r.id === '2.3') && !w.mileList().some(m => m.id === '2.3'), 'والحذفُ يمسحه من الخطة والمعالم');
+as('viewer'); c = show('wbs'); T(!c.querySelector('[data-wbsnew]'), 'والوزارةُ لا ترى زرَّ الإضافة'); as('engineer');
 T(errs.length === 0, 'بلا أخطاء في الصفحة' + (errs.length ? ': ' + errs[0] : ''));
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

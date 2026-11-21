@@ -41,7 +41,7 @@
 | `02-definitions-10-assistant-answers.js` | 435 | 24 | (V47.5) Phase 2 of the brain plan: a question about sensors, shipments, vehicles, the pace, people's |
 | `02-edit-09-edit-requests.js` | 186 | 11 | Data-correction requests from the field (fixreqs) and their review. |
 
-## `03-survey/` — المسح والتركيب — النماذج والنقاط والإسناد والخطة  (11 ملفات · 4172 سطر · 195 دالة)
+## `03-survey/` — المسح والتركيب — النماذج والنقاط والإسناد والخطة  (11 ملفات · 4183 سطر · 195 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -54,7 +54,7 @@
 | `03-survey-records-07-demo-single-errors.js` | 203 | 16 | Demo-point kits, single-point form, production error capture, events carrying their point and actor. |
 | `03-survey-records-08-parts-history-onboarding.js` | 219 | 9 | Parts picker, three items missing from the worker, the point's full history, and the first-run tour. |
 | `03-survey-records-09-team-bugs-companies.js` | 217 | 14 | Team numbers in one pass, bug report and bug screen, accepted-only work rule, daily WhatsApp briefing, company phone book and company rename. |
-| `03-survey-records-10-wbs-plan-trials.js` | 495 | 30 | Work breakdown structure, plan versus actual, plan export with formulas, item file and the trials page. |
+| `03-survey-records-10-wbs-plan-trials.js` | 506 | 30 | Work breakdown structure, plan versus actual, plan export with formulas, item file and the trials page. |
 | `03-survey-records-11-weekly-tasks-paths.js` | 526 | 32 | Weekly tasks as sentence cards, meeting mode, the one filter for screen and paper, and path filtering with each path's status. |
 
 ## `03z-shared/` — المشتركُ — تعريفاتٌ تحتاجها النواةُ قبل مجالات المكتب والوزارة والتقارير (نُقلت حرفيًّا، لا كودَ جديدًا هنا)  (63 ملفات · 8240 سطر · 459 دالة)
@@ -125,7 +125,7 @@
 | `03z-shared-b-26-from-approvals-reports-10-point-actions-export-pdf.js` | 52 | 2 | Definitions moved verbatim from src/07-reports/07-approvals-reports-10-point-actions-export-pdf.js (V38.38–V38.39, stage A of core + chunks, pass b): the core ( |
 | `03z-shared-b-27-from-approvals-reports-11-import-roles-perms.js` | 29 | 0 | Definitions moved verbatim from src/07-reports/07-approvals-reports-11-import-roles-perms.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, |
 
-## `03zz-late/` —   (65 ملفات · 6999 سطر · 454 دالة)
+## `03zz-late/` —   (65 ملفات · 7024 سطر · 455 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -154,7 +154,7 @@
 | `03-survey--03-survey-records-07-demo-single-errors.js` | 170 | 9 | Moved verbatim from src/03-survey/03-survey-records-07-demo-single-errors.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office |
 | `03-survey--03-survey-records-08-parts-history-onboarding.js` | 233 | 14 | Moved verbatim from src/03-survey/03-survey-records-08-parts-history-onboarding.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the  |
 | `03-survey--03-survey-records-09-team-bugs-companies.js` | 322 | 19 | Moved verbatim from src/03-survey/03-survey-records-09-team-bugs-companies.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the offic |
-| `03-survey--03-survey-records-10-wbs-plan-trials.js` | 238 | 15 | Moved verbatim from src/03-survey/03-survey-records-10-wbs-plan-trials.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office ch |
+| `03-survey--03-survey-records-10-wbs-plan-trials.js` | 263 | 16 | Moved verbatim from src/03-survey/03-survey-records-10-wbs-plan-trials.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office ch |
 | `03-survey--03-survey-records-11-weekly-tasks-paths.js` | 59 | 6 | Moved verbatim from src/03-survey/03-survey-records-11-weekly-tasks-paths.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office |
 | `03z-shared--03z-shared-02-from-tasks-office-02-newsite-schedule.js` | 13 | 1 | Moved verbatim from src/03z-shared/03z-shared-02-from-tasks-office-02-newsite-schedule.js by scripts/split-late.mjs (V38.90): only the delegated click handlers  |
 | `03z-shared--03z-shared-03-from-tasks-office-03-photos-drive.js` | 110 | 4 | Moved verbatim from src/03z-shared/03z-shared-03-from-tasks-office-03-photos-drive.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or t |
@@ -253,7 +253,7 @@
 | `05-lifecycle-map-21-move-devices.js` | 127 | 11 | (V39.31) owner: «عاوز أي نقطة، من أقل نقطة، أقدر أحرّكها: كاميرا وأنتنات وريدر وحساسات وجيت واي وخلافه». A point |
 | `05-lifecycle-map-30-kmz-detailed.js` | 100 | 5 | A detailed KMZ for Google Earth: every planned point, once per app filter as folders, with a full balloon. |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (14 ملفات · 4774 سطر · 168 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (14 ملفات · 4777 سطر · 168 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -267,7 +267,7 @@
 | `06-ministry-alerts-08-pptx-template.js` | 1111 | 33 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 252 | 6 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 176 | 8 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 1487 | 2 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 1490 | 2 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-11b-password-change.js` | 68 | 2 | The forced password change after a temporary password. Moved verbatim out of 11-whats-new.js (V47.2): |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 113 | 7 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 32 | 3 | Ministry props helpers. |
@@ -289,7 +289,7 @@
 | `07-approvals-reports-11-import-roles-perms.js` | 322 | 10 | Import via downloaded template, roles (who sees and does what), the owner is never locked out, database permissions matrix, custom roles, ranks, org tree and me |
 | `07-approvals-reports-12-activity-report.js` | 229 | 15 | What each person did in a period, counted two ways — how many times, and how many DIFFERENT points — split by the kind |
 
-## `08-events/` — البياناتُ والأحداث — الإعدادات والمستخدمون والنقرات والإقلاع  (14 ملفات · 5371 سطر · 141 دالة)
+## `08-events/` — البياناتُ والأحداث — الإعدادات والمستخدمون والنقرات والإقلاع  (14 ملفات · 5380 سطر · 141 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -301,7 +301,7 @@
 | `08-data-events-boot-06-long-lists-storage-clicks.js` | 429 | 13 | Long lists (100 first then 'show more'), persistent storage request, table and window clicks. |
 | `08-data-events-boot-07-clicks-a-1.js` | 276 | 3 | Delegated click handlers, group A part 1 (return true when the event is consumed). |
 | `08-data-events-boot-08-clicks-a-2.js` | 385 | 3 | Delegated click handlers, group A part 2. |
-| `08-data-events-boot-09-clicks-a-3.js` | 338 | 4 | Delegated click handlers, group A part 3. |
+| `08-data-events-boot-09-clicks-a-3.js` | 347 | 4 | Delegated click handlers, group A part 3. |
 | `08-data-events-boot-10-clicks-doc-1.js` | 363 | 5 | Document-level click handlers part 1 (onDocClick and parts 1–3): settings, constants, survey edit, pending file, E-GATE verification. |
 | `08-data-events-boot-11-clicks-doc-2.js` | 542 | 7 | Document-level click handlers part 2 (parts 4–7). |
 | `08-data-events-boot-12-clicks-doc-3.js` | 262 | 3 | Document-level click handlers part 3 (parts 8–9). |
@@ -320,4 +320,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 253 ملفًّا · 52972 سطر · 2469 دالة.
+**الإجمالي:** 253 ملفًّا · 53020 سطر · 2470 دالة.

@@ -59,6 +59,15 @@ function clickAPart6(e){
     wbsEditSave(wid2, { n:g2('n'), s:g2('s'), e:g2('e'), type:g2('type') || 'مهمة', resp:g2('resp'), party:g2('party') });
     return true;
   }
+  /* (V47.17) a new plan item from the platform */
+  if (e.target.closest('[data-wbsnew]')){ PV.WBS_NEW = PV.WBS_NEW ? 0 : 1; render(1); return true; }
+  if (e.target.closest('[data-wbsnewx]')){ PV.WBS_NEW = 0; render(1); return true; }
+  if (e.target.closest('[data-wbsnewsave]')){
+    var gv = function(k){ var el = document.getElementById(k); return el ? String(el.value || '').trim() : ''; };
+    var nid = gv('wbnId'), werr = typeof wbsAddRow === 'function' ? wbsAddRow({ id:nid, n:gv('wbnN'), type:gv('wbnT'), s:gv('wbnS'), e:gv('wbnE'), resp:gv('wbnR') }) : t('تعذّر الحفظ');
+    if (werr){ toast(werr); return true; }
+    toast(t('أُضيف البند') + ' ' + nid); PV.WBS_NEW = 0; render(1); return true;
+  }
   var wdl = e.target.closest('[data-wbsdel]');
   if (wdl){ wbsRemove(wdl.getAttribute('data-wbsdel')); return true; }
   if (e.target.closest('[data-wbsreset]')){ if (PV.WBS_RESET) wbsClear(); else { PV.WBS_RESET = 1; render(1); } return true; }

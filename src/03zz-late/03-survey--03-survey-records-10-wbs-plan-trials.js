@@ -2,7 +2,7 @@
    FILE    : src/03zz-late/03-survey--03-survey-records-10-wbs-plan-trials.js
    DOMAIN  : Late core — functions the core alone never reaches, shipped with app-office.js
    PURPOSE : Moved verbatim from src/03-survey/03-survey-records-10-wbs-plan-trials.js by scripts/split-late.mjs (V38.90): only the delegated click handlers or the office chunk call them, so they arrive a few seconds after the login screen instead of in the field's first payload. A click that needs one before the chunk lands is replayed when it does.
-   DEFINES : wbsProjectPct, wbsPlanCard, wbsKeyRow, xlDate, workDays, wbsExcel, dosSet, dosSave, dosItemAdd, dosItemDel, dosFileAdd, dosFileDel, wbsRemove, wbsEditSave, wbsClear
+   DEFINES : wbsProjectPct, wbsPlanCard, wbsKeyRow, xlDate, workDays, wbsExcel, dosSet, dosSave, dosItemAdd, dosItemDel, dosFileAdd, dosFileDel, wbsRemove, wbsAddRow, wbsEditSave, wbsClear
    NOTE    : Edit these functions here. audit-core-alone.mjs fails if code the core runs alone starts calling one without checking typeof first.
    ============================================================================ */
 function wbsProjectPct(){ var top = wbsRows().filter(function(r){ return wbsDepth(r.id) === 1; }), pw = 0, pa = 0, w = 0; top.forEach(function(r){ var d = Math.max(1, +r.w || +r.dur || 1); pw += wbsPlanPct(r) * d; pa += wbsPct(r) * d; w += d; }); return { plan:w ? Math.round(pw / w) : 0, act:w ? Math.round(pa / w) : 0, rows:top.length }; }
@@ -223,6 +223,31 @@ function wbsRemove(id){
   if (wbsSave()){ logEvent('حذفُ بندٍ من جدول المتابعة — ' + id, id); toast(t('حُذف البند') + ' ' + id); WBS_EDIT = ''; render(1); }
 }
 
+/* ═══ (V47.17) a new item on the platform ═══
+   The owner: «هاقدر أعدل في تواريخهم وأضيف وأمسح؟» — edit and delete were here; adding was only by re-importing the
+   workbook. A new item goes in by its number, under an existing parent, in the plan's own order; a «معلم» becomes a
+   milestone at once (mileList reads the plan); a task gets its work days like wbsExcel. It lives in the plan on the platform — a later import replaces the plan
+   whole, so the screen says to add it to the workbook too. Returns the error text, or '' on success. */
+function wbsAddRow(o){
+  if (!may('settings')) return t('جدولُ المتابعة للمهندس فما فوق');
+  var id = String(o.id || '').replace(/[\u200f\u200e\s]/g, '').replace(/[٠-٩]/g, function(c){ return '٠١٢٣٤٥٦٧٨٩'.indexOf(c); });
+  var n = String(o.n || '').trim(), s = o.s || '', e = o.e || '', type = o.type === 'مهمة' ? 'مهمة' : 'معلم';
+  if (!/^\d+(\.\d+)*$/.test(id)) return t('رقم البند أرقام بينها نقاط، مثل 2.5.6');
+  if (!n) return t('اكتب اسم البند');
+  var R = wbsRows();
+  if (R.some(function(x){ return String(x.id) === id; })) return t('رقم البند موجود بالفعل');
+  var par = id.split('.').slice(0, -1).join('.');
+  if (par && !R.some(function(x){ return String(x.id) === par; })) return t('البند الأب غير موجود في الخطة');
+  if (s && e && e < s) return t('النهاية قبل البداية');
+  if (!e && s) e = s; if (!s && e) s = e;
+  var cmp = function(a, b){ var A = String(a).split('.'), B = String(b).split('.');
+    for (var i = 0; i < Math.max(A.length, B.length); i++){ if (A[i] == null) return -1; if (B[i] == null) return 1; var d = (+A[i]) - (+B[i]); if (d) return d; } return 0; };
+  var at = R.length; for (var k = 0; k < R.length; k++){ if (cmp(R[k].id, id) > 0){ at = k; break; } }
+  R.splice(at, 0, { id:id, n:n, s:s, e:e, dur:(type === 'معلم' || !s) ? 0 : workDays(s, e), pct:0, type:type, resp:String(o.resp || '').trim(), party:'', w:0, ms:'', added:Date.now(), addedBy:STATE.meta.name || '' });
+  if (!wbsSave()) return t('تعذّر الحفظ');
+  logEvent('إضافةُ بندٍ إلى جدول المتابعة — ' + id + ' · ' + n, id);
+  return '';
+}
 function wbsEditSave(id, patch){
   if (!may('settings')){ toast(t('جدولُ المتابعة للمهندس فما فوق')); return; }
   var r = wbsRows().filter(function(x){ return String(x.id) === String(id); })[0]; if (!r) return;
