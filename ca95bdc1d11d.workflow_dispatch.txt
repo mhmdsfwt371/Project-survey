@@ -1,0 +1,12 @@
+verdict:  GREEN
+commit:   ca95bdc1d11d2137fd2c0d25a925936393d1817a
+version:  V47.16
+title:    V47.16 — سجلُّ المخاطر الداخلي، ومواعيدُ الخطة ومعالمُها
+event:    workflow_dispatch  (the full list, then promotion to main)
+on main:  yes — promoted
+when:     2026-11-21T00:52:56.689Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/44845924166
+jobs:     fast=skipped · real=success · shards=success · promote=skipped · chain=success
+passed:   browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     —
+missing:  —
