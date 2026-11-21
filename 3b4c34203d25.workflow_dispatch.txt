@@ -1,0 +1,12 @@
+verdict:  GREEN
+commit:   3b4c34203d25f4eca5c7e3ebdfe8c2e11f25d5ff
+version:  V47.17
+title:    V47.17 — بندٌ جديدٌ من صفحة الخطة، وشريطُ المعالم بأعدادٍ صحيحة
+event:    workflow_dispatch  (the full list, then promotion to main)
+on main:  yes — promoted
+when:     2026-11-21T01:46:11.468Z
+run:      https://github.com/mhmdsfwt371/Project-survey/actions/runs/44851396454
+jobs:     fast=skipped · real=success · shards=success · promote=skipped · chain=success
+passed:   browser rules multi shard-1 shard-2 shard-3 shard-4 shard-5 shard-6
+fell:     —
+missing:  —
